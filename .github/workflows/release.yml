@@ -12,7 +12,7 @@ jobs:
   release:
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Require tag and VERSION to agree
         run: |
           test "v$(sed -n '1p' VERSION)" = "$GITHUB_REF_NAME"
@@ -21,5 +21,4 @@ jobs:
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create "$GITHUB_REF_NAME" +            dist/day-one-mac-runtime.tar.gz +            dist/day-one-mac-runtime.tar.gz.sha256 +            dist/install-day-one-mac +            --generate-notes +            --title "Day One Mac $GITHUB_REF_NAME"
+        run: gh release create "$GITHUB_REF_NAME" dist/day-one-mac-runtime.tar.gz dist/day-one-mac-runtime.tar.gz.sha256 dist/install-day-one-mac --generate-notes --title "Day One Mac $GITHUB_REF_NAME"
