@@ -364,6 +364,11 @@ if grep -Fq 'exec bash "$HERE/setup.sh" "$@"' "$SCRIPT_DIR/bootstrap-day-one-mac
    && grep -Fq 'for phase in 01 02 03 04 05 06 07 08' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq 'printf '\''%s\n'\'' chezmoi ghq git jq ripgrep starship zsh' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq 'git config --global ghq.root' "$SCRIPT_DIR/setup.sh" \
+   && grep -Fq 'git config --global push.autoSetupRemote true' "$SCRIPT_DIR/setup.sh" \
+   && grep -Fq 'git config --global core.excludesFile' "$SCRIPT_DIR/setup.sh" \
+   && grep -Fq 'if [[ "$PRIMARY_IDE" == vscode ]]' "$SCRIPT_DIR/setup.sh" \
+   && grep -Fq 'Use Visual Studio Code as the primary IDE on this Mac?' "$SCRIPT_DIR/bootstrap-day-one-mac.sh" \
+   && grep -Fq '"$HOME/.gitignore_global"' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq '2) printf '\''Azure DevOps only' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq '3) printf '\''GitHub + Azure DevOps' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq 'run_installation_centre()' "$SCRIPT_DIR/setup.sh" \
@@ -398,9 +403,9 @@ if grep -Fq 'exec bash "$HERE/setup.sh" "$@"' "$SCRIPT_DIR/bootstrap-day-one-mac
    && grep -Fq 'save_state_value project-root "$PROJECT_DIR"' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq 'advanced) shift; exec "$PROJECT_ROOT/scripts/advanced-setup.sh"' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'advanced-audit|audit) shift; exec' "$SCRIPT_DIR/day-one-mac" \
-   && grep -Fq 'PHASE_SCHEMA_05=12' "$SCRIPT_DIR/setup.sh" \
+   && grep -Fq 'PHASE_SCHEMA_05=13' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq 'PHASE_SCHEMA_08=9' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'PHASE_SCHEMA_01=4' "$SCRIPT_DIR/setup.sh" \
+   && grep -Fq 'PHASE_SCHEMA_01=5' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq '.config/zsh/path.zsh' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq '.config/zsh/aliases.zsh' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq 'HTTPS Git authentication selected; no SSH identity is configured.' "$SCRIPT_DIR/setup.sh" \
@@ -419,6 +424,28 @@ else
 fi
 
 semantic_failed=0
+if rg -n 'raw\.githubusercontent\.com/CodeByKwakes/day-one-mac/main/install-day-one-mac|CodeByKwakes/MacOS|└── MacOS/' \
+  "$PROJECT_DIR" --glob '*.md' >/dev/null 2>&1; then
+  fail "a guide still uses the moving main-branch installer or the retired monorepo layout"
+  semantic_failed=1
+fi
+if rg -n '\./(bootstrap-day-one-mac|setup|prepare-existing-mac|preflight-audit|configure-macos-settings|configure-cli-tools|application-status|workspace-manager|remove-day-one-mac)\.sh' \
+  "$PROJECT_DIR/docs/00-preflight" \
+  "$PROJECT_DIR/docs/01-required" \
+  "$PROJECT_DIR/docs/02-optional" \
+  "$PROJECT_DIR/docs/10-app-guides" \
+  --glob '*.md' --glob '!03-account-preserving-cleanup.md' >/dev/null 2>&1; then
+  fail "a normal user guide bypasses the standalone day-one-mac command"
+  semantic_failed=1
+fi
+if ! grep -Fq 'releases/latest/download/install-day-one-mac' "$PROJECT_DIR/README.md" \
+   || ! grep -Fq 'Move an already-completed Mac to standalone mode' \
+      "$PROJECT_DIR/docs/20-reference/PORTABLE-COMMAND.md" \
+   || ! grep -Fq 'active versioned runtime' \
+      "$PROJECT_DIR/docs/01-required/08-verify-and-reproduce.md"; then
+  fail "standalone installation, migration, or Phase 8 runtime guidance is incomplete"
+  semantic_failed=1
+fi
 if rg -n '^cd day-one-mac/' "$PROJECT_DIR" --glob '*.md' >/dev/null 2>&1; then
   fail "a guide still assumes the reader's current directory with 'cd day-one-mac/...'"
   semantic_failed=1
@@ -575,7 +602,7 @@ if ! grep -Fq 'Shell (PS1)' "$PROJECT_DIR/docs/10-app-guides/WARP.md" \
   fail "Warp app guide is missing Starship, sync, export, or secret-handling guidance"
   semantic_failed=1
 fi
-if ! grep -Fq 'use the wizard in Step 1.8' "$PROJECT_DIR/docs/01-required/01-first-boot-and-decisions.md" \
+if ! grep -Fq 'use the wizard in Step 1.9' "$PROJECT_DIR/docs/01-required/01-first-boot-and-decisions.md" \
    || ! grep -Fq '[Continue to early macOS settings →](MACOS-SETTINGS.md)' "$PROJECT_DIR/docs/01-required/01-first-boot-and-decisions.md" \
    || ! grep -Fq '[← Early macOS settings](MACOS-SETTINGS.md)' "$PROJECT_DIR/docs/01-required/02-command-line-foundation.md" \
    || ! grep -Fq 'Existing Homebrew found at' "$SCRIPT_DIR/setup.sh" \

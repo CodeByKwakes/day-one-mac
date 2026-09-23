@@ -23,7 +23,7 @@ remote code directly into a shell:
 ```bash
 INSTALLER="$HOME/Downloads/install-day-one-mac"
 curl --proto '=https' --tlsv1.2 -fsSL \
-  https://raw.githubusercontent.com/CodeByKwakes/day-one-mac/main/install-day-one-mac \
+  https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac \
   -o "$INSTALLER"
 chmod 700 "$INSTALLER"
 less "$INSTALLER"
@@ -98,6 +98,33 @@ Open the installed Start Here guide:
 day-one-mac docs --open
 ```
 
+## Move an already-completed Mac to standalone mode
+
+If Phases 1–8 were completed with an older checkout-dependent command, do not
+reset progress or rerun the first-time choices. Download the current public
+installer as shown above, then run:
+
+```bash
+"$INSTALLER" --update
+export PATH="$HOME/.local/bin:$PATH"
+hash -r
+day-one-mac runtime-status
+day-one-mac root
+day-one-mac --guided
+```
+
+The installer preserves `~/.day-one-mac`, the completed phase fingerprints,
+chezmoi source, dotfiles and installed applications. The guided run revalidates
+saved completions and skips phases that remain current. `runtime-status` must
+report `standalone runtime` and `Integrity: verified`; `root` should normally
+point below `~/.local/share/day-one-mac`, not a personal Git checkout.
+
+After verification, continue directly to optional work when wanted:
+
+```bash
+day-one-mac optional --guided
+```
+
 ## Update safely
 
 ```bash
@@ -126,7 +153,7 @@ day-one-mac rollback-runtime --execute
 Choose an exact installed version when necessary:
 
 ```bash
-day-one-mac rollback-runtime --version 1.0.0 --execute
+day-one-mac rollback-runtime --version <installed-version> --execute
 ```
 
 This changes only the Day One Mac runtime. It does not reverse applications,

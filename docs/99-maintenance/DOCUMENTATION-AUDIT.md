@@ -234,14 +234,13 @@ source. The relative script does not exist there.
 **Suggested replacement:**
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --phase 05 --local-dotfiles
-./bootstrap-day-one-mac.sh --phase 08
+day-one-mac setup --phase 05 --local-dotfiles
+day-one-mac setup --phase 08
 ```
 
-Current implementation note: the early installer now makes `day-one-mac`
-available before Phase 1, so `day-one-mac setup --phase 05` is the preferred
-location-independent form.
+Current implementation note: the standalone installer makes `day-one-mac`
+available before Phase 1, and the location-independent form above is now used
+throughout user-facing phase guides.
 
 ### `START-HERE.md`
 
@@ -373,8 +372,9 @@ Phase 2.
 does not repeat `cd .../day-one-mac/scripts`. Users arriving through a search
 result may run it from their home directory.
 
-**Resolved:** the early installer now provides the portable command before
-Phase 1. Direct-script examples still include an explicit working directory.
+**Resolved:** the public standalone installer now provides the portable
+command before Phase 1. User-facing examples use that command; direct scripts
+are limited to contributor and recovery contexts.
 
 #### No explicit policy escape hatch for environments that forbid 1Password
 

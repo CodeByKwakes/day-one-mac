@@ -102,7 +102,7 @@ day-one-mac macos-settings
 If the portable command is unavailable, run it from this project's scripts directory:
 
 ```bash
-./configure-macos-settings.sh --wizard
+day-one-mac macos-settings --wizard
 ```
 
 Use arrow keys or `j`/`k` to move, Space to toggle, and Return to review. The
@@ -115,13 +115,13 @@ asks for one completion confirmation before the guided setup continues.
 
 ```bash
 # Show the saved selection without changing the Mac.
-./configure-macos-settings.sh --preview
+day-one-mac macos-settings --preview
 
 # Show status and report locations.
-./configure-macos-settings.sh --status
+day-one-mac macos-settings --status
 
 # Restore values captured before the first write.
-./configure-macos-settings.sh --restore
+day-one-mac macos-settings --restore
 ```
 
 State is private to this Mac:

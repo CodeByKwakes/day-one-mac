@@ -34,8 +34,7 @@ that action.
 When the drive is ready, let the wizard verify it and prepare the folder:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./prepare-existing-mac.sh --guided
+day-one-mac prepare-existing --guided
 ```
 
 Choose the same route as before, then choose **Step 2 — verify the encrypted
@@ -162,8 +161,7 @@ highlights the cleanup preview. If you intentionally leave the wizard, return
 with the same command:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./prepare-existing-mac.sh --guided
+day-one-mac prepare-existing --guided
 ```
 
 ---

@@ -19,7 +19,7 @@ into the source directory.
 
 ## How to use this phase
 
-Run `./bootstrap-day-one-mac.sh --phase 05`. For a new source, the runner creates
+Run `day-one-mac setup --phase 05`. For a new source, the runner creates
 only the documented minimum. For an existing source, it shows the complete
 chezmoi comparison and asks before applying. The manual commands below explain
 the files and help with a stopped phase; do not recreate files after a pass.
@@ -63,8 +63,7 @@ and push flow, including when `add`, `apply`, or `merge` is correct.
 Pass the repository to the runner:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh \
+day-one-mac setup \
   --phase 05 \
   --dotfiles-repo <private-repository-url>
 ```
@@ -108,8 +107,7 @@ Choose this when policy or preference means the source must not be Git
 versioned:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --phase 05 --local-dotfiles
+day-one-mac setup --phase 05 --local-dotfiles
 ```
 
 chezmoi still manages and applies the same files. Phase 8 performs the secret
@@ -434,16 +432,17 @@ command to its direct project script, lists compatibility aliases, and explains
 when to choose finalisation, recorded rollback, sectional removal, or broad
 cleanup.
 
-If the project moves, run `./scripts/bootstrap-day-one-mac.sh --guided` once from
-the new checkout. Current phase fingerprints remain valid and the root record
-is refreshed before the runner considers any phase.
+Normal installations use the versioned standalone runtime and do not need a
+checkout-location repair. If a contributor deliberately uses linked mode and
+moves that source checkout, reinstall linked mode from the new location before
+rerunning the phase. Current phase fingerprints remain valid.
 
 ## Step 5.7 — Add and inspect new-source targets
 
 For a new source, the equivalent manual commands are:
 
 ```bash
-chezmoi add ~/.zprofile ~/.zshrc ~/.gitconfig ~/.ssh/config \
+chezmoi add ~/.zprofile ~/.zshrc ~/.gitconfig ~/.gitignore_global ~/.ssh/config \
   ~/.config/zsh/path.zsh ~/.config/zsh/aliases.zsh \
   ~/.config/starship.toml ~/.local/bin/day-one-mac
 
@@ -483,6 +482,7 @@ Typical source names are:
 | `~/.config/zsh/path.zsh` | `dot_config/zsh/path.zsh` |
 | `~/.config/zsh/aliases.zsh` | `dot_config/zsh/aliases.zsh` |
 | `~/.gitconfig` | `dot_gitconfig` |
+| `~/.gitignore_global` | `dot_gitignore_global` |
 | `~/.ssh/config` | `dot_ssh/config` |
 | `~/.config/starship.toml` | `dot_config/starship.toml` |
 | `~/.local/bin/day-one-mac` | `dot_local/bin/executable_day-one-mac` |
@@ -629,9 +629,21 @@ section. The required values are equivalent to:
     ff = only
 [fetch]
     prune = true
+[push]
+    autoSetupRemote = true
+[core]
+    excludesFile = /Users/your-name/.gitignore_global
+[merge]
+    conflictStyle = zdiff3
 [ghq]
     root = /Users/your-name/Developer
 ```
+
+When VS Code was selected as the primary IDE, additional `core.editor`,
+`merge.tool`, `mergetool.vscode`, `diff.tool`, and `difftool.vscode` values are
+expected. Their executable path may be `code` or the absolute command inside
+`/Applications/Visual Studio Code.app`; both are valid. They are deliberately
+absent when another primary IDE was selected.
 
 Check semantics without relying on formatting:
 
@@ -641,7 +653,26 @@ git config --global --get user.email
 git config --global --get init.defaultBranch
 git config --global --get pull.ff
 git config --global --get fetch.prune
+git config --global --get push.autoSetupRemote
+git config --global --get core.excludesFile
+git config --global --get merge.conflictStyle
 git config --global --get ghq.root
+```
+
+### `~/.gitignore_global`
+
+The managed baseline contains only operating-system and temporary editor
+files. Add project-specific patterns to the repository's own `.gitignore`.
+
+```gitignore
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Trashes
+*.swp
+*.swo
+*~
 ```
 
 ### `~/.ssh/config`
@@ -720,8 +751,9 @@ printf 'mode: %s\n' "$(stat -f '%Lp' "$HOME/.local/bin/day-one-mac")"
 day-one-mac root
 ```
 
-Expected mode is `700`. If the comparison fails, review both files and rerun
-`install-portable-command.sh` from the trusted checkout before rerunning Phase 5.
+Expected mode is `700`. If the comparison fails, review both files, run
+`day-one-mac update`, verify `day-one-mac runtime-status`, and then rerun Phase
+5. Linked-mode contributors may reinstall from their trusted source checkout.
 
 ## Never add these to chezmoi
 
@@ -887,7 +919,7 @@ only when the intended outcome is to undo broader setup work.
 | `chezmoi source-path` fails | Run `chezmoi init`, then rerun Phase 5 |
 | An existing source produces a large diff | Stop, inspect each change, and apply individual targets first |
 | `day-one-mac` is missing | Confirm `~/.config/zsh/path.zsh` adds `~/.local/bin`, confirm both startup files source it, and open a new shell |
-| `day-one-mac root` names an old checkout | Run the setup entry point once from the current checkout to refresh the machine-local record |
+| `day-one-mac root` names a removed checkout | Install the latest public runtime again and verify it with `day-one-mac runtime-status`; linked-mode contributors should reinstall from the intended source checkout |
 | Starship is installed but no prompt appears | Confirm `.zshrc` contains exactly one `starship init zsh` block and open a new shell |
 | Nerd Font symbols are boxes | Select JetBrainsMono Nerd Font in the terminal or VS Code setting |
 | pnpm reports its global bin is not on PATH | Confirm `~/.config/zsh/path.zsh`, run `exec /opt/homebrew/bin/zsh -l`, and print `$PNPM_HOME` |

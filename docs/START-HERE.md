@@ -126,7 +126,7 @@ Wait for the installer window to finish. Then download the public installer:
 ```bash
 INSTALLER="$HOME/Downloads/install-day-one-mac"
 curl --proto '=https' --tlsv1.2 -fsSL \
-  https://raw.githubusercontent.com/CodeByKwakes/day-one-mac/main/install-day-one-mac \
+  https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac \
   -o "$INSTALLER"
 chmod 700 "$INSTALLER"
 less "$INSTALLER"
@@ -159,6 +159,11 @@ whole list.
 The first wizard asks only for choices needed by the eight required phases. The
 eight items marked 🔒 are required, not completed. A ✓ is used only for a
 phase that has passed.
+
+The wizard also asks whether VS Code is the primary IDE. Choose **Yes** to make
+Git open commit messages, diffs, and merge conflicts in VS Code. Choose **No**
+to leave Git's existing editor tools unchanged; VS Code remains installed as a
+small compatibility editor either way.
 
 One optional item deliberately runs early: the
 [macOS Settings Wizard](01-required/MACOS-SETTINGS.md). A checkpoint appears after Phase

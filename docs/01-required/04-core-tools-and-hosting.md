@@ -12,7 +12,7 @@ selected in Phase 1 passes both CLI and SSH authentication.
 
 ## How to use this phase
 
-Run `./bootstrap-day-one-mac.sh --phase 04`. The runner rechecks the required
+Run `day-one-mac setup --phase 04`. The runner rechecks the required
 applications and command-line tools prepared by the
 [Installation Centre](INSTALLATION-CENTRE.md). It does not install them here.
 The phase creates the selected hosting folders, sets Git defaults, opens
@@ -67,8 +67,7 @@ Receipt or identity conflict    → stop for review
 Run the read-only check at any time:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --applications --required
+day-one-mac applications --required
 ```
 
 See [Application ownership](../20-reference/APPLICATION-OWNERSHIP.md) for Company Portal,
@@ -164,7 +163,10 @@ git config --global user.email "you@example.com"
 git config --global init.defaultBranch main
 git config --global pull.ff only
 git config --global fetch.prune true
+git config --global push.autoSetupRemote true
 git config --global ghq.root "$HOME/Developer"
+git config --global core.excludesFile "$HOME/.gitignore_global"
+git config --global merge.conflictStyle zdiff3
 ```
 
 Why these defaults:
@@ -172,6 +174,36 @@ Why these defaults:
 - New repositories start on `main`.
 - Pull refuses an implicit merge commit when branches diverge.
 - Deleted remote branches are pruned during fetch.
+- The first push of a new local branch automatically records its upstream.
+- A small global ignore file filters macOS metadata and temporary editor files.
+- `zdiff3` displays the original text as well as both sides of a merge conflict.
+
+The runner also adds the non-destructive `git lg` history alias. When the
+wizard records VS Code as the primary IDE, it additionally configures VS Code
+for commit messages, diffs, and merge conflicts. When another IDE is primary,
+those editor settings are left untouched. The installer never adds
+`safe.directory = *`, because that would disable Git's repository-ownership
+protection globally.
+
+The global ignore file is intentionally small. Project decisions such as
+`node_modules`, `.env`, lockfiles, `.vscode`, and build output belong in each
+repository's own `.gitignore`, not the global file.
+
+When VS Code is primary, the equivalent manual configuration is:
+
+```bash
+CODE_BIN="$(command -v code || printf '%s' \
+  '/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code')"
+git config --global core.editor "'$CODE_BIN' --wait"
+git config --global merge.tool vscode
+git config --global mergetool.vscode.cmd "'$CODE_BIN' --wait \"\$MERGED\""
+git config --global diff.tool vscode
+git config --global difftool.vscode.cmd \
+  "'$CODE_BIN' --wait --diff \"\$LOCAL\" \"\$REMOTE\""
+```
+
+Do not run those five commands when another IDE is primary. Rerun the main
+wizard, change the primary-IDE choice, and revalidate Phases 4–5 instead.
 
 Because of `pull.ff only`, a `git pull` will sometimes stop with:
 
@@ -389,8 +421,7 @@ which it never provides. A genuine failure says
 ## Step 4.6 — Run or resume the phase
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --phase 04
+day-one-mac setup --phase 04
 ```
 
 The runner verifies the software prepared by the Installation Centre, writes

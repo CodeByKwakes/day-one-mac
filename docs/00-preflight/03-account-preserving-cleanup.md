@@ -11,8 +11,7 @@ development setup, so it is not the same as a factory reset.
 ## Use the guided route
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./prepare-existing-mac.sh --guided
+day-one-mac prepare-existing --guided
 ```
 
 Choose **Route B**. The next screen makes the order visible:
@@ -294,13 +293,13 @@ operation.
 Preview:
 
 ```bash
-./prepare-existing-mac.sh --dry-run
+day-one-mac prepare-existing --dry-run
 ```
 
 Apply, replacing both example paths:
 
 ```bash
-./prepare-existing-mac.sh --apply \
+day-one-mac prepare-existing --apply \
   --archive-root "/Volumes/Backup Drive/My MacBook Pro Backup - 2026-09-12 23-00" \
   --preflight-report "/Volumes/Backup Drive/My MacBook Pro Backup - 2026-09-12 23-00/Safety Report - 2026-09-12 23-05-00" \
   --archive-projects \

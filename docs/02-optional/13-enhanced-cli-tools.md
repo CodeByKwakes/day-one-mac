@@ -41,17 +41,15 @@ reviewed declaration above.
 ## Review or select tools
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-
 # Read-only catalogue with current installation state.
-./configure-cli-tools.sh --list
+day-one-mac cli-tools --list
 
 # Grouped interactive selector.
-./configure-cli-tools.sh
+day-one-mac cli-tools
 
 # Reproducible non-interactive selections.
-./configure-cli-tools.sh --packages eza,zsh-autosuggestions,lazydocker --dry-run
-./configure-cli-tools.sh --packages eza,zsh-autosuggestions,lazydocker
+day-one-mac cli-tools --packages eza,zsh-autosuggestions,lazydocker --dry-run
+day-one-mac cli-tools --packages eza,zsh-autosuggestions,lazydocker
 ```
 
 In the selector, use Up/Down (or `j`/`k`) to move, Space to toggle, `a` for all,
@@ -60,7 +58,7 @@ required formulae appear with 🔒 and cannot be toggled. `--check` returns a
 non-zero status when a selected tool is missing, which is useful in an audit:
 
 ```bash
-./configure-cli-tools.sh \
+day-one-mac cli-tools \
   --packages eza,zsh-autosuggestions,lazydocker \
   --check
 ```

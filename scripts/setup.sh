@@ -33,6 +33,7 @@ TRACK=""
 STACK=""
 GIT_NAME=""
 GIT_EMAIL=""
+PRIMARY_IDE=""
 DOTFILES_REPO=""
 DOTFILES_VERSIONING=""
 AUTH_MODE=""
@@ -57,13 +58,13 @@ PHASE_NEXT_ACTION=""
 
 # Bump only the phase whose implementation contract changed. This avoids
 # making all eight completed phases stale after an unrelated runner edit.
-PHASE_SCHEMA_01=4
+PHASE_SCHEMA_01=5
 PHASE_SCHEMA_02=3
 PHASE_SCHEMA_03=6
-PHASE_SCHEMA_04=5
-PHASE_SCHEMA_05=12
+PHASE_SCHEMA_04=6
+PHASE_SCHEMA_05=13
 PHASE_SCHEMA_06=2
-PHASE_SCHEMA_07=3
+PHASE_SCHEMA_07=4
 PHASE_SCHEMA_08=9
 
 usage() {
@@ -77,6 +78,7 @@ Usage: ./setup.sh [options]
   --auth-mode MODE            1password (default), keychain, external, or https
   --name "Full Name"          Git author name
   --email ADDRESS             primary Git author email
+  --primary-ide IDE           vscode or other; controls Git editor integration
   --dotfiles-repo URL         apply an existing private chezmoi source
   --new-dotfiles              create or keep a new chezmoi source
   --dotfiles-versioning MODE  git (private remote) or local (no Git gate)
@@ -260,6 +262,7 @@ load_or_choose_selections() {
   [[ -n "$STACK" ]] || STACK="$(state_value stack)"
   [[ -n "$GIT_NAME" ]] || GIT_NAME="$(state_value git-name)"
   [[ -n "$GIT_EMAIL" ]] || GIT_EMAIL="$(state_value git-email)"
+  [[ -n "$PRIMARY_IDE" ]] || PRIMARY_IDE="$(state_value primary-ide)"
   if [[ "$DOTFILES_EXPLICIT" != 1 && -z "$DOTFILES_REPO" ]]; then
     DOTFILES_REPO="$(state_value dotfiles-repo)"
   fi
@@ -273,6 +276,11 @@ load_or_choose_selections() {
 
   [[ -n "$TRACK" ]] || TRACK="$(ask 'Hosting track: 1 GitHub, 2 Azure, 3 both' 1 '^[123]$')"
   [[ -n "$STACK" ]] || STACK="$(ask 'Stack: node, python, or both' both '^(node|python|both)$')"
+  if [[ -z "$PRIMARY_IDE" ]]; then
+    if [[ "$DRY_RUN" == 1 || ! -t 0 ]]; then PRIMARY_IDE=vscode
+    else PRIMARY_IDE="$(ask 'Use VS Code as the primary IDE? Enter vscode or other' vscode '^(vscode|other)$')"
+    fi
+  fi
   if [[ -z "$MACOS_SETTINGS_PLAN" ]]; then
     if [[ -n "$REQUESTED_PHASES" ]]; then MACOS_SETTINGS_PLAN=skip
     else MACOS_SETTINGS_PLAN="$(ask 'Early macOS settings: configure or skip' configure '^(configure|skip)$')"
@@ -280,6 +288,7 @@ load_or_choose_selections() {
   fi
   [[ "$TRACK" =~ ^[123]$ ]] || { err "track must be 1, 2, or 3"; exit 2; }
   [[ "$STACK" =~ ^(node|python|both)$ ]] || { err "stack must be node, python, or both"; exit 2; }
+  [[ "$PRIMARY_IDE" =~ ^(vscode|other)$ ]] || { err "primary IDE must be vscode or other"; exit 2; }
   [[ "$DOTFILES_VERSIONING" =~ ^(git|local)$ ]] || { err "dotfiles versioning must be git or local"; exit 2; }
   [[ "$MACOS_SETTINGS_PLAN" =~ ^(ask|configure|skip)$ ]] || { err "macOS settings choice must be ask, configure, or skip"; exit 2; }
   [[ "$AUTH_MODE" =~ ^(1password|keychain|external|https)$ ]] || {
@@ -323,13 +332,13 @@ phase_fingerprint() {
   application_catalog_hash="$(shasum -a 256 "$DAY_ONE_APP_CATALOG" | awk '{print $1}')"
   eval "schema=\${PHASE_SCHEMA_$1}"
   case "$1" in
-    01) inputs="$TRACK|$STACK|$GIT_NAME|$GIT_EMAIL" ;;
+    01) inputs="$TRACK|$STACK|$GIT_NAME|$GIT_EMAIL|$PRIMARY_IDE" ;;
     02) inputs='foundation' ;;
     03) inputs="security|$AUTH_MODE|applications=$application_catalog_hash" ;;
-    04) inputs="$TRACK|$STACK|$GIT_NAME|$GIT_EMAIL|$AUTH_MODE|applications=$application_catalog_hash" ;;
-    05) inputs="$GIT_NAME|$GIT_EMAIL|$DOTFILES_REPO|$DOTFILES_VERSIONING" ;;
+    04) inputs="$TRACK|$STACK|$GIT_NAME|$GIT_EMAIL|$PRIMARY_IDE|$AUTH_MODE|applications=$application_catalog_hash" ;;
+    05) inputs="$GIT_NAME|$GIT_EMAIL|$PRIMARY_IDE|$DOTFILES_REPO|$DOTFILES_VERSIONING" ;;
     06) inputs="$STACK" ;;
-    07) inputs="vscode-base|applications=$application_catalog_hash" ;;
+    07) inputs="vscode-base|primary-ide=$PRIMARY_IDE|applications=$application_catalog_hash" ;;
     08) inputs="$TRACK|$STACK|$DOTFILES_REPO|$DOTFILES_VERSIONING|applications=$application_catalog_hash" ;;
   esac
   { printf 'phase-schema=%s\n' "$schema"; printf 'document=%s\n' "$doc_hash";
@@ -824,6 +833,7 @@ phase_01() {
   save_state_value stack "$STACK"
   save_state_value git-name "$GIT_NAME"
   save_state_value git-email "$GIT_EMAIL"
+  save_state_value primary-ide "$PRIMARY_IDE"
   phase_step_done "hosting, stack and Git identity recorded"
   ok "decisions recorded"
 }
@@ -1431,6 +1441,7 @@ phase_03() {
 }
 
 phase_04() {
+  local global_ignore global_ignore_content vscode_cli vscode_command
   local app_id formula ssh_output
   ui_title '4️⃣' 'Phase 04 — Core tools and hosting'
   info "Guide: $(phase_doc 04)"
@@ -1484,7 +1495,35 @@ phase_04() {
   run git config --global init.defaultBranch main
   run git config --global pull.ff only
   run git config --global fetch.prune true
+  run git config --global push.autoSetupRemote true
   run git config --global ghq.root "$HOME/Developer"
+  run git config --global alias.lg "log --color --graph --decorate --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %C(bold blue)<%an>%Creset' --abbrev-commit"
+  global_ignore="$HOME/.gitignore_global"
+  global_ignore_content=$'# Files created by macOS or temporary terminal editors.\n.DS_Store\n.AppleDouble\n.LSOverride\n._*\n.Trashes\n*.swp\n*.swo\n*~\n'
+  if [[ ! -e "$global_ignore" ]]; then
+    record_path_before_write "$global_ignore"
+    write_text_file "$global_ignore" "$global_ignore_content"
+  fi
+  run git config --global core.excludesFile "$global_ignore"
+  run git config --global merge.conflictStyle zdiff3
+  if [[ "$PRIMARY_IDE" == vscode ]]; then
+    vscode_cli="$(command -v code 2>/dev/null || true)"
+    [[ -x "$vscode_cli" ]] || vscode_cli='/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code'
+    if [[ "$DRY_RUN" != 1 && ! -x "$vscode_cli" ]]; then
+      err "VS Code was selected as the primary IDE, but its command-line program is unavailable."
+      warn "Open VS Code and run 'Shell Command: Install code command in PATH', then rerun Phase 4."
+      return "$EX_MANUAL"
+    fi
+    printf -v vscode_command "'%s'" "$vscode_cli"
+    run git config --global core.editor "$vscode_command --wait"
+    run git config --global merge.tool vscode
+    run git config --global mergetool.vscode.cmd "$vscode_command --wait \"\$MERGED\""
+    run git config --global diff.tool vscode
+    run git config --global difftool.vscode.cmd "$vscode_command --wait --diff \"\$LOCAL\" \"\$REMOTE\""
+    info "VS Code is the selected primary IDE; Git editor, merge and diff integration is configured."
+  else
+    info "VS Code is not the selected primary IDE; existing Git editor and tool settings were left unchanged."
+  fi
   if [[ "$DRY_RUN" == 1 ]]; then
     uses_github && print_command gh auth login --git-protocol "$(git_protocol_for_mode)" --web --skip-ssh-key
     uses_azure && print_command az login
@@ -1635,7 +1674,7 @@ phase_05() {
   local chezmoi_config chezmoi_content escaped_email escaped_name managed_target
   local existing_managed_source=0 starship_config starship_content starship_created=0 chezmoi_source_dir
   local runner_wrapper runner_source runner_content runner_created=0 applications_case optional_case remove_case shell_status_case legacy_runner legacy_runner_content
-  local legacy_runner_updated=0 zprofile zshrc zsh_path zsh_aliases bootstrap_zsh_path
+  local legacy_runner_updated=0 zprofile zshrc zsh_path zsh_aliases bootstrap_zsh_path global_ignore
   local zsh_config_dir zsh_path_file zsh_aliases_file ssh_config ssh_config_created=0 homebrew_zsh clean_shell_check compaudit_output
   ui_title '5️⃣' 'Phase 05 — Dotfiles and Starship'
   info "Guide: $(phase_doc 05)"
@@ -1703,6 +1742,7 @@ phase_05() {
   zsh_path_file="$zsh_config_dir/path.zsh"
   zsh_aliases_file="$zsh_config_dir/aliases.zsh"
   ssh_config="$HOME/.ssh/config"
+  global_ignore="$HOME/.gitignore_global"
   zsh_path=$'# Shared PATH setup for login and non-login interactive zsh.\n# Keep this file idempotent: both ~/.zprofile and ~/.zshrc source it.\ntypeset -U path PATH\nif [[ -x /opt/homebrew/bin/brew ]] && {\n  [[ ${HOMEBREW_PREFIX:-} != /opt/homebrew ]] ||\n  [[ ":$PATH:" != *":/opt/homebrew/bin:"* ]] ||\n  [[ ":$PATH:" != *":/opt/homebrew/sbin:"* ]]\n}; then\n  eval "$(/opt/homebrew/bin/brew shellenv)"\nfi\n\ncase ":$PATH:" in\n  *":$HOME/.local/bin:"*) ;;\n  *) export PATH="$HOME/.local/bin:$PATH" ;;\nesac\n'
   bootstrap_zsh_path=$'# Day One Mac bootstrap PATH — Phase 5 expands and adopts this file.\ntypeset -U path PATH\ncase ":$PATH:" in\n  *":$HOME/.local/bin:"*) ;;\n  *) export PATH="$HOME/.local/bin:$PATH" ;;\nesac\n'
   if uses_node; then
@@ -1773,12 +1813,13 @@ phase_05() {
     zshrc=$'[[ -r "$HOME/.config/zsh/path.zsh" ]] && source "$HOME/.config/zsh/path.zsh"\n\nHISTFILE="$HOME/.zsh_history"\nHISTSIZE=50000\nSAVEHIST=10000\nsetopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_REDUCE_BLANKS HIST_VERIFY\n\nfor completion_dir in /opt/homebrew/share/zsh/site-functions /opt/homebrew/share/zsh-completions; do\n  [[ -d "$completion_dir" ]] || continue\n  (( ${fpath[(Ie)$completion_dir]} )) || fpath=("$completion_dir" $fpath)\ndone\nunset completion_dir\nautoload -Uz compinit\ncompinit\n\nif command -v fnm >/dev/null 2>&1; then\n  eval "$(fnm env --use-on-cd --shell zsh)"\nfi\n\n[[ -r "$HOME/.config/zsh/aliases.zsh" ]] && source "$HOME/.config/zsh/aliases.zsh"\n\nif [[ -r /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then\n  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh\nfi\n\nif command -v starship >/dev/null 2>&1; then\n  eval "$(starship init zsh)"\nfi\n\n# Syntax highlighting must be the final shell integration.\nif [[ -r /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then\n  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh\nfi\n'
     [[ -e "$HOME/.zprofile" ]] || write_text_file "$HOME/.zprofile" "$zprofile"
     [[ -e "$HOME/.zshrc" ]] || write_text_file "$HOME/.zshrc" "$zshrc"
-    [[ "$DRY_RUN" == 1 ]] || run chezmoi add "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" "$HOME/.ssh/config" "$starship_config" "$zsh_path_file" "$zsh_aliases_file" "$runner_wrapper"
+    [[ "$DRY_RUN" == 1 ]] || run chezmoi add "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" "$global_ignore" "$HOME/.ssh/config" "$starship_config" "$zsh_path_file" "$zsh_aliases_file" "$runner_wrapper"
   elif [[ "$DRY_RUN" != 1 ]]; then
     [[ "$starship_created" == 1 ]] && run chezmoi add "$starship_config"
     [[ "$runner_created" == 1 ]] && run chezmoi add "$runner_wrapper"
     [[ "$legacy_runner_updated" == 1 ]] && run chezmoi add "$legacy_runner"
     [[ "$ssh_config_created" == 1 ]] && run chezmoi add "$ssh_config"
+    chezmoi source-path "$global_ignore" >/dev/null 2>&1 || run chezmoi add "$global_ignore"
     chezmoi source-path "$zsh_path_file" >/dev/null 2>&1 || run chezmoi add "$zsh_path_file"
     chezmoi source-path "$zsh_aliases_file" >/dev/null 2>&1 || run chezmoi add "$zsh_aliases_file"
   fi
@@ -1805,7 +1846,7 @@ phase_05() {
     return "$EX_MANUAL"
   }
   chezmoi doctor >/dev/null
-  for managed_target in "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" "$HOME/.ssh/config" "$starship_config" "$zsh_path_file" "$zsh_aliases_file" "$runner_wrapper"; do
+  for managed_target in "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" "$global_ignore" "$HOME/.ssh/config" "$starship_config" "$zsh_path_file" "$zsh_aliases_file" "$runner_wrapper"; do
     chezmoi source-path "$managed_target" >/dev/null 2>&1 || {
       err "$managed_target is not managed by chezmoi."; return "$EX_MANUAL"; }
   done
@@ -2365,6 +2406,7 @@ show_status() {
   ui_title '📊' 'Day One Mac status'
   printf '  Track: %s\n' "${TRACK:-not selected}"
   printf '  Stack: %s\n' "${STACK:-not selected}"
+  printf '  Primary IDE: %s\n' "${PRIMARY_IDE:-not selected}"
   printf '  Git authentication: %s\n' "${AUTH_MODE:-1password}"
   printf '  Dotfiles: %s\n' "${DOTFILES_VERSIONING:-git}"
   printf '  Early macOS settings: %s\n' "${MACOS_SETTINGS_PLAN:-not selected}"
@@ -2458,6 +2500,7 @@ while [[ $# -gt 0 ]]; do
     --stack) shift; [[ $# -gt 0 ]] || { err "--stack needs node, python, or both"; exit 2; }; STACK="$1" ;;
     --name) shift; [[ $# -gt 0 ]] || { err "--name needs a value"; exit 2; }; GIT_NAME="$1" ;;
     --email) shift; [[ $# -gt 0 ]] || { err "--email needs a value"; exit 2; }; GIT_EMAIL="$1" ;;
+    --primary-ide) shift; [[ $# -gt 0 ]] || { err "--primary-ide needs vscode or other"; exit 2; }; PRIMARY_IDE="$1" ;;
     --dotfiles-repo) shift; [[ $# -gt 0 ]] || { err "--dotfiles-repo needs a URL"; exit 2; }; DOTFILES_REPO="$1"; DOTFILES_VERSIONING=git; DOTFILES_EXPLICIT=1 ;;
     --new-dotfiles) DOTFILES_REPO=""; DOTFILES_EXPLICIT=1 ;;
     --dotfiles-versioning) shift; [[ $# -gt 0 ]] || { err "--dotfiles-versioning needs git or local"; exit 2; }; DOTFILES_VERSIONING="$1"; [[ "$1" != local ]] || { DOTFILES_REPO=""; DOTFILES_EXPLICIT=1; } ;;
@@ -2544,6 +2587,8 @@ if [[ "$SHOW_STATUS" == 1 ]]; then
   STACK="${STACK:-$(state_value stack)}"
   GIT_NAME="${GIT_NAME:-$(state_value git-name)}"
   GIT_EMAIL="${GIT_EMAIL:-$(state_value git-email)}"
+  PRIMARY_IDE="${PRIMARY_IDE:-$(state_value primary-ide)}"
+  [[ -n "$PRIMARY_IDE" ]] || PRIMARY_IDE=vscode
   DOTFILES_REPO="${DOTFILES_REPO:-$(state_value dotfiles-repo)}"
   DOTFILES_VERSIONING="${DOTFILES_VERSIONING:-$(state_value dotfiles-versioning)}"
   [[ -n "$DOTFILES_VERSIONING" ]] || DOTFILES_VERSIONING=git
@@ -2565,6 +2610,7 @@ save_state_value track-schema-version "$TRACK_SCHEMA_VERSION"
 save_state_value stack "$STACK"
 [[ -n "$GIT_NAME" ]] && save_state_value git-name "$GIT_NAME"
 [[ -n "$GIT_EMAIL" ]] && save_state_value git-email "$GIT_EMAIL"
+save_state_value primary-ide "$PRIMARY_IDE"
 if [[ "$DOTFILES_EXPLICIT" == 1 || -n "$DOTFILES_REPO" ]]; then
   save_state_value dotfiles-repo "$DOTFILES_REPO"
 fi

@@ -20,8 +20,7 @@ day-one-mac remove --guided
 When the portable command is unavailable:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./remove-day-one-mac.sh --guided
+day-one-mac remove --guided
 ```
 
 The first run should be a preview. Read the complete Homebrew ownership and

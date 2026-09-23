@@ -183,7 +183,7 @@ checkout:
 DOWNLOAD="$HOME/Downloads/install-day-one-mac"
 
 curl --proto '=https' --tlsv1.2 -fsSL \
-  https://raw.githubusercontent.com/CodeByKwakes/day-one-mac/main/install-day-one-mac \
+  https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac \
   -o "$DOWNLOAD"
 
 chmod 700 "$DOWNLOAD"
@@ -213,8 +213,8 @@ git clone https://github.com/CodeByKwakes/day-one-mac.git \
 ```
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./install-portable-command.sh --standalone
+"$HOME/Developer/github.com/CodeByKwakes/day-one-mac/scripts/install-portable-command.sh" \
+  --standalone
 export PATH="$HOME/.local/bin:$PATH"
 day-one-mac --wizard
 ```
@@ -466,8 +466,7 @@ word `day-one-mac audit` remains an alias for compatibility.
 Generate a read-only application report at any time:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./application-inventory.sh
+day-one-mac inventory
 ```
 
 The Markdown report separates Homebrew formulae, Homebrew casks, Mac App Store
@@ -477,8 +476,8 @@ applications. It does not uninstall anything.
 Check just the applications used by this setup and see who owns each one:
 
 ```bash
-./bootstrap-day-one-mac.sh --applications --required
-./bootstrap-day-one-mac.sh --applications --optional
+day-one-mac applications --required
+day-one-mac applications --optional
 ```
 
 The setup accepts a valid Company Portal, Mac App Store, or manual
@@ -532,9 +531,8 @@ Homebrew itself, and active development configuration—even if it was installed
 before this runner:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./clean-development-state.sh             # read-only inventory
-./clean-development-state.sh --execute   # typed confirmation required
+day-one-mac clean             # read-only inventory
+day-one-mac clean --execute   # typed confirmation required
 ```
 
 This is the broad clean-state tool. It preserves applications that Homebrew
@@ -550,8 +548,8 @@ and the drive are never changed.
 Use this when you want the narrower, manifest-owned rollback:
 
 ```bash
-./rollback-recorded-setup.sh
-./rollback-recorded-setup.sh --execute
+day-one-mac rollback
+day-one-mac rollback --execute
 ```
 
 Read [ROLLBACK.md](04-operations/ROLLBACK.md) before either execution. Neither script formats

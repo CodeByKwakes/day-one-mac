@@ -100,8 +100,7 @@ is true:
 Start or return to the wizard:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./prepare-existing-mac.sh --guided
+day-one-mac prepare-existing --guided
 ```
 
 ---

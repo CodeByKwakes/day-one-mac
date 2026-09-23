@@ -73,8 +73,7 @@ or font is called a **cask**. See [Glossary](../20-reference/GLOSSARY.md) for mo
 Start or resume the normal wizard:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --wizard
+day-one-mac --wizard
 ```
 
 After Phase 2 succeeds, the wizard opens the Installation Centre immediately.
@@ -90,18 +89,10 @@ when the status report says the checkpoint needs revalidation:
 day-one-mac install
 ```
 
-If the portable command is unavailable, use the direct equivalent:
-
-```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --install-centre
-```
-
 To choose Homebrew for all missing required items without individual prompts:
 
 ```bash
-./bootstrap-day-one-mac.sh \
-  --install-centre \
+day-one-mac install \
   --app-install-policy homebrew
 ```
 
@@ -110,8 +101,8 @@ To choose Homebrew for all missing required items without individual prompts:
 Show the saved state and perform a live recheck:
 
 ```bash
-./bootstrap-day-one-mac.sh --status
-./bootstrap-day-one-mac.sh --applications --required
+day-one-mac --status
+day-one-mac applications --required
 ```
 
 The status must show:

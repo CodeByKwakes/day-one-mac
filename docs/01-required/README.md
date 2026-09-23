@@ -6,8 +6,7 @@ This folder contains the complete required route. Run the main wizard rather
 than treating every command block as a separate checklist:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --wizard
+day-one-mac --wizard
 ```
 
 The runner prints the relevant guide whenever a phase needs manual input.

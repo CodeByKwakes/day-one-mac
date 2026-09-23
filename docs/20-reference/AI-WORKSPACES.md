@@ -88,8 +88,7 @@ day-one-mac workspace init
 If the portable command is unavailable, use the direct script:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./workspace-manager.sh init
+day-one-mac workspace init
 ```
 
 ### Codex desktop settings
@@ -155,8 +154,7 @@ day-one-mac workspace --guided
 If the portable command is unavailable, run the project script directly:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./workspace-manager.sh --guided
+day-one-mac workspace --guided
 ```
 
 The wizard asks for:

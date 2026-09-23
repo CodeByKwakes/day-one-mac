@@ -16,7 +16,7 @@ Install the public, checkout-independent runtime:
 ```bash
 INSTALLER="$HOME/Downloads/install-day-one-mac"
 curl --proto '=https' --tlsv1.2 -fsSL \
-  https://raw.githubusercontent.com/CodeByKwakes/day-one-mac/main/install-day-one-mac \
+  https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac \
   -o "$INSTALLER"
 chmod 700 "$INSTALLER"
 less "$INSTALLER"
@@ -131,6 +131,7 @@ Important setup selectors include:
 --stack node|python|both
 --name "Full Name"
 --email ADDRESS
+--primary-ide vscode|other
 --dotfiles-repo URL
 --new-dotfiles
 --dotfiles-versioning git|local

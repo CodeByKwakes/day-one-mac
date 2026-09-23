@@ -67,11 +67,11 @@ Expected result: `arm64`.
 ### Choose the correct starting point
 
 - [ ] **New or factory-reset Mac:** continue below.
-- [ ] **Existing Mac or uncertain:** stop and run the Stage 0 wizard from the
-      project scripts directory:
+- [ ] **Existing Mac or uncertain:** install the standalone runtime in the next
+      section, but do not start the Phase 1 wizard. Run Stage 0 instead:
 
 ```bash
-./prepare-existing-mac.sh --guided
+day-one-mac prepare-existing --guided
 ```
 
 Stage 0 first creates a read-only safety report. Route A hands off to Apple's
@@ -91,7 +91,7 @@ Finish the graphical installer. Then download and inspect the public installer:
 ```bash
 INSTALLER="$HOME/Downloads/install-day-one-mac"
 curl --proto '=https' --tlsv1.2 -fsSL \
-  https://raw.githubusercontent.com/CodeByKwakes/day-one-mac/main/install-day-one-mac \
+  https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac \
   -o "$INSTALLER"
 chmod 700 "$INSTALLER"
 less "$INSTALLER"
@@ -123,6 +123,7 @@ Complete this worksheet before choosing either route.
 
 - [ ] Git author name: `________________________________`
 - [ ] Primary Git email: `________________________________`
+- [ ] Primary IDE: VS Code Git integration / another IDE; leave Git tools unchanged
 - [ ] chezmoi source: existing private repository / new private Git / local-only
 - [ ] After Phase 1, choose early macOS preferences: configure / skip for now
 
@@ -171,8 +172,8 @@ preferences now, or skip them without blocking development setup.
 For the reviewed interactive selector:
 
 ```bash
-./configure-macos-settings.sh --preview
-./configure-macos-settings.sh --wizard
+day-one-mac macos-settings --preview
+day-one-mac macos-settings --wizard
 ```
 
 To remain fully manual, open the documented System Settings locations in
@@ -397,8 +398,16 @@ git config --global user.email "you@example.com"
 git config --global init.defaultBranch main
 git config --global pull.ff only
 git config --global fetch.prune true
+git config --global push.autoSetupRemote true
 git config --global ghq.root "$HOME/Developer"
+git config --global core.excludesFile "$HOME/.gitignore_global"
+git config --global merge.conflictStyle zdiff3
 ```
+
+The script also adds `git lg` and creates the small global ignore file described
+in Phase 4. If VS Code was selected as the primary IDE, it configures VS Code
+for Git editing, visual diffs, and merge conflicts. Otherwise those editor
+settings remain untouched.
 
 Authenticate only the selected providers:
 
@@ -765,17 +774,16 @@ or font before continuing.
 
 ### Automated 1 — preview the complete plan
 
-From the project scripts directory:
+Using the standalone command installed above:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./install-portable-command.sh
-export PATH="$HOME/.local/bin:$PATH"
+day-one-mac runtime-status
 day-one-mac --wizard --dry-run
 ```
 
-The installer makes the same portable command available before Phase 1. Phase
-5 later adopts it into chezmoi; it does not replace it with a different tool.
+The public installer makes the portable command available before Phase 1.
+Phase 5 later adopts the same launcher into chezmoi; it does not replace it
+with a different tool.
 
 The wizard asks for:
 
@@ -856,7 +864,7 @@ day-one-mac --status
 day-one-mac --phase 03
 
 # Reopen the early preference selector.
-./configure-macos-settings.sh --wizard
+day-one-mac macos-settings --wizard
 ```
 
 Do not manually create a completion marker. A phase receives `✓` only after its

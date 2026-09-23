@@ -1,8 +1,14 @@
 # Project instructions for AI agents
 
 Day One Mac is a public, Apple-silicon-only macOS development-environment
-installer. Read \`docs/START-HERE.md\`, \`docs/PROCESS-OVERVIEW.md\` and the
+installer. Read `docs/START-HERE.md`, `docs/PROCESS-OVERVIEW.md` and the
 affected phase before changing behaviour.
+
+The normal user path is the public release installer, the versioned standalone
+runtime, and the `day-one-mac` command. User-facing examples should use that
+command. Direct scripts belong only in contributor, low-level troubleshooting,
+or recovery instructions. Never make an ordinary setup depend on a permanent
+Git checkout or a personal absolute path.
 
 Never add credentials, private keys, recovery codes, real personal inventories,
 company identifiers, private repository names, 1Password vault names or
@@ -11,14 +17,14 @@ explicitly confirmed, precisely scoped and recoverable. Never erase or format
 a disk.
 
 Shell scripts must remain compatible with macOS Bash 3.2, use
-\`set -euo pipefail\`, quote paths and support spaces and Unicode. Reuse helpers
-under \`scripts/lib/\`, preserve idempotency and record only Day One Mac-owned
+`set -euo pipefail`, quote paths and support spaces and Unicode. Reuse helpers
+under `scripts/lib/`, preserve idempotency and record only Day One Mac-owned
 changes.
 
 Validate with:
 
-\`\`\`bash
+```bash
 cd scripts
 bash -n ./*.sh ./lib/*.sh ./tests/*.sh
 ./validate.sh
-\`\`\`
+```

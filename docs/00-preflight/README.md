@@ -12,8 +12,7 @@ the Stage 0 wizard stops before work begins on Intel hardware or under Rosetta.
 Open Terminal and run:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./prepare-existing-mac.sh --guided
+day-one-mac prepare-existing --guided
 ```
 
 The wizard first asks which result you want, then opens a progress dashboard.
@@ -155,16 +154,16 @@ troubleshooting:
 
 ```bash
 # Create only the safety report.
-./prepare-existing-mac.sh --safety-report
+day-one-mac prepare-existing --safety-report
 
 # Explain report contents without creating it.
-./preflight-audit.sh --plan
+day-one-mac safety-report --plan
 
 # Preview Route B without the menu.
-./prepare-existing-mac.sh --dry-run
+day-one-mac prepare-existing --dry-run
 
 # Verify a mounted drive and create a default named folder without the menu.
-./prepare-existing-mac.sh --prepare-backup-folder \
+day-one-mac prepare-existing --prepare-backup-folder \
   --backup-volume "/Volumes/Day One Backup"
 ```
 
@@ -175,7 +174,7 @@ To print the saved route, completion gates, and paths without opening the
 interactive menu or changing anything:
 
 ```bash
-./prepare-existing-mac.sh --status
+day-one-mac prepare-existing --status
 ```
 
 ---

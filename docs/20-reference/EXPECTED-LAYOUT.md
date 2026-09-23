@@ -88,11 +88,9 @@ The required setup produces or manages the following structure. Entries marked
 ├── Brewfile                              Homebrew desired state; managed by chezmoi
 │
 ├── Developer/                            ghq root
-│   ├── github.com/                       Track 1 or 3, plus this setup checkout
+│   ├── github.com/                       Track 1 or 3 project repositories
 │   │   └── CodeByKwakes/
-│   │       └── MacOS/                    canonical repository checkout
-│   │           ├── day-one-mac/
-│   │           └── zero-audited-mac/
+│   │       └── day-one-mac/              optional contributor source checkout
 │   ├── dev.azure.com/                    Track 2 or 3
 │   ├── _Projectless/                     optional AI/file tasks without a repository
 │   │   ├── README.md                     boundary and promotion rules
@@ -112,6 +110,12 @@ The required setup produces or manages the following structure. Entries marked
 │   │           └── output/
 │   ├── _sandbox/                         disposable experiments
 │   └── _archive/                         retained inactive projects
+│
+├── .local/
+│   ├── bin/day-one-mac                   stable launcher; managed by chezmoi after Phase 5
+│   └── share/day-one-mac/
+│       ├── current -> releases/<version> active verified runtime
+│       └── releases/<version>/           versioned scripts, guides and assets
 │
 ├── .day-one-mac/                         private setup evidence; mode 0700
 │   ├── preflight/                         optional existing-Mac safety reports
@@ -177,6 +181,7 @@ The required setup produces or manages the following structure. Entries marked
 │
 ├── .azure/                               Track 2 or 3
 ├── .gitconfig                            conservative Git defaults and ghq root
+├── .gitignore_global                     macOS and temporary-editor ignores
 ├── .zprofile                             loads the shared PATH configuration
 ├── .zshrc                                history, completion, fnm, aliases and Starship
 │
@@ -192,6 +197,7 @@ The required setup produces or manages the following structure. Entries marked
 │   │   ├── chezmoi/                      actual dotfiles source repository
 │   │   │   ├── Brewfile
 │   │   │   ├── dot_gitconfig
+│   │   │   ├── dot_gitignore_global
 │   │   │   ├── dot_zprofile
 │   │   │   ├── dot_zshrc
 │   │   │   ├── dot_config/zsh/path.zsh

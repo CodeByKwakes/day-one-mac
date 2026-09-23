@@ -21,7 +21,7 @@ standalone runtime:
 ```bash
 INSTALLER="$HOME/Downloads/install-day-one-mac"
 curl --proto '=https' --tlsv1.2 -fsSL \
-  https://raw.githubusercontent.com/CodeByKwakes/day-one-mac/main/install-day-one-mac \
+  https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac \
   -o "$INSTALLER"
 chmod 700 "$INSTALLER"
 less "$INSTALLER"
@@ -32,9 +32,12 @@ day-one-mac --wizard
 
 The runtime is installed under `~/.local/share/day-one-mac`; no Git checkout
 is required afterward. The wizard saves completed phases and tells you which
-guide to open when a manual action is required. Read the
+guide to open when a manual action is required. It also asks whether VS Code
+should become Git's primary editor, diff viewer, and merge tool; choosing
+another primary IDE leaves those Git settings unchanged. Read the
 [portable installation guide](docs/20-reference/PORTABLE-COMMAND.md) for
-updates, rollback and source-checkout development.
+updates, rollback, migration from an older Phase 8 installation, and
+source-checkout development.
 
 ## Repository layout
 

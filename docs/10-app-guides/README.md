@@ -120,7 +120,7 @@ day-one-mac applications --id jetbrains-mono-nerd-font
 If that command is unavailable, run this from the `day-one-mac/scripts` folder:
 
 ```bash
-./bootstrap-day-one-mac.sh --applications --id jetbrains-mono-nerd-font
+day-one-mac applications --id jetbrains-mono-nerd-font
 ```
 
 Then select **JetBrainsMono Nerd Font** in both [VS Code](VSCODE.md) and

@@ -12,30 +12,35 @@ Thank you for improving Day One Mac.
 4. Keep scripts compatible with the Bash 3.2 included with macOS.
 5. Make mutations idempotent, preview-first where destructive, and precisely
    recorded for rollback.
+6. Use the `day-one-mac` portable command in user-facing instructions. Show
+   direct scripts only in contributor, low-level troubleshooting, or recovery
+   sections, and state why the direct form is needed.
+7. Treat the public release installer and versioned standalone runtime as the
+   normal distribution path. A source checkout is optional development state.
 
 ## Validate a change
 
-\`\`\`bash
+```bash
 cd scripts
 bash -n ./*.sh ./lib/*.sh ./tests/*.sh
 ./validate.sh
-\`\`\`
+```
 
 Also inspect:
 
-\`\`\`bash
+```bash
 git diff --check
 git status --short
-\`\`\`
+```
 
 ## Public examples
 
 Use placeholders such as:
 
-\`\`\`text
+```text
 /Users/your-name
 github.com/example-user/example-repository
 op://<vault>/<item>/<field>
-\`\`\`
+```
 
 Never use a realistic token, even when it has been revoked.

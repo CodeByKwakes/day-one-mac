@@ -226,7 +226,7 @@ should report available changes, not install or delete them unattended.
 Write down the inputs a different clean Mac needs:
 
 ```text
-1. This day-one-mac project checkout or archive
+1. The public Day One Mac release installer, or an offline release archive and checksum
 2. Selected track and stack
 3. Git name/email and provider accounts
 4. 1Password account and Emergency Kit/recovery process
@@ -239,9 +239,8 @@ Write down the inputs a different clean Mac needs:
 Rehearsal sequence:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --dry-run --track <1|2|3> --stack <node|python|both>
-./bootstrap-day-one-mac.sh --track <1|2|3> --stack <node|python|both> \
+day-one-mac setup --dry-run --track <1|2|3> --stack <node|python|both>
+day-one-mac setup --track <1|2|3> --stack <node|python|both> \
   --dotfiles-repo <private-url>
 day-one-mac validate
 day-one-mac advanced-audit

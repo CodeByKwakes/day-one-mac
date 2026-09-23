@@ -156,11 +156,11 @@ The status should identify a branch without an authentication error. The remote
 should use `https://github.com/<github-owner>/<repository>.git` and must not
 contain the token.
 
-For Day One Mac itself, enter its scripts directory and start the wizard:
+For Day One Mac itself, start the installed standalone wizard from any
+directory:
 
 ```bash
-cd "$(git rev-parse --show-toplevel)/day-one-mac/scripts"
-./bootstrap-day-one-mac.sh --wizard
+day-one-mac --wizard
 ```
 
 ## Step 9 — move to SSH and revoke the token

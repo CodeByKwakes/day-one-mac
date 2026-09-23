@@ -29,7 +29,7 @@ Install the standalone runtime, then start the main wizard:
 ```bash
 INSTALLER="$HOME/Downloads/install-day-one-mac"
 curl --proto '=https' --tlsv1.2 -fsSL \
-  https://raw.githubusercontent.com/CodeByKwakes/day-one-mac/main/install-day-one-mac \
+  https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac \
   -o "$INSTALLER"
 chmod 700 "$INSTALLER"
 less "$INSTALLER"
@@ -73,6 +73,10 @@ the full [existing-Mac route](00-preflight/README.md) before applying cleanup.
 ## 2. Make the setup decisions
 
 The main wizard collects choices before it installs anything.
+
+It also records whether VS Code is the primary IDE. That answer controls Git's
+editor, diff, and merge-tool integration only; it does not remove VS Code from
+the required compatibility base.
 
 ### Hosting track
 
@@ -294,8 +298,6 @@ wizard choices, phase fingerprints, logs, original files, package/path
 manifests, application provenance, and the Phase 8 verification report.
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-
 # Show saved choices and phase status.
 day-one-mac --status
 
@@ -305,8 +307,8 @@ day-one-mac --wizard --dry-run
 # Retry or revalidate one phase.
 day-one-mac --phase 03
 
-# Validate the project and completed environment.
-./validate.sh
+# Validate the active runtime and completed environment.
+day-one-mac validate
 ```
 
 It is safe to exit between phases. Rerunning the wizard resumes the first

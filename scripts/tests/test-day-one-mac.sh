@@ -74,6 +74,7 @@ fi
 "$SCRIPT_DIR/bootstrap-day-one-mac.sh" --help | grep -Fq -- '--new-dotfiles'
 "$SCRIPT_DIR/bootstrap-day-one-mac.sh" --help | grep -Fq -- '--local-dotfiles'
 "$SCRIPT_DIR/bootstrap-day-one-mac.sh" --help | grep -Fq -- '--dotfiles-versioning'
+"$SCRIPT_DIR/bootstrap-day-one-mac.sh" --help | grep -Fq -- '--primary-ide'
 "$SCRIPT_DIR/bootstrap-day-one-mac.sh" --help | grep -Fq -- '--preflight'
 "$SCRIPT_DIR/bootstrap-day-one-mac.sh" --help | grep -Fq -- '--safety-report'
 "$SCRIPT_DIR/bootstrap-day-one-mac.sh" --help | grep -Fq -- '--prepare-existing'
@@ -447,6 +448,7 @@ HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE_ROOT" \
   "$SCRIPT_DIR/bootstrap-day-one-mac.sh" --status > "$status_output"
 grep -Fq 'Track: 1' "$status_output"
 grep -Fq 'Stack: node' "$status_output"
+grep -Fq 'Primary IDE: vscode' "$status_output"
 grep -Fq '○ pending  01' "$status_output"
 grep -Fq 'Optional plan: none' "$status_output"
 

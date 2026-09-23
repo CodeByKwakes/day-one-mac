@@ -14,7 +14,7 @@ that follows this phase.
 ## How to use this phase
 
 The recommended route is to run
-`./bootstrap-day-one-mac.sh --phase 02` from the absolute scripts directory
+`day-one-mac setup --phase 02` from any directory
 shown in Phase 1. Use Steps 2.1–2.3 to understand what the runner does or to
 recover if it pauses. If the phase passes, do not run the same installation
 commands again. See [Start Here](../START-HERE.md) for Terminal basics.
@@ -199,8 +199,7 @@ home directory. Broad permission changes make later upgrades less predictable.
 ## Step 2.4 — Run or resume Phase 2
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --phase 02
+day-one-mac setup --phase 02
 ```
 
 The runner behaves idempotently:

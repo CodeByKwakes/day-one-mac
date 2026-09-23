@@ -28,8 +28,7 @@ To add OmniRoute to an existing Day One plan, rerun the wizard, choose
 the clients that should use it:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --wizard
+day-one-mac --wizard
 ```
 
 The choice is saved to the review report; it does not start a container or

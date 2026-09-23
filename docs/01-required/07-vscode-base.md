@@ -10,9 +10,14 @@ VS Code opens from Terminal, uses zsh and the Nerd Font, and starts with a small
 portable settings file. Extension lists, AI clients, Settings Sync, and
 separate profiles remain deliberate optional choices.
 
+VS Code is still verified when another primary IDE was selected. The Phase 1
+choice controls only whether Git uses VS Code for commit messages, visual diffs
+and merge conflicts; it does not control whether this compatibility editor is
+installed.
+
 ## How to use this phase
 
-Run `./bootstrap-day-one-mac.sh --phase 07`. The runner creates the minimal
+Run `day-one-mac setup --phase 07`. The runner creates the minimal
 settings file only when none exists; it does not overwrite an existing file.
 Use the reference steps below to review an existing setup or fix the `code`
 launcher. Profiles and large extension sets are not part of this required gate.
@@ -162,8 +167,7 @@ For the clean base, leaving Sync off until Phase 8 completes is safest.
 ## Step 7.6 — Run or resume the phase
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --phase 07
+day-one-mac setup --phase 07
 ```
 
 The runner creates the parent directories and base settings only when absent.

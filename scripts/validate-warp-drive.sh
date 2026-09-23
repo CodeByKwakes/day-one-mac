@@ -136,9 +136,9 @@ else
   fail "Notebook is missing its count, dispatcher, track, or cleanup-safety statement"
 fi
 
-if grep -Fq '**62 validated' "$IMPORT_GUIDE" \
+if grep -Fq '**63 validated' "$IMPORT_GUIDE" \
    && grep -Fq '**Command-Backslash**' "$IMPORT_GUIDE" \
-   && grep -Fq '<checkout>/day-one-mac/warp-drive/Day One Mac' "$IMPORT_GUIDE" \
+   && grep -Fq 'open "$(day-one-mac root)/warp-drive/Day One Mac"' "$IMPORT_GUIDE" \
    && grep -Fq 'Do not create a one-click Warp workflow that includes `--execute`' "$IMPORT_GUIDE" \
    && grep -Fq 'No workflow stores a secret or personal absolute path.' "$IMPORT_GUIDE"; then
   pass "import guide explains prerequisites, import target, secrets, and destructive boundaries"

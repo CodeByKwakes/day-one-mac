@@ -8,14 +8,14 @@
 
 At the end of this phase, the permanent administrator account is ready, macOS
 is current, the old computer's data is safely out of scope, and the runner has
-the decisions it needs: hosting track, development stack, Git identity, and
-dotfiles protection. The next checkpoint is the optional macOS Settings Wizard,
+the decisions it needs: hosting track, development stack, Git identity, primary
+IDE behavior, and dotfiles protection. The next checkpoint is the optional macOS Settings Wizard,
 which can be completed before Phase 2 or intentionally skipped and run later.
 No development packages are installed yet.
 
 ## How to use this phase
 
-Read the preparation steps, then use the wizard in Step 1.8. Step 1.7 explains
+Read the preparation steps, then use the wizard in Step 1.9. Step 1.8 explains
 the dotfiles-protection choice that the wizard will ask you to make. The wizard
 is the recommended route and asks for the decisions described below. Earlier command
 blocks are checks or explanations; do not repeat them after the phase passes.
@@ -70,7 +70,7 @@ Download and inspect the public installer:
 ```bash
 INSTALLER="$HOME/Downloads/install-day-one-mac"
 curl --proto '=https' --tlsv1.2 -fsSL \
-  https://raw.githubusercontent.com/CodeByKwakes/day-one-mac/main/install-day-one-mac \
+  https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac \
   -o "$INSTALLER"
 chmod 700 "$INSTALLER"
 less "$INSTALLER"
@@ -200,7 +200,20 @@ git config user.email "work@example.com"
 
 That command is repository-local and does not modify the global default.
 
-## Step 1.7 — Choose chezmoi protection
+## Step 1.7 — Choose whether VS Code is the primary IDE
+
+VS Code remains part of the small required base because projects and company
+workflows may expect it. This choice controls only Git integration:
+
+| Choice | Git behavior |
+|---|---|
+| **Yes — VS Code is primary** | Configure VS Code for commit messages, visual diffs and merge conflicts |
+| **No — another IDE is primary** | Do not add or change Git editor, diff or merge-tool settings |
+
+Selecting **No** does not uninstall VS Code. It also does not erase an editor
+setting that already belongs to you or company policy.
+
+## Step 1.8 — Choose chezmoi protection
 
 chezmoi always manages the selected dotfiles, but Git version history is a
 choice:
@@ -214,13 +227,12 @@ Local-only does not make chezmoi temporary and does not remove existing Git
 metadata. Select it for a new source when policy or preference forbids a
 dotfiles repository.
 
-## Step 1.8 — Start the wizard
+## Step 1.9 — Start the wizard
 
 From this project's scripts directory, start the Day One Mac wizard:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh
+day-one-mac
 ```
 
 Use Up/Down (or `j`/`k`) to move. Space or Enter accepts one highlighted
@@ -231,7 +243,8 @@ wizard collects only the decisions needed by the required phases:
 1. Hosting track.
 2. Node, Python, or both development stacks.
 3. Primary Git name and email.
-4. A new chezmoi source protected by private Git, a new local-only source, or
+4. Whether VS Code should be Git's primary editor and visual comparison tool.
+5. A new chezmoi source protected by private Git, a new local-only source, or
    an existing private dotfiles repository.
 
 Required phases display 🔒 because they cannot be removed; this symbol does
@@ -253,13 +266,13 @@ To walk through the same wizard and preview the selected base without saving
 choices, run:
 
 ```bash
-./bootstrap-day-one-mac.sh --wizard --dry-run
+day-one-mac --wizard --dry-run
 ```
 
 Saved values can be reviewed at any time:
 
 ```bash
-./bootstrap-day-one-mac.sh --status
+day-one-mac --status
 ```
 
 They and a readable `wizard-selections.md` review are stored with private-user
@@ -288,7 +301,8 @@ the wizard or pass an explicit option and rerun the affected phase instead.
 - [ ] One hosting track is selected.
 - [ ] One development stack is selected.
 - [ ] Git author name and primary email are correct.
-- [ ] `./bootstrap-day-one-mac.sh --status` shows the saved choices.
+- [ ] The primary-IDE choice matches how Git should open editors and conflicts.
+- [ ] `day-one-mac --status` shows the saved choices.
 
 Do not advance while any item above is uncertain.
 

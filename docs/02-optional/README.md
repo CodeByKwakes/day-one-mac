@@ -22,12 +22,8 @@ Open the interactive selector later with:
 day-one-mac optional --guided
 ```
 
-If the portable command is unavailable:
-
-```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --optional --guided
-```
+If the command is unavailable, reinstall the public standalone runtime first;
+do not make optional work depend on a personal source checkout.
 
 ---
 

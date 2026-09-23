@@ -56,8 +56,7 @@ unencrypted device this way requires erasing it first.
 Do not type a long `mkdir` command. Use the Stage 0 wizard:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./prepare-existing-mac.sh --guided
+day-one-mac prepare-existing --guided
 ```
 
 1. Choose Route A or Route B.

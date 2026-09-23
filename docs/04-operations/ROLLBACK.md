@@ -164,8 +164,7 @@ binary is gone, but you may remove it with `sudo` if you prefer a tidy file.
 Run from this project's scripts directory:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./clean-development-state.sh
+day-one-mac clean
 ```
 
 The preview prints:
@@ -183,7 +182,7 @@ Nothing is changed without `--execute`.
 Save the preview if you want a separate review artifact:
 
 ```bash
-./clean-development-state.sh \
+day-one-mac clean \
   > "$HOME/Desktop/day-one-mac-cleanup-preview.txt"
 ```
 
@@ -210,7 +209,7 @@ test -d "/Volumes/Backup Drive/Mac-cleanup-recovery" \
 Then preview with the same path that execution will use:
 
 ```bash
-./clean-development-state.sh \
+day-one-mac clean \
   --archive-root "/Volumes/Backup Drive/Mac-cleanup-recovery"
 ```
 
@@ -224,7 +223,7 @@ The normal broad execution preserves project and container data and uses a
 normal cask uninstall:
 
 ```bash
-./clean-development-state.sh --execute
+day-one-mac clean --execute
 ```
 
 That command proceeds without the matching data-archive option only when Docker
@@ -237,7 +236,7 @@ For the closest recoverable equivalent to a blank development account, add the
 explicit archive flags you have reviewed:
 
 ```bash
-./clean-development-state.sh \
+day-one-mac clean \
   --execute \
   --zap-cask-data \
   --archive-projects \
@@ -414,15 +413,14 @@ It trusts only manifests created under:
 ## B.1 Preview
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./rollback-recorded-setup.sh
+day-one-mac rollback
 ```
 
 The normal preview handles recorded files and packages. Add `--all-recorded`
 to include the chezmoi source, eligible Homebrew removal, and runner state:
 
 ```bash
-./rollback-recorded-setup.sh --all-recorded
+day-one-mac rollback --all-recorded
 ```
 
 Homebrew itself is removed only when the manifest says this runner installed
@@ -432,7 +430,7 @@ script refuses to guess.
 ## B.2 Execute
 
 ```bash
-./rollback-recorded-setup.sh --all-recorded --execute
+day-one-mac rollback --all-recorded --execute
 ```
 
 Type exactly `CLEAN DAY ONE MAC` when prompted. Files that existed before the
@@ -443,9 +441,9 @@ and newly created directories are removed only when empty. Repositories under
 ## B.3 Narrow cleanup options
 
 ```bash
-./rollback-recorded-setup.sh --include-dotfiles-source
-./rollback-recorded-setup.sh --remove-homebrew
-./rollback-recorded-setup.sh --purge-state
+day-one-mac rollback --include-dotfiles-source
+day-one-mac rollback --remove-homebrew
+day-one-mac rollback --purge-state
 ```
 
 Combine only the scopes you intend to execute. `--all-recorded` selects all

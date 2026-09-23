@@ -20,7 +20,7 @@ environment.
 
 ## How to use this phase
 
-Run `./bootstrap-day-one-mac.sh --phase 08`. The runner performs Step 8.1,
+Run `day-one-mac setup --phase 08`. The runner performs Step 8.1,
 writes the machine report, records the Brewfile, and checks the chosen dotfiles
 mode. Private-Git mode verifies the remote and pushed branch. Local-only mode
 secret-scans the source and records that remote recovery is intentionally absent.
@@ -32,8 +32,7 @@ directly only when diagnosing the project or checking a change without running
 the machine audit:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./validate.sh
+day-one-mac validate
 ```
 
 This checks shell syntax, required documents, internal paths, cleanup safety
@@ -64,8 +63,7 @@ every pull request.
 ## Step 8.2 — Run the complete Phase 8 gate
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --phase 08
+day-one-mac setup --phase 08
 ```
 
 The report is written to:
@@ -263,9 +261,8 @@ No Git repository, remote, commit, or push is required. Choose this from the
 wizard or directly:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --phase 05 --local-dotfiles
-./bootstrap-day-one-mac.sh --phase 08
+day-one-mac setup --phase 05 --local-dotfiles
+day-one-mac setup --phase 08
 ```
 
 Phase 8 still verifies that the source exists, that the Brewfile is managed,
@@ -301,16 +298,14 @@ review. Without that backup there is no automatic rebuild source.
 
 ## Step 8.7 — Understand cleanup before declaring completion
 
-Two scripts are included:
+Two preview-first commands are included:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-
 # Broad: all Homebrew packages/apps plus known development configuration.
-./clean-development-state.sh
+day-one-mac clean
 
 # Narrow: only packages and paths recorded as changed by this runner.
-./rollback-recorded-setup.sh
+day-one-mac rollback
 ```
 
 Both commands default to read-only previews. Read [ROLLBACK.md](../04-operations/ROLLBACK.md)
@@ -319,9 +314,9 @@ before adding `--execute`.
 ## Step 8.8 — Compare the completed layout
 
 Review [EXPECTED-LAYOUT.md](../20-reference/EXPECTED-LAYOUT.md) after the machine audit. It
-records the canonical `ghq` checkout, required applications, Homebrew prefix,
-chezmoi source, shell configuration, toolchain data, and private
-`~/.day-one-mac` evidence.
+records the standalone runtime, optional contributor source checkout, `ghq`
+project layout, required applications, Homebrew prefix, chezmoi source, shell
+configuration, toolchain data, and private `~/.day-one-mac` evidence.
 
 Do not move a path merely to make the tree look identical. Confirm dynamic
 locations with `brew --prefix`, `chezmoi source-path`, `pnpm store path`, and
@@ -345,7 +340,8 @@ locations with `brew --prefix`, `chezmoi source-path`, `pnpm store path`, and
 - [ ] The project validator run by Phase 8 passes.
 - [ ] The machine verification report contains no failed gate.
 - [ ] `ghq root` reports the intended `~/Developer` root.
-- [ ] `day-one-mac root` reports the current project checkout.
+- [ ] `day-one-mac runtime-status` reports `standalone runtime` and `Integrity: verified`.
+- [ ] `day-one-mac root` reports the active versioned runtime (or the intentional linked source for contributors).
 - [ ] `day-one-mac finalize --help` confirms that post-setup record
       finalisation is available.
 - [ ] `day-one-mac advanced --list` and `day-one-mac advanced-audit --help` succeed.

@@ -31,15 +31,14 @@ by Company Portal, the Mac App Store or a trusted manual installer.
 The normal setup opens the Installation Centre after Phase 2:
 
 ```bash
-cd "$HOME/Developer/github.com/<github-user>/day-one-mac/scripts"
-./bootstrap-day-one-mac.sh --wizard
+day-one-mac --wizard
 ```
 
 Replace `<github-user>` with the account or organisation used in the clone
 path. To check only Raycast, run:
 
 ```bash
-./application-status.sh --id raycast --install-missing
+day-one-mac applications --id raycast --install-missing
 ```
 
 Choose Homebrew, finish an approved external installer and recheck, or stop
@@ -65,8 +64,7 @@ brew install --cask raycast
 5. Return to Terminal and run the ownership check:
 
    ```bash
-   cd "$HOME/Developer/github.com/<github-user>/day-one-mac/scripts"
-   ./application-status.sh --id raycast
+   day-one-mac applications --id raycast
    ```
 
 ### Route D — Use Company Portal or another approved installer

@@ -27,21 +27,29 @@ Restart the Mac before Phase 1. This closes old background processes and shell
 sessions. Disconnect the recovery drive during normal setup; reconnect it only
 when restoring a specific reviewed item.
 
-If `~/Developer` was archived, first restore or reclone this repository to:
-
-```text
-~/Developer/github.com/CodeByKwakes/day-one-mac
-```
-
-Do not copy the entire archived development configuration back. That would
-recreate the state Route B removed.
+Route B may have archived the earlier runtime with the development state. Do
+not restore the entire old development configuration or source checkout; that
+would recreate the state Route B removed. Install a fresh verified runtime
+from the public release instead.
 
 ## Start the eight required phases
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --wizard
+INSTALLER="$HOME/Downloads/install-day-one-mac"
+curl --proto '=https' --tlsv1.2 -fsSL \
+  https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac \
+  -o "$INSTALLER"
+chmod 700 "$INSTALLER"
+less "$INSTALLER"
+"$INSTALLER"
+export PATH="$HOME/.local/bin:$PATH"
+day-one-mac runtime-status
+day-one-mac --wizard
 ```
+
+Read the installer in `less`, press `q`, and then run it. `runtime-status`
+must report `Integrity: verified` before the wizard starts. Contributors can
+clone the public source later; a checkout is not needed for setup.
 
 Choose **New or factory-reset Mac** when Route A completed. After Route B,
 choose the same option because the old-state preparation is now finished and

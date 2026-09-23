@@ -6,9 +6,9 @@
 
 ## Outcome
 
-Warp contains a personal `Day One Mac` collection with **62 validated
+Warp contains a personal `Day One Mac` collection with **63 validated
 workflows in seven folders** and one searchable command-catalogue Notebook. The
-commands follow the new eight-phase project, work from any checkout location,
+commands follow the eight-phase setup, resolve the active standalone runtime,
 and expose cleanup only as a preview.
 
 Warp is a required Phase 4 application. Phase 4 accepts a valid copy supplied
@@ -40,10 +40,10 @@ brew bundle check --file="$HOME/Brewfile" --no-upgrade
 
 ## Step 14.2 — Verify the portable command
 
-The early command installer places the `day-one-mac` dispatcher in
-`~/.local/bin`; Phase 5 later adopts it into chezmoi. It looks up the current checkout through
-`~/.day-one-mac/runtime-root`, so no imported workflow contains a personal
-username or absolute repository path.
+The public installer places the `day-one-mac` launcher in `~/.local/bin`;
+Phase 5 later adopts the same launcher into chezmoi. The launcher resolves the
+active versioned runtime through `~/.day-one-mac/runtime-root`, so no imported
+workflow contains a personal username or absolute repository path.
 
 Open a new terminal and run:
 
@@ -53,17 +53,19 @@ day-one-mac root
 day-one-mac validate
 ```
 
-All three commands must succeed before import. If the checkout was moved, run
-the setup entry point once from its new location:
+All three commands must succeed before import. If the runtime is missing,
+unverified, or points to a removed source checkout, install the latest verified
+runtime and refresh its root record:
 
 ```bash
-cd /path/to/new/checkout/day-one-mac/scripts
-./bootstrap-day-one-mac.sh --guided
+day-one-mac update
+day-one-mac runtime-status
 day-one-mac root
 ```
 
-The runner refreshes the project-location record before it checks which phases
-are already complete.
+`runtime-status` must report `standalone runtime` and `Integrity: verified`.
+A contributor intentionally using linked mode may instead reinstall from that
+source checkout.
 
 ## Step 14.3 — Import the directory into Warp Drive
 
@@ -71,10 +73,11 @@ are already complete.
 2. Press **Command-Backslash** (`⌘\`) to open Warp Drive.
 3. Choose the **plus** menu or right-click the destination, then choose
    **Import**.
-4. Select this directory, not one of its child folders:
+4. Run the following command to reveal the import directory in Finder, then
+   select that directory—not one of its child folders—in Warp:
 
-   ```text
-   <checkout>/day-one-mac/warp-drive/Day One Mac
+   ```bash
+   open "$(day-one-mac root)/warp-drive/Day One Mac"
    ```
 
 5. Keep the imported hierarchy when Warp previews it.
@@ -192,8 +195,8 @@ then follow the typed-confirmation procedure in the finalisation guide.
 
 | Symptom | Resolution |
 |---|---|
-| `day-one-mac: command not found` | Run `install-portable-command.sh`, open a new login shell, and confirm `~/.local/bin` is on `PATH` |
-| `project location is not recorded` | Rerun `install-portable-command.sh` from the current checkout |
+| `day-one-mac: command not found` | Reinstall from the public release, open a new login shell, and confirm `~/.local/bin` is on `PATH` |
+| `runtime root is not recorded` | Run the downloaded public installer again, then check `day-one-mac runtime-status` |
 | A provider workflow says its command is missing | Confirm that provider belongs to the selected track; rerun Phase 4 if it does |
 | An fnm/pnpm or uv workflow is missing its command | Confirm the selected stack and revalidate Phase 6 |
 | An AI launch workflow refuses the current folder | Run a creation workflow, or `cd` into one validated task below `_Projectless/tasks/<year>`; the parent and legacy folders are not accepted automatically |
@@ -205,7 +208,7 @@ then follow the typed-confirmation procedure in the finalisation guide.
 
 ## Optional 14 completion checklist 🚦
 
-- [ ] `day-one-mac root` prints the current checkout.
+- [ ] `day-one-mac runtime-status` reports a verified standalone runtime.
 - [ ] `day-one-mac validate` passes.
 - [ ] `day-one-mac applications --id warp` reports a valid owner and Warp opens.
 - [ ] Warp shows seven workflow folders, 63 workflows, and one Notebook.

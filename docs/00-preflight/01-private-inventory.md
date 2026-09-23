@@ -11,8 +11,7 @@ state. It does not clean, reset, update, or back up the Mac.
 ## Run the guided version
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./prepare-existing-mac.sh --guided
+day-one-mac prepare-existing --guided
 ```
 
 Choose Route A, Route B, or Not sure, then choose **Step 1 — create the safety
@@ -118,7 +117,7 @@ Most users can skip this section.
 To write the report directly to a mounted external volume:
 
 ```bash
-./prepare-existing-mac.sh --safety-report \
+day-one-mac prepare-existing --safety-report \
   --archive-root "/Volumes/Backup Drive/Day-One-Mac"
 ```
 
@@ -126,7 +125,7 @@ To search additional repository parent folders, run the underlying report
 tool directly:
 
 ```bash
-./preflight-audit.sh --guided \
+day-one-mac safety-report --guided \
   --repo-root "$HOME/Work" \
   --repo-root "/Volumes/Projects/Repositories"
 ```

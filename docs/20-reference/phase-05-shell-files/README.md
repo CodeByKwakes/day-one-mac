@@ -14,6 +14,7 @@ personal configuration that should be merged rather than erased.
 
 ```text
 home/
+├── .gitignore_global
 ├── .zprofile
 ├── .zshrc
 └── .config/
@@ -37,8 +38,9 @@ and is normally present when the portable command was installed before Phase
 
 Git identity and SSH configuration are not duplicated here because their
 correct content depends on the selected hosting track, authentication mode,
-email, and organisation policy. Phase 5 explains their required shapes and
-the runner verifies their semantics.
+email, primary-IDE choice, and organisation policy. The portable global Git
+ignore is included because it is the same on every Mac. Phase 5 explains the
+machine-specific files' required shapes and the runner verifies their semantics.
 
 ## Compare without changing anything
 
@@ -53,6 +55,7 @@ Compare each applied file:
 ```bash
 diff -u "$REFERENCE/.zprofile" "$HOME/.zprofile" || true
 diff -u "$REFERENCE/.zshrc" "$HOME/.zshrc" || true
+diff -u "$REFERENCE/.gitignore_global" "$HOME/.gitignore_global" || true
 diff -u "$REFERENCE/.config/zsh/path.zsh" "$HOME/.config/zsh/path.zsh" || true
 diff -u "$REFERENCE/.config/zsh/aliases.zsh" "$HOME/.config/zsh/aliases.zsh" || true
 diff -u "$REFERENCE/.config/starship.toml" "$HOME/.config/starship.toml" || true

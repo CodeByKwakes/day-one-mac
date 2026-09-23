@@ -65,7 +65,7 @@ day-one-mac raycast --extensions
 day-one-mac raycast --groups core,documentation,ai,hosting --apply
 ```
 
-The direct pre-portable form is:
+The direct script form is available only for contributor troubleshooting:
 
 ```bash
 cd "$(day-one-mac root)/scripts"
@@ -77,15 +77,16 @@ installer. This prevents generated commands from depending on a personal clone
 path.
 
 If an older Day One installation reports that `raycast` is an unknown command,
-refresh the dispatcher from the current checkout:
+update the standalone runtime and verify it:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./install-portable-command.sh
+day-one-mac update
+day-one-mac runtime-status
 ```
 
-You can also run `./configure-raycast.sh --wizard` directly from the current
-runtime directly; generated commands still require the portable dispatcher.
+Contributors can also run `./configure-raycast.sh --wizard` directly from the
+active runtime or a linked source checkout; generated commands still require
+the portable launcher.
 
 ## Route B — Create Script Commands manually
 
@@ -114,7 +115,7 @@ set -euo pipefail
 
 DAY_ONE_BIN="$HOME/.local/bin/day-one-mac"
 if [[ ! -x "$DAY_ONE_BIN" ]]; then
-  printf 'The Day One Mac portable command is unavailable. Run install-portable-command.sh first.\n' >&2
+  printf 'The Day One Mac command is unavailable. Reinstall the public standalone runtime.\n' >&2
   exit 1
 fi
 

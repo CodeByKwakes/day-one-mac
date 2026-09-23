@@ -57,8 +57,8 @@ day-one-mac applications --optional
 If the portable command is unavailable, use the project scripts directly:
 
 ```bash
-./bootstrap-day-one-mac.sh --applications --required
-./bootstrap-day-one-mac.sh --applications --optional
+day-one-mac applications --required
+day-one-mac applications --optional
 ```
 
 Install or revalidate the complete required set after Phase 2:
@@ -66,7 +66,7 @@ Install or revalidate the complete required set after Phase 2:
 ```bash
 day-one-mac install
 # Direct fallback:
-./bootstrap-day-one-mac.sh --install-centre
+day-one-mac install
 ```
 
 Check one optional application and offer to install it only when missing:

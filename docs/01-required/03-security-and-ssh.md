@@ -48,7 +48,7 @@ documented and give the same result.
 
 The Installation Centre already installed or accepted 1Password and its CLI.
 Phase 3 configures them; it does not install anything. If a component is
-missing, run `./bootstrap-day-one-mac.sh --install-centre` first.
+missing, run `day-one-mac install` first.
 
 **Never paste, upload, or print the private-key field.** Only public keys leave
 1Password.
@@ -86,7 +86,7 @@ choice.
 Set it in the wizard, or directly:
 
 ```bash
-./bootstrap-day-one-mac.sh --phase 03 --auth-mode keychain
+day-one-mac setup --phase 03 --auth-mode keychain
 ```
 
 Check what is currently saved at any time:
@@ -123,8 +123,7 @@ Check that both the app and the command-line tool are present and see who owns
 them:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --applications --id 1password --id 1password-cli
+day-one-mac applications --id 1password --id 1password-cli
 ```
 
 Both rows must report as ready. **External installation** is a valid result — it
@@ -752,8 +751,7 @@ not need to wait for it.
 Everything manual is done. Run the gate once:
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --phase 03
+day-one-mac setup --phase 03
 ```
 
 The runner verifies ownership of both 1Password components, prints their

@@ -200,17 +200,18 @@ matching launch workflow can use the current directory without requiring a
 personal absolute path. Launch workflows refuse the `_Projectless` container,
 legacy folders without the control files, and unrelated directories.
 
-## If the project moves
+## If the runtime is missing or points to a removed checkout
 
-From the new checkout, rerun the setup entry point with the same track and
-stack. Completed phases remain fingerprinted and the machine-local project
-location is refreshed before phase selection:
+Install the latest verified standalone release. Existing phase fingerprints
+and machine choices remain under `~/.day-one-mac`; updating the runtime does
+not reset them:
 
 ```bash
-cd /path/to/new/checkout/day-one-mac/scripts
-./bootstrap-day-one-mac.sh --guided
+day-one-mac update
+day-one-mac runtime-status
 day-one-mac root
 ```
 
-Do not edit the generated dispatcher to embed a personal path; chezmoi owns it
-and the machine-local state record is the intended indirection.
+Do not edit the generated launcher to embed a personal path; chezmoi owns it
+and the machine-local runtime record is the intended indirection. Contributors
+using linked mode should reinstall linked mode from their chosen source path.

@@ -50,6 +50,7 @@ Direct setup:
   --stack node|python|both    language toolchain selection
   --name "Full Name"          Git author name
   --email ADDRESS             primary Git author email
+  --primary-ide IDE           vscode or other; controls Git editor integration
   --dotfiles-repo URL         apply an existing private chezmoi source
   --new-dotfiles              create or keep a new chezmoi source
   --dotfiles-versioning MODE  git (private remote) or local (no Git gate)
@@ -356,6 +357,11 @@ print_review_body() {
   printf '  Stack:     %s\n' "$(stack_label "$STACK")"
   printf '  Git name:  %s\n' "$GIT_NAME"
   printf '  Git email: %s\n' "$GIT_EMAIL"
+  if [[ "$PRIMARY_IDE" == vscode ]]; then
+    printf '  IDE:       VS Code — also use it for Git edit, diff and merge actions\n'
+  else
+    printf '  IDE:       another primary IDE — do not change Git editor tools\n'
+  fi
   if [[ "$MACOS_SETTINGS_PLAN" == skip ]]; then
     printf '  macOS:     skip optional settings now; command remains available later\n'
   elif [[ "$MACOS_SETTINGS_PLAN" == ask ]]; then
@@ -450,6 +456,7 @@ write_wizard_report() {
     printf -- '- Stack: `%s`\n' "$(stack_label "$STACK")"
     printf -- '- Git name: `%s`\n' "$GIT_NAME"
     printf -- '- Git email: `%s`\n' "$GIT_EMAIL"
+    printf -- '- Primary IDE: `%s`\n' "$PRIMARY_IDE"
     printf -- '- Early macOS settings: `%s`\n' "$MACOS_SETTINGS_PLAN"
     if [[ -n "$DOTFILES_REPO" ]]; then
       printf -- '- Dotfiles: existing private chezmoi source `%s`\n' "$DOTFILES_REPO"
@@ -489,6 +496,7 @@ save_wizard_choices() {
   save_state_value stack "$STACK"
   save_state_value git-name "$GIT_NAME"
   save_state_value git-email "$GIT_EMAIL"
+  save_state_value primary-ide "$PRIMARY_IDE"
   save_state_value dotfiles-repo "$DOTFILES_REPO"
   save_state_value dotfiles-versioning "$DOTFILES_VERSIONING"
   save_state_value auth-mode "$AUTH_MODE"
@@ -527,6 +535,18 @@ choose_stack() {
       *) warn 'Select at least one development stack.' ;;
     esac
   done
+}
+
+choose_primary_ide() {
+  local default_index=0
+  [[ "$PRIMARY_IDE" == other ]] && default_index=1
+  SINGLE_VALUES=(vscode other)
+  SINGLE_LABELS=(
+    'Yes — use VS Code for Git commit messages, diffs and merge conflicts'
+    'No — keep Git editor, diff and merge-tool settings unchanged'
+  )
+  select_one 'Use Visual Studio Code as the primary IDE on this Mac?' "$default_index"
+  PRIMARY_IDE="$SINGLE_RESULT"
 }
 
 choose_auth_mode() {
@@ -761,6 +781,7 @@ configure_wizard() {
   default_email="${GIT_EMAIL:-$(git config --global user.email 2>/dev/null || true)}"
   prompt_name "$default_name"
   prompt_email "$default_email"
+  choose_primary_ide
   choose_auth_mode
   choose_dotfiles
   # Keep the initial wizard focused on the required base. The runner asks
@@ -782,6 +803,7 @@ load_saved_choices() {
   STACK="$(state_value stack)"
   GIT_NAME="$(state_value git-name)"
   GIT_EMAIL="$(state_value git-email)"
+  PRIMARY_IDE="$(state_value primary-ide)"
   DOTFILES_REPO="$(state_value dotfiles-repo)"
   DOTFILES_VERSIONING="$(state_value dotfiles-versioning)"
   [[ -n "$DOTFILES_VERSIONING" ]] || DOTFILES_VERSIONING=git
@@ -836,6 +858,7 @@ run_wizard() {
       status) direct_setup --status ;;
       exit) exit 0 ;;
     esac
+    [[ "$PRIMARY_IDE" =~ ^(vscode|other)$ ]] || choose_primary_ide
   else
     choose_machine_state
     configure_wizard
@@ -866,7 +889,7 @@ run_wizard() {
   else info 'dry run: wizard choices were not saved'; fi
   printf '\nStarting the required setup. After Phase 2, one Installation Centre prepares all required software before configuration.\n'
 
-  setup_args=(--guided --track "$TRACK" --stack "$STACK" --name "$GIT_NAME" --email "$GIT_EMAIL")
+  setup_args=(--guided --track "$TRACK" --stack "$STACK" --name "$GIT_NAME" --email "$GIT_EMAIL" --primary-ide "$PRIMARY_IDE")
   if [[ -n "$DOTFILES_REPO" ]]; then setup_args+=(--dotfiles-repo "$DOTFILES_REPO")
   else setup_args+=(--new-dotfiles)
   fi

@@ -13,7 +13,7 @@ guide does not freeze versions that will become stale.
 
 ## How to use this phase
 
-Run `./bootstrap-day-one-mac.sh --phase 06`. It performs only the Node and/or
+Run `day-one-mac setup --phase 06`. It performs only the Node and/or
 Python route saved in Phase 1. The detailed commands below are for understanding
 and recovery. **LTS** means a longer-supported Node release; a **lockfile**
 records exact project dependencies. See [GLOSSARY.md](../20-reference/GLOSSARY.md).
@@ -212,8 +212,7 @@ environments and caches remain local.
 ## Step 6.5 — Run or resume the phase
 
 ```bash
-cd "$(day-one-mac root)/scripts"
-./bootstrap-day-one-mac.sh --phase 06
+day-one-mac setup --phase 06
 ```
 
 The runner checks only the selected stack. A Python-only machine is not failed

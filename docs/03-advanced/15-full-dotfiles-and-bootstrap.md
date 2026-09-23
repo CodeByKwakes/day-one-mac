@@ -45,7 +45,7 @@ Recommended advanced target inventory:
 
 | Target | Source form | Add when |
 |---|---|---|
-| `~/.gitignore_global` | `dot_gitignore_global` | The same generated-file rules apply to every repository |
+| `~/.gitignore_global` | `dot_gitignore_global` | Already managed by Phase 5; extend only with truly global machine artefacts |
 | `~/.npmrc` | `dot_npmrc.tmpl` | Only non-secret npm defaults are shared |
 | `~/.config/pnpm/rc` | `dot_config/pnpm/rc` | pnpm defaults must reproduce |
 | `~/.config/git/allowed_signers` | `dot_config/git/allowed_signers.tmpl` | SSH commit verification is used |
@@ -94,12 +94,12 @@ Before using a key in a template, fail clearly when it is absent:
 {{- end -}}
 ```
 
-## Step 15.4 — Add global Git ignores and safe package defaults
+## Step 15.4 — Review global Git ignores and add safe package defaults
 
 Create or review the targets first:
 
 ```bash
-touch "$HOME/.gitignore_global"
+test -f "$HOME/.gitignore_global"
 mkdir -p "$HOME/.config/pnpm"
 touch "$HOME/.config/pnpm/rc"
 ```
@@ -108,8 +108,12 @@ Useful global ignores are machine artefacts, not project build choices:
 
 ```gitignore
 .DS_Store
-.idea/workspace.xml
+.AppleDouble
+.LSOverride
+._*
+.Trashes
 *.swp
+*.swo
 *~
 ```
 
@@ -128,7 +132,8 @@ save-exact=true
 Add and inspect:
 
 ```bash
-chezmoi add "$HOME/.gitignore_global" "$HOME/.config/pnpm/rc"
+chezmoi source-path "$HOME/.gitignore_global"
+chezmoi add "$HOME/.config/pnpm/rc"
 chezmoi diff --no-pager
 ```
 
