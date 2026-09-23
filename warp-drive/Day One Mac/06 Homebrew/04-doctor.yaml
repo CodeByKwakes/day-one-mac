@@ -1,0 +1,5 @@
+name: "Homebrew · Run doctor"
+command: "brew doctor"
+tags: ["day-one-mac", "homebrew", "diagnostics", "read-only"]
+description: "Check Homebrew installation health and report actionable warnings."
+shells: ["zsh"]

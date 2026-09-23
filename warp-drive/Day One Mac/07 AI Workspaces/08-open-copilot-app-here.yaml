@@ -1,0 +1,5 @@
+name: "AI workspace · Open a new Copilot app session here"
+command: 'day-one-mac workspace status "$PWD" >/dev/null && copilot app'
+tags: ["day-one-mac", "ai", "projectless", "copilot", "app", "open"]
+description: "Validate the current immutable task, then open a new Copilot app session from that folder."
+shells: ["zsh"]

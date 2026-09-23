@@ -1,0 +1,5 @@
+name: "pnpm · Check store status"
+command: "pnpm store status"
+tags: ["day-one-mac", "pnpm", "node", "store", "read-only"]
+description: "Check whether packages in pnpm's content-addressed store were modified."
+shells: ["zsh"]

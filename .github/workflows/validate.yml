@@ -1,0 +1,21 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install validation tools
+        run: brew install ripgrep shellcheck
+      - name: Check shell syntax
+        run: bash -n scripts/*.sh scripts/lib/*.sh scripts/tests/*.sh install-day-one-mac
+      - name: Run complete validation
+        run: scripts/validate.sh

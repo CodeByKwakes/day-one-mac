@@ -1,0 +1,5 @@
+name: "Azure · List repositories"
+command: "az repos list --output table"
+tags: ["day-one-mac", "azure", "devops", "repositories", "read-only"]
+description: "List repositories using the Azure DevOps defaults configured for the current shell or project."
+shells: ["zsh"]

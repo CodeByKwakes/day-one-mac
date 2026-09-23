@@ -1,0 +1,5 @@
+name: "Setup · Show project root"
+command: "day-one-mac root"
+tags: ["day-one-mac", "setup", "path", "read-only"]
+description: "Print the machine-local path used by the Day One Mac command and these workflows."
+shells: ["zsh"]

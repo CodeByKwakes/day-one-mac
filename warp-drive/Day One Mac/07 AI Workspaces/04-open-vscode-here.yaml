@@ -1,0 +1,5 @@
+name: "AI workspace · Open this task in VS Code"
+command: 'day-one-mac workspace open-vscode "$PWD"'
+tags: ["day-one-mac", "ai", "projectless", "vscode", "open"]
+description: "Validate and open only the current immutable projectless task in a new VS Code window."
+shells: ["zsh"]

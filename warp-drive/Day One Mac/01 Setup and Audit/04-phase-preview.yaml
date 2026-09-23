@@ -1,0 +1,9 @@
+name: "Setup · Preview one phase"
+command: 'day-one-mac setup --phase "{{phase}}" --dry-run'
+tags: ["day-one-mac", "setup", "phase", "preview", "read-only"]
+description: "Preview one required phase. Valid phase numbers are 01 through 08."
+shells: ["zsh"]
+arguments:
+  - name: phase
+    description: "Required phase number from 01 through 08."
+    default_value: "01"

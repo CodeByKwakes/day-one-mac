@@ -1,0 +1,5 @@
+name: "Dotfiles · List managed targets"
+command: "chezmoi managed"
+tags: ["day-one-mac", "chezmoi", "dotfiles", "inventory", "read-only"]
+description: "List every path managed by the Day One Mac dotfiles source."
+shells: ["zsh"]

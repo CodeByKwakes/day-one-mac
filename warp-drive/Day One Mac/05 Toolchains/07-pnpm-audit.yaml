@@ -1,0 +1,5 @@
+name: "pnpm · Audit dependencies"
+command: "pnpm audit"
+tags: ["day-one-mac", "pnpm", "node", "security", "read-only"]
+description: "Report known dependency vulnerabilities without applying automatic fixes."
+shells: ["zsh"]

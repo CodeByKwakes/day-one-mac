@@ -1,0 +1,5 @@
+name: "Setup · Choose optional modules"
+command: "day-one-mac optional --guided"
+tags: ["day-one-mac", "setup", "optional", "interactive"]
+description: "After Phase 8, choose and save optional modules without installing them automatically."
+shells: ["zsh"]

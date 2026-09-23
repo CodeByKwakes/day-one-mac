@@ -1,0 +1,9 @@
+name: "Dotfiles · Edit one target"
+command: 'chezmoi edit "{{target}}"'
+tags: ["day-one-mac", "chezmoi", "dotfiles", "edit", "interactive", "write"]
+description: "Edit one target's source representation without applying it automatically."
+shells: ["zsh"]
+arguments:
+  - name: target
+    description: "Managed target path."
+    default_value: "$HOME/.zshrc"

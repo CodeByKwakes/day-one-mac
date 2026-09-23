@@ -1,0 +1,5 @@
+name: "Homebrew · Preview autoremove"
+command: "brew autoremove --dry-run"
+tags: ["day-one-mac", "homebrew", "dependencies", "cleanup", "preview", "read-only"]
+description: "Show currently unused dependencies without uninstalling them."
+shells: ["zsh"]

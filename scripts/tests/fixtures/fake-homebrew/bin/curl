@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+output=""
+while [[ $# -gt 0 ]]; do
+  if [[ "$1" == -o ]]; then
+    shift
+    output="${1:-}"
+    break
+  fi
+  shift
+done
+[[ -n "$output" ]] || { printf 'fake curl expected -o PATH\n' >&2; exit 2; }
+/bin/cp "$(dirname "$0")/fake-homebrew-uninstall.sh" "$output"

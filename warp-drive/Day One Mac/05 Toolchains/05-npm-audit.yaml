@@ -1,0 +1,5 @@
+name: "npm · Audit dependencies"
+command: "npm audit"
+tags: ["day-one-mac", "npm", "node", "security", "read-only"]
+description: "Report known dependency vulnerabilities without applying automatic fixes."
+shells: ["zsh"]

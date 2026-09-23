@@ -1,0 +1,5 @@
+name: "Dotfiles · Verify targets"
+command: "chezmoi verify"
+tags: ["day-one-mac", "chezmoi", "dotfiles", "verify", "read-only"]
+description: "Verify that managed targets match the expected source state."
+shells: ["zsh"]

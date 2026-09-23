@@ -1,0 +1,5 @@
+name: "Advanced · Open guided checklist"
+command: "day-one-mac advanced --guided"
+tags: ["day-one-mac", "advanced", "guided", "interactive"]
+description: "Walk through the optional advanced guides; configuration changes remain manual and separately reviewed."
+shells: ["zsh"]

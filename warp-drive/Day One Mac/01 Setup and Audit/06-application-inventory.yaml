@@ -1,0 +1,5 @@
+name: "Setup · Write application inventory"
+command: "day-one-mac inventory"
+tags: ["day-one-mac", "applications", "homebrew", "inventory", "report"]
+description: "Write the private Markdown inventory of Homebrew, App Store, local and system applications."
+shells: ["zsh"]

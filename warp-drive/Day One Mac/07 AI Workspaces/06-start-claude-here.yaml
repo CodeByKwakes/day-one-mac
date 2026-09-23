@@ -1,0 +1,5 @@
+name: "AI workspace · Start a new Claude Code chat here"
+command: 'day-one-mac workspace start-claude "$PWD"'
+tags: ["day-one-mac", "ai", "projectless", "claude", "chat"]
+description: "Validate the current task and start a named Claude Code session in Plan mode."
+shells: ["zsh"]

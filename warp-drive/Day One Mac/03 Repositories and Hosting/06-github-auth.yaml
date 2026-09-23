@@ -1,0 +1,5 @@
+name: "GitHub · Check authentication"
+command: "gh auth status"
+tags: ["day-one-mac", "github", "authentication", "read-only"]
+description: "Check GitHub CLI authentication on Day One Mac Tracks 1 and 3."
+shells: ["zsh"]

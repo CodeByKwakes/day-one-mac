@@ -1,0 +1,5 @@
+name: "Git · Status"
+command: "git status --short --branch"
+tags: ["day-one-mac", "git", "status", "read-only"]
+description: "Show the current branch plus staged, modified and untracked files."
+shells: ["zsh"]

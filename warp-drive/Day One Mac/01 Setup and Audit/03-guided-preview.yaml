@@ -1,0 +1,5 @@
+name: "Setup · Preview all required phases"
+command: "day-one-mac setup --guided --dry-run"
+tags: ["day-one-mac", "setup", "preview", "read-only"]
+description: "Preview the complete eight-phase required setup without writing state or installing anything."
+shells: ["zsh"]

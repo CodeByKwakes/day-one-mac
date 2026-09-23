@@ -1,0 +1,11 @@
+name: "AI workspace · Create a named task"
+command: 'TASK_DIR="$(day-one-mac workspace create-task --title "{{task_name}}" --kind "{{task_kind}}" --client undecided --sensitivity private --quiet)" && cd "$TASK_DIR" && printf "Created and opened:\n%s\n" "$TASK_DIR"'
+tags: ["day-one-mac", "ai", "projectless", "workspace", "create", "write"]
+description: "Create and enter a stable, uniquely dated projectless task through the shared Day One manager."
+shells: ["zsh"]
+arguments:
+  - name: task_name
+    description: "Plain-English task title, such as Compare database clients."
+  - name: task_kind
+    description: "One of: research, document, analysis, prototype, or other."
+    default_value: "other"

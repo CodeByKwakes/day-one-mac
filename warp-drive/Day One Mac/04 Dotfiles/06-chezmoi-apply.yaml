@@ -1,0 +1,9 @@
+name: "Dotfiles · Apply one reviewed target"
+command: 'chezmoi apply "{{target}}"'
+tags: ["day-one-mac", "chezmoi", "dotfiles", "apply", "write"]
+description: "Apply one target after reviewing it with the Dotfiles preview workflow."
+shells: ["zsh"]
+arguments:
+  - name: target
+    description: "Managed target path reviewed with chezmoi diff."
+    default_value: "$HOME/.zshrc"

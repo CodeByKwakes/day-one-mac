@@ -1,0 +1,5 @@
+name: "Setup · Select optional CLI tools"
+command: "day-one-mac cli-tools"
+tags: ["day-one-mac", "homebrew", "optional", "interactive", "write"]
+description: "Open the interactive selector; review the checked formulae before confirming installation."
+shells: ["zsh"]

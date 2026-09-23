@@ -1,0 +1,5 @@
+name: "Git · Show remotes"
+command: "git remote --verbose"
+tags: ["day-one-mac", "git", "remote", "read-only"]
+description: "Show fetch and push URLs before any provider operation."
+shells: ["zsh"]

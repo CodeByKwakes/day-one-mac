@@ -1,0 +1,14 @@
+# tier	scope	name	publisher	purpose	url	access_review
+Built-in	Everyone	File Search	Raycast	Find approved local files and folders without another extension.	https://manual.raycast.com/file-search	Review indexed folders and keep sensitive locations out of scope.
+Built-in	Everyone	Clipboard History	Raycast	Find and paste recent clipboard entries.	https://manual.raycast.com/clipboard-history	Disable capture in 1Password, Passwords, Keychain Access and sensitive work apps.
+Built-in	Everyone	Quicklinks	Raycast	Open Day One guides, folders and approved web dashboards.	https://manual.raycast.com/quicklinks	Do not store tokens or secret-bearing URLs.
+Built-in	Everyone	Snippets	Raycast	Insert reviewed reusable text without shell automation.	https://manual.raycast.com/snippets	Disable expansion in password and keychain applications.
+Built-in	Optional	Window Management	Raycast	Move and resize development windows from the keyboard.	https://manual.raycast.com/window-management	Requires Accessibility; skip when company policy disallows it.
+Recommended	Everyone	Warp	warpdotdev	Open Warp tabs, windows and launch configurations from Raycast.	https://www.raycast.com/warpdotdev/warp	Vendor extension; review URI targets before opening them.
+Recommended	Everyone	Visual Studio Code	Thomas Paul Mann	Search and open recent VS Code projects.	https://www.raycast.com/thomas/visual-studio-code	Community extension; grant only the editor access it needs.
+Recommended	Track 1 or 3	GitHub	Raycast	Work with GitHub issues, pull requests, repositories and notifications.	https://www.raycast.com/raycast/github	Uses GitHub authentication; confirm personal versus work account before connecting.
+Conditional	Copilot selected	GitHub Copilot	GitHub	Delegate work to GitHub Copilot coding agent.	https://www.raycast.com/github/github-copilot	Official publisher; confirm organisation Copilot policy and repository scope.
+Conditional	Second Brain with Obsidian	Obsidian	Marc Julian	Search, create and open notes across approved vaults.	https://www.raycast.com/marcjulian/obsidian	Community extension; configure only intended vault paths and exclusions.
+Optional	Web development	Can I Use	Thomas Lombart	Check browser support for web platform features.	https://www.raycast.com/thomas/can-i-use	Queries public compatibility data; no project credentials are needed.
+Optional	Troubleshooting	Kill Process	Roland Leth	Find a process consuming CPU or memory.	https://www.raycast.com/rolandleth/kill-process	Terminating a process is destructive; inspect the exact process first.
+Optional	Troubleshooting	Port Manager	Luca Schultz	Inspect listening ports and their owning processes.	https://www.raycast.com/lucaschultz/port-manager	Closing a port terminates work; use inspection before action.

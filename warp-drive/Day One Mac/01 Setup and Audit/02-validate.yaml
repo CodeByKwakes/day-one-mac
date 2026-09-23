@@ -1,0 +1,5 @@
+name: "Setup · Validate Day One Mac project"
+command: "day-one-mac validate"
+tags: ["day-one-mac", "setup", "validate", "read-only"]
+description: "Run syntax, documentation, workflow, safety and regression checks for the self-contained project."
+shells: ["zsh"]

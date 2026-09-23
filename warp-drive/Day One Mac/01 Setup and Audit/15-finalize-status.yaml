@@ -1,0 +1,5 @@
+name: "Setup · Show finalisation status"
+command: "day-one-mac finalize --status"
+tags: ["day-one-mac", "setup", "finalise", "status", "read-only"]
+description: "Show whether Phase 8 passed and whether the retained Day One Mac records were finalised."
+shells: ["zsh"]

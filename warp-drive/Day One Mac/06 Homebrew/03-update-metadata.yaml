@@ -1,0 +1,5 @@
+name: "Homebrew · Refresh package metadata"
+command: "brew update"
+tags: ["day-one-mac", "homebrew", "update", "write"]
+description: "Refresh Homebrew formula and cask metadata without upgrading installed packages."
+shells: ["zsh"]

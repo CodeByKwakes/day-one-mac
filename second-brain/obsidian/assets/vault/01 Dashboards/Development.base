@@ -1,0 +1,38 @@
+filters:
+  and:
+    - 'file.inFolder("10 Software Development")'
+    - 'file.ext == "md"'
+properties:
+  file.name:
+    displayName: Note
+  type:
+    displayName: Type
+  status:
+    displayName: Status
+  topics:
+    displayName: Topics
+  file.mtime:
+    displayName: Updated
+views:
+  - type: table
+    name: Active
+    filters:
+      and:
+        - 'status != "done"'
+        - 'status != "archived"'
+    order:
+      - file.name
+      - type
+      - status
+      - topics
+      - file.mtime
+  - type: table
+    name: Needs review
+    filters:
+      or:
+        - 'status == "review"'
+        - 'status == "inbox"'
+    order:
+      - file.name
+      - status
+      - file.mtime

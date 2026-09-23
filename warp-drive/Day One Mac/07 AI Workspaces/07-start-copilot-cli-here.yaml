@@ -1,0 +1,5 @@
+name: "AI workspace · Start a new Copilot CLI chat here"
+command: 'day-one-mac workspace status "$PWD" >/dev/null && copilot -C "$PWD"'
+tags: ["day-one-mac", "ai", "projectless", "copilot", "chat"]
+description: "Validate the current immutable task, then start Copilot CLI with that folder selected."
+shells: ["zsh"]

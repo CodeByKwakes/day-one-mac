@@ -1,0 +1,5 @@
+name: "Repositories · Show ghq root"
+command: "ghq root"
+tags: ["day-one-mac", "ghq", "repositories", "read-only"]
+description: "Print the repository root configured by Phase 4; it should be the absolute path to ~/Developer."
+shells: ["zsh"]

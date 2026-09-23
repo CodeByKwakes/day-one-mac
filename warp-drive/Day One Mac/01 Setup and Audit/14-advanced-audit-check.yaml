@@ -1,0 +1,5 @@
+name: "Advanced · Check environment report"
+command: "day-one-mac advanced-audit --check"
+tags: ["day-one-mac", "advanced", "audit", "gate", "report", "write"]
+description: "After Phase 8, write the optional private report and return a failure status when a required base gate does not pass."
+shells: ["zsh"]

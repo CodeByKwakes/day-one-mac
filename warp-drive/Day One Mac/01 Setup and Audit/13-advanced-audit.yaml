@@ -1,0 +1,5 @@
+name: "Advanced · Write environment report"
+command: "day-one-mac advanced-audit"
+tags: ["day-one-mac", "advanced", "audit", "report", "write"]
+description: "After Phase 8, write optional private advanced and repository-risk reports without changing installed or configured state."
+shells: ["zsh"]

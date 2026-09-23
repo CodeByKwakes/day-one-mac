@@ -1,0 +1,5 @@
+name: "Homebrew · Preview cleanup"
+command: "brew cleanup --dry-run"
+tags: ["day-one-mac", "homebrew", "cleanup", "preview", "read-only"]
+description: "Show old package versions and cached downloads that normal cleanup would remove."
+shells: ["zsh"]

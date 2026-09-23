@@ -1,0 +1,5 @@
+name: "fnm · Show current Node"
+command: "fnm current"
+tags: ["day-one-mac", "fnm", "node", "read-only"]
+description: "Show the fnm-managed Node version active in the current shell."
+shells: ["zsh"]

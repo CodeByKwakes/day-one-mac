@@ -1,0 +1,13 @@
+# id	scope	phase	name	homebrew_cask	kind	expected_path	bundle_id	command
+1password	required	03	1Password	1password	app	/Applications/1Password.app	com.1password.1password	-
+1password-cli	required	03	1Password CLI	1password-cli	cli	-	-	op
+jetbrains-mono-nerd-font	required	04	JetBrains Mono Nerd Font	font-jetbrains-mono-nerd-font	font	-	-	-
+raycast	required	04	Raycast	raycast	app	/Applications/Raycast.app	com.raycast.macos	-
+visual-studio-code	required	04	Visual Studio Code	visual-studio-code	app	/Applications/Visual Studio Code.app	com.microsoft.VSCode	-
+warp	required	04	Warp	warp	app	/Applications/Warp.app	dev.warp.Warp-Stable	-
+orbstack	optional	09	OrbStack	orbstack	app	/Applications/OrbStack.app	-	docker
+claude-code	optional	10	Claude Code	claude-code	cli	-	-	claude
+codex	optional	10	Codex	codex	cli	-	-	codex
+copilot-app	optional	10	GitHub Copilot app	github-copilot-app	app	/Applications/GitHub Copilot.app	-	-
+copilot-cli	optional	10	GitHub Copilot CLI	copilot-cli	cli	-	-	copilot
+obsidian	optional	second-brain	Obsidian	obsidian	app	/Applications/Obsidian.app	md.obsidian	-

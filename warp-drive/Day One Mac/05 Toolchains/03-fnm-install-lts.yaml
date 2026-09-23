@@ -1,0 +1,5 @@
+name: "fnm · Install and use current LTS"
+command: "fnm install --lts --use"
+tags: ["day-one-mac", "fnm", "node", "install", "write"]
+description: "Install the current Node LTS through fnm and use it in this shell; review before running."
+shells: ["zsh"]

@@ -1,0 +1,5 @@
+name: "Advanced · Show module status"
+command: "day-one-mac advanced --status"
+tags: ["day-one-mac", "advanced", "status", "read-only"]
+description: "Show current, pending, and guide-changed review state for optional Modules 15 through 22."
+shells: ["zsh"]

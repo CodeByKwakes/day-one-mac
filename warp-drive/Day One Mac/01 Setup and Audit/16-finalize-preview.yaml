@@ -1,0 +1,5 @@
+name: "Setup · Preview post-setup finalisation"
+command: "day-one-mac finalize"
+tags: ["day-one-mac", "setup", "finalise", "preview", "read-only"]
+description: "Preview evidence archiving and record compaction after Phase 8; this workflow makes no changes."
+shells: ["zsh"]

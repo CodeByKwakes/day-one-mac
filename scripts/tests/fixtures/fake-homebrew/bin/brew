@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+log_file="${DAY_ONE_TEST_BREW_LOG:?DAY_ONE_TEST_BREW_LOG is required}"
+state_dir="${DAY_ONE_TEST_BREW_STATE:?DAY_ONE_TEST_BREW_STATE is required}"
+command_name="${1:-}"
+subcommand="${2:-}"
+
+case "$command_name:$subcommand" in
+  list:--formula)
+    printf 'fake-formula\n'
+    ;;
+  list:--cask)
+    if [[ -n "${3:-}" ]]; then
+      [[ ! -e "$state_dir/cask-removed" && "$3" == fake-app ]]
+    elif [[ ! -e "$state_dir/cask-removed" ]]; then
+      printf 'fake-app\n'
+    fi
+    ;;
+  tap:)
+    printf 'example/tap\n'
+    ;;
+  info:--cask)
+    printf 'fake cask fixture: %s\n' "${3:-unknown}"
+    ;;
+  bundle:dump)
+    # The Brewfile is optional recovery metadata; the ordering regression does
+    # not need to emulate Homebrew's complete bundle output.
+    exit 1
+    ;;
+  services:list|services:stop)
+    ;;
+  uninstall:*)
+    printf 'brew-uninstall\t%s\t%s\n' "$(pwd -P)" "$*" >> "$log_file"
+    case " $* " in
+      *' --cask '*) : > "$state_dir/cask-removed" ;;
+    esac
+    ;;
+  *)
+    printf 'unexpected fake brew invocation: %s\n' "$*" >&2
+    exit 2
+    ;;
+esac

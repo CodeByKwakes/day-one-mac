@@ -1,0 +1,5 @@
+name: "Cleanup · Preview broad development cleanup"
+command: "day-one-mac clean"
+tags: ["day-one-mac", "cleanup", "preview", "read-only"]
+description: "Inventory all Homebrew software and known development settings; make no changes."
+shells: ["zsh"]

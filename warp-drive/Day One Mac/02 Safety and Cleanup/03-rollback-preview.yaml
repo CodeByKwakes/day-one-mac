@@ -1,0 +1,5 @@
+name: "Cleanup · Preview recorded rollback"
+command: "day-one-mac rollback"
+tags: ["day-one-mac", "rollback", "manifest", "preview", "read-only"]
+description: "Preview rollback of only files and packages recorded as changed by Day One Mac."
+shells: ["zsh"]

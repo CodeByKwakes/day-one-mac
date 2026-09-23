@@ -1,0 +1,5 @@
+name: "Setup · List optional CLI tools"
+command: "day-one-mac cli-tools --list"
+tags: ["day-one-mac", "homebrew", "optional", "catalogue", "read-only"]
+description: "Show the grouped enhanced CLI catalogue and which formulae are already installed."
+shells: ["zsh"]

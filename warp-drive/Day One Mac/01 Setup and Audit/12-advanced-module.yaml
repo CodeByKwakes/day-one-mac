@@ -1,0 +1,9 @@
+name: "Advanced · Read one module"
+command: 'day-one-mac advanced --module "{{module}}"'
+tags: ["day-one-mac", "advanced", "guide", "read-only"]
+description: "Open one self-contained advanced guide. Valid module numbers are 15 through 22."
+shells: ["zsh"]
+arguments:
+  - name: module
+    description: "Advanced module number from 15 through 22."
+    default_value: "15"

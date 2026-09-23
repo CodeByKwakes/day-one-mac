@@ -1,0 +1,5 @@
+name: "Homebrew · Check Brewfile"
+command: 'brew bundle check --file="$HOME/Brewfile" --no-upgrade'
+tags: ["day-one-mac", "homebrew", "brewfile", "verify", "read-only"]
+description: "Check whether the Phase 8 Brewfile is satisfied without installing or upgrading packages."
+shells: ["zsh"]

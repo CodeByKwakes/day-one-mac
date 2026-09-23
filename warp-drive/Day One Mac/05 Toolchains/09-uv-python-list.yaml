@@ -1,0 +1,5 @@
+name: "Python · List uv interpreters"
+command: "uv python list"
+tags: ["day-one-mac", "python", "uv", "versions", "read-only"]
+description: "List available and installed Python interpreters known to uv."
+shells: ["zsh"]

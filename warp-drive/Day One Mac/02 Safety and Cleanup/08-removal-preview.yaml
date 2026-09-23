@@ -1,0 +1,5 @@
+name: "Cleanup · Preview recorded Day One removal"
+command: "day-one-mac remove --mode recorded"
+tags: ["day-one-mac", "cleanup", "remove", "preview", "read-only"]
+description: "Preview removal of manifest-owned Day One changes; unrecorded Homebrew items and Developer content remain preserved."
+shells: ["zsh"]

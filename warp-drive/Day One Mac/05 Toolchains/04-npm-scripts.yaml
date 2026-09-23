@@ -1,0 +1,5 @@
+name: "npm · List project scripts"
+command: "npm run"
+tags: ["day-one-mac", "npm", "node", "scripts", "read-only"]
+description: "List package.json scripts in an npm-managed repository."
+shells: ["zsh"]

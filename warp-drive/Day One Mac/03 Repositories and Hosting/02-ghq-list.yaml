@@ -1,0 +1,5 @@
+name: "Repositories · List ghq repositories"
+command: "ghq list"
+tags: ["day-one-mac", "ghq", "repositories", "read-only"]
+description: "List repositories below the configured ghq root using provider and owner paths."
+shells: ["zsh"]

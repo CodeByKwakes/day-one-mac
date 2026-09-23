@@ -1,0 +1,5 @@
+name: "Cleanup · Preview complete recorded rollback"
+command: "day-one-mac rollback --all-recorded"
+tags: ["day-one-mac", "rollback", "dotfiles", "homebrew", "preview", "read-only"]
+description: "Preview recorded rollback including eligible Homebrew removal, dotfiles source and setup state."
+shells: ["zsh"]

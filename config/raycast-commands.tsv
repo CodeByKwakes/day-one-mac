@@ -1,0 +1,27 @@
+# group	condition	id	title	alias	mode	action	description
+core	always	status	Day One · Status	d1s	fullOutput	status	Show saved choices and all eight required phase states.
+core	always	applications	Day One · Application Ownership	d1a	fullOutput	applications	Check required application ownership without installing anything.
+core	always	inventory	Day One · Application Inventory	d1i	fullOutput	inventory	Write the private application inventory and print its location.
+core	always	validate	Day One · Validate	d1v	fullOutput	validate	Run the complete structural and regression validator.
+core	always	finalize-status	Day One · Finalisation Status	d1f	fullOutput	finalize-status	Show whether post-Phase-8 finalisation is appropriate.
+documentation	always	start-here	Day One · Open Start Here	d1h	silent	open-start	Open the beginner entry guide in VS Code.
+documentation	always	command-reference	Day One · Command Reference	d1c	silent	open-command-reference	Open the complete portable and direct command reference.
+documentation	always	open-project	Day One · Open Project in VS Code	d1r	silent	open-project	Open the Day One Mac project folder in a new VS Code window.
+documentation	always	open-project-terminal	Day One · Open Project Terminal	d1t	silent	open-project-terminal	Open a new Warp tab at the Day One Mac project folder.
+documentation	always	optional-modules	Day One · Optional Modules	d1o	silent	open-optional	Open the optional-module index without running a module.
+safety	always	removal-inventory	Day One · Removal Inventory	d1ri	fullOutput	removal-inventory	Classify removable state without changing the Mac.
+safety	always	rollback-preview	Day One · Preview Recorded Rollback	d1rp	fullOutput	rollback-preview	Preview manifest-owned rollback; never execute it from Raycast.
+safety	always	cleanup-preview	Day One · Preview Broad Cleanup	d1cp	fullOutput	cleanup-preview	Preview broad cleanup; never execute it from Raycast.
+ai	always	workspace-list	AI · List Projectless Tasks	ail	fullOutput	workspace-list	List bounded projectless tasks and their saved status.
+ai	always	workspace-folder	AI · Open Projectless Tasks	aif	silent	workspace-folder	Open the projectless tasks folder in Finder.
+ai	always	workspace-guide	AI · Open Workspace Guide	aig	silent	workspace-guide	Open the AI workspace and trust-boundary guide.
+ai	ai-codex	new-codex-task	AI · New Codex Task	aitc	silent	new-codex-task	Create a private bounded task, open Warp there and copy the reviewed Codex launch command.
+ai	ai-claude	new-claude-task	AI · New Claude Code Task	aitl	silent	new-claude-task	Create a private bounded task, open Warp there and copy the reviewed Claude Code launch command.
+ai	ai-copilot-cli	new-copilot-task	AI · New Copilot CLI Task	aitp	silent	new-copilot-task	Create a private bounded task, open Warp there and copy the Copilot CLI launch command.
+ai	ai-copilot-app	open-copilot-app	AI · Open GitHub Copilot	copilot	silent	open-copilot-app	Open the selected standalone GitHub Copilot application.
+ai	ai-raycast-ai	raycast-ai-guide	AI · Raycast AI Safety Guide	rai	silent	raycast-ai-guide	Open the Raycast AI setup and approval guidance.
+hosting	track-github	github-auth	GitHub · Authentication Status	gha	fullOutput	github-auth	Show GitHub CLI authentication without exposing a token.
+hosting	track-github	github-repository	GitHub · Open Day One Repository	ghd	silent	github-repository	Open the current Day One Mac Git remote in the browser.
+hosting	track-azure	azure-account	Azure · Active Account	aza	fullOutput	azure-account	Show the current Azure account and tenant.
+hosting	track-azure	azure-repositories	Azure · List Repositories	azr	fullOutput	azure-repositories	List Azure Repos using the current CLI defaults.
+second-brain	always	second-brain-guide	Knowledge · Open Second Brain Guide	kbg	silent	second-brain-guide	Open the dynamic multi-domain knowledge-base guide.

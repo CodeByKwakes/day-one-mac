@@ -1,0 +1,5 @@
+name: "AI workspace · Create an untitled task"
+command: 'TASK_DIR="$(day-one-mac workspace create-task --title Untitled --kind other --client undecided --sensitivity private --quiet)" && cd "$TASK_DIR" && printf "Created and opened:\n%s\n" "$TASK_DIR"'
+tags: ["day-one-mac", "ai", "projectless", "workspace", "create", "write"]
+description: "Create a stable, uniquely timestamped projectless task when its final title is unknown, then enter that folder."
+shells: ["zsh"]

@@ -1,0 +1,70 @@
+# ShellCheck configuration for Day One Mac.
+#
+# Every script targets the Bash 3.2 that macOS ships, so bash is the shell
+# dialect even where the shebang is /usr/bin/env bash.
+shell=bash
+
+# Let ShellCheck follow `source "$SCRIPT_DIR/lib/..."` so library functions are
+# resolved instead of reported as unknown.
+source-path=SCRIPTDIR
+source-path=SCRIPTDIR/lib
+source-path=SCRIPTDIR/..
+
+# Disabled checks. Each one was reviewed across the whole project during the
+# September 2026 audit and found to be a false positive here, not a latent bug.
+# Do not extend this list without recording the same kind of justification:
+# a suppressed check is a check that cannot warn you later.
+
+# SC1091 — "not following" a sourced file. The source-path entries above cover
+# the in-repo libraries; the remainder are files that only exist on a
+# configured Mac (shell profiles, brew shellenv output) and cannot be followed
+# from a checkout.
+disable=SC1091
+
+# SC2016 — "expressions don't expand in single quotes". The runner deliberately
+# emits literal text containing `$`: the generated ~/.ssh/config block, the
+# portable day-one-mac dispatcher, and shell-profile snippets. Expansion at
+# generation time would be the bug.
+disable=SC2016
+
+# SC2004 — `$` on variables inside $((...)). Stylistic only; the existing form
+# is consistent across the project.
+disable=SC2004
+
+# SC2034 — "appears unused". Two legitimate patterns dominate: arrays defined
+# in scripts/lib/*.sh that are consumed by the scripts sourcing them, and
+# `IFS=$'\t' read -r a b c ...` destructuring where only some fields are used.
+disable=SC2034
+
+# SC2094 — "read and write the same file in the same pipeline". The checksum
+# writers explicitly exclude their own output with `! -name SHA256SUMS.txt`,
+# which ShellCheck cannot see.
+disable=SC2094
+
+# SC2251 — a leading `!` skipping errexit. Intentional in the test harnesses,
+# which assert that a command fails and check the status themselves.
+disable=SC2251
+
+# SC2015 — `A && B || C is not if-then-else`. Only used where B is a `printf`
+# that cannot fail, to pick a status symbol.
+disable=SC2015
+
+# SC2030/SC2031 — "modified in a subshell". ARCHIVE_ROOT is scoped to a
+# `( ... )` group on purpose so it does not leak; the code path that needs it
+# to persist sets it at function scope instead.
+disable=SC2030
+disable=SC2031
+
+# SC2088 — "tilde does not expand in quotes". Every instance is a literal `~`
+# on purpose: display text, a case pattern matching `~`, or a search string for
+# a path written in documentation.
+disable=SC2088
+
+# SC2129 — "consider using { } >> file". Stylistic; the individual appends read
+# more clearly next to the conditions that guard them.
+disable=SC2129
+
+# SC2100/SC2041 — ShellCheck misparses `APP_INSTALL_POLICY=check-only` as
+# arithmetic and a single-element quoted `for` list as a command.
+disable=SC2100
+disable=SC2041

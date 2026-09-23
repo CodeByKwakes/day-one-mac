@@ -1,0 +1,5 @@
+name: "AI workspace · Start a new Codex chat here"
+command: 'day-one-mac workspace start-codex "$PWD"'
+tags: ["day-one-mac", "ai", "projectless", "codex", "chat"]
+description: "Validate the current task and start Codex with explicit workspace-write and approval boundaries."
+shells: ["zsh"]

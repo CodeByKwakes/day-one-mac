@@ -1,0 +1,5 @@
+name: "Dotfiles · Status"
+command: "chezmoi status"
+tags: ["day-one-mac", "chezmoi", "dotfiles", "status", "read-only"]
+description: "Show targets whose current state differs from the chezmoi source."
+shells: ["zsh"]

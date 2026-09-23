@@ -1,0 +1,5 @@
+name: "Azure · Show active account"
+command: "az account show --output table"
+tags: ["day-one-mac", "azure", "authentication", "read-only"]
+description: "Show the active Azure account and tenant on Day One Mac Tracks 2 and 3."
+shells: ["zsh"]

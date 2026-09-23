@@ -1,0 +1,5 @@
+Name,Domain,Type,Status,Sensitivity,AI Allowed,AI Status,Topics
+Welcome to the Inbox,Software Development,Capture,Inbox,Personal,false,Not Required,onboarding
+First development learning,Software Development,Learning,Inbox,Personal,false,Not Required,learning
+First software content idea,Software Content,Content,Inbox,Personal,false,Not Required,content
+First tech content idea,Tech Content,Content,Inbox,Personal,false,Not Required,content

@@ -1,0 +1,25 @@
+name: Publish runtime release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require tag and VERSION to agree
+        run: |
+          test "v$(sed -n '1p' VERSION)" = "$GITHUB_REF_NAME"
+      - name: Build verified runtime assets
+        run: scripts/build-release.sh
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" +            dist/day-one-mac-runtime.tar.gz +            dist/day-one-mac-runtime.tar.gz.sha256 +            dist/install-day-one-mac +            --generate-notes +            --title "Day One Mac $GITHUB_REF_NAME"

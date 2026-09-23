@@ -1,0 +1,2 @@
+# id	scope	phase	name	homebrew_cask	kind	expected_path	bundle_id	command
+fixture-cli	optional	test	Fixture CLI	fixture-cli	cli	-	-	fixture-day-one-command

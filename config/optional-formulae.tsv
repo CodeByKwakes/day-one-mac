@@ -1,0 +1,34 @@
+# group<TAB>formula<TAB>purpose
+Containers	dive	Inspect Docker image layers and wasted space
+Containers	lazydocker	Terminal interface for Docker and Compose
+Content	ffmpeg	Convert and inspect audio and video
+Content	gifsicle	Create and optimise GIF files
+Content	imagemagick	Convert and inspect raster images
+Development	act	Run GitHub Actions workflows locally
+Development	httpie	Human-friendly HTTP client
+Development	mkcert	Create locally trusted development certificates
+Development	shellcheck	Static analysis for shell scripts
+Development	shfmt	Format shell scripts consistently
+Development	watchman	Watch files and trigger rebuilds
+Development	wget	Download files from HTTP and FTP
+Development	yq	Query and edit YAML, JSON and XML
+Git	git-delta	Readable Git diffs and syntax highlighting
+Git	git-lfs	Git support for large binary files
+Git	gitleaks	Detect secrets in repositories
+Git	lazygit	Terminal interface for Git
+Navigation	bat	Syntax-highlighted file viewer
+Navigation	eza	Modern replacement for ls
+Navigation	fd	Fast file finder
+Navigation	fzf	Interactive fuzzy finder
+Navigation	tree	Display directory trees
+Navigation	zoxide	Directory jumper learned from shell history
+Shell	direnv	Load per-project environment variables
+Shell	zsh-autosuggestions	Suggest commands from shell history
+Shell	zsh-completions	Additional Zsh completions
+Shell	zsh-syntax-highlighting	Highlight valid and invalid shell commands
+System	btop	Interactive process and resource monitor
+System	duf	Readable filesystem usage
+System	dust	Readable directory size analysis
+System	hyperfine	Command-line benchmarking
+System	tlrc	Maintained tldr client for concise command examples
+System	watch	Repeat a command and display changes

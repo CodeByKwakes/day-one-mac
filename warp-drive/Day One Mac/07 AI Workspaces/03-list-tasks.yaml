@@ -1,0 +1,5 @@
+name: "AI workspace · List projectless tasks"
+command: 'day-one-mac workspace list'
+tags: ["day-one-mac", "ai", "projectless", "workspace", "list", "read-only"]
+description: "List stable projectless task folders with their status, primary client, title, and relative path."
+shells: ["zsh"]

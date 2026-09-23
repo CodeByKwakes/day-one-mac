@@ -1,0 +1,16 @@
+.DS_Store
+.trash/
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache/
+CLAUDE.local.md
+
+# Never keep secrets or bulk exports in the knowledge vault.
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.mobileprovision
+secrets/
+exports/

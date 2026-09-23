@@ -1,0 +1,169 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Portable Day One Mac dispatcher. A standalone installation resolves the
+# versioned runtime under ~/.local/share; a source checkout remains supported
+# for development.
+
+CANONICAL_STATE_ROOT="${DAY_ONE_MAC_STATE_ROOT:-${FRESH_START_STATE_ROOT:-$HOME/.day-one-mac}}"
+LEGACY_STATE_ROOT="$HOME/.fresh-mac-setup"
+if [[ -z "${DAY_ONE_MAC_STATE_ROOT:-}" && -z "${FRESH_START_STATE_ROOT:-}" \
+   && ! -e "$CANONICAL_STATE_ROOT" && -e "$LEGACY_STATE_ROOT" ]]; then
+  STATE_ROOT="$LEGACY_STATE_ROOT"
+else
+  STATE_ROOT="$CANONICAL_STATE_ROOT"
+fi
+RUNTIME_FILE="$STATE_ROOT/runtime-root"
+LEGACY_ROOT_FILE="$STATE_ROOT/project-root"
+SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+resolve_project_root() {
+  local candidate=''
+  if [[ -x "$SELF_DIR/bootstrap-day-one-mac.sh" ]]; then
+    candidate="$(cd "$SELF_DIR/.." && pwd)"
+  elif [[ -r "$RUNTIME_FILE" ]]; then
+    candidate="$(sed -n '1p' "$RUNTIME_FILE")"
+  elif [[ -x "$HOME/.local/share/day-one-mac/current/scripts/bootstrap-day-one-mac.sh" ]]; then
+    candidate="$HOME/.local/share/day-one-mac/current"
+  elif [[ -r "$LEGACY_ROOT_FILE" ]]; then
+    candidate="$(sed -n '1p' "$LEGACY_ROOT_FILE")"
+  fi
+  [[ "$candidate" == /* && -x "$candidate/scripts/bootstrap-day-one-mac.sh" ]] || return 1
+  PROJECT_ROOT="$candidate"
+}
+
+bootstrap_checkout() {
+  local repository='https://github.com/CodeByKwakes/day-one-mac.git'
+  local checkout="$HOME/Developer/github.com/CodeByKwakes/day-one-mac"
+  while (( $# )); do
+    case "$1" in
+      --repository) repository="${2:?--repository requires a Git URL}"; shift 2 ;;
+      --checkout) checkout="${2:?--checkout requires an absolute path}"; shift 2 ;;
+      -h|--help)
+        printf '%s\n' \
+          'Usage: day-one-mac bootstrap [--repository URL] [--checkout ABSOLUTE_PATH]' \
+          '' \
+          'Clone or reuse the project, install the portable command, and print the next step.'
+        return 0
+        ;;
+      *) printf 'Unknown bootstrap option: %s\n' "$1" >&2; return 2 ;;
+    esac
+  done
+  [[ "$checkout" == /* && "$checkout" != / && "$checkout" != "$HOME" ]] || {
+    printf 'Refusing unsafe checkout path: %s\n' "$checkout" >&2; return 2; }
+  command -v git >/dev/null 2>&1 || {
+    printf '%s\n' 'Git is unavailable. Run xcode-select --install, finish the Apple installer, and retry.' >&2
+    return 1
+  }
+  if [[ -d "$checkout/.git" ]]; then
+    printf 'Using existing checkout: %s\n' "$checkout"
+  elif [[ -e "$checkout" ]]; then
+    printf 'Checkout path exists but is not a Git repository: %s\n' "$checkout" >&2
+    return 1
+  else
+    mkdir -p "$(dirname "$checkout")"
+    git clone "$repository" "$checkout"
+  fi
+  if [[ -x "$checkout/scripts/install-portable-command.sh" ]]; then
+    PROJECT_ROOT="$checkout"
+  else
+    PROJECT_ROOT="$checkout/day-one-mac"
+  fi
+  [[ -x "$PROJECT_ROOT/scripts/install-portable-command.sh" ]] || {
+    printf 'The checkout does not contain Day One Mac: %s\n' "$PROJECT_ROOT" >&2; return 1; }
+  exec "$PROJECT_ROOT/scripts/install-portable-command.sh" --source "$PROJECT_ROOT" --standalone
+}
+
+if [[ "${1:-}" == bootstrap ]]; then
+  shift
+  bootstrap_checkout "$@"
+  exit $?
+fi
+
+if ! resolve_project_root; then
+  case "${1:-}" in
+    help|-h|--help) : ;;
+    *)
+      printf '%s\n' \
+        'The Day One Mac runtime is not installed or recorded.' \
+        "Expected state file: $RUNTIME_FILE" \
+        '' \
+        'Install the public standalone runtime with:' \
+        '  ./day-one-mac bootstrap' \
+        '' \
+        'If a source checkout already exists, run:' \
+        '  ./scripts/install-portable-command.sh --standalone' >&2
+      exit 1
+      ;;
+  esac
+fi
+
+case "${1:-}" in
+  root) printf '%s\n' "$PROJECT_ROOT" ;;
+  runtime-status) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" status "$@" ;;
+  update) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" update "$@" ;;
+  rollback-runtime) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" rollback "$@" ;;
+  uninstall-runtime) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" uninstall "$@" ;;
+  docs) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" docs "$@" ;;
+  shell-status) shift; exec "$PROJECT_ROOT/scripts/shell-status.sh" "$@" ;;
+  validate) shift; exec "$PROJECT_ROOT/scripts/validate.sh" "$@" ;;
+  safety-report|preflight) shift; exec "$PROJECT_ROOT/scripts/preflight-audit.sh" "$@" ;;
+  prepare-existing|prepare-reset)
+    shift
+    [[ $# -gt 0 ]] || set -- --guided
+    exec "$PROJECT_ROOT/scripts/prepare-existing-mac.sh" "$@"
+    ;;
+  inventory) shift; exec "$PROJECT_ROOT/scripts/application-inventory.sh" "$@" ;;
+  applications) shift; exec "$PROJECT_ROOT/scripts/application-status.sh" "$@" ;;
+  install) shift; exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" --install-centre "$@" ;;
+  ssh-pin) shift; [[ $# -gt 0 ]] || set -- both; exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" --ssh-pin "$@" ;;
+  raycast) shift; exec "$PROJECT_ROOT/scripts/configure-raycast.sh" "$@" ;;
+  workspace) shift; exec "$PROJECT_ROOT/scripts/workspace-manager.sh" "$@" ;;
+  macos-settings) shift; exec "$PROJECT_ROOT/scripts/configure-macos-settings.sh" "$@" ;;
+  optional) shift; exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" --optional "$@" ;;
+  finalize) shift; exec "$PROJECT_ROOT/scripts/finalize-setup.sh" "$@" ;;
+  advanced-audit|audit) shift; exec "$PROJECT_ROOT/scripts/advanced-audit.sh" "$@" ;;
+  advanced) shift; exec "$PROJECT_ROOT/scripts/advanced-setup.sh" "$@" ;;
+  cli-tools) shift; exec "$PROJECT_ROOT/scripts/configure-cli-tools.sh" "$@" ;;
+  remove) shift; exec "$PROJECT_ROOT/scripts/remove-day-one-mac.sh" "$@" ;;
+  clean) shift; exec "$PROJECT_ROOT/scripts/clean-development-state.sh" "$@" ;;
+  rollback) shift; exec "$PROJECT_ROOT/scripts/rollback-recorded-setup.sh" "$@" ;;
+  setup) shift; exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" "$@" ;;
+  help|-h|--help)
+    printf '%s\n' \
+      'day-one-mac commands:' \
+      '  bootstrap         clone/reuse the project and install this command' \
+      '  runtime-status    show and verify the active standalone runtime' \
+      '  update            install the latest verified public release' \
+      '  rollback-runtime  preview or select a previous installed runtime' \
+      '  uninstall-runtime remove only the command and runtime; preserve setup' \
+      '  docs              print the installed Start Here guide path' \
+      '  setup [options]   run or inspect the eight required phases' \
+      '  shell-status      inspect zsh, PATH, completions and shell tools' \
+      '  safety-report     create the Stage 0 read-only safety report' \
+      '  prepare-existing  choose Stage 0 Route A or Route B' \
+      '  applications      check required or optional app ownership' \
+      '  install           install or revalidate required software' \
+      '  ssh-pin           save 1Password public keys to ~/.ssh' \
+      '  raycast           manage optional Day One Raycast commands' \
+      '  workspace         create and open bounded projectless tasks' \
+      '  macos-settings    configure or restore optional macOS preferences' \
+      '  optional          choose post-Phase-8 modules' \
+      '  finalize          compact records or detach after Phase 8' \
+      '  advanced          read and track optional advanced modules' \
+      '  advanced-audit    write the private extended audit' \
+      '  validate          validate the self-contained project' \
+      '  inventory         write the complete application inventory' \
+      '  cli-tools         select optional Homebrew formulae' \
+      '  remove            choose recorded, sectional, or full removal' \
+      '  clean             preview broad development cleanup' \
+      '  rollback          preview manifest-owned rollback' \
+      '  root              print the active runtime or development root' \
+      '' \
+      'Compatibility aliases:' \
+      '  preflight         same as safety-report' \
+      '  prepare-reset     same as prepare-existing' \
+      '  audit             same as advanced-audit'
+    ;;
+  *) exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" "$@" ;;
+esac

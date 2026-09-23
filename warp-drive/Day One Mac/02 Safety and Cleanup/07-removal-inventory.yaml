@@ -1,0 +1,5 @@
+name: "Cleanup · Show removal ownership inventory"
+command: "day-one-mac remove --inventory"
+tags: ["day-one-mac", "cleanup", "remove", "inventory", "read-only"]
+description: "Report Homebrew ownership and dirty or NO-REMOTE repositories without changing the Mac."
+shells: ["zsh"]

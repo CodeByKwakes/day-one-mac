@@ -1,0 +1,10 @@
+.DS_Store
+dist/
+*.log
+*.tmp
+.env
+.env.*
+!.env.example
+Safety Report*/
+Day-One-Mac-Backup-Snapshot-*/
+Day-One-Mac-Clean-Recovery-*/

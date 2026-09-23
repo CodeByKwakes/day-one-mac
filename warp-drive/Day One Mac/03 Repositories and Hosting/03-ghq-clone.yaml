@@ -1,0 +1,8 @@
+name: "Repositories · Clone with ghq"
+command: 'ghq get "{{repository}}"'
+tags: ["day-one-mac", "ghq", "git", "clone", "write"]
+description: "Clone a reviewed repository URL below ~/Developer using ghq's provider-aware layout."
+shells: ["zsh"]
+arguments:
+  - name: repository
+    description: "Full Git URL or supported host/owner/repository path."

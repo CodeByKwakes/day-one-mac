@@ -1,0 +1,5 @@
+name: "Python · Sync locked environment"
+command: "uv sync --locked"
+tags: ["day-one-mac", "python", "uv", "install", "reproducible", "write"]
+description: "Synchronize the project environment without changing uv.lock."
+shells: ["zsh"]

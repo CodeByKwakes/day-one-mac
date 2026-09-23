@@ -1,0 +1,5 @@
+name: "pnpm · Install frozen dependencies"
+command: "pnpm install --frozen-lockfile"
+tags: ["day-one-mac", "pnpm", "node", "install", "reproducible", "write"]
+description: "Install exactly the dependency graph recorded in pnpm-lock.yaml without changing the lockfile."
+shells: ["zsh"]

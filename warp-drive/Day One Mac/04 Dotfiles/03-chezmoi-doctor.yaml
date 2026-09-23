@@ -1,0 +1,5 @@
+name: "Dotfiles · Run doctor"
+command: "chezmoi doctor"
+tags: ["day-one-mac", "chezmoi", "dotfiles", "diagnostics", "read-only"]
+description: "Check chezmoi configuration, source state and external dependencies."
+shells: ["zsh"]

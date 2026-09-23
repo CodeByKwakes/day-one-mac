@@ -1,0 +1,45 @@
+filters:
+  and:
+    - or:
+        - 'file.inFolder("10 Projects")'
+        - 'file.inFolder("20 Learning")'
+        - 'file.inFolder("30 Reference")'
+        - 'file.inFolder("40 Sources")'
+    - 'file.ext == "md"'
+properties:
+  file.name:
+    displayName: Note
+  type:
+    displayName: Type
+  status:
+    displayName: Status
+  topics:
+    displayName: Topics
+  file.mtime:
+    displayName: Updated
+views:
+  - type: table
+    name: Active
+    filters:
+      and:
+        - 'status != "done"'
+        - 'status != "archived"'
+    order:
+      - file.name
+      - type
+      - status
+      - topics
+      - file.mtime
+  - type: table
+    name: Needs review
+    filters:
+      or:
+        - 'status == "inbox"'
+        - 'status == "review"'
+        - '!type'
+        - '!status'
+        - '!created'
+    order:
+      - file.name
+      - status
+      - file.mtime

@@ -1,0 +1,5 @@
+name: "Homebrew · List outdated packages"
+command: "brew outdated --greedy"
+tags: ["day-one-mac", "homebrew", "outdated", "read-only"]
+description: "List outdated formulae and casks, including casks that self-update."
+shells: ["zsh"]

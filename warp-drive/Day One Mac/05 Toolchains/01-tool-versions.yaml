@@ -1,0 +1,5 @@
+name: "Toolchains · Show installed versions"
+command: 'for tool in fnm node npm pnpm uv; do if command -v "$tool" >/dev/null 2>&1; then printf "%-8s " "$tool"; "$tool" --version; else printf "%-8s not installed\n" "$tool"; fi; done'
+tags: ["day-one-mac", "node", "npm", "pnpm", "python", "uv", "read-only"]
+description: "Report the selected Node and Python toolchain commands without failing for an unselected stack."
+shells: ["zsh"]

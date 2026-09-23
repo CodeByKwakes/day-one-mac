@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Small, inspectable installer for the public Day One Mac release bundle.
+REPOSITORY="${DAY_ONE_MAC_REPOSITORY:-CodeByKwakes/day-one-mac}"
+RELEASE="${DAY_ONE_MAC_RELEASE:-latest}"
+ARCHIVE=""
+SOURCE=""
+UPDATE=0
+
+usage() {
+  cat <<'EOF'
+Usage: ./install-day-one-mac [options]
+
+  --archive PATH    install a previously downloaded runtime archive
+  --source PATH     install from an extracted Day One Mac source directory
+  --release TAG     download a specific public GitHub release (default: latest)
+  --update          update an existing standalone runtime
+  -h, --help        show this help
+
+The installer downloads an archive and its SHA-256 file separately, verifies
+the archive, extracts it into a temporary directory, and then installs the
+versioned runtime under ~/.local/share/day-one-mac.
+EOF
+}
+
+while (( $# )); do
+  case "$1" in
+    --archive) ARCHIVE="${2:?--archive requires a path}"; shift 2 ;;
+    --source) SOURCE="${2:?--source requires a path}"; shift 2 ;;
+    --release) RELEASE="${2:?--release requires a tag}"; shift 2 ;;
+    --update) UPDATE=1; shift ;;
+    -h|--help) usage; exit 0 ;;
+    *) printf 'Unknown option: %s\n' "$1" >&2; usage >&2; exit 2 ;;
+  esac
+done
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [[ "$UPDATE" != 1 && -z "$SOURCE" && -x "$SCRIPT_DIR/scripts/install-portable-command.sh" ]]; then
+  SOURCE="$SCRIPT_DIR"
+fi
+
+if [[ -n "$SOURCE" ]]; then
+  SOURCE="$(cd "$SOURCE" && pwd)"
+  exec "$SOURCE/scripts/install-portable-command.sh" --source "$SOURCE" --standalone
+fi
+
+command -v curl >/dev/null 2>&1 || { printf 'curl is required.\n' >&2; exit 1; }
+command -v shasum >/dev/null 2>&1 || { printf 'shasum is required.\n' >&2; exit 1; }
+
+temporary="$(mktemp -d "${TMPDIR:-/tmp}/day-one-mac-install.XXXXXX")"
+trap 'rm -rf "$temporary"' EXIT HUP INT TERM
+
+if [[ -z "$ARCHIVE" ]]; then
+  if [[ "$RELEASE" == latest ]]; then
+    base="https://github.com/$REPOSITORY/releases/latest/download"
+  else
+    base="https://github.com/$REPOSITORY/releases/download/$RELEASE"
+  fi
+  ARCHIVE="$temporary/day-one-mac-runtime.tar.gz"
+  checksum="$temporary/day-one-mac-runtime.tar.gz.sha256"
+  printf 'Downloading Day One Mac runtime from %s\n' "$base"
+  curl --proto '=https' --tlsv1.2 -fL "$base/day-one-mac-runtime.tar.gz" -o "$ARCHIVE"
+  curl --proto '=https' --tlsv1.2 -fL "$base/day-one-mac-runtime.tar.gz.sha256" -o "$checksum"
+else
+  ARCHIVE="$(cd "$(dirname "$ARCHIVE")" && pwd)/$(basename "$ARCHIVE")"
+  checksum="$ARCHIVE.sha256"
+  [[ -f "$checksum" ]] || {
+    printf 'Checksum file is required beside the archive: %s\n' "$checksum" >&2; exit 1; }
+fi
+
+expected="$(awk 'NR == 1 { print $1 }' "$checksum")"
+actual="$(shasum -a 256 "$ARCHIVE" | awk '{print $1}')"
+[[ -n "$expected" && "$actual" == "$expected" ]] || {
+  printf 'Runtime archive checksum verification failed.\n' >&2; exit 1; }
+
+mkdir -p "$temporary/unpacked"
+tar -xzf "$ARCHIVE" -C "$temporary/unpacked"
+SOURCE="$temporary/unpacked/day-one-mac"
+[[ -x "$SOURCE/scripts/install-portable-command.sh" ]] || {
+  printf 'The verified archive does not contain the expected runtime.\n' >&2; exit 1; }
+
+exec "$SOURCE/scripts/install-portable-command.sh" --source "$SOURCE" --standalone
