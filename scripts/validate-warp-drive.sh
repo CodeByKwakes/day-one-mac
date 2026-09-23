@@ -114,7 +114,7 @@ assert_command '02 Safety and Cleanup/02-clean-comprehensive-preview.yaml' '"day
 assert_command '02 Safety and Cleanup/07-removal-inventory.yaml' '"day-one-mac remove --inventory"'
 assert_command '02 Safety and Cleanup/08-removal-preview.yaml' '"day-one-mac remove --mode recorded"'
 assert_command '03 Repositories and Hosting/01-ghq-root.yaml' '"ghq root"'
-assert_command '04 Dotfiles/02-chezmoi-diff.yaml' '"chezmoi diff --no-pager"'
+assert_command '04 Dotfiles/02-chezmoi-diff.yaml' '"chezmoi diff"'
 assert_command '05 Toolchains/06-pnpm-install-frozen.yaml' '"pnpm install --frozen-lockfile"'
 assert_command '06 Homebrew/05-cleanup-preview.yaml' '"brew cleanup --dry-run"'
 assert_command '07 AI Workspaces/03-list-tasks.yaml' "'day-one-mac workspace list'"

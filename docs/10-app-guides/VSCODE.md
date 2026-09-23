@@ -212,6 +212,38 @@ replace GitHub Copilot's native inline-completion service.
 If the shell or font is wrong, create a new terminal after changing the setting;
 an already-open terminal keeps its old process and font rendering state.
 
+## Step 7 — Review and merge chezmoi changes visually
+
+When VS Code is the primary editor, Phase 5 configures three related commands:
+
+```bash
+chezmoi edit "$HOME/.zshrc"   # edit the source and wait for VS Code to close
+chezmoi diff "$HOME/.zshrc"   # compare the live and rendered files in VS Code
+chezmoi merge "$HOME/.zshrc"  # open VS Code's three-way merge editor
+```
+
+Use `diff` when you only need to inspect. Use `merge` when both the live file
+and chezmoi source contain changes worth keeping. In the merge editor:
+
+1. Review the live destination, rendered target, base copy, and source.
+2. Accept only the lines you understand.
+3. Save the result with `⌘S` and close the window with `⌘W`.
+4. Run `chezmoi diff "$HOME/.zshrc"` again.
+5. Apply only that reviewed target with `chezmoi apply "$HOME/.zshrc"`.
+
+For text output in Terminal or a log, bypass the graphical tool explicitly:
+
+```bash
+chezmoi --use-builtin-diff diff --no-pager "$HOME/.zshrc"
+```
+
+The current Phase 5 alias baseline provides `cmdiff`, `cmdifftext`, and
+`cmmerge` for the same three review paths. An older private dotfiles source is
+not force-edited just to add convenience aliases; copy the reviewed lines from
+the Phase 5 guide if `day-one-mac shell-status` reports them as optional. The
+automated Phase 5 gate always uses the built-in text diff so it cannot wait on
+a VS Code window.
+
 ## Export and back up the configuration
 
 ### Export a portable profile — preferred
@@ -304,6 +336,7 @@ you intend to replace the shared remote state.
 | A formatter changes every project | Remove the global default and set it in that repository instead |
 | Starship symbols are squares | Select JetBrainsMono Nerd Font and reopen the terminal |
 | One profile looks different | Confirm the active profile from **Manage → Profiles** |
+| `chezmoi diff` appears stuck | Close the VS Code comparison tabs; `--wait` deliberately keeps the Terminal command active during review |
 | A work setting appears on a personal Mac | Sign out of the wrong sync account and review synced categories before reconnecting |
 
 ## VS Code completion checklist 🚦
@@ -313,6 +346,7 @@ you intend to replace the shared remote state.
 - [ ] The integrated terminal uses zsh and the Nerd Font.
 - [ ] The minimal safety settings are present and the JSON is valid.
 - [ ] Extensions are limited to real project needs.
+- [ ] `chezmoi diff` opens VS Code and the terminal-only form prints a unified diff.
 - [ ] Settings Sync is intentionally on or intentionally off.
 - [ ] A reviewed `.code-profile` export and extension inventory exist privately.
 

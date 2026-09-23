@@ -44,14 +44,14 @@ grep -Fq 'status: inbox' "$first/TASK.md"
 grep -Fq 'primary_client: codex' "$first/TASK.md"
 grep -Fq 'Treat `input/` as read-only' "$first/AGENTS.md"
 
-quoted_title="$($SCRIPT_DIR/workspace-manager.sh create-task \
+quoted_title="$("$SCRIPT_DIR/workspace-manager.sh" create-task \
   --title "Review Codex: Alex's notes" \
   --kind document \
   --client vscode \
   --sensitivity private \
   --quiet)"
 grep -Fq "title: 'Review Codex: Alex''s notes'" "$quoted_title/TASK.md"
-quoted_status="$($SCRIPT_DIR/workspace-manager.sh status "$quoted_title")"
+quoted_status="$("$SCRIPT_DIR/workspace-manager.sh" status "$quoted_title")"
 grep -Fq "Review Codex: Alex's notes" <<<"$quoted_status"
 
 list_output="$("$SCRIPT_DIR/workspace-manager.sh" list)"

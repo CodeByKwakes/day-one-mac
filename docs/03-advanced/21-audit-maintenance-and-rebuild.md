@@ -136,7 +136,7 @@ Mac without intentionally changing ownership.
 ```bash
 chezmoi doctor
 chezmoi status
-chezmoi diff --no-pager
+chezmoi --use-builtin-diff diff --no-pager
 chezmoi verify
 brew bundle check --file="$HOME/Brewfile" --no-upgrade
 ```
@@ -145,7 +145,7 @@ When changing a target, edit source first:
 
 ```bash
 chezmoi edit <target>
-chezmoi diff --no-pager
+chezmoi diff
 chezmoi apply <target>
 ```
 

@@ -518,7 +518,9 @@ complete maintained set is in Phase 5:
 alias gs='git status --short --branch'
 alias gd='git diff'
 alias cmstatus='chezmoi status'
-alias cmdiff='chezmoi diff --no-pager'
+alias cmdiff='chezmoi diff'
+alias cmdifftext='chezmoi --use-builtin-diff diff --no-pager'
+alias cmmerge='chezmoi merge'
 alias brewcleanpreview='brew cleanup --dry-run'
 ```
 
@@ -559,6 +561,17 @@ out of the managed source:
 command = "code"
 args = ["--wait"]
 
+[diff]
+command = "code"
+args = ["--wait", "--diff"]
+
+[merge]
+command = "bash"
+args = [
+  "-c",
+  "cp {{ .Target | quote }} {{ printf \"%s.base\" .Target | quote }} && code --new-window --wait --merge {{ .Destination | quote }} {{ .Target | quote }} {{ printf \"%s.base\" .Target | quote }} {{ .Source | quote }}",
+]
+
 [data]
 track = "github"
 stack = "both"
@@ -573,7 +586,7 @@ chezmoi add "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" \
   "$HOME/.ssh/config" "$HOME/.config/zsh/path.zsh" \
   "$HOME/.config/zsh/aliases.zsh" "$HOME/.config/starship.toml"
 chezmoi managed
-chezmoi diff --no-pager
+chezmoi diff
 ```
 
 Do not add tokens, `.env` files, private SSH keys, provider credential files,
@@ -589,13 +602,13 @@ Open a new login shell and verify:
 exec /opt/homebrew/bin/zsh -l
 command -v brew git ghq chezmoi starship
 chezmoi doctor
-chezmoi diff --no-pager
+chezmoi diff
 ```
 
 **Checkpoint**
 
 - [ ] The source path exists and every managed target is understood.
-- [ ] `chezmoi diff --no-pager` is empty or fully reviewed.
+- [ ] `chezmoi diff` is empty or every VS Code comparison is understood.
 - [ ] A new zsh login shell finds Homebrew and displays Starship.
 - [ ] The source contains no credentials.
 - [ ] Private-Git or local-only recovery has been deliberately chosen.
@@ -718,7 +731,7 @@ Create a Brewfile only when one does not already exist:
 test -e "$HOME/Brewfile" || brew bundle dump --file="$HOME/Brewfile"
 brew bundle check --file="$HOME/Brewfile" --no-upgrade
 chezmoi add "$HOME/Brewfile"
-chezmoi diff --no-pager
+chezmoi diff
 ```
 
 Review the complete chezmoi source:
@@ -739,7 +752,7 @@ brew --prefix
 git config --global --list --show-origin
 ghq root
 chezmoi doctor
-chezmoi diff --no-pager
+chezmoi diff
 starship --version
 fdesetup status
 spctl --status
@@ -781,9 +794,10 @@ day-one-mac runtime-status
 day-one-mac --wizard --dry-run
 ```
 
-The public installer makes the portable command available before Phase 1.
-Phase 5 later adopts the same launcher into chezmoi; it does not replace it
-with a different tool.
+The public installer makes the portable command available before Phase 1 and
+remains its sole owner. Phase 5 keeps the launcher out of chezmoi; when an old
+source still manages it, the runner backs up and forgets only that source entry
+without removing the live command.
 
 The wizard asks for:
 
@@ -888,7 +902,7 @@ Useful commands:
 sed -n '1,240p' "$HOME/.day-one-mac/verification.md"
 sed -n '1,240p' "$HOME/.day-one-mac/application-provenance.md"
 brew bundle check --file="$HOME/Brewfile" --no-upgrade
-chezmoi diff --no-pager
+chezmoi --use-builtin-diff diff --no-pager
 ```
 
 - [ ] Every required gate passes.

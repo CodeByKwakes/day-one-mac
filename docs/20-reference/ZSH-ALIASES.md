@@ -83,11 +83,14 @@ reopen the file and correct it before continuing.
 ### 5. Review and apply
 
 ```bash
-chezmoi diff --no-pager
+chezmoi diff
 chezmoi apply "$HOME/.config/zsh/aliases.zsh"
 ```
 
 Read the diff before applying. Only the alias you intended should change.
+With the Phase 5 VS Code integration, `cmdiff` opens the graphical comparison,
+`cmdifftext` prints a unified diff in Terminal, and `cmmerge TARGET` opens the
+three-way merge editor when both copies contain changes worth keeping.
 
 ### 6. Load and test it
 
@@ -133,7 +136,7 @@ Then repeat the syntax, diff, apply, and reload steps:
 
 ```bash
 /opt/homebrew/bin/zsh -n "$(chezmoi source-path "$HOME/.config/zsh/aliases.zsh")"
-chezmoi diff --no-pager
+chezmoi diff
 chezmoi apply "$HOME/.config/zsh/aliases.zsh"
 exec /opt/homebrew/bin/zsh -l
 ```

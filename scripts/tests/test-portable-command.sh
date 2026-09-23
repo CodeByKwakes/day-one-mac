@@ -12,7 +12,7 @@ test_home="$TEST_ROOT/home"
 mkdir -p "$test_home"
 
 HOME="$test_home" "$SCRIPT_DIR/install-portable-command.sh" \
-  --source "$PROJECT_ROOT" --standalone >/dev/null
+  --source "$PROJECT_ROOT" --version test-1.0.0 --standalone >/dev/null
 
 portable="$test_home/.local/bin/day-one-mac"
 runtime="$test_home/.local/share/day-one-mac/current"
@@ -22,6 +22,8 @@ runtime="$test_home/.local/share/day-one-mac/current"
   || fail_test 'portable dispatcher did not resolve the standalone runtime'
 HOME="$test_home" "$portable" runtime-status | grep -Fq 'Integrity: verified' \
   || fail_test 'installed runtime did not pass checksum verification'
+HOME="$test_home" "$portable" runtime-status | grep -Fq 'Version:   test-1.0.0' \
+  || fail_test 'first runtime version was not activated'
 [[ "$(HOME="$test_home" "$portable" docs)" == *'/docs/START-HERE.md' ]] \
   || fail_test 'installed runtime did not resolve its documentation'
 grep -Fqx '[[ -r "$HOME/.config/zsh/path.zsh" ]] && source "$HOME/.config/zsh/path.zsh"' "$test_home/.zprofile" \
@@ -31,13 +33,28 @@ grep -Fq '# Day One Mac bootstrap PATH' "$test_home/.config/zsh/path.zsh" \
 grep -Fq 'runtime-status    show and verify' < <(HOME="$test_home" "$portable" --help) \
   || fail_test 'portable command help does not document the standalone runtime'
 
-# Reinstallation is idempotent: one source line and one stable runtime record.
+# Installing a second version must replace the current symlink itself. On
+# macOS, a plain `mv -f next current` follows a directory symlink and silently
+# leaves the old version active; this fixture prevents that regression.
 HOME="$test_home" "$SCRIPT_DIR/install-portable-command.sh" \
-  --source "$PROJECT_ROOT" --standalone >/dev/null
+  --source "$PROJECT_ROOT" --version test-2.0.0 --standalone >/dev/null
+[[ "$(readlink "$runtime")" == 'releases/test-2.0.0' ]] \
+  || fail_test 'second install did not switch the current runtime symlink'
+HOME="$test_home" "$portable" runtime-status | grep -Fq 'Version:   test-2.0.0' \
+  || fail_test 'second runtime version was not activated'
 [[ "$(grep -Fc '.config/zsh/path.zsh' "$test_home/.zprofile")" == 1 ]] \
   || fail_test 'reinstall duplicated the .zprofile source line'
 [[ "$(wc -l < "$test_home/.day-one-mac/runtime-root" | tr -d ' ')" == 1 ]] \
   || fail_test 'recorded runtime root is not one line'
+
+# Rollback uses the same symlink replacement boundary and must also activate
+# the requested verified version instead of moving a link into the old target.
+HOME="$test_home" "$portable" rollback-runtime \
+  --version test-1.0.0 --execute >/dev/null
+[[ "$(readlink "$runtime")" == 'releases/test-1.0.0' ]] \
+  || fail_test 'rollback did not switch the current runtime symlink'
+HOME="$test_home" "$portable" runtime-status | grep -Fq 'Version:   test-1.0.0' \
+  || fail_test 'rolled-back runtime version was not activated'
 
 # A downloaded dispatcher must explain installation without prior state.
 downloaded="$TEST_ROOT/downloaded-day-one-mac"

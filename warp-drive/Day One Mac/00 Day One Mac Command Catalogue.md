@@ -1,7 +1,7 @@
 # Day One Mac — command catalogue
 
 > Install the portable `day-one-mac` command before Phase 1. Phase 5 later
-> adopts the same launcher into chezmoi.
+> keeps the launcher under standalone-runtime ownership rather than chezmoi.
 
 This Notebook accompanies the **63 workflows in seven folders** imported with
 it. It belongs to the self-contained `day-one-mac` setup and intentionally does
@@ -130,7 +130,8 @@ does not need that—the configured `ghq.root` chooses the destination.
 | Workflow | Command | Purpose |
 |---|---|---|
 | Dotfiles · Status | `chezmoi status` | Show managed targets that differ. |
-| Dotfiles · Preview changes | `chezmoi diff --no-pager` | Review every proposed target change. |
+| Dotfiles · Preview changes in VS Code | `chezmoi diff` | Open every proposed target change in VS Code. |
+| Dotfiles · Preview changes in Terminal | `chezmoi --use-builtin-diff diff --no-pager` | Print a non-graphical unified diff without changing the configured tool. |
 | Dotfiles · Run doctor | `chezmoi doctor` | Check source, config, and dependencies. |
 | Dotfiles · List managed targets | `chezmoi managed` | List source-owned paths. |
 | Dotfiles · Edit one target | `chezmoi edit "{{target}}"` | Edit a target's source representation. |
@@ -141,7 +142,7 @@ Safe edit cycle:
 
 ```bash
 chezmoi edit "$HOME/.zshrc"
-chezmoi diff --no-pager
+chezmoi diff
 chezmoi apply "$HOME/.zshrc"
 chezmoi verify
 ```

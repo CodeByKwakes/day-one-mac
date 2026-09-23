@@ -22,7 +22,7 @@ esac
 EOF
 chmod 700 "$HOME/.local/bin/day-one-mac"
 
-preview="$($SCRIPT_DIR/configure-raycast.sh --groups core,documentation,ai,hosting,safety --preview)"
+preview="$("$SCRIPT_DIR/configure-raycast.sh" --groups core,documentation,ai,hosting,safety --preview)"
 grep -Fq 'GitHub · Authentication Status' <<<"$preview"
 grep -Fq 'Azure · Active Account' <<<"$preview"
 grep -Fq 'AI · New Codex Task' <<<"$preview"
@@ -30,7 +30,7 @@ grep -Fq 'AI · New Claude Code Task' <<<"$preview"
 grep -Fq 'AI · New Copilot CLI Task' <<<"$preview"
 grep -Fq 'Day One · Preview Broad Cleanup' <<<"$preview"
 
-$SCRIPT_DIR/configure-raycast.sh \
+"$SCRIPT_DIR/configure-raycast.sh" \
   --groups core,documentation,ai,hosting,safety \
   --apply --yes >/dev/null
 
@@ -55,21 +55,21 @@ for command_file in "$DAY_ONE_RAYCAST_COMMAND_DIR"/*.sh; do
   bash -n "$command_file"
 done
 
-second_apply="$($SCRIPT_DIR/configure-raycast.sh \
+second_apply="$("$SCRIPT_DIR/configure-raycast.sh" \
   --groups core,documentation,ai,hosting,safety \
   --apply --yes)"
 grep -Fq 'already current' <<<"$second_apply"
 
-status="$($SCRIPT_DIR/configure-raycast.sh --status)"
+status="$("$SCRIPT_DIR/configure-raycast.sh" --status)"
 grep -Fq 'generated commands are present' <<<"$status"
 
-extensions="$($SCRIPT_DIR/configure-raycast.sh --extensions)"
+extensions="$("$SCRIPT_DIR/configure-raycast.sh" --extensions)"
 grep -Fq 'Warp' <<<"$extensions"
 grep -Fq 'Visual Studio Code' <<<"$extensions"
 grep -Fq 'GitHub Copilot' <<<"$extensions"
 grep -Fq 'Obsidian' <<<"$extensions"
 
-$SCRIPT_DIR/configure-raycast.sh --remove-generated --yes >/dev/null
+"$SCRIPT_DIR/configure-raycast.sh" --remove-generated --yes >/dev/null
 [[ ! -e "$DAY_ONE_RAYCAST_COMMAND_DIR" ]]
 find "$DAY_ONE_MAC_STATE_ROOT/raycast-command-backups" -maxdepth 1 \
   -type d -name 'removed-*' | grep -q .

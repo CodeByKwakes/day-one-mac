@@ -21,7 +21,7 @@ The runner prints the relevant guide whenever a phase needs manual input.
 | 2A | [Required Installation Centre](INSTALLATION-CENTRE.md) | Detect application ownership and provide every required app and CLI before configuration begins. |
 | 3 | [Phase 3 — Security and SSH](03-security-and-ssh.md) | Configure the selected authentication route and verify FileVault. |
 | 4 | [Phase 4 — Core tools and hosting](04-core-tools-and-hosting.md) | Verify core tools, create the development layout, configure Git, and authenticate hosting services. |
-| 5 | [Phase 5 — Dotfiles and shell](05-dotfiles-and-shell.md) | Configure chezmoi, zsh and Starship, then adopt the early portable command into dotfiles. |
+| 5 | [Phase 5 — Dotfiles and shell](05-dotfiles-and-shell.md) | Configure chezmoi, zsh and Starship while keeping the standalone launcher under runtime ownership. |
 | 6 | [Phase 6 — Language toolchains](06-language-toolchains.md) | Configure the selected Node/npm/pnpm and/or Python/uv stack. |
 | 7 | [Phase 7 — VS Code base](07-vscode-base.md) | Apply the minimal editor and integrated-terminal baseline. |
 | 8 | [Phase 8 — Verify and reproduce](08-verify-and-reproduce.md) | Run all gates and record the reproducible Homebrew and dotfiles state. |

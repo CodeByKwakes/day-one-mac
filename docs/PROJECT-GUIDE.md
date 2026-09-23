@@ -307,8 +307,9 @@ New installations use `day-one-mac`, `~/.day-one-mac`, and the
 under its former name, the scripts safely fall back to the existing
 `~/.fresh-mac-setup` state when the new directory is absent. The former
 `FRESH_START_*` variables are also accepted for compatibility. Rerunning
-the early installer installs the new command; Phase 5 adopts it into chezmoi
-and converts a recognised old command into a small compatibility shim. It does
+the early installer installs the new command; Phase 5 removes any legacy
+chezmoi ownership while preserving the command and converts a recognised old
+command into a small compatibility shim. It does
 not duplicate or discard saved progress.
 
 Useful portable controls:
@@ -387,8 +388,8 @@ that OmniRoute and MCP require an installed AI client.
 | [13 · Enhanced CLI tools](02-optional/13-enhanced-cli-tools.md) | You want `eza`, Zsh suggestions, `lazydocker`, fuzzy finding, richer Git tools, or content utilities |
 | [14 · Warp Drive](02-optional/14-warp-drive.md) | You want the validated setup, cleanup-preview, ghq, chezmoi, toolchain, and Homebrew command collection in Warp |
 
-The early installer provides the `day-one-mac` dispatcher before Phase 1, and
-Phase 5 adopts it into chezmoi. Its
+The early installer provides and owns the `day-one-mac` dispatcher before
+Phase 1; Phase 5 deliberately keeps it out of chezmoi. Its
 machine-local runtime-root record lets Warp workflows call this setup from any
 directory without embedding a username or checkout path. The
 [command reference](20-reference/COMMAND-REFERENCE.md) maps every portable command to its

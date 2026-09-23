@@ -279,9 +279,10 @@ combine closely related explanations:
 Reference commands in a phase explain or diagnose the automation; they are not
 a second checklist that must be repeated after the runner succeeds.
 
-The early command installer makes `day-one-mac` available immediately after
-the repository is cloned. Phase 5 later adopts the same command into chezmoi
-without changing how you use it. If the portable command is unavailable, run
+The early command installer makes `day-one-mac` available immediately without
+a permanent clone. The standalone runtime remains its sole owner; Phase 5
+keeps it out of chezmoi and safely migrates older managed copies. If the
+portable command is unavailable, run
 the matching script from this repository. The
 [complete command reference](20-reference/COMMAND-REFERENCE.md) shows both forms and when to
 use every setup, report, workspace, finalisation, rollback, and removal command.

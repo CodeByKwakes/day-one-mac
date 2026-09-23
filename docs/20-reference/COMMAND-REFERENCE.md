@@ -52,7 +52,7 @@ public installer or an offline release archive.
 
 ## Complete portable command list
 
-Install this command before Phase 1; Phase 5 later adopts the same launcher
+Install this command before Phase 1; the standalone runtime remains its sole owner
 into chezmoi. See [PORTABLE-COMMAND.md](PORTABLE-COMMAND.md) for installation,
 updates and rollback.
 

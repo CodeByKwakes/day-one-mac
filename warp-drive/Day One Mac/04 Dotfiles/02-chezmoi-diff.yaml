@@ -1,5 +1,5 @@
-name: "Dotfiles · Preview changes"
-command: "chezmoi diff --no-pager"
+name: "Dotfiles · Preview changes in VS Code"
+command: "chezmoi diff"
 tags: ["day-one-mac", "chezmoi", "dotfiles", "diff", "preview", "read-only"]
-description: "Preview every target change before applying the chezmoi source."
+description: "Open every proposed target change in VS Code before applying the chezmoi source."
 shells: ["zsh"]

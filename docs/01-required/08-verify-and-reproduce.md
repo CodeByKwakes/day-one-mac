@@ -151,7 +151,7 @@ The runner adds a newly created Brewfile to chezmoi:
 ```bash
 chezmoi add "$HOME/Brewfile"
 chezmoi source-path "$HOME/Brewfile"
-chezmoi diff --no-pager
+chezmoi diff
 ```
 
 If a pre-existing Brewfile is not managed, the runner pauses so you can review
@@ -284,7 +284,7 @@ The shortest safe private-Git rebuild on another clean Mac is:
 # Install Command Line Tools and Homebrew first.
 brew install chezmoi
 chezmoi init <private-dotfiles-remote>
-chezmoi diff --no-pager
+chezmoi diff
 chezmoi apply
 brew bundle install --file="$(chezmoi source-path)/Brewfile"
 ```
@@ -293,7 +293,7 @@ Then rerun this project's track-aware authentication and verification phases.
 Do not apply a source before reviewing its diff on the new machine.
 
 For local-only mode, restore the backed-up chezmoi source to
-`~/.local/share/chezmoi`, run `chezmoi diff --no-pager`, and apply only after
+`~/.local/share/chezmoi`, run `chezmoi diff`, and apply only after
 review. Without that backup there is no automatic rebuild source.
 
 ## Step 8.7 — Understand cleanup before declaring completion
@@ -329,7 +329,7 @@ locations with `brew --prefix`, `chezmoi source-path`, `pnpm store path`, and
 | The verification report contains one failure | Return to the named owning phase; do not mark Phase 8 complete manually |
 | A required app passes but is absent from the Brewfile | Check `application-provenance.md`; external applications correctly remain outside Homebrew desired state |
 | `brew bundle dump` says the Brewfile exists | Review and preserve it; the runner intentionally refuses overwrite |
-| `chezmoi add ~/Brewfile` includes unexpected edits | Inspect `chezmoi diff --no-pager` and apply only reviewed targets |
+| `chezmoi add ~/Brewfile` includes unexpected edits | Inspect `chezmoi diff` and apply only reviewed targets |
 | Git push reports `Permission denied (publickey)` | Unlock 1Password, verify `ssh-add -l`, then repeat the provider SSH test from Phase 4 |
 | The dotfiles repository is public | Change repository visibility before pushing machine configuration |
 | Local-only mode reports no remote | This is expected; verify the chezmoi source is included in an encrypted backup |
@@ -349,7 +349,7 @@ locations with `brew --prefix`, `chezmoi source-path`, `pnpm store path`, and
 - [ ] The completed machine agrees with `EXPECTED-LAYOUT.md` or documented dynamic paths.
 - [ ] `~/Brewfile` contains only intended Homebrew desired state.
 - [ ] The Brewfile and required dotfiles are managed by chezmoi.
-- [ ] `chezmoi diff --no-pager` is empty or every change is understood.
+- [ ] `chezmoi diff` is empty or every VS Code comparison is understood.
 - [ ] The source is clean and the secret-pattern scan has no review items.
 - [ ] Private-Git mode has a private, reachable, pushed remote; or local-only
       mode is recorded and the source has an encrypted backup plan.

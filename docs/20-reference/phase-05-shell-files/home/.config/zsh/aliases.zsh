@@ -15,7 +15,9 @@ fi
 if command -v chezmoi >/dev/null 2>&1; then
   alias cm='chezmoi'
   alias cmstatus='chezmoi status'
-  alias cmdiff='chezmoi diff --no-pager'
+  alias cmdiff='chezmoi diff'
+  alias cmdifftext='chezmoi --use-builtin-diff diff --no-pager'
+  alias cmmerge='chezmoi merge'
   alias cmverify='chezmoi verify'
   alias cmdoctor='chezmoi doctor'
 fi

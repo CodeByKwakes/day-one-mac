@@ -315,6 +315,7 @@ required_scripts=(
   lib/platform.sh
   lib/terminal-ui.sh
   tests/test-application-ownership.sh
+  tests/test-chezmoi-vscode-tools.sh
   tests/test-day-one-mac.sh
   tests/test-preflight.sh
   tests/test-secret-scan-and-ssh.sh
@@ -383,7 +384,8 @@ if grep -Fq 'exec bash "$HERE/setup.sh" "$@"' "$SCRIPT_DIR/bootstrap-day-one-mac
    && grep -Fq 'existing_managed_source=1' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq 'eval "$(starship init zsh)"' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq 'runner_wrapper="$HOME/.local/bin/day-one-mac"' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'runner_source="$PROJECT_DIR/scripts/day-one-mac"' "$SCRIPT_DIR/setup.sh" \
+   && grep -Fq 'migrate_legacy_managed_launcher' "$SCRIPT_DIR/setup.sh" \
+   && grep -Fq 'run chezmoi forget "$target"' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq 'safety-report|preflight) shift; exec' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'prepare-existing|prepare-reset)' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'macos-settings) shift; exec "$PROJECT_ROOT/scripts/configure-macos-settings.sh"' "$SCRIPT_DIR/day-one-mac" \
@@ -403,8 +405,8 @@ if grep -Fq 'exec bash "$HERE/setup.sh" "$@"' "$SCRIPT_DIR/bootstrap-day-one-mac
    && grep -Fq 'save_state_value project-root "$PROJECT_DIR"' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq 'advanced) shift; exec "$PROJECT_ROOT/scripts/advanced-setup.sh"' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'advanced-audit|audit) shift; exec' "$SCRIPT_DIR/day-one-mac" \
-   && grep -Fq 'PHASE_SCHEMA_05=13' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'PHASE_SCHEMA_08=9' "$SCRIPT_DIR/setup.sh" \
+   && grep -Fq 'PHASE_SCHEMA_05=15' "$SCRIPT_DIR/setup.sh" \
+   && grep -Fq 'PHASE_SCHEMA_08=10' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq 'PHASE_SCHEMA_01=5' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq '.config/zsh/path.zsh' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq '.config/zsh/aliases.zsh' "$SCRIPT_DIR/setup.sh" \
@@ -761,6 +763,10 @@ run_fixture "1Password CLI integration, deadline, and track key-type fixtures pa
 run_fixture "standalone runtime installs before Phase 1 and survives source removal" \
   "portable dispatcher installation or checkout resolution fixture failed" \
   "$SCRIPT_DIR/tests/test-portable-command.sh" || true
+
+run_fixture "chezmoi preserves custom tools and uses VS Code only for human review" \
+  "chezmoi VS Code diff and merge regression fixture failed" \
+  "$SCRIPT_DIR/tests/test-chezmoi-vscode-tools.sh" || true
 
 run_fixture "login and non-login shell PATH and the login-shell switch pass" \
   "shell PATH or login-shell switch fixture failed" \

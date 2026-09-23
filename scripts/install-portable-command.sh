@@ -88,6 +88,37 @@ RELEASE_DIR="$RUNTIME_HOME/releases/$VERSION"
 CURRENT_LINK="$RUNTIME_HOME/current"
 RECORDED_ROOT="$SOURCE_ROOT"
 
+switch_current_runtime() {
+  local next_link expected_root actual_root
+
+  [[ -d "$RELEASE_DIR" ]] || {
+    printf 'Cannot activate missing runtime: %s\n' "$RELEASE_DIR" >&2
+    return 1
+  }
+  if [[ -e "$CURRENT_LINK" && ! -L "$CURRENT_LINK" ]]; then
+    printf 'Refusing to replace a non-symlink runtime path: %s\n' "$CURRENT_LINK" >&2
+    return 1
+  fi
+
+  # Do not use `mv -f next current` while current is a symlink to a directory.
+  # macOS follows that destination and moves `next` inside the old release,
+  # leaving the active version unchanged. Remove only the reviewed symlink,
+  # then rename the prepared link into place.
+  next_link="$RUNTIME_HOME/.current-$$"
+  rm -f "$next_link"
+  ln -s "releases/$VERSION" "$next_link"
+  [[ ! -L "$CURRENT_LINK" ]] || rm -f "$CURRENT_LINK"
+  mv "$next_link" "$CURRENT_LINK"
+
+  expected_root="$(cd -P "$RELEASE_DIR" && pwd)"
+  actual_root="$(cd -P "$CURRENT_LINK" && pwd)"
+  [[ "$actual_root" == "$expected_root" ]] || {
+    printf 'Runtime activation verification failed.\n' >&2
+    printf '  Expected: %s\n  Actual:   %s\n' "$expected_root" "$actual_root" >&2
+    return 1
+  }
+}
+
 if [[ "$MODE" == standalone ]]; then
   RECORDED_ROOT="$CURRENT_LINK"
 fi
@@ -135,9 +166,7 @@ if [[ "$MODE" == standalone ]]; then
   fi
   trap - EXIT HUP INT TERM
 
-  next_link="$RUNTIME_HOME/.current-$$"
-  ln -s "releases/$VERSION" "$next_link"
-  mv -f "$next_link" "$CURRENT_LINK"
+  switch_current_runtime
   install -m 700 "$CURRENT_LINK/scripts/day-one-mac" "$TARGET"
 else
   install -m 700 "$SOURCE_ROOT/scripts/day-one-mac" "$TARGET"
@@ -151,12 +180,21 @@ if [[ "$MODE" == linked ]]; then
 fi
 write_shell_bootstrap
 
-"$TARGET" runtime-status >/dev/null
+installed_status="$("$TARGET" runtime-status)"
+printf '%s\n' "$installed_status" | grep -Fq "Version:   $VERSION" || {
+  printf 'Installed launcher did not resolve the requested runtime version %s.\n' "$VERSION" >&2
+  exit 1
+}
+printf '%s\n' "$installed_status" | grep -Fq 'Integrity: verified' || {
+  printf 'Installed runtime did not pass its integrity check.\n' >&2
+  exit 1
+}
 
 printf '%s\n' \
   '' \
   '✓ Portable Day One Mac command installed.' \
   "  Mode:    $MODE" \
+  "  Version: $VERSION" \
   "  Command: $TARGET" \
   "  Runtime: $RECORDED_ROOT" \
   '' \

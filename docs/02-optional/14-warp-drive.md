@@ -41,7 +41,7 @@ brew bundle check --file="$HOME/Brewfile" --no-upgrade
 ## Step 14.2 — Verify the portable command
 
 The public installer places the `day-one-mac` launcher in `~/.local/bin`;
-Phase 5 later adopts the same launcher into chezmoi. The launcher resolves the
+The standalone runtime owns the launcher; Phase 5 keeps it out of chezmoi. The launcher resolves the
 active versioned runtime through `~/.day-one-mac/runtime-root`, so no imported
 workflow contains a personal username or absolute repository path.
 

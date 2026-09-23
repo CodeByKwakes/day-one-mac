@@ -5,14 +5,12 @@ set -uo pipefail
 # permissions, the login shell, or Homebrew packages.
 
 green=$'\033[32m'
-yellow=$'\033[33m'
 red=$'\033[31m'
 blue=$'\033[36m'
 reset=$'\033[0m'
-[[ -t 1 ]] || green='' yellow='' red='' blue='' reset=''
+[[ -t 1 ]] || green='' red='' blue='' reset=''
 
 ok()   { printf '  %s✓%s %s\n' "$green" "$reset" "$*"; }
-warn() { printf '  %s⚠%s %s\n' "$yellow" "$reset" "$*"; }
 fail() { printf '  %s✗%s %s\n' "$red" "$reset" "$*"; failures=$((failures + 1)); }
 info() { printf '  %sℹ%s %s\n' "$blue" "$reset" "$*"; }
 
@@ -79,8 +77,13 @@ TOOLS
     "$expected" -lic 'alias cdayone gs gd gds gl gremotes cm cmstatus cmdiff cmverify cmdoctor brewcheck brewout brewcleanpreview brewautopreview' 2>/dev/null || true)"
   alias_count="$(printf '%s\n' "$alias_output" | awk 'NF { count++ } END { print count + 0 }')"
   [[ "$alias_count" == 15 ]] \
-    && ok "15 safe Day One Mac aliases are loaded" \
-    || fail "only $alias_count of 15 safe Day One Mac aliases are loaded"
+    && ok "15 required safe Day One Mac aliases are loaded" \
+    || fail "only $alias_count of 15 required safe Day One Mac aliases are loaded"
+  if "$expected" -lic 'alias cmdifftext cmmerge >/dev/null' 2>/dev/null; then
+    info "VS Code chezmoi convenience aliases are loaded: cmdifftext, cmmerge"
+  else
+    info "optional aliases cmdifftext and cmmerge can be adopted from the current Phase 5 baseline"
+  fi
 
   completion_output="$(env -i HOME="$HOME" USER="$(id -un)" LOGNAME="$(id -un)" TERM="${TERM:-xterm-256color}" PATH='/usr/bin:/bin:/usr/sbin:/sbin' SHELL="$expected" \
     "$expected" -fc 'for dir in /opt/homebrew/share/zsh/site-functions /opt/homebrew/share/zsh-completions; do [[ -d "$dir" ]] && fpath=("$dir" $fpath); done; autoload -Uz compaudit; compaudit' 2>/dev/null || true)"

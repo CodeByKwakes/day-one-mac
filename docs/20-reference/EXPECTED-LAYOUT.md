@@ -112,7 +112,7 @@ The required setup produces or manages the following structure. Entries marked
 │   └── _archive/                         retained inactive projects
 │
 ├── .local/
-│   ├── bin/day-one-mac                   stable launcher; managed by chezmoi after Phase 5
+│   ├── bin/day-one-mac                   stable launcher; owned by the standalone runtime
 │   └── share/day-one-mac/
 │       ├── current -> releases/<version> active verified runtime
 │       └── releases/<version>/           versioned scripts, guides and assets

@@ -33,7 +33,7 @@ cp "$HOME/Brewfile" \
   "$HOME/.day-one-mac/manual-backups/Brewfile.before-advanced-16" \
   2>/dev/null || true
 chezmoi source-path "$HOME/Brewfile"
-chezmoi diff --no-pager
+chezmoi diff
 ```
 
 If the Brewfile is not managed, add it only after reviewing its contents:
@@ -186,7 +186,7 @@ into an installer.
 
 ```bash
 chezmoi add "$HOME/Brewfile"
-chezmoi diff --no-pager
+chezmoi diff
 chezmoi apply "$HOME/Brewfile"
 brew bundle check --file="$HOME/Brewfile" --no-upgrade
 ```

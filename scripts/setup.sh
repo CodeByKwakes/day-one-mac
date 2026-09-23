@@ -62,10 +62,10 @@ PHASE_SCHEMA_01=5
 PHASE_SCHEMA_02=3
 PHASE_SCHEMA_03=6
 PHASE_SCHEMA_04=6
-PHASE_SCHEMA_05=13
+PHASE_SCHEMA_05=15
 PHASE_SCHEMA_06=2
 PHASE_SCHEMA_07=4
-PHASE_SCHEMA_08=9
+PHASE_SCHEMA_08=10
 
 usage() {
   cat <<'EOF'
@@ -1670,10 +1670,191 @@ switch_login_shell_to_homebrew_zsh() {
   return 0
 }
 
+migrate_legacy_managed_launcher() {
+  local target="$HOME/.local/bin/day-one-mac"
+  local source_root source_entry relative backup_root backup_entry
+
+  if ! chezmoi managed -p absolute 2>/dev/null | grep -Fqx "$target"; then
+    return 0
+  fi
+
+  info "migrating the legacy chezmoi-managed Day One Mac launcher"
+  info "the standalone runtime now owns $target; the live command will be preserved"
+  if [[ "$DRY_RUN" == 1 ]]; then
+    print_command chezmoi forget "$target"
+    return 0
+  fi
+
+  source_root="$(chezmoi source-path)"
+  source_entry="$(chezmoi source-path "$target")"
+  [[ -n "$source_root" && -e "$source_entry" ]] || {
+    err "Could not locate the legacy launcher in the chezmoi source."
+    return "$EX_GATE"
+  }
+  relative="${source_entry#"$source_root"/}"
+  backup_root="$STATE_DIR/migrations/phase-05-standalone-launcher"
+  backup_entry="$backup_root/source/$relative"
+  ensure_state
+  if [[ ! -e "$backup_entry" ]]; then
+    mkdir -p "$(dirname "$backup_entry")"
+    ditto "$source_entry" "$backup_entry"
+    printf '%s\n' \
+      "Legacy source: $source_entry" \
+      "Preserved target: $target" \
+      "Migrated: $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+      > "$backup_root/README.txt"
+    chmod 600 "$backup_entry" "$backup_root/README.txt"
+  fi
+
+  run chezmoi forget "$target"
+  [[ -x "$target" ]] || {
+    err "chezmoi migration unexpectedly removed the live launcher: $target"
+    return "$EX_GATE"
+  }
+  if chezmoi managed -p absolute 2>/dev/null | grep -Fqx "$target"; then
+    err "chezmoi still reports the standalone launcher as managed."
+    return "$EX_GATE"
+  fi
+  ok "legacy launcher removed from chezmoi; standalone runtime remains installed"
+  info "migration backup: $backup_root"
+}
+
+migrate_legacy_gitconfig_source() {
+  local target="$HOME/.gitconfig"
+  local source_root source_entry relative backup_root backup_entry key live_value source_value
+  local keys needs_update=0
+
+  if ! chezmoi managed -p absolute 2>/dev/null | grep -Fqx "$target"; then
+    return 0
+  fi
+  source_root="$(chezmoi source-path)"
+  source_entry="$(chezmoi source-path "$target")"
+  [[ -n "$source_root" && -e "$source_entry" ]] || return 0
+
+  keys=$'user.name\nuser.email\ninit.defaultBranch\npull.ff\nfetch.prune\npush.autoSetupRemote\nghq.root\nalias.lg\ncore.excludesFile\nmerge.conflictStyle'
+  if [[ "$PRIMARY_IDE" == vscode ]]; then
+    keys+=$'\ncore.editor\nmerge.tool\nmergetool.vscode.cmd\ndiff.tool\ndifftool.vscode.cmd'
+  fi
+  while IFS= read -r key; do
+    [[ -n "$key" ]] || continue
+    live_value="$(git config --global --get "$key" 2>/dev/null || true)"
+    [[ -n "$live_value" ]] || continue
+    source_value="$(git config --file "$source_entry" --get "$key" 2>/dev/null || true)"
+    [[ "$source_value" == "$live_value" ]] || needs_update=1
+  done <<<"$keys"
+  [[ "$needs_update" == 1 ]] || return 0
+
+  case "$source_entry" in
+    *.tmpl)
+      err "The existing ~/.gitconfig source is a template and needs a reviewed manual merge."
+      warn "Run 'chezmoi edit ~/.gitconfig', add the Phase 4 Git settings shown in the guide, save, then rerun Phase 5."
+      return "$EX_MANUAL"
+      ;;
+  esac
+
+  info "merging the reviewed Phase 4 Git settings into the legacy chezmoi source"
+  if [[ "$DRY_RUN" == 1 ]]; then
+    info "would preserve unrelated source settings and add only the current Day One Mac Git keys"
+    return 0
+  fi
+
+  relative="${source_entry#"$source_root"/}"
+  backup_root="$STATE_DIR/migrations/phase-05-gitconfig"
+  backup_entry="$backup_root/source/$relative"
+  ensure_state
+  if [[ ! -e "$backup_entry" ]]; then
+    mkdir -p "$(dirname "$backup_entry")"
+    ditto "$source_entry" "$backup_entry"
+    printf '%s\n' \
+      "Legacy source: $source_entry" \
+      "Preserved target: $target" \
+      "Migrated: $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+      > "$backup_root/README.txt"
+    chmod 600 "$backup_entry" "$backup_root/README.txt"
+  fi
+  while IFS= read -r key; do
+    [[ -n "$key" ]] || continue
+    live_value="$(git config --global --get "$key" 2>/dev/null || true)"
+    [[ -n "$live_value" ]] || continue
+    git config --file "$source_entry" "$key" "$live_value"
+  done <<<"$keys"
+  ok "legacy ~/.gitconfig source updated without applying its stale version"
+  info "migration backup: $backup_root"
+}
+
+# Phase gates must remain terminal-only even when the user has configured a
+# graphical diff program. chezmoi's global --use-builtin-diff switch preserves
+# the active source, template data, destination and persistent state while
+# bypassing only diff.command.
+chezmoi_text_diff() {
+  chezmoi --use-builtin-diff diff --no-pager
+}
+
+chezmoi_config_has_tool() {
+  local config="$1" tool="$2"
+  [[ -f "$config" ]] || return 1
+  grep -Eq "^[[:space:]]*\\[${tool}\\][[:space:]]*(#.*)?$|^[[:space:]]*${tool}([.]command)?[[:space:]]*=" "$config"
+}
+
+chezmoi_vscode_diff_block() {
+  printf '%s\n' \
+    '# Day One Mac: open reviewed dotfile comparisons in VS Code.' \
+    '[diff]' \
+    'command = "code"' \
+    'args = ["--wait", "--diff"]'
+}
+
+chezmoi_vscode_merge_block() {
+  printf '%s\n' \
+    '# Day One Mac: use VS Code'"'"'s three-way merge editor.' \
+    '[merge]' \
+    'command = "bash"' \
+    'args = [' \
+    '  "-c",' \
+    '  "cp {{ .Target | quote }} {{ printf \"%s.base\" .Target | quote }} && code --new-window --wait --merge {{ .Destination | quote }} {{ .Target | quote }} {{ printf \"%s.base\" .Target | quote }} {{ .Source | quote }}",' \
+    ']'
+}
+
+configure_chezmoi_vscode_tools() {
+  local config="$1" content missing="" addition=""
+  [[ "$PRIMARY_IDE" == vscode ]] || return 0
+
+  if chezmoi_config_has_tool "$config" diff; then
+    info "preserving the existing chezmoi diff tool in $config"
+  else
+    missing="diff"
+    addition+=$'\n\n'"$(chezmoi_vscode_diff_block)"$'\n'
+  fi
+  if chezmoi_config_has_tool "$config" merge; then
+    info "preserving the existing chezmoi merge tool in $config"
+  else
+    missing="${missing}${missing:+ and }merge"
+    addition+=$'\n'"$(chezmoi_vscode_merge_block)"$'\n'
+  fi
+  [[ -n "$missing" ]] || return 0
+
+  if [[ "$DRY_RUN" == 1 ]]; then
+    info "would add the official VS Code chezmoi $missing configuration to $config"
+    return 0
+  fi
+  if ! command -v code >/dev/null 2>&1; then
+    warn "VS Code is selected, but its 'code' command is not available yet."
+    warn "Open VS Code, run 'Shell Command: Install code command in PATH', then rerun Phase 5."
+    return "$EX_MANUAL"
+  fi
+  confirm "Configure VS Code as the missing chezmoi $missing tool?" || {
+    warn "VS Code chezmoi integration was left unchanged. You can add it later with 'chezmoi edit-config'."
+    return 0
+  }
+  content="$(cat "$config")"
+  write_text_file "$config" "${content}${addition}"
+  ok "VS Code configured for chezmoi $missing review"
+}
+
 phase_05() {
   local chezmoi_config chezmoi_content escaped_email escaped_name managed_target
   local existing_managed_source=0 starship_config starship_content starship_created=0 chezmoi_source_dir
-  local runner_wrapper runner_source runner_content runner_created=0 applications_case optional_case remove_case shell_status_case legacy_runner legacy_runner_content
+  local runner_wrapper applications_case optional_case remove_case shell_status_case legacy_runner legacy_runner_content
   local legacy_runner_updated=0 zprofile zshrc zsh_path zsh_aliases bootstrap_zsh_path global_ignore
   local zsh_config_dir zsh_path_file zsh_aliases_file ssh_config ssh_config_created=0 homebrew_zsh clean_shell_check compaudit_output
   ui_title '5️⃣' 'Phase 05 — Dotfiles and Starship'
@@ -1705,12 +1886,33 @@ phase_05() {
     fi
     [[ -n "$DOTFILES_REPO" ]] && existing_managed_source=1
   fi
+  # Configure the selected editor before reviewing or applying an existing
+  # source. If apply encounters a conflict, its merge option is then already
+  # backed by the reviewed VS Code three-way merge command.
+  chezmoi_config="$HOME/.config/chezmoi/chezmoi.toml"
+  if [[ ! -e "$chezmoi_config" ]]; then
+    create_directory "$HOME/.config"
+    create_directory "$HOME/.config/chezmoi"
+    escaped_name="$(toml_escape "$GIT_NAME")"
+    escaped_email="$(toml_escape "$GIT_EMAIL")"
+    printf -v chezmoi_content \
+      '[data]\ntrack = "%s"\nstack = "%s"\nname = "%s"\nemail = "%s"\n' \
+      "$(track_value)" "$STACK" "$escaped_name" "$escaped_email"
+    if [[ "$PRIMARY_IDE" == vscode ]]; then
+      chezmoi_content=$'[edit]\ncommand = "code"\nargs = ["--wait"]\n\n'"$(chezmoi_vscode_diff_block)"$'\n\n'"$(chezmoi_vscode_merge_block)"$'\n\n'"$chezmoi_content"
+    fi
+    write_text_file "$chezmoi_config" "$chezmoi_content"
+  fi
+  configure_chezmoi_vscode_tools "$chezmoi_config" || return $?
+  runner_wrapper="$HOME/.local/bin/day-one-mac"
+  migrate_legacy_managed_launcher || return $?
+  migrate_legacy_gitconfig_source || return $?
   if [[ "$existing_managed_source" == 1 ]]; then
     if [[ "$DRY_RUN" == 1 ]]; then
-      print_command chezmoi diff --no-pager
+      print_command chezmoi --use-builtin-diff diff --no-pager
       print_command chezmoi apply
-    elif [[ -n "$(chezmoi diff --no-pager)" ]]; then
-      chezmoi diff --no-pager
+    elif [[ -n "$(chezmoi_text_diff)" ]]; then
+      chezmoi_text_diff
       confirm "Apply the reviewed existing dotfiles source?" || return "$EX_MANUAL"
       record_managed_targets_before_apply || return $?
       run chezmoi apply
@@ -1720,17 +1922,6 @@ phase_05() {
   fi
   phase_step_done "chezmoi source initialised and any existing-source diff reviewed"
   phase_next "managed shell, Starship and portable command files" "Complete Steps 5.2–5.7 and merge any existing file instead of overwriting it blindly."
-  chezmoi_config="$HOME/.config/chezmoi/chezmoi.toml"
-  if [[ ! -e "$chezmoi_config" ]]; then
-    create_directory "$HOME/.config"
-    create_directory "$HOME/.config/chezmoi"
-    escaped_name="$(toml_escape "$GIT_NAME")"
-    escaped_email="$(toml_escape "$GIT_EMAIL")"
-    printf -v chezmoi_content \
-      '[edit]\ncommand = "code"\nargs = ["--wait"]\n\n[data]\ntrack = "%s"\nstack = "%s"\nname = "%s"\nemail = "%s"\n' \
-      "$(track_value)" "$STACK" "$escaped_name" "$escaped_email"
-    write_text_file "$chezmoi_config" "$chezmoi_content"
-  fi
   starship_config="$HOME/.config/starship.toml"
   starship_content=$'add_newline = false\ncommand_timeout = 1000\n\n[character]\nsuccess_symbol = "[❯](bold green)"\nerror_symbol = "[❯](bold red)"\n'
   if [[ ! -e "$starship_config" ]]; then
@@ -1748,7 +1939,7 @@ phase_05() {
   if uses_node; then
     zsh_path+=$'\nexport PNPM_HOME="$HOME/Library/pnpm"\ncase ":$PATH:" in\n  *":$PNPM_HOME:"*) ;;\n  *) export PATH="$PNPM_HOME:$PATH" ;;\nesac\n'
   fi
-  zsh_aliases=$'# Safe, readable aliases selected by Day One Mac.\n# Keep destructive, publishing, force-push and prune commands explicit.\nif command -v day-one-mac >/dev/null 2>&1; then\n  alias cdayone=\'cd "$(day-one-mac root)"\'\nfi\n\nif command -v git >/dev/null 2>&1; then\n  alias gs=\'git status --short --branch\'\n  alias gd=\'git diff\'\n  alias gds=\'git diff --staged\'\n  alias gl=\'git log --oneline --graph --decorate -20\'\n  alias gremotes=\'git remote --verbose\'\nfi\n\nif command -v chezmoi >/dev/null 2>&1; then\n  alias cm=\'chezmoi\'\n  alias cmstatus=\'chezmoi status\'\n  alias cmdiff=\'chezmoi diff --no-pager\'\n  alias cmverify=\'chezmoi verify\'\n  alias cmdoctor=\'chezmoi doctor\'\nfi\n\nif command -v brew >/dev/null 2>&1; then\n  alias brewcheck=\'brew bundle check --file="$HOME/Brewfile" --no-upgrade\'\n  alias brewout=\'brew outdated --greedy\'\n  alias brewcleanpreview=\'brew cleanup --dry-run\'\n  alias brewautopreview=\'brew autoremove --dry-run\'\nfi\n'
+  zsh_aliases=$'# Safe, readable aliases selected by Day One Mac.\n# Keep destructive, publishing, force-push and prune commands explicit.\nif command -v day-one-mac >/dev/null 2>&1; then\n  alias cdayone=\'cd "$(day-one-mac root)"\'\nfi\n\nif command -v git >/dev/null 2>&1; then\n  alias gs=\'git status --short --branch\'\n  alias gd=\'git diff\'\n  alias gds=\'git diff --staged\'\n  alias gl=\'git log --oneline --graph --decorate -20\'\n  alias gremotes=\'git remote --verbose\'\nfi\n\nif command -v chezmoi >/dev/null 2>&1; then\n  alias cm=\'chezmoi\'\n  alias cmstatus=\'chezmoi status\'\n  alias cmdiff=\'chezmoi diff\'\n  alias cmdifftext=\'chezmoi --use-builtin-diff diff --no-pager\'\n  alias cmmerge=\'chezmoi merge\'\n  alias cmverify=\'chezmoi verify\'\n  alias cmdoctor=\'chezmoi doctor\'\nfi\n\nif command -v brew >/dev/null 2>&1; then\n  alias brewcheck=\'brew bundle check --file="$HOME/Brewfile" --no-upgrade\'\n  alias brewout=\'brew outdated --greedy\'\n  alias brewcleanpreview=\'brew cleanup --dry-run\'\n  alias brewautopreview=\'brew autoremove --dry-run\'\nfi\n'
   create_directory "$zsh_config_dir"
   if [[ -f "$zsh_path_file" ]] \
      && grep -Fq '# Day One Mac bootstrap PATH — Phase 5 expands and adopts this file.' "$zsh_path_file"; then
@@ -1773,27 +1964,16 @@ phase_05() {
     [[ "$DRY_RUN" == 1 ]] || chmod 600 "$ssh_config"
     ssh_config_created=1
   fi
-  runner_wrapper="$HOME/.local/bin/day-one-mac"
-  # The same reviewed dispatcher is available before Phase 1 through
-  # install-portable-command.sh. Phase 5 adopts that exact file into chezmoi.
-  runner_source="$PROJECT_DIR/scripts/day-one-mac"
-  [[ -r "$runner_source" ]] || { err "portable dispatcher is missing: $runner_source"; return "$EX_GATE"; }
-  runner_content="$(<"$runner_source")"$'\n'
-  if [[ ! -e "$runner_wrapper" ]]; then
-    create_directory "$HOME/.local"
-    create_directory "$HOME/.local/bin"
-    write_text_file "$runner_wrapper" "$runner_content"
-    [[ "$DRY_RUN" == 1 ]] || chmod 700 "$runner_wrapper"
-    runner_created=1
-  elif ! cmp -s "$runner_wrapper" <(printf '%s' "$runner_content"); then
+  # The checksum-verified standalone installer is the sole owner of this
+  # launcher. Keeping it out of chezmoi prevents an old dotfiles source from
+  # downgrading a newly installed runtime during Phase 5.
+  if [[ ! -x "$runner_wrapper" ]]; then
     if [[ "$DRY_RUN" == 1 ]]; then
-      info "would refresh the changed playbook-owned command: $runner_wrapper"
+      info "would require the standalone Day One Mac command at $runner_wrapper"
     else
-      warn "$runner_wrapper differs from the current portable dispatcher."
-      confirm "Back it up and replace it with the reviewed current dispatcher?" || return "$EX_MANUAL"
-      write_text_file "$runner_wrapper" "$runner_content"
-      chmod 700 "$runner_wrapper"
-      runner_created=1
+      err "The standalone Day One Mac command is missing: $runner_wrapper"
+      warn "Reinstall the latest public runtime, then rerun Phase 5."
+      return "$EX_GATE"
     fi
   fi
   legacy_runner="$HOME/.local/bin/fresh-start"
@@ -1813,10 +1993,9 @@ phase_05() {
     zshrc=$'[[ -r "$HOME/.config/zsh/path.zsh" ]] && source "$HOME/.config/zsh/path.zsh"\n\nHISTFILE="$HOME/.zsh_history"\nHISTSIZE=50000\nSAVEHIST=10000\nsetopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_REDUCE_BLANKS HIST_VERIFY\n\nfor completion_dir in /opt/homebrew/share/zsh/site-functions /opt/homebrew/share/zsh-completions; do\n  [[ -d "$completion_dir" ]] || continue\n  (( ${fpath[(Ie)$completion_dir]} )) || fpath=("$completion_dir" $fpath)\ndone\nunset completion_dir\nautoload -Uz compinit\ncompinit\n\nif command -v fnm >/dev/null 2>&1; then\n  eval "$(fnm env --use-on-cd --shell zsh)"\nfi\n\n[[ -r "$HOME/.config/zsh/aliases.zsh" ]] && source "$HOME/.config/zsh/aliases.zsh"\n\nif [[ -r /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then\n  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh\nfi\n\nif command -v starship >/dev/null 2>&1; then\n  eval "$(starship init zsh)"\nfi\n\n# Syntax highlighting must be the final shell integration.\nif [[ -r /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then\n  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh\nfi\n'
     [[ -e "$HOME/.zprofile" ]] || write_text_file "$HOME/.zprofile" "$zprofile"
     [[ -e "$HOME/.zshrc" ]] || write_text_file "$HOME/.zshrc" "$zshrc"
-    [[ "$DRY_RUN" == 1 ]] || run chezmoi add "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" "$global_ignore" "$HOME/.ssh/config" "$starship_config" "$zsh_path_file" "$zsh_aliases_file" "$runner_wrapper"
+    [[ "$DRY_RUN" == 1 ]] || run chezmoi add "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" "$global_ignore" "$HOME/.ssh/config" "$starship_config" "$zsh_path_file" "$zsh_aliases_file"
   elif [[ "$DRY_RUN" != 1 ]]; then
     [[ "$starship_created" == 1 ]] && run chezmoi add "$starship_config"
-    [[ "$runner_created" == 1 ]] && run chezmoi add "$runner_wrapper"
     [[ "$legacy_runner_updated" == 1 ]] && run chezmoi add "$legacy_runner"
     [[ "$ssh_config_created" == 1 ]] && run chezmoi add "$ssh_config"
     chezmoi source-path "$global_ignore" >/dev/null 2>&1 || run chezmoi add "$global_ignore"
@@ -1846,7 +2025,7 @@ phase_05() {
     return "$EX_MANUAL"
   }
   chezmoi doctor >/dev/null
-  for managed_target in "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" "$global_ignore" "$HOME/.ssh/config" "$starship_config" "$zsh_path_file" "$zsh_aliases_file" "$runner_wrapper"; do
+  for managed_target in "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" "$global_ignore" "$HOME/.ssh/config" "$starship_config" "$zsh_path_file" "$zsh_aliases_file"; do
     chezmoi source-path "$managed_target" >/dev/null 2>&1 || {
       err "$managed_target is not managed by chezmoi."; return "$EX_MANUAL"; }
   done
@@ -1866,6 +2045,9 @@ phase_05() {
     warn "Review only the listed paths; do not recursively chmod /opt/homebrew or HOME."
     return "$EX_MANUAL"
   fi
+  # Keep the gate compatible with sources created before cmdifftext/cmmerge
+  # were added. Those convenience aliases are in the current baseline, but a
+  # visual-tool upgrade must not force-edit a user's versioned alias file.
   clean_shell_check='command -v brew git ghq chezmoi starship day-one-mac >/dev/null; [[ "$(command -v zsh)" == /opt/homebrew/bin/zsh ]]; alias cdayone gs gd gds gl gremotes cm cmstatus cmdiff cmverify cmdoctor brewcheck brewout brewcleanpreview brewautopreview >/dev/null; [[ ":$PATH:" == *":$HOME/.local/bin:"* ]]'
   uses_node && clean_shell_check+='; [[ "$PNPM_HOME" == "$HOME/Library/pnpm" && ":$PATH:" == *":$PNPM_HOME:"* ]]'
   env -i HOME="$HOME" USER="$(id -un)" LOGNAME="$(id -un)" TERM="${TERM:-xterm-256color}" PATH='/usr/bin:/bin:/usr/sbin:/sbin' SHELL="$homebrew_zsh" \

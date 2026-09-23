@@ -65,11 +65,22 @@ active target in your home folder.
 ### 3. Preview exactly what will change
 
 ```bash
-chezmoi diff --no-pager "$HOME/.zshrc"
+chezmoi diff "$HOME/.zshrc"
 ```
 
-In the diff, `-` lines are removed from the active target and `+` lines are
-added by the source. Stop if the preview removes configuration you still need.
+VS Code opens one comparison for each changed target. The left side is the
+file currently on the Mac and the right side is the rendered state chezmoi
+would apply. Close the comparison tab when you finish reviewing it; `--wait`
+keeps the Terminal command active until the review window closes.
+
+For a plain unified diff in Terminal, bypass the configured graphical tool:
+
+```bash
+chezmoi --use-builtin-diff diff --no-pager "$HOME/.zshrc"
+```
+
+In that output, `-` lines are removed from the active target and `+` lines are
+added by the source. `--no-pager` alone does not disable the VS Code diff tool.
 
 ### 4. Apply only the reviewed file
 
@@ -131,7 +142,7 @@ Sometimes an application or installer changes `~/.zprofile` or `~/.zshrc`
 directly. Review both copies before adopting it:
 
 ```bash
-chezmoi diff --no-pager "$HOME/.zshrc"
+chezmoi diff "$HOME/.zshrc"
 chezmoi cat "$HOME/.zshrc"
 ```
 
@@ -150,9 +161,14 @@ If both copies contain valuable differences, use:
 
 ```bash
 chezmoi merge "$HOME/.zshrc"
-chezmoi diff --no-pager "$HOME/.zshrc"
+chezmoi diff "$HOME/.zshrc"
 chezmoi apply "$HOME/.zshrc"
 ```
+
+VS Code's merge editor shows the live destination, rendered target, base copy,
+and chezmoi source. Accept only the parts you understand, save the merge result,
+close the window, and rerun `chezmoi diff` before applying. The merge command
+does not grant permission to apply unrelated files.
 
 ## Receiving a change on another Mac
 
@@ -161,7 +177,7 @@ Pull the private source repository without immediately applying every target:
 ```bash
 DOTFILES_SOURCE="$(chezmoi source-path)"
 git -C "$DOTFILES_SOURCE" pull --ff-only
-chezmoi diff --no-pager
+chezmoi diff
 ```
 
 Apply reviewed targets individually, then verify Phase 5:
@@ -180,7 +196,8 @@ day-one-mac setup --phase 05
 | The source is correct and the active target is stale | `chezmoi apply TARGET` |
 | The active target has the reviewed change you want to preserve | `chezmoi add TARGET`, then inspect the source diff |
 | Both source and target contain changes you need | `chezmoi merge TARGET`, preview, then apply |
-| You only want to inspect | `chezmoi diff --no-pager TARGET` and `chezmoi cat TARGET` |
+| You want a visual inspection | `chezmoi diff TARGET` and `chezmoi cat TARGET` |
+| You need diff text in Terminal or automation | `chezmoi --use-builtin-diff diff --no-pager TARGET` |
 
 Templates require extra care because their source contains template logic, not
 only rendered text. Prefer `chezmoi edit TARGET`; do not replace a template by
@@ -192,6 +209,9 @@ Before accepting a surprising change, stop and copy the diff into a private
 note. Git-versioned sources can restore a reviewed source file with a normal
 Git revert. The applied target can then be regenerated with `chezmoi apply`.
 Never use destructive Git reset commands as a troubleshooting shortcut.
+
+Official references: [chezmoi diff tools](https://www.chezmoi.io/user-guide/tools/diff/)
+and [chezmoi merge tools](https://www.chezmoi.io/user-guide/tools/merge/).
 
 ---
 

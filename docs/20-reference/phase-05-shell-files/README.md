@@ -69,7 +69,7 @@ changing anything.
 Compare the chezmoi source with its applied targets too:
 
 ```bash
-chezmoi diff --no-pager
+chezmoi diff
 chezmoi status
 ```
 
@@ -80,7 +80,7 @@ applied file:
 
 ```bash
 chezmoi edit "$HOME/.zshrc"
-chezmoi diff --no-pager "$HOME/.zshrc"
+chezmoi diff "$HOME/.zshrc"
 chezmoi apply "$HOME/.zshrc"
 ```
 

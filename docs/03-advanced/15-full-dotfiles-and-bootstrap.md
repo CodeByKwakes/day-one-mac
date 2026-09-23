@@ -17,7 +17,7 @@ day-one-mac --status
 chezmoi doctor
 chezmoi source-path
 chezmoi managed | LC_ALL=C sort
-chezmoi diff --no-pager
+chezmoi diff
 ```
 
 Resolve an unexplained diff before adding more files. Record the current source
@@ -134,7 +134,7 @@ Add and inspect:
 ```bash
 chezmoi source-path "$HOME/.gitignore_global"
 chezmoi add "$HOME/.config/pnpm/rc"
-chezmoi diff --no-pager
+chezmoi diff
 ```
 
 ## Step 15.5 — Manage templates without embedding secrets
@@ -144,7 +144,7 @@ Render a proposed target before applying it:
 ```bash
 chezmoi execute-template < "$(chezmoi source-path "$HOME/.gitconfig")"
 chezmoi cat "$HOME/.gitconfig"
-chezmoi diff --no-pager
+chezmoi diff
 ```
 
 For a 1Password-backed value, prefer a runtime reference or a narrowly scoped
@@ -188,7 +188,7 @@ Preview hook execution before applying:
 
 ```bash
 chezmoi state dump
-chezmoi diff --no-pager
+chezmoi diff
 chezmoi apply --dry-run --verbose
 ```
 
@@ -211,7 +211,7 @@ Then:
 ```bash
 chmod 700 "$HOME/.local/bin/example-helper"
 chezmoi add "$HOME/.local/bin/example-helper"
-chezmoi diff --no-pager
+chezmoi diff
 ```
 
 A helper that removes data must default to preview, resolve exact targets, and
@@ -240,7 +240,7 @@ Validate source-to-target behaviour:
 ```bash
 chezmoi doctor
 chezmoi verify
-chezmoi diff --no-pager
+chezmoi diff
 git status --short
 ```
 
@@ -253,7 +253,7 @@ apply only named targets. Do not restore a whole old home-directory snapshot.
 cd "$(chezmoi source-path)"
 git log --oneline -10
 git revert <reviewed-commit>
-chezmoi diff --no-pager
+chezmoi diff
 chezmoi apply <reviewed-target>
 ```
 

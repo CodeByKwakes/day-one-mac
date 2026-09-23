@@ -12,7 +12,10 @@ trap 'rm -rf "$temporary"' EXIT HUP INT TERM
 mkdir -p "$temporary/day-one-mac" "$OUTPUT_DIR"
 
 ditto "$PROJECT_ROOT" "$temporary/day-one-mac"
-rm -rf "$temporary/day-one-mac/.git" +       "$temporary/day-one-mac/.github" +       "$temporary/day-one-mac/dist"
+rm -rf \
+  "$temporary/day-one-mac/.git" \
+  "$temporary/day-one-mac/.github" \
+  "$temporary/day-one-mac/dist"
 
 (
   cd "$temporary/day-one-mac"

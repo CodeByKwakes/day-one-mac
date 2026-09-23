@@ -82,7 +82,6 @@ The existing source must ultimately manage:
 ~/.gitconfig
 ~/.ssh/config
 ~/.config/starship.toml
-~/.local/bin/day-one-mac
 ```
 
 If one is missing, the phase reports the exact target instead of silently
@@ -238,7 +237,9 @@ The base contains only readable, non-destructive shortcuts:
 cdayone                 cd "$(day-one-mac root)"
 gs / gd / gds / gl      Git status, diffs, and a short graph
 gremotes                Git remote URLs
-cm / cmstatus / cmdiff  chezmoi and its read-only inspections
+cm / cmstatus           chezmoi and its status inspection
+cmdiff / cmdifftext     visual VS Code diff / terminal text diff
+cmmerge                 VS Code three-way merge for one target
 cmverify / cmdoctor     chezmoi verification
 brewcheck / brewout     Homebrew inspection
 brewcleanpreview        cleanup preview only
@@ -304,12 +305,25 @@ failure case; fix the named line in `starship.toml` and run it again.
 
 ## Step 5.5 — Store machine-local data
 
-When absent, the runner creates `~/.config/chezmoi/chezmoi.toml`:
+When absent, the runner creates `~/.config/chezmoi/chezmoi.toml`. The editor,
+diff, and merge sections below are included only when VS Code is the selected
+primary editor:
 
 ```toml
 [edit]
 command = "code"
 args = ["--wait"]
+
+[diff]
+command = "code"
+args = ["--wait", "--diff"]
+
+[merge]
+command = "bash"
+args = [
+  "-c",
+  "cp {{ .Target | quote }} {{ printf \"%s.base\" .Target | quote }} && code --new-window --wait --merge {{ .Destination | quote }} {{ .Target | quote }} {{ printf \"%s.base\" .Target | quote }} {{ .Source | quote }}",
+]
 
 [data]
 track = "github" # github, github+azure, or azure
@@ -319,7 +333,20 @@ email = "you@example.com"
 ```
 
 The actual values come from Phase 1. This file stays on the machine and is not
-added to the dotfiles repository. A pre-existing file is never overwritten.
+added to the dotfiles repository. When VS Code is the selected primary editor,
+the runner offers to add missing `diff` and `merge` sections to an existing
+file. Existing custom tool sections are preserved, and the setup manifest keeps
+the original before any accepted edit.
+
+`chezmoi diff` now opens VS Code and waits until its comparison tabs close.
+Use the built-in terminal renderer when you need text output in a log or script:
+
+```bash
+chezmoi --use-builtin-diff diff --no-pager
+```
+
+Phase 5 always uses that built-in form internally, so a graphical tool can
+never stall its drift gate or make an empty stdout look like a clean source.
 
 ## Step 5.5a — Switch to the Homebrew zsh 🔴
 
@@ -374,12 +401,21 @@ chsh -s /bin/zsh
 
 The previous shell is also recorded at `~/.day-one-mac/previous-login-shell`.
 
-## Step 5.6 — Install the portable day-one-mac command
+## Step 5.6 — Verify the standalone day-one-mac command
 
 The recommended start guide installs `~/.local/bin/day-one-mac` before Phase 1.
-If it is absent, Phase 5 installs it. In either case Phase 5 compares it with
-the tracked dispatcher, refreshes a changed file only after review, and adds
-the final file to chezmoi. See the [early installer and download guide](../20-reference/PORTABLE-COMMAND.md).
+The checksum-verified runtime installer remains the sole owner of this file;
+Phase 5 verifies it but never adds it to chezmoi. This boundary allows
+`day-one-mac update` to switch versions without an older dotfiles source
+restoring an obsolete launcher. See the
+[early installer and download guide](../20-reference/PORTABLE-COMMAND.md).
+
+When Phase 5 detects a launcher managed by an older Day One Mac installation,
+it backs up that source entry below
+`~/.day-one-mac/migrations/phase-05-standalone-launcher/`, runs
+`chezmoi forget ~/.local/bin/day-one-mac`, and confirms the live executable was
+preserved. It also merges only the reviewed Phase 4 Git keys into a plain
+legacy `dot_gitconfig`; a templated Git source stops for a manual review.
 
 The command reads one machine-local value:
 
@@ -444,17 +480,17 @@ For a new source, the equivalent manual commands are:
 ```bash
 chezmoi add ~/.zprofile ~/.zshrc ~/.gitconfig ~/.gitignore_global ~/.ssh/config \
   ~/.config/zsh/path.zsh ~/.config/zsh/aliases.zsh \
-  ~/.config/starship.toml ~/.local/bin/day-one-mac
+  ~/.config/starship.toml
 
 chezmoi managed
-chezmoi diff --no-pager
+chezmoi diff
 ```
 
 An empty diff means source and targets agree. To make a later change safely:
 
 ```bash
 chezmoi edit ~/.zshrc
-chezmoi diff --no-pager
+chezmoi diff
 chezmoi apply ~/.zshrc
 ```
 
@@ -470,7 +506,7 @@ Use these commands to compare a target with its chezmoi source:
 ```bash
 chezmoi source-path "$HOME/.zshrc"
 chezmoi cat "$HOME/.zshrc"
-chezmoi diff --no-pager
+chezmoi diff
 ```
 
 Typical source names are:
@@ -485,7 +521,6 @@ Typical source names are:
 | `~/.gitignore_global` | `dot_gitignore_global` |
 | `~/.ssh/config` | `dot_ssh/config` |
 | `~/.config/starship.toml` | `dot_config/starship.toml` |
-| `~/.local/bin/day-one-mac` | `dot_local/bin/executable_day-one-mac` |
 
 chezmoi may use a different encoded name when attributes or templates are
 involved. Trust `chezmoi source-path TARGET` rather than guessing a filename.
@@ -598,7 +633,9 @@ fi
 if command -v chezmoi >/dev/null 2>&1; then
   alias cm='chezmoi'
   alias cmstatus='chezmoi status'
-  alias cmdiff='chezmoi diff --no-pager'
+  alias cmdiff='chezmoi diff'
+  alias cmdifftext='chezmoi --use-builtin-diff diff --no-pager'
+  alias cmmerge='chezmoi merge'
   alias cmverify='chezmoi verify'
   alias cmdoctor='chezmoi doctor'
 fi
@@ -730,6 +767,17 @@ This file stores per-Mac values and therefore stays outside the chezmoi source:
 command = "code"
 args = ["--wait"]
 
+[diff]
+command = "code"
+args = ["--wait", "--diff"]
+
+[merge]
+command = "bash"
+args = [
+  "-c",
+  "cp {{ .Target | quote }} {{ printf \"%s.base\" .Target | quote }} && code --new-window --wait --merge {{ .Destination | quote }} {{ .Target | quote }} {{ printf \"%s.base\" .Target | quote }} {{ .Source | quote }}",
+]
+
 [data]
 track = "github"
 stack = "both"
@@ -742,18 +790,18 @@ email = "you@example.com"
 
 ### `~/.local/bin/day-one-mac`
 
-This is an executable dispatcher, not a hand-edited configuration file. It
-must match the tracked project copy and remain executable:
+This is an executable dispatcher, not a hand-edited configuration file. It is
+installed outside chezmoi and must resolve the verified active runtime:
 
 ```bash
-cmp -s "$(day-one-mac root)/scripts/day-one-mac" "$HOME/.local/bin/day-one-mac"
 printf 'mode: %s\n' "$(stat -f '%Lp' "$HOME/.local/bin/day-one-mac")"
+day-one-mac runtime-status
 day-one-mac root
 ```
 
-Expected mode is `700`. If the comparison fails, review both files, run
-`day-one-mac update`, verify `day-one-mac runtime-status`, and then rerun Phase
-5. Linked-mode contributors may reinstall from their trusted source checkout.
+Expected mode is `700`, and runtime integrity must be `verified`. If either
+check fails, run `day-one-mac update`, verify `day-one-mac runtime-status`, and
+then rerun Phase 5. Do not add the launcher back to chezmoi.
 
 ## Never add these to chezmoi
 
@@ -827,7 +875,7 @@ day-one-mac root
 chezmoi doctor
 chezmoi source-path
 chezmoi managed
-chezmoi diff --no-pager
+chezmoi --use-builtin-diff diff --no-pager
 printf 'PNPM_HOME=%s\n' "${PNPM_HOME:-not-set}"
 day-one-mac shell-status
 ```
@@ -874,7 +922,7 @@ rerun the phase. For example:
 ```bash
 chezmoi edit "$HOME/.zshrc"
 /opt/homebrew/bin/zsh -n "$(chezmoi source-path "$HOME/.zshrc")"
-chezmoi diff --no-pager
+chezmoi diff
 chezmoi apply "$HOME/.zshrc"
 exec /opt/homebrew/bin/zsh -l
 day-one-mac setup --phase 05
@@ -918,6 +966,7 @@ only when the intended outcome is to undo broader setup work.
 |---|---|
 | `chezmoi source-path` fails | Run `chezmoi init`, then rerun Phase 5 |
 | An existing source produces a large diff | Stop, inspect each change, and apply individual targets first |
+| An older source tries to replace `~/.local/bin/day-one-mac` | Decline the apply. Update to the current runtime and rerun Phase 5; it backs up and forgets the legacy source entry without deleting the live command |
 | `day-one-mac` is missing | Confirm `~/.config/zsh/path.zsh` adds `~/.local/bin`, confirm both startup files source it, and open a new shell |
 | `day-one-mac root` names a removed checkout | Install the latest public runtime again and verify it with `day-one-mac runtime-status`; linked-mode contributors should reinstall from the intended source checkout |
 | Starship is installed but no prompt appears | Confirm `.zshrc` contains exactly one `starship init zsh` block and open a new shell |
@@ -925,14 +974,16 @@ only when the intended outcome is to undo broader setup work.
 | pnpm reports its global bin is not on PATH | Confirm `~/.config/zsh/path.zsh`, run `exec /opt/homebrew/bin/zsh -l`, and print `$PNPM_HOME` |
 | Phase 5 reports a `.zshenv` conflict | Review `ZDOTDIR` or `unsetopt RCS` in that file; do not delete unrelated settings blindly |
 | An alias is missing | Run `day-one-mac shell-status`, confirm `.zshrc` sources `~/.config/zsh/aliases.zsh`, then open a new shell |
+| `chezmoi diff` opens VS Code when terminal output was expected | Use `chezmoi --use-builtin-diff diff --no-pager`; `--no-pager` alone does not bypass a configured graphical tool |
 | `chezmoi diff` asks 1Password for an unknown secret | Remove or correct that template reference before applying |
 
 ## Phase 5 completion checklist 🚦
 
 - [ ] `chezmoi source-path` returns a real directory.
-- [ ] All eight required targets, including both `~/.config/zsh` files and `~/.local/bin/day-one-mac`, are managed.
+- [ ] The eight configuration targets, including both `~/.config/zsh` files, are managed.
+- [ ] `~/.local/bin/day-one-mac` is executable and is not managed by chezmoi.
 - [ ] The machine-local config contains the correct track, stack, name, and email.
-- [ ] `chezmoi diff --no-pager` is empty or every change is understood.
+- [ ] `chezmoi diff` is empty or every VS Code comparison is understood.
 - [ ] Starship renders without a configuration error.
 - [ ] A new login shell finds Homebrew, Git, chezmoi, and Starship.
 - [ ] Directory Services reports `/opt/homebrew/bin/zsh` as the login shell.
@@ -942,8 +993,10 @@ only when the intended outcome is to undo broader setup work.
 - [ ] Node selections expose `PNPM_HOME` on PATH.
 - [ ] The source contains no tokens, private keys, or provider credential files.
 
-References: [chezmoi quick start](https://www.chezmoi.io/quick-start/) and
-[Starship setup](https://starship.rs/guide/).
+References: [chezmoi quick start](https://www.chezmoi.io/quick-start/),
+[VS Code diff configuration](https://www.chezmoi.io/user-guide/tools/diff/),
+[VS Code merge configuration](https://www.chezmoi.io/user-guide/tools/merge/),
+and [Starship setup](https://starship.rs/guide/).
 
 ---
 

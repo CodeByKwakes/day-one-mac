@@ -44,7 +44,7 @@ status() {
 }
 
 rollback_runtime() {
-  local execute=0 requested='' candidate='' current=''
+  local execute=0 requested='' candidate='' current='' next='' expected='' actual=''
   while (( $# )); do
     case "$1" in
       --version) requested="${2:?--version requires a value}"; shift 2 ;;
@@ -73,7 +73,20 @@ rollback_runtime() {
     printf 'Preview only. Rerun with --execute to switch versions.\n'; return 0; }
   next="$RUNTIME_HOME/.current-$$"
   ln -s "releases/$(basename "$candidate")" "$next"
-  mv -f "$next" "$CURRENT_LINK"
+  if [[ -e "$CURRENT_LINK" && ! -L "$CURRENT_LINK" ]]; then
+    rm -f "$next"
+    printf 'Refusing to replace a non-symlink runtime path: %s\n' "$CURRENT_LINK" >&2
+    return 1
+  fi
+  [[ ! -L "$CURRENT_LINK" ]] || rm -f "$CURRENT_LINK"
+  mv "$next" "$CURRENT_LINK"
+  expected="$(cd -P "$candidate" && pwd)"
+  actual="$(cd -P "$CURRENT_LINK" && pwd)"
+  [[ "$actual" == "$expected" ]] || {
+    printf 'Runtime rollback activation verification failed.\n' >&2
+    printf '  Expected: %s\n  Actual:   %s\n' "$expected" "$actual" >&2
+    return 1
+  }
   install -m 700 "$CURRENT_LINK/scripts/day-one-mac" "$COMMAND"
   printf '%s\n' "$CURRENT_LINK" > "$STATE_ROOT/runtime-root"
   printf '✓ Runtime switched to %s\n' "$(basename "$candidate")"

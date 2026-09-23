@@ -118,7 +118,11 @@ grep -Fq 'PNPM_HOME' "$home/.config/zsh/path.zsh" || fail_test 'path.zsh no long
 grep -Fq 'PNPM_HOME' "$home/.zprofile" && fail_test '.zprofile must not duplicate PNPM_HOME'
 grep -Fq 'PNPM_HOME' "$home/.zshrc" && fail_test '.zshrc must not duplicate PNPM_HOME'
 alias_count="$(PATH="$home/.local/bin:$prefix/bin:$PATH" /bin/zsh -fc 'source "$1"; alias cdayone gs gd gds gl gremotes cm cmstatus cmdiff cmverify cmdoctor brewcheck brewout brewcleanpreview brewautopreview' _ "$home/.config/zsh/aliases.zsh" 2>/dev/null | awk 'NF { count++ } END { print count + 0 }')"
-[[ "$alias_count" == 15 ]] || fail_test "only $alias_count of 15 safe aliases load in zsh"
+[[ "$alias_count" == 15 ]] || fail_test "only $alias_count of 15 required safe aliases load in zsh"
+grep -Fq "alias cmdifftext='chezmoi --use-builtin-diff diff --no-pager'" "$home/.config/zsh/aliases.zsh" \
+  || fail_test 'the current baseline is missing the terminal chezmoi diff alias'
+grep -Fq "alias cmmerge='chezmoi merge'" "$home/.config/zsh/aliases.zsh" \
+  || fail_test 'the current baseline is missing the chezmoi merge alias'
 
 # ---------------------------------------------------------------------------
 # The login-shell switch must never leave an unusable shell behind.

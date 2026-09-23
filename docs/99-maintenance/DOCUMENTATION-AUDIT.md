@@ -6,6 +6,24 @@ documents ask users to run
 **Audience tested:** first-time Terminal user, junior developer, experienced
 developer, and developer using a company-managed Mac
 
+## Follow-up audit — standalone runtime and legacy chezmoi ownership
+
+**Review date:** 24 September 2026
+
+Older installations managed `~/.local/bin/day-one-mac` in chezmoi. After the
+standalone runtime was introduced, that old source could attempt to replace a
+new launcher during Phase 5. Phase 5 now backs up and forgets only the legacy
+source entry while preserving the executable. Plain legacy `.gitconfig`
+sources receive only the reviewed Phase 4 Git keys; templates stop for a
+manual merge instead of being overwritten.
+
+The runtime updater also previously used a plain `mv -f` to replace `current`.
+On macOS, the destination symlink to a directory could be followed, leaving
+the old release active despite a success message. Installation and rollback
+now replace the symlink itself, verify its resolved directory, verify the
+reported version and packaged checksums, and fail before reporting success if
+any check differs.
+
 ## Executive summary
 
 The documentation is structurally sound and safety-conscious. The final

@@ -44,7 +44,8 @@ The installer:
 2. Downloads its SHA-256 file separately.
 3. Refuses to extract the archive when verification fails.
 4. Installs it under `~/.local/share/day-one-mac/releases/<version>`.
-5. Switches the `current` link only after the new runtime is ready.
+5. Replaces the `current` link itself only after the new runtime is ready, then
+   verifies that it resolves to the requested version.
 6. Installs `~/.local/bin/day-one-mac`.
 7. Records `~/.day-one-mac/runtime-root`.
 8. Leaves earlier releases available for reviewed rollback.
@@ -134,7 +135,10 @@ day-one-mac validate
 ```
 
 An update installs a new version beside the existing version. It does not
-overwrite the previous release in place.
+overwrite the previous release in place. The command fails rather than reports
+success if `current` does not resolve to the downloaded version. Phase 5 keeps
+the launcher out of chezmoi so an older dotfiles source cannot reverse the
+switch.
 
 ## Roll back the runtime
 

@@ -84,7 +84,9 @@ alias brewautopreview='brew autoremove --dry-run'
 # chezmoi
 alias cm='chezmoi'
 alias cmstatus='chezmoi status'
-alias cmdiff='chezmoi diff --no-pager'
+alias cmdiff='chezmoi diff'
+alias cmdifftext='chezmoi --use-builtin-diff diff --no-pager'
+alias cmmerge='chezmoi merge'
 alias cmverify='chezmoi verify'
 alias cmdoctor='chezmoi doctor'
 
@@ -235,7 +237,7 @@ migration. A local commit without a remote is not a backup.
 ## Step 17.9 — Apply and remeasure
 
 ```bash
-chezmoi diff --no-pager
+chezmoi diff
 chezmoi apply "$HOME/.config/zsh/aliases.zsh"
 exec /opt/homebrew/bin/zsh -l
 for run in 1 2 3 4 5; do /usr/bin/time zsh -lic exit; done
