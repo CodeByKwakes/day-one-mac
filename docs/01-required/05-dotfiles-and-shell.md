@@ -406,16 +406,18 @@ The previous shell is also recorded at `~/.day-one-mac/previous-login-shell`.
 The recommended start guide installs `~/.local/bin/day-one-mac` before Phase 1.
 The checksum-verified runtime installer remains the sole owner of this file;
 Phase 5 verifies it but never adds it to chezmoi. This boundary allows
-`day-one-mac update` to switch versions without an older dotfiles source
-restoring an obsolete launcher. See the
+`day-one-mac update` to switch versions without a dotfiles apply restoring a
+launcher from an earlier installation. See the
 [early installer and download guide](../20-reference/PORTABLE-COMMAND.md).
 
-When Phase 5 detects a launcher managed by an older Day One Mac installation,
+When Phase 5 detects a launcher managed by an earlier Day One Mac installation,
 it backs up that source entry below
 `~/.day-one-mac/migrations/phase-05-standalone-launcher/`, runs
 `chezmoi forget ~/.local/bin/day-one-mac`, and confirms the live executable was
 preserved. It also merges only the reviewed Phase 4 Git keys into a plain
-legacy `dot_gitconfig`; a templated Git source stops for a manual review.
+earlier `dot_gitconfig`; a templated Git source stops for a manual review. The
+exact compatibility names are isolated in
+[Upgrade notes](../20-reference/UPGRADE-NOTES.md).
 
 The command reads one machine-local value:
 
@@ -966,7 +968,7 @@ only when the intended outcome is to undo broader setup work.
 |---|---|
 | `chezmoi source-path` fails | Run `chezmoi init`, then rerun Phase 5 |
 | An existing source produces a large diff | Stop, inspect each change, and apply individual targets first |
-| An older source tries to replace `~/.local/bin/day-one-mac` | Decline the apply. Update to the current runtime and rerun Phase 5; it backs up and forgets the legacy source entry without deleting the live command |
+| An earlier source tries to replace `~/.local/bin/day-one-mac` | Decline the apply. Update to the current runtime and rerun Phase 5; it backs up and forgets that source entry without deleting the live command |
 | `day-one-mac` is missing | Confirm `~/.config/zsh/path.zsh` adds `~/.local/bin`, confirm both startup files source it, and open a new shell |
 | `day-one-mac root` names a removed checkout | Install the latest public runtime again and verify it with `day-one-mac runtime-status`; linked-mode contributors should reinstall from the intended source checkout |
 | Starship is installed but no prompt appears | Confirm `.zshrc` contains exactly one `starship init zsh` block and open a new shell |

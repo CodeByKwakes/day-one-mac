@@ -22,9 +22,9 @@ Replace these examples with the repository you are authorised to use:
 | Placeholder | Meaning | Example |
 |---|---|---|
 | `<github-owner>` | Personal account or organisation that owns the repository | `example-user` |
-| `<repository>` | Repository name without `.git` | `mac-setup` |
+| `<repository>` | Repository name without `.git` | `dotfiles` |
 | `<device-name>` | Short label that identifies this Mac | `personal-macbook` |
-| `<checkout>` | Final local checkout path | `~/Developer/github.com/example-user/mac-setup` |
+| `<checkout>` | Final local checkout path | `~/Developer/github.com/example-user/dotfiles` |
 
 For this repository, use the owner and repository shown in its GitHub URL.
 Do not copy the example names literally.

@@ -151,7 +151,7 @@ The required setup produces or manages the following structure. Entries marked
 │   │       └── SHA256SUMS.txt
 │   ├── wizard-selections.md              reviewed wizard plan
 │   ├── runtime-root
-│   ├── project-root                      legacy/linked-development compatibility only
+│   ├── project-root                      linked-development compatibility only
 │   ├── track
 │   ├── track-schema-version
 │   ├── stack

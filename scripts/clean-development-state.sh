@@ -923,7 +923,7 @@ write_archive_checksums() {
   if [[ -s "$ARCHIVE_DIR/SHA256SUMS.txt" && ! -s "$ARCHIVE_DIR/SNAPSHOT-COMPLETE" ]]; then
     mv "$ARCHIVE_DIR/SHA256SUMS.txt" "$interrupted_file"
     rm -f "$partial_file" "$list_file" "$ARCHIVE_DIR/.checksum-files.nul.sha256" "$completed_file"
-    info 'found an interrupted legacy checksum pass; the copied data will be reused and rehashed in batches'
+    info 'found an interrupted earlier checksum pass; the copied data will be reused and rehashed in batches'
   fi
 
   prepare_checksum_file_list || return 1

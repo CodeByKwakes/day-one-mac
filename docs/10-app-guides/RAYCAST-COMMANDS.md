@@ -76,7 +76,7 @@ Applying requires the portable dispatcher installed by the early command
 installer. This prevents generated commands from depending on a personal clone
 path.
 
-If an older Day One installation reports that `raycast` is an unknown command,
+If `day-one-mac raycast` is reported as an unknown command,
 update the standalone runtime and verify it:
 
 ```bash

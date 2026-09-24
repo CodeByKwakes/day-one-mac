@@ -436,19 +436,19 @@ Choose one durable outcome:
 Do not use `_Projectless` as a permanent backup. Include `~/Developer` in an
 encrypted backup and follow employer policy for work content.
 
-## Existing legacy layout
+## Existing task folders from another layout
 
-Older Day One versions used:
+You may already have task folders named:
 
 ```text
 00_Inbox/  01_Active/  02_Experiments/  03_Generated/  99_Archive/
 ```
 
-The manager detects those folders but never moves them automatically. Moving a
+The manager detects these folders but never moves them automatically. Moving a
 live task can break client histories, saved permissions, terminal directories,
 and editor state. Finish or close every associated client first, then either:
 
-- leave the legacy task where it is and adopt a `TASK.md`; or
+- leave the existing task where it is and adopt a `TASK.md`; or
 - create a new stable task and copy only the reviewed inputs and outputs.
 
 ## Verification checklist 🚦

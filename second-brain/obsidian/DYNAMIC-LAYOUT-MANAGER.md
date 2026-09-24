@@ -275,7 +275,7 @@ second-brain-report --write
 The written aggregate report is stored outside the vaults under local state,
 so a multi-vault report does not leak one vault's counts into another.
 
-## Compatibility commands
+## Preset shortcuts
 
 The previous commands remain available as preset wrappers:
 
@@ -293,11 +293,13 @@ older notes or automation.
 
 Current control files use the concise `second-brain` namespace under
 `~/.config`, `~/.local/share`, and `~/.local/state`. If an earlier installation
-has a readable `~/.config/fresh-start-second-brain/layout.tsv`, the manager and
+has a readable layout manifest in the retired namespace, the manager and
 launchers can still read it. The next confirmed layout apply writes the current
-namespace and moves known legacy control files into the recoverable backup.
-Vault notes are not moved by this namespace migration. After migration, update
-Raycast's Script Directory to `~/.local/share/second-brain/raycast`.
+namespace and moves known compatibility control files into the recoverable
+backup. Vault notes are not moved by this namespace migration. Exact retired
+paths are listed in Day One Mac's `docs/20-reference/UPGRADE-NOTES.md`. After
+migration, update Raycast's Script Directory to
+`~/.local/share/second-brain/raycast`.
 
 ---
 

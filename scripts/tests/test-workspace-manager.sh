@@ -77,7 +77,7 @@ fi
 
 mkdir -p "$DAY_ONE_PROJECTLESS_ROOT/00_Inbox/legacy-task"
 legacy_output="$("$SCRIPT_DIR/workspace-manager.sh" init 2>&1)"
-grep -Fq 'Legacy _Projectless folders were found and left unchanged.' <<<"$legacy_output"
+grep -Fq 'Folders created by an earlier _Projectless layout were found and left unchanged.' <<<"$legacy_output"
 [[ -d "$DAY_ONE_PROJECTLESS_ROOT/00_Inbox/legacy-task" ]]
 
 printf 'workspace manager fixture passed\n'

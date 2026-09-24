@@ -4,9 +4,8 @@
 
 **Guide release 2.3.0.0 · macOS · dynamic vaults, domains, and integrations**
 
-This is a self-contained build for a new personal knowledge system. It does
-not require the older MacBook or second-brain playbooks. Start with the dynamic
-manager so it can ask which physical vaults, domains, folders, privacy
+This is a self-contained build for a new personal knowledge system. Start with
+the dynamic manager so it can ask which physical vaults, domains, folders, privacy
 boundaries, and integrations you need. Then follow the guide for each tool you
 selected to finish its application-specific settings and smoke test.
 
@@ -79,15 +78,15 @@ that independent vaults behave like one Obsidian database.
 | [Checklist](CHECKLIST.md) | A short, verifiable checklist for either route |
 | `assets/vault/` | Starter notes, templates, and Obsidian Base files |
 | `assets/raycast/` | Three Raycast Script Commands and their configuration example |
-| `assets/codex/` | Manual/legacy bounded Codex launcher for the fixed single-vault design |
-| `assets/three-vaults/` | Manual/legacy fixed-layout dashboards, policy files, and launchers |
+| `assets/codex/` | Manual launcher for the fixed single-vault design |
+| `assets/three-vaults/` | Manual dashboards, policy files, and launchers for the fixed layout |
 | `assets/manager/` | Manifest-aware Raycast, Codex, Claude, and reporting commands |
 | `scripts/second-brain-manager.sh` | Dynamic guided setup and the canonical layout manager |
-| `scripts/setup-second-brain.sh` | Compatibility wrapper for the unified preset |
+| `scripts/setup-second-brain.sh` | Shortcut for the unified preset |
 | `scripts/setup-multi-vaults.sh` | Shortcut for the standard separate-vault-per-domain preset |
-| `scripts/setup-three-vaults.sh` | Former command name retained as a compatibility alias |
-| `scripts/vault-health-report.sh` | Legacy per-vault analytics report; writes only with `--write` |
-| `scripts/three-vault-health-report.sh` | Legacy fixed three-vault aggregate report |
+| `scripts/setup-three-vaults.sh` | Shortcut for the fixed three-vault preset |
+| `scripts/vault-health-report.sh` | Per-vault analytics report; writes only with `--write` |
+| `scripts/three-vault-health-report.sh` | Fixed three-vault aggregate report |
 | `scripts/validate.sh` | Validates this project and, optionally, an installed vault |
 
 ## Fastest safe start
@@ -192,9 +191,10 @@ second-brain-report
 Reconfiguration shows a complete replacement plan and manifest diff. Removing
 a domain stops managing it but keeps its notes. Moving or renaming an existing
 domain or vault is blocked until you perform a separate, reviewed migration.
-If a previous version used `~/.config/fresh-start-second-brain`, the current
-manager reads it and migrates known control files on the next confirmed apply;
-vault content stays in place.
+If a previous version used the retired manager namespace, the current manager
+reads it and migrates known control files on the next confirmed apply; vault
+content stays in place. Exact compatibility paths are documented in Day One
+Mac's `docs/20-reference/UPGRADE-NOTES.md`.
 
 Validate the source project and the installed vault:
 

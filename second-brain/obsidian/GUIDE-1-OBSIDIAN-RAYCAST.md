@@ -75,8 +75,8 @@ For the standard one-vault preset:
 ./scripts/setup-second-brain.sh --tools raycast --apply
 ```
 
-The first compatibility command is a preview. The second delegates to the
-manager and applies only the reviewed, managed layout.
+The first command is a preview. The second delegates to the manager and applies
+only the reviewed, managed layout.
 
 ### Manual path
 
@@ -246,8 +246,8 @@ Then:
 2. Choose **Add Script Directory**.
 3. Select `~/.local/share/second-brain/raycast`.
 4. Confirm Raycast discovers **Search Knowledge Vault**, **Capture Knowledge
-   Item**, and **Open Knowledge Vault**. The fixed manual assets retain the
-   older **Second Brain** names.
+   Item**, and **Open Knowledge Vault**. The fixed manual assets use a smaller
+   command set than the dynamic manager.
 5. Configure aliases/hotkeys from each command's action panel.
 6. If macOS asks for Automation permission, grant it to Raycast—the process
    running the command—not to Terminal.

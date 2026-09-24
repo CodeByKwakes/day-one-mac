@@ -88,15 +88,9 @@ updates and rollback.
 | `day-one-mac clean [options]` | `./clean-development-state.sh [options]` | Preview a broad development cleanup or create/resume its recovery archive. This is wider than recorded rollback. |
 | `day-one-mac validate` | `./validate.sh` | Run the complete read-only structural and regression validation suite. |
 
-Compatibility aliases remain available for older instructions:
-
-| Compatibility command | Current command |
-|---|---|
-| `day-one-mac preflight` | `day-one-mac safety-report` |
-| `day-one-mac prepare-reset` | `day-one-mac prepare-existing` |
-| `day-one-mac audit` | `day-one-mac advanced-audit` |
-
-Use the current names in new notes and Warp workflows.
+Use the current names in this reference for new notes and Warp workflows.
+Machines upgraded from a pre-standalone installation can consult
+[Upgrade notes](UPGRADE-NOTES.md) for accepted aliases and state migration.
 
 ## Required setup commands
 

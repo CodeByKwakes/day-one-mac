@@ -154,19 +154,21 @@ entire preferences domain over unrelated application settings.
 After completion or an intentional skip, continue to
 [Phase 2 — Command-line foundation](02-command-line-foundation.md).
 
-## How this replaces the five-year-old web-development guide
+## Current safety and tooling rules
 
-| Former instruction | Day One Mac replacement |
-|---|---|
-| Disable Gatekeeper with `spctl --master-disable` | Removed; keep Gatekeeper enabled and use a reviewed one-app exception only when necessary |
-| Separate Apple-silicon and Intel Homebrew instructions | Apple silicon only, `/opt/homebrew`, verified in Phase 2 |
-| Install another zsh and edit `/etc/shells` | Kept, but automated: Phase 5 installs Homebrew zsh, registers it in `/etc/shells`, and switches your login shell after asking. Shell files are still small and chezmoi-managed |
-| Install Oh My Zsh and clone plugins manually | Starship in the base; optional Homebrew-managed helpers in Module 13 |
-| Install NVM from a dynamically discovered script | Homebrew `fnm` with `eval "$(fnm env --use-on-cd --shell zsh)"` |
-| Generate a local RSA SSH key by default | 1Password SSH agent; Ed25519 is the documented fallback |
-| Install Python with global pip or pyenv | uv-managed Python and project environments |
-| Run PostgreSQL, MySQL, and MongoDB as global Homebrew services | Optional reviewed containers through OrbStack in Module 9 |
-| Globally ignore broad paths such as `.vscode` and package artefacts | Keep the global ignore small; use repository-specific `.gitignore` files |
+- Keep Gatekeeper enabled. Make a reviewed exception for one application only
+  when its trusted publisher and source are known.
+- Support Apple-silicon Macs only; Phase 2 verifies `/opt/homebrew`.
+- Let Phase 5 install and register Homebrew zsh after explicit confirmation.
+- Use Starship for the base prompt. Add Homebrew-managed shell helpers only
+  through optional Module 13.
+- Use Homebrew `fnm` with `eval "$(fnm env --use-on-cd --shell zsh)"` for Node.
+- Prefer the 1Password SSH agent; use a reviewed Ed25519 key only when a local
+  fallback is required.
+- Use uv-managed Python and project environments instead of global packages.
+- Add databases as optional OrbStack containers through Module 9.
+- Keep the global Git ignore small and put framework-specific rules in each
+  repository.
 
 ---
 

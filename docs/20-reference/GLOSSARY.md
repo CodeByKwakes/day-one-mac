@@ -44,7 +44,7 @@ describes an action or a file the user may need to review.
 | **Manifest** | A machine-readable list of items a script installed or changed. Cleanup uses it to avoid guessing ownership. |
 | **Preflight / audit** | A check performed before changes. In Stage 0 it means a read-only safety report; it does not copy, remove, or back up data. |
 | **Provenance** | Evidence showing where an application came from and whether Day One Mac installed it. The application provenance report distinguishes Homebrew from external ownership. |
-| **Safety report** | The required first Stage 0 step for Route A and Route B. It lists current applications, repositories, packages, containers, and configuration locations so backup risks can be reviewed. Older files call it a preflight audit. |
+| **Safety report** | The required first Stage 0 step for Route A and Route B. It lists current applications, repositories, packages, containers, and configuration locations so backup risks can be reviewed. |
 | **Stage 0** | The optional process used before Phase 1 when a Mac still has data or settings: create the safety report, test an encrypted backup, then choose Route A or Route B. |
 | **Route A** | Erase the current accounts, applications, files, settings, and credentials using Apple's Erase All Content and Settings. The Day One script shows the handoff but does not perform the erase. |
 | **Route B** | Keep the current macOS account and non-Homebrew applications while removing the known development setup after a no-change preview and backup gates. Unknown settings can remain. |

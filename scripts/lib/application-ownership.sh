@@ -241,7 +241,7 @@ day_one_app_detect() {
   if [[ "$cask_present" == 1 && "$used_legacy_path" == 1 ]]; then
     DAY_ONE_APP_STATUS=review
     DAY_ONE_APP_SOURCE=review
-    DAY_ONE_APP_REASON="Homebrew records cask '$DAY_ONE_APP_CASK', but its current application is missing while a legacy external application exists at $DAY_ONE_APP_FOUND_PATH."
+    DAY_ONE_APP_REASON="Homebrew records cask '$DAY_ONE_APP_CASK', but its current application is missing while an earlier external application exists at $DAY_ONE_APP_FOUND_PATH."
   elif [[ "$cask_present" == 1 && "$payload_present" == 1 ]]; then
     DAY_ONE_APP_STATUS=ready
     DAY_ONE_APP_SOURCE=homebrew

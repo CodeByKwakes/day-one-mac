@@ -216,7 +216,7 @@ Commit only after the secret review:
 ```bash
 git add --all
 git status --short
-git commit -m "chore: bootstrap fresh mac dotfiles"
+git commit -m "chore: bootstrap day one dotfiles"
 ```
 
 ### Tracks 1 and 3 — GitHub private remote

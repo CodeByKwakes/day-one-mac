@@ -148,8 +148,8 @@ report_legacy_layout() {
     fi
   done
   if [[ "$found" == 1 ]]; then
-    warn "Legacy _Projectless folders were found and left unchanged."
-    warn "Finish live client sessions before adopting or moving any legacy task."
+    warn "Folders created by an earlier _Projectless layout were found and left unchanged."
+    warn "Finish live client sessions before adopting or moving any earlier-layout task."
   fi
 }
 

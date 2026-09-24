@@ -102,7 +102,7 @@ second-brain-report --write
 With the dynamic manager, the aggregate output goes to
 `~/.local/state/second-brain/reports/` so one vault's counts are not
 written into another physical vault. Compare several weekly reports for growth
-and maintenance trends. The standalone legacy report script can still target a
+and maintenance trends. The standalone compatibility report can still target a
 single vault explicitly.
 
 ## Step 4 — Add optional Dataview roll-ups

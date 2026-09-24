@@ -167,8 +167,9 @@ day-one-mac prepare-existing --prepare-backup-folder \
   --backup-volume "/Volumes/Day One Backup"
 ```
 
-The older options `--audit-only` and `--audit` still work, but the clearer
-names `--safety-report` and `--preflight-report` are preferred.
+Use `--safety-report` for a report-only run. Installations created by an earlier
+release can find accepted command aliases in
+[Upgrade notes](../20-reference/UPGRADE-NOTES.md).
 
 To print the saved route, completion gates, and paths without opening the
 interactive menu or changing anything:

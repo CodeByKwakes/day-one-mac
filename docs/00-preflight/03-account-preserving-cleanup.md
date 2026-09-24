@@ -307,10 +307,9 @@ day-one-mac prepare-existing --apply \
   --archive-orbstack-data
 ```
 
-The older `--audit` path option remains supported but is no longer the
-recommended spelling. The older `--archive-container-data` flag also remains
-available as a compatibility alias; it selects both Docker Desktop and
-OrbStack data.
+Use the current flags shown above. Installations created by an earlier release
+can find accepted aliases in
+[Upgrade notes](../20-reference/UPGRADE-NOTES.md).
 
 ## What Route B leaves behind
 

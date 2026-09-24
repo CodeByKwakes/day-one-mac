@@ -300,17 +300,14 @@ Track numbers are schema-versioned. If state created by an earlier draft lacks
 the current schema marker, the runner stops and asks for an explicit `--track`
 instead of silently reinterpreting Track 2 or Track 3.
 
-### Existing installations from before the rename
+### Upgrading an earlier installation
 
-New installations use `day-one-mac`, `~/.day-one-mac`, and the
-`DAY_ONE_MAC_*` environment-variable prefix. If this project was already run
-under its former name, the scripts safely fall back to the existing
-`~/.fresh-mac-setup` state when the new directory is absent. The former
-`FRESH_START_*` variables are also accepted for compatibility. Rerunning
-the early installer installs the new command; Phase 5 removes any legacy
-chezmoi ownership while preserving the command and converts a recognised old
-command into a small compatibility shim. It does
-not duplicate or discard saved progress.
+New installations use only the current `day-one-mac` command and
+`~/.day-one-mac` state directory. Compatibility handling for installations
+created before the standalone runtime is intentionally kept out of the normal
+setup flow. Follow [Upgrade notes](20-reference/UPGRADE-NOTES.md) only when an
+existing Mac reports an earlier command, state location, or chezmoi-owned
+launcher.
 
 Useful portable controls:
 
@@ -461,8 +458,9 @@ versions so later documentation changes appear as review work rather than
 being silently skipped.
 
 The advanced environment report is optional and belongs to Module 21 after the
-base setup. It is different from Stage 0's safety report. The older dispatcher
-word `day-one-mac audit` remains an alias for compatibility.
+base setup. It is different from Stage 0's safety report. Use
+`day-one-mac advanced-audit`; upgrade-only command aliases are listed in
+[Upgrade notes](20-reference/UPGRADE-NOTES.md).
 
 Generate a read-only application report at any time:
 

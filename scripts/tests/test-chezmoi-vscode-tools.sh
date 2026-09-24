@@ -8,6 +8,38 @@ trap 'rm -rf "$TEST_ROOT"' EXIT
 
 fail_test() { printf 'FAIL: %s\n' "$1" >&2; exit 1; }
 
+validate_config_toml() {
+  local file="$1"
+  if command -v python3 >/dev/null 2>&1 \
+     && python3 -c 'import tomllib' >/dev/null 2>&1; then
+    python3 -c 'import sys,tomllib; tomllib.load(open(sys.argv[1], "rb"))' "$file"
+    return
+  fi
+  awk '
+    /^[[:space:]]*($|#)/ { next }
+    in_array {
+      line = $0
+      gsub(/[[:space:]]/, "", line)
+      if (line == "]") in_array = 0
+      next
+    }
+    /^\[[A-Za-z0-9_.-]+\]$/ {
+      if (seen[$0]++) exit 1
+      section = $0
+      next
+    }
+    section != "" && /^[A-Za-z0-9_.-]+[[:space:]]*=[[:space:]]*\[[[:space:]]*$/ {
+      in_array = 1
+      next
+    }
+    section != "" && /^[A-Za-z0-9_.-]+[[:space:]]*=[[:space:]]*.+$/ { next }
+    { exit 1 }
+    END {
+      if (in_array || !seen["[data]"] || !seen["[diff]"] || !seen["[merge]"]) exit 1
+    }
+  ' "$file"
+}
+
 harness="$TEST_ROOT/harness.sh"
 {
   printf '%s\n' \
@@ -39,8 +71,19 @@ grep -Fq '[diff]' "$config" || fail_test 'missing VS Code diff section'
 grep -Fq 'args = ["--wait", "--diff"]' "$config" || fail_test 'missing VS Code diff arguments'
 grep -Fq '[merge]' "$config" || fail_test 'missing VS Code merge section'
 grep -Fq 'code --new-window --wait --merge' "$config" || fail_test 'missing VS Code merge command'
-python3 -c 'import sys,tomllib; tomllib.load(open(sys.argv[1], "rb"))' "$config" \
+
+validate_config_toml "$config" \
   || fail_test 'generated chezmoi configuration is not valid TOML'
+
+# Reproduce an Apple-provided Python without tomllib even when the contributor
+# machine has a modern Python. The same generated file must pass the portable
+# fallback used on a clean Mac.
+old_python_bin="$TEST_ROOT/apple-python-bin"
+mkdir -p "$old_python_bin"
+printf '%s\n' '#!/bin/sh' 'exit 1' > "$old_python_bin/python3"
+chmod +x "$old_python_bin/python3"
+PATH="$old_python_bin:$PATH" validate_config_toml "$config" \
+  || fail_test 'portable TOML validation failed without Python tomllib'
 
 before="$(shasum -a 256 "$config" | awk '{print $1}')"
 PATH="$fake_bin:$PATH" bash -c 'source "$1"; configure_chezmoi_vscode_tools "$2"' _ "$harness" "$config"

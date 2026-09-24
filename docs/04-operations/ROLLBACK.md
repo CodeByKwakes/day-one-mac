@@ -255,7 +255,6 @@ These flags mean:
 | `--archive-projects` | Moves the complete `~/Developer` directory into recovery instead of deleting it |
 | `--archive-docker-data` | Moves known Docker Desktop data into recovery |
 | `--archive-orbstack-data` | Moves known OrbStack data into recovery |
-| `--archive-container-data` | Compatibility alias: selects both Docker Desktop and OrbStack data |
 | `--archive-1password-data` | Moves known local 1Password support data into recovery; writes separate cloud cleanup steps |
 | `--archive-ssh-private-keys` | Detects private-key headers under `~/.ssh` and moves those keys plus matching `.pub` files into recovery |
 | `--prepare-keychain-reset` | Writes Apple's manual default-Keychain reset procedure; it does not modify the Keychain during the script |
@@ -330,14 +329,14 @@ non-Homebrew applications, Apple system preferences, iCloud state, login
 items, privacy grants, and unknown vendor paths remain. The generated
 `settings-scope.md` is the precise record of what this run archived.
 
-The Obsidian Second Brain configuration—including the current `second-brain`
-namespace and its former `fresh-start-second-brain` namespace—and the Notion
-planner's `second-brain-notion` namespace are known development settings.
-Their local plans, launchers, and Raycast Script Commands are archived by this
-broad cleanup. Obsidian knowledge vaults under `~/Vaults` and cloud content in
-Notion remain in place. Back them up and remove them deliberately if that is
-the intended outcome; cleanup never treats knowledge as disposable settings
-and cannot delete a Notion workspace.
+The Obsidian Second Brain and Notion planner configuration namespaces are
+known development settings. Their local plans, launchers, compatibility data,
+and Raycast Script Commands are archived by this broad cleanup. Obsidian
+knowledge vaults under `~/Vaults` and cloud content in Notion remain in place.
+Back them up and remove them deliberately if that is the intended outcome;
+cleanup never treats knowledge as disposable settings and cannot delete a
+Notion workspace. Exact names retained for upgrades are listed in
+[Upgrade notes](../20-reference/UPGRADE-NOTES.md).
 
 ### 1Password and Keychain limits
 

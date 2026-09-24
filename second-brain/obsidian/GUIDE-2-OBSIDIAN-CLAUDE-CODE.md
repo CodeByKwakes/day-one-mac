@@ -321,7 +321,7 @@ report, not silently replace the underlying checks.
 
 If you intentionally used the manual, fixed single-vault path instead of the
 manager, `./scripts/vault-health-report.sh --vault "$HOME/Vaults/Second Brain"`
-remains available as the legacy per-vault report.
+remains available as the compatibility per-vault report.
 
 ## Step 13 — Back up and optionally add Git history
 

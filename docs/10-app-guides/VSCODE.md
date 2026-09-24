@@ -238,9 +238,9 @@ chezmoi --use-builtin-diff diff --no-pager "$HOME/.zshrc"
 ```
 
 The current Phase 5 alias baseline provides `cmdiff`, `cmdifftext`, and
-`cmmerge` for the same three review paths. An older private dotfiles source is
-not force-edited just to add convenience aliases; copy the reviewed lines from
-the Phase 5 guide if `day-one-mac shell-status` reports them as optional. The
+`cmmerge` for the same three review paths. An existing private dotfiles source
+is not force-edited just to add convenience aliases; copy the reviewed lines
+from the Phase 5 guide if `day-one-mac shell-status` reports them as optional. The
 automated Phase 5 gate always uses the built-in text diff so it cannot wait on
 a VS Code window.
 
@@ -272,7 +272,7 @@ code --list-extensions --show-versions | sort > "$EXPORT_DIR/extensions.txt"
 ```
 
 This text file is an audit. A later reinstall normally installs the current
-release rather than forcing an old version:
+release rather than forcing a pinned version:
 
 ```bash
 cut -d@ -f1 "/Volumes/<backup-volume>/Day-One-Mac-App-Exports/VS-Code/extensions.txt" |

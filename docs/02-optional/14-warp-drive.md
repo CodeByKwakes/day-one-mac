@@ -199,7 +199,7 @@ then follow the typed-confirmation procedure in the finalisation guide.
 | `runtime root is not recorded` | Run the downloaded public installer again, then check `day-one-mac runtime-status` |
 | A provider workflow says its command is missing | Confirm that provider belongs to the selected track; rerun Phase 4 if it does |
 | An fnm/pnpm or uv workflow is missing its command | Confirm the selected stack and revalidate Phase 6 |
-| An AI launch workflow refuses the current folder | Run a creation workflow, or `cd` into one validated task below `_Projectless/tasks/<year>`; the parent and legacy folders are not accepted automatically |
+| An AI launch workflow refuses the current folder | Run a creation workflow, or `cd` into one validated task below `_Projectless/tasks/<year>`; the parent and earlier-layout folders are not accepted automatically |
 | An AI launch workflow reports `command not found` | Install/select that client through Optional Module 10; the Warp import never installs clients |
 | Import is flat or incomplete | Import the `Day One Mac` directory itself and retain its subfolder hierarchy |
 | Duplicate results appear | Remove the older imported collection, validate the source, then import once |

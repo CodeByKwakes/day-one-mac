@@ -65,7 +65,7 @@ PHASE_SCHEMA_04=6
 PHASE_SCHEMA_05=15
 PHASE_SCHEMA_06=2
 PHASE_SCHEMA_07=4
-PHASE_SCHEMA_08=10
+PHASE_SCHEMA_08=11
 
 usage() {
   cat <<'EOF'
@@ -1678,7 +1678,7 @@ migrate_legacy_managed_launcher() {
     return 0
   fi
 
-  info "migrating the legacy chezmoi-managed Day One Mac launcher"
+  info "migrating a launcher managed by an earlier Day One Mac installation"
   info "the standalone runtime now owns $target; the live command will be preserved"
   if [[ "$DRY_RUN" == 1 ]]; then
     print_command chezmoi forget "$target"
@@ -1688,7 +1688,7 @@ migrate_legacy_managed_launcher() {
   source_root="$(chezmoi source-path)"
   source_entry="$(chezmoi source-path "$target")"
   [[ -n "$source_root" && -e "$source_entry" ]] || {
-    err "Could not locate the legacy launcher in the chezmoi source."
+    err "Could not locate the earlier launcher in the chezmoi source."
     return "$EX_GATE"
   }
   relative="${source_entry#"$source_root"/}"
@@ -1699,7 +1699,7 @@ migrate_legacy_managed_launcher() {
     mkdir -p "$(dirname "$backup_entry")"
     ditto "$source_entry" "$backup_entry"
     printf '%s\n' \
-      "Legacy source: $source_entry" \
+      "Earlier source: $source_entry" \
       "Preserved target: $target" \
       "Migrated: $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
       > "$backup_root/README.txt"
@@ -1715,7 +1715,7 @@ migrate_legacy_managed_launcher() {
     err "chezmoi still reports the standalone launcher as managed."
     return "$EX_GATE"
   fi
-  ok "legacy launcher removed from chezmoi; standalone runtime remains installed"
+  ok "earlier launcher removed from chezmoi; standalone runtime remains installed"
   info "migration backup: $backup_root"
 }
 
@@ -1752,7 +1752,7 @@ migrate_legacy_gitconfig_source() {
       ;;
   esac
 
-  info "merging the reviewed Phase 4 Git settings into the legacy chezmoi source"
+  info "merging the reviewed Phase 4 Git settings into the earlier chezmoi source"
   if [[ "$DRY_RUN" == 1 ]]; then
     info "would preserve unrelated source settings and add only the current Day One Mac Git keys"
     return 0
@@ -1766,7 +1766,7 @@ migrate_legacy_gitconfig_source() {
     mkdir -p "$(dirname "$backup_entry")"
     ditto "$source_entry" "$backup_entry"
     printf '%s\n' \
-      "Legacy source: $source_entry" \
+      "Earlier source: $source_entry" \
       "Preserved target: $target" \
       "Migrated: $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
       > "$backup_root/README.txt"
@@ -1778,7 +1778,7 @@ migrate_legacy_gitconfig_source() {
     [[ -n "$live_value" ]] || continue
     git config --file "$source_entry" "$key" "$live_value"
   done <<<"$keys"
-  ok "legacy ~/.gitconfig source updated without applying its stale version"
+  ok "earlier ~/.gitconfig source updated without applying its stale version"
   info "migration backup: $backup_root"
 }
 
@@ -2403,7 +2403,7 @@ phase_08() {
     fi
     return 0
   fi
-  phase_next "Day One Mac project validation" "Run scripts/validate.sh, fix the named structural or semantic failure, then rerun Phase 8."
+  phase_next "Day One Mac project validation" "Run 'day-one-mac validate', fix the named structural or semantic failure, then rerun Phase 8."
   "$SCRIPT_DIR/validate.sh" || return "$EX_GATE"
   phase_step_done "Day One Mac project validation passed"
   ensure_state

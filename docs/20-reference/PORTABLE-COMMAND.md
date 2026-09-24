@@ -101,9 +101,10 @@ day-one-mac docs --open
 
 ## Move an already-completed Mac to standalone mode
 
-If Phases 1–8 were completed with an older checkout-dependent command, do not
-reset progress or rerun the first-time choices. Download the current public
-installer as shown above, then run:
+If Phases 1–8 were completed before the standalone runtime was installed, do
+not reset progress or rerun the first-time choices. Read
+[Upgrade notes](UPGRADE-NOTES.md), download the current public installer as
+shown above, then run:
 
 ```bash
 "$INSTALLER" --update
@@ -137,7 +138,7 @@ day-one-mac validate
 An update installs a new version beside the existing version. It does not
 overwrite the previous release in place. The command fails rather than reports
 success if `current` does not resolve to the downloaded version. Phase 5 keeps
-the launcher out of chezmoi so an older dotfiles source cannot reverse the
+the launcher out of chezmoi so applying dotfiles cannot reverse the runtime
 switch.
 
 ## Roll back the runtime

@@ -141,7 +141,7 @@ the required setup. Security gates remain in their required phases.
 | [**📦 Required Installation Centre**](01-required/INSTALLATION-CENTRE.md) | Install or accept every required app, font, and command-line tool in one pass before configuration begins. |
 | [**3 — Security and SSH**](01-required/03-security-and-ssh.md) | Set up the chosen authentication mode — by default 1Password, its CLI and SSH agent — register provider keys, and verify FileVault. |
 | [**4 — Core tools and hosting**](01-required/04-core-tools-and-hosting.md) | Verify the prepared tools, create the `~/Developer` structure, configure Git, and authenticate the selected providers. |
-| [**5 — Dotfiles and shell**](01-required/05-dotfiles-and-shell.md) | Establish the chezmoi source, configure zsh and Starship, and migrate any legacy managed launcher to standalone ownership. |
+| [**5 — Dotfiles and shell**](01-required/05-dotfiles-and-shell.md) | Establish the chezmoi source, configure zsh and Starship, and ensure the standalone runtime—not chezmoi—owns the launcher. |
 | [**6 — Language toolchains**](01-required/06-language-toolchains.md) | Configure Node with npm/pnpm, Python with uv, or both in a new login shell. |
 | [**7 — VS Code base**](01-required/07-vscode-base.md) | Apply a small portable editor baseline with zsh, the Nerd Font, and safe approval defaults. |
 | [**8 — Verify and reproduce**](01-required/08-verify-and-reproduce.md) | Run the complete audit, record the Brewfile, scan for secrets, and verify private-Git or local-only dotfiles protection. |

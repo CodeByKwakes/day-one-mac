@@ -812,7 +812,8 @@ it. The runner handles an existing file conservatively:
 
 - a missing config is created;
 - an existing Day One Mac block is refreshed in place;
-- the older `Host *`-only Day One Mac config is migrated automatically;
+- a pre-existing Day One Mac block that targets only `Host *` is migrated
+  automatically;
 - any other existing config is backed up through the rollback manifest, and the
   runner asks before inserting its block at the top; and
 - a symbolic-link config is never replaced indirectly — edit its source instead.

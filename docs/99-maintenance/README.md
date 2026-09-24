@@ -4,11 +4,12 @@
 
 This folder contains project-maintenance evidence rather than setup steps.
 
-- [Documentation audit](DOCUMENTATION-AUDIT.md) records previous clarity,
-  alignment, and accessibility findings and their disposition.
-- Executable structural and regression checks live in `../scripts/validate.sh`.
-- ShellCheck policy lives in `../.shellcheckrc` and is applied by
-  `../scripts/lint.sh`.
+- [Documentation audit](DOCUMENTATION-AUDIT.md) records the current clarity,
+  alignment, accessibility, and release-validation result.
+- Executable structural and regression checks live in
+  `../../scripts/validate.sh`.
+- ShellCheck policy lives in `../../.shellcheckrc` and is applied by
+  `../../scripts/lint.sh`.
 
 Ordinary setup users do not need to read this folder.
 

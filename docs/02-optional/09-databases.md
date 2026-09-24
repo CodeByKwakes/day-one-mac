@@ -215,9 +215,9 @@ docker network rm dev-net
 
 The broad clean-state script preserves container data by default. Its separate
 `--archive-docker-data` and `--archive-orbstack-data` options move the selected
-runtime's known storage into the recovery archive. The older combined
-`--archive-container-data` spelling selects both. It does not silently delete
-volumes.
+runtime's known storage into the recovery archive. It does not silently delete
+volumes. See [Upgrade notes](../20-reference/UPGRADE-NOTES.md) only when an
+existing automation still uses an earlier flag name.
 
 ## Optional completion checklist 🚦
 

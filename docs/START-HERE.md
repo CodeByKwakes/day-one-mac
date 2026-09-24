@@ -229,8 +229,10 @@ To create only the read-only safety report, use:
 day-one-mac safety-report --guided
 ```
 
-The older word `preflight` means “a safety check before work begins.” You do
-not need to use it as a command; `--preflight` remains only as an older alias.
+Use the current command names shown above. Upgrade-only aliases and retired
+state names are documented separately in
+[Upgrade notes](20-reference/UPGRADE-NOTES.md), so a first-time setup does not
+need to learn them.
 
 ## One change that needs your password
 

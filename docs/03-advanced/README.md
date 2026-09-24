@@ -4,9 +4,9 @@
 is needed for a secure, working development Mac.
 
 The required setup intentionally stops at a small, reproducible foundation.
-This advanced layer brings across the useful power-user capabilities from the
-older 20-phase design without bringing back its teardown sequence, migration
-assumptions, hard-coded package counts, or mandatory complexity.
+This advanced layer adds power-user capabilities only when they solve a real
+need. Teardown work, machine migration, fixed package counts, and optional
+complexity never become required setup steps.
 
 Every module is independent, documents its rollback boundary, and ends with a
 checklist. Use the tracker from any directory after installing the portable command:
@@ -39,13 +39,12 @@ Modules 09–14 remain the first optional layer: databases, AI clients, the 10A
 OmniRoute gateway, MCP, VS Code profiles, enhanced CLI formulae, and Warp
 Drive. Complete the relevant one before its advanced extension here.
 
-## Capability crosswalk
+## Capability placement
 
-This table accounts for the complete older phase and appendix surface so an
-advanced feature is either present, deliberately excluded, or assigned a new
-home.
+Use this table to find the current home of each capability. It describes the
+present Day One Mac design; it is not a second sequence to complete.
 
-| Older capability | Day One Mac destination | Decision |
+| Capability | Day One Mac destination | Decision |
 |---|---|---|
 | Prerequisites, track, identity, stack | Required Phase 1 | Kept and simplified |
 | External backup and system snapshots | Advanced 20 | Optional on a genuinely clean Mac |
@@ -72,7 +71,7 @@ home.
 | Full Brewfile catalogue | Advanced 16 | Dynamic desired state; no fixed totals |
 | Git worktrees | [Advanced 18](18-hosting-identities-azure-and-worktrees.md) and the [detailed VS Code/AI guide](GIT-WORKTREES-VSCODE-AND-AI.md) | Optional |
 | Emergency rollback | `ROLLBACK.md` | Kept and expanded |
-| Migration-only LastPass, nvm, old package-manager, and duplicate-app removal | Cleanup tools only | Not setup work and never replayed on a clean Mac |
+| Retired credential managers, package managers, and duplicate-app removal | Cleanup tools only | Not setup work and never replayed on a clean Mac |
 
 ## Global rules
 

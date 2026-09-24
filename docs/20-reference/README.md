@@ -9,6 +9,7 @@ phases that must all be completed before running the setup.
 |---|---|
 | Which command or script should I run? | [Complete command reference](COMMAND-REFERENCE.md) |
 | How do I install or download `day-one-mac` before Phase 1? | [Portable command](PORTABLE-COMMAND.md) |
+| How do I update a Mac created before the standalone runtime? | [Upgrade notes](UPGRADE-NOTES.md) |
 | How do I add, edit, save, or remove a Zsh alias? | [Zsh aliases](ZSH-ALIASES.md) |
 | What should the current Phase 5 shell files look like? | [Phase 5 shell-file reference](phase-05-shell-files/README.md) |
 | How do changes move from a dotfile into chezmoi and the private repository? | [Manage dotfiles with chezmoi](MANAGING-DOTFILES-WITH-CHEZMOI.md) |

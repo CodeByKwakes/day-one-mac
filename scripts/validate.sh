@@ -89,6 +89,7 @@ required_docs=(
   docs/01-required/08-verify-and-reproduce.md
   docs/20-reference/README.md
   docs/20-reference/COMMAND-REFERENCE.md
+  docs/20-reference/UPGRADE-NOTES.md
   docs/20-reference/GLOSSARY.md
   docs/20-reference/GITHUB-PRIVATE-REPOSITORY.md
   docs/20-reference/APPLICATION-OWNERSHIP.md
@@ -194,6 +195,18 @@ if ! awk -F '\t' '
 ' "$PROJECT_DIR/config/applications.tsv"; then
   fail "application catalogue has an invalid, duplicate, or incomplete row"
   catalog_failed=1
+fi
+
+if rg_scan -n -i \
+  -e 'fresh-start|fresh[ -]mac|\.fresh-mac-setup|FRESH_START|older 20-phase|legacy playbook|zam-state|mac-setup' \
+  "$PROJECT_DIR/docs" "$PROJECT_DIR/second-brain" \
+  --glob '*.md' --glob '!UPGRADE-NOTES.md'; then
+  if [[ "$RG_STATUS" -eq 0 ]]; then
+    fail "normal guides contain retired project names that belong only in UPGRADE-NOTES.md"
+    printf '%s\n' "$RG_OUTPUT" | sed 's/^/      /' >&2
+  else
+    pass "retired project names are isolated in the upgrade-only reference"
+  fi
 fi
 for app_id in 1password 1password-cli jetbrains-mono-nerd-font raycast visual-studio-code warp \
               orbstack claude-code codex copilot-app copilot-cli obsidian; do
@@ -342,9 +355,9 @@ if rg_scan -n \
   -e 'FRESH-START-PLAYBOOK|\.zam-state|\.\./.*mac-setup|(^|[/(])mac-setup/|scripts/(day-one-mac|cleanup-previous-setup|remove-development-setup)\.sh|\./run\.sh' \
   "$PROJECT_DIR" --glob '*.md' --glob '*.sh' --glob '!validate.sh'; then
   if [[ "$RG_STATUS" -eq 0 ]]; then
-    fail "day-one-mac contains a legacy playbook, state, or script reference"
+    fail "day-one-mac contains a retired playbook, state, or script reference"
   else
-    pass "documents and scripts are independent of the legacy playbook"
+    pass "documents and scripts are independent of the retired monorepo playbook"
   fi
 fi
 
@@ -406,7 +419,7 @@ if grep -Fq 'exec bash "$HERE/setup.sh" "$@"' "$SCRIPT_DIR/bootstrap-day-one-mac
    && grep -Fq 'advanced) shift; exec "$PROJECT_ROOT/scripts/advanced-setup.sh"' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'advanced-audit|audit) shift; exec' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'PHASE_SCHEMA_05=15' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'PHASE_SCHEMA_08=10' "$SCRIPT_DIR/setup.sh" \
+   && grep -Fq 'PHASE_SCHEMA_08=11' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq 'PHASE_SCHEMA_01=5' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq '.config/zsh/path.zsh' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq '.config/zsh/aliases.zsh' "$SCRIPT_DIR/setup.sh" \
@@ -590,8 +603,8 @@ if ! grep -Fq '## Complete portable command list' "$PROJECT_DIR/docs/20-referenc
    || ! grep -Fq '`day-one-mac safety-report [options]`' "$PROJECT_DIR/docs/20-reference/COMMAND-REFERENCE.md" \
    || ! grep -Fq '`day-one-mac workspace [command]`' "$PROJECT_DIR/docs/20-reference/COMMAND-REFERENCE.md" \
    || ! grep -Fq '`./validate-warp-drive.sh`' "$PROJECT_DIR/docs/20-reference/COMMAND-REFERENCE.md" \
-   || ! grep -Fq 'Compatibility aliases' "$PROJECT_DIR/docs/20-reference/COMMAND-REFERENCE.md"; then
-  fail "command reference is missing portable, direct-script, maintenance, or compatibility coverage"
+   || ! grep -Fq '[Upgrade notes](UPGRADE-NOTES.md)' "$PROJECT_DIR/docs/20-reference/COMMAND-REFERENCE.md"; then
+  fail "command reference is missing portable, direct-script, maintenance, or upgrade coverage"
   semantic_failed=1
 fi
 if ! grep -Fq 'Shell (PS1)' "$PROJECT_DIR/docs/10-app-guides/WARP.md" \
@@ -631,7 +644,7 @@ for advanced_doc in "$PROJECT_DIR"/docs/03-advanced/[1-2][0-9]-*.md; do
   [[ -s "$advanced_doc" ]] && advanced_docs=$((advanced_docs + 1))
 done
 if [[ "$advanced_docs" == 8 ]] \
-   && grep -Fq 'Capability crosswalk' "$PROJECT_DIR/docs/03-advanced/README.md" \
+   && grep -Fq 'Capability placement' "$PROJECT_DIR/docs/03-advanced/README.md" \
    && grep -Fq 'Modules 15–22' "$SCRIPT_DIR/advanced-setup.sh" \
    && grep -Fq 'advanced-audit.md' "$SCRIPT_DIR/advanced-audit.sh" \
    && grep -Fq 'repository-audit.tsv' "$SCRIPT_DIR/advanced-audit.sh"; then

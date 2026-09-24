@@ -129,7 +129,7 @@ day-one-mac applications --id copilot-app --install-missing
 
 Homebrew installs the current application as `/Applications/GitHub Copilot.app`.
 An older official download may exist as `/Applications/Copilot.app`; the
-ownership check recognises and preserves that legacy external installation
+ownership check recognises and preserves that earlier external installation
 rather than creating a duplicate. To move an external copy to Homebrew
 ownership, uninstall it with its existing owner first, then rerun the command
 above.

@@ -8,7 +8,7 @@
 
 macOS preferences and application permissions are changed deliberately after
 their current values are recorded. Optional productivity applications are
-configured without importing unknown legacy state, and local HTTPS uses a new
+configured without importing unknown previous state, and local HTTPS uses a new
 machine-local development CA that is never committed.
 
 The ordinary Finder, Dock, keyboard, trackpad, menu-bar, and screenshot choices
