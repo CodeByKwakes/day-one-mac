@@ -25,8 +25,11 @@ rm -rf \
 )
 (cd "$temporary/day-one-mac" && shasum -a 256 -c SHA256SUMS >/dev/null)
 tar -czf "$OUTPUT_DIR/day-one-mac-runtime.tar.gz" -C "$temporary" day-one-mac
-shasum -a 256 "$OUTPUT_DIR/day-one-mac-runtime.tar.gz" \
-  > "$OUTPUT_DIR/day-one-mac-runtime.tar.gz.sha256"
+(
+  cd "$OUTPUT_DIR"
+  shasum -a 256 day-one-mac-runtime.tar.gz \
+    > day-one-mac-runtime.tar.gz.sha256
+)
 cp "$PROJECT_ROOT/install-day-one-mac" "$OUTPUT_DIR/install-day-one-mac"
 chmod 700 "$OUTPUT_DIR/install-day-one-mac"
 
