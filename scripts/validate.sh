@@ -75,6 +75,7 @@ required_docs=(
   docs/README.md
   docs/START-HERE.md
   docs/PROCESS-OVERVIEW.md
+  docs/NEW-DEVICE-SETUP-BLUEPRINT.md
   docs/PROJECT-GUIDE.md
   docs/01-required/README.md
   docs/01-required/MACOS-SETTINGS.md

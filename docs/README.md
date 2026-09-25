@@ -13,6 +13,7 @@ folder before starting.
 | New or factory-reset Mac; do not use Day One Mac scripts | [Complete manual route](20-reference/NOTION-SETUP-GUIDE.md#manual-setup-flow) |
 | Existing Mac that still contains data or settings | [Stage 0 preflight](00-preflight/README.md) |
 | Want a one-page map of the complete process | [Process overview](PROCESS-OVERVIEW.md) |
+| Configuring a new developer Mac and want an audit-backed blueprint | [New-device development environment blueprint](NEW-DEVICE-SETUP-BLUEPRINT.md) |
 | Following the required setup | [Required phases 1–8](01-required/README.md) |
 | Required Phase 8 has passed and you want extras | [Optional modules](02-optional/README.md) |
 | Need one status or audit view for Modules 09–22 | [Optional and advanced status dashboard](20-reference/OPTIONAL-STATUS.md) |
@@ -69,6 +70,8 @@ docs/
 ├── README.md              This index
 ├── START-HERE.md          Short, beginner-safe route
 ├── PROCESS-OVERVIEW.md    Full process and decision map
+├── NEW-DEVICE-SETUP-BLUEPRINT.md
+│                           Audit-backed fresh-device plan
 ├── PROJECT-GUIDE.md       Detailed project explanation
 ├── 00-preflight/          Existing-Mac safety before the setup flow
 ├── 01-required/           Phases 1–8 and required checkpoints
