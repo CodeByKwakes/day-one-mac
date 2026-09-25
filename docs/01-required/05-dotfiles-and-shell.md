@@ -58,9 +58,14 @@ For side-by-side copies of the deterministic shell files, open the
 Use it for comparison only; merge reviewed differences through chezmoi rather
 than copying the complete folder over an existing setup.
 
-For every later edit, follow [Manage dotfiles with chezmoi](../20-reference/MANAGING-DOTFILES-WITH-CHEZMOI.md).
-It shows the complete source → preview → apply → validate → private Git commit
-and push flow, including when `add`, `apply`, or `merge` is correct.
+First-time users should follow the
+[complete chezmoi setup tutorial](../20-reference/CHEZMOI-SETUP-TUTORIAL.md),
+which keeps the script-assisted and fully manual paths explicit through Phase
+8. For every later edit, follow
+[Daily chezmoi workflows](../20-reference/MANAGING-DOTFILES-WITH-CHEZMOI.md).
+It shows the source → preview → apply → validate → private Git commit or
+local-only backup flow, including when `add`, `apply`, `merge`, or `forget` is
+correct.
 
 ### Existing private dotfiles repository
 

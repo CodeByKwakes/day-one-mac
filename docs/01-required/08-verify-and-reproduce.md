@@ -18,6 +18,11 @@ compact the retained operational evidence or deliberately detach the portable
 command and state. Finalisation is optional and never uninstalls the completed
 environment.
 
+If this is your first chezmoi setup, the
+[complete chezmoi tutorial](../20-reference/CHEZMOI-SETUP-TUTORIAL.md) connects
+the Phase 5 source and target work to this phase's Brewfile, secret scan,
+private-Git, and local-only protection gates.
+
 ## How to use this phase
 
 - **Manual route:** complete

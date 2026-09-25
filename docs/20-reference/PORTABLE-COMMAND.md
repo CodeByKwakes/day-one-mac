@@ -100,6 +100,7 @@ documentation folder:
 day-one-mac docs --list
 day-one-mac docs start --open
 day-one-mac docs manual --open
+day-one-mac docs chezmoi --open
 day-one-mac docs --folder --open
 ```
 

@@ -13,7 +13,10 @@ phases that must all be completed before running the setup.
 | How do I update a Mac created before the standalone runtime? | [Upgrade notes](UPGRADE-NOTES.md) |
 | How do I add, edit, save, or remove a Zsh alias? | [Zsh aliases](ZSH-ALIASES.md) |
 | What should the current Phase 5 shell files look like? | [Phase 5 shell-file reference](phase-05-shell-files/README.md) |
-| How do changes move from a dotfile into chezmoi and the private repository? | [Manage dotfiles with chezmoi](MANAGING-DOTFILES-WITH-CHEZMOI.md) |
+| How do I set up chezmoi, manually or with the installer? | [Chezmoi setup tutorial](CHEZMOI-SETUP-TUTORIAL.md) |
+| How do I edit, add, remove, receive, or recover a managed file? | [Daily chezmoi workflows](MANAGING-DOTFILES-WITH-CHEZMOI.md) |
+| Which chezmoi command or path do I need? | [Chezmoi command reference](CHEZMOI-COMMAND-REFERENCE.md) |
+| What should chezmoi manage, and why? | [Chezmoi concepts and safety boundaries](CHEZMOI-CONCEPTS-AND-BOUNDARIES.md) |
 | Where will files and tools live? | [Expected filesystem layout](EXPECTED-LAYOUT.md) |
 | Does Homebrew, Company Portal, the App Store, or another installer own this app? | [Application ownership](APPLICATION-OWNERSHIP.md) |
 | How do I clone a private GitHub repository on a new Mac? | [Private GitHub repository access](GITHUB-PRIVATE-REPOSITORY.md) |

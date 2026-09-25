@@ -21,6 +21,7 @@ folder before starting.
 | Need help configuring an installed application | [Application guides](10-app-guides/README.md) |
 | Need to undo, finalise, or remove setup changes | [Operations](04-operations/README.md) |
 | Need a command, definition, or configuration example | [Reference library](20-reference/README.md) |
+| Need to set up or learn when to use chezmoi | [Complete chezmoi setup tutorial](20-reference/CHEZMOI-SETUP-TUTORIAL.md) |
 | Updating a Mac created before the standalone runtime | [Upgrade notes](20-reference/UPGRADE-NOTES.md) |
 | Maintaining the project documentation | [Maintenance](99-maintenance/README.md) |
 

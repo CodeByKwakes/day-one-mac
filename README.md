@@ -12,6 +12,7 @@ base is working.
 - **Existing Mac with files or settings:** [start with the read-only safety process](docs/00-preflight/README.md).
 - **Need the complete map first:** [read the process overview](docs/PROCESS-OVERVIEW.md).
 - **Need one specific command:** [open the command reference](docs/20-reference/COMMAND-REFERENCE.md).
+- **Need to learn or maintain chezmoi:** [open the complete chezmoi setup tutorial](docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md).
 - **Need to browse everything:** [open the documentation index](docs/README.md).
 
 ## Install without keeping a repository
@@ -37,6 +38,7 @@ guides at any time:
 ```bash
 day-one-mac docs --list
 day-one-mac docs start --open
+day-one-mac docs chezmoi --open
 ```
 
 The runtime container is `~/.local/share/day-one-mac`; its `current` link points
@@ -62,7 +64,7 @@ day-one-mac/
 └── warp-drive/          Importable Warp workflows
 ```
 
-Configuration files that Phase 5 should manage are shown in the
-[Phase 5 shell-file reference](docs/20-reference/phase-05-shell-files/README.md).
-The safe source-to-target-to-Git process is documented in
-[Manage dotfiles with chezmoi](docs/20-reference/MANAGING-DOTFILES-WITH-CHEZMOI.md).
+Start with the [complete chezmoi setup tutorial](docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md).
+It links the Phase 5 baseline, script-assisted and fully manual routes, daily
+maintenance, command reference, ownership boundaries, private Git, and
+local-only backups.

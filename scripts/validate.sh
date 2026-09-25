@@ -98,6 +98,9 @@ required_docs=(
   docs/20-reference/AI-WORKSPACES.md
   docs/20-reference/EXPECTED-LAYOUT.md
   docs/20-reference/NOTION-SETUP-GUIDE.md
+  docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md
+  docs/20-reference/CHEZMOI-COMMAND-REFERENCE.md
+  docs/20-reference/CHEZMOI-CONCEPTS-AND-BOUNDARIES.md
   docs/20-reference/MANAGING-DOTFILES-WITH-CHEZMOI.md
   docs/20-reference/phase-05-shell-files/README.md
   docs/04-operations/README.md

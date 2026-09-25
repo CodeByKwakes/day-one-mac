@@ -10,6 +10,11 @@ The minimal chezmoi source is expanded only for configuration you genuinely
 want on another Mac. Machine data stays local, secrets remain excluded, hooks
 are idempotent, and a complete inventory explains who owns each target.
 
+Read [Chezmoi concepts and safety boundaries](../20-reference/CHEZMOI-CONCEPTS-AND-BOUNDARIES.md)
+before expanding ownership. Use the
+[command reference](../20-reference/CHEZMOI-COMMAND-REFERENCE.md) when choosing
+between `edit`, `add`, `apply`, `merge`, and `forget`.
+
 ## Step 15.1 — Audit the minimal source first
 
 ```bash

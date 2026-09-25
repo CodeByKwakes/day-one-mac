@@ -28,8 +28,12 @@ HOME="$test_home" "$portable" runtime-status | grep -Fq 'Version:   test-1.0.0' 
   || fail_test 'installed runtime did not resolve its documentation'
 HOME="$test_home" "$portable" docs --list | grep -Fq 'manual' \
   || fail_test 'installed runtime did not list documentation topics'
+HOME="$test_home" "$portable" docs --list | grep -Fq 'chezmoi' \
+  || fail_test 'installed runtime did not list the chezmoi documentation topic'
 [[ "$(HOME="$test_home" "$portable" docs manual)" == *'/docs/20-reference/NOTION-SETUP-GUIDE.md' ]] \
   || fail_test 'installed runtime did not resolve the manual setup guide'
+[[ "$(HOME="$test_home" "$portable" docs chezmoi)" == *'/docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md' ]] \
+  || fail_test 'installed runtime did not resolve the chezmoi setup tutorial'
 [[ "$(HOME="$test_home" "$portable" docs --folder)" == *'/docs' ]] \
   || fail_test 'installed runtime did not resolve the documentation folder'
 HOME="$test_home" "$portable" docs --help | grep -Fq 'Topics: start, index, manual' \
