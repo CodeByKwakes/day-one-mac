@@ -142,9 +142,15 @@ if [[ "$MODE" == standalone ]]; then
   [[ ! -e "$staging" ]] || { printf 'Staging path already exists: %s\n' "$staging" >&2; exit 1; }
   trap 'rm -rf "$staging"' EXIT HUP INT TERM
 
-  # ditto preserves executable bits, symlinks and filenames used by the guides.
-  ditto "$SOURCE_ROOT" "$staging"
-  rm -rf "$staging/.git" "$staging/.github"
+  # Copy project-owned runtime files without Git metadata or contributor
+  # dependencies. rsync preserves executable bits, symlinks and guide names
+  # while avoiding an expensive copy-and-delete of node_modules.
+  rsync -a \
+    --exclude '/.git/' \
+    --exclude '/.github/' \
+    --exclude '/dist/' \
+    --exclude '/node_modules/' \
+    "$SOURCE_ROOT/" "$staging/"
   printf '%s\n' "$VERSION" > "$staging/VERSION"
   (
     cd "$staging"

@@ -21,9 +21,10 @@ Thank you for improving Day One Mac.
 ## Validate a change
 
 ```bash
-cd scripts
-bash -n ./*.sh ./lib/*.sh ./tests/*.sh
-./validate.sh
+pnpm install --frozen-lockfile
+pnpm run lint
+bash -n scripts/*.sh scripts/lib/*.sh scripts/tests/*.sh install-day-one-mac
+scripts/validate.sh
 ```
 
 Also inspect:
@@ -32,6 +33,11 @@ Also inspect:
 git diff --check
 git status --short
 ```
+
+Run `pnpm install --frozen-lockfile` once after cloning to install the
+contributor tools and activate the shared Husky hooks. See the
+[contributor-tooling setup guide](docs/CONTRIBUTOR-TOOLING.md)
+for prerequisites, hook behaviour, troubleshooting, and safe bypasses.
 
 ## Release workflow
 

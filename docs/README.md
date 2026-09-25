@@ -23,6 +23,9 @@ folder before starting.
 | Need a command, definition, or configuration example | [Reference library](20-reference/README.md) |
 | Need to set up or learn when to use chezmoi | [Complete chezmoi setup tutorial](20-reference/CHEZMOI-SETUP-TUTORIAL.md) |
 | Updating a Mac created before the standalone runtime | [Upgrade notes](20-reference/UPGRADE-NOTES.md) |
+| Contributing code or documentation | [Git workflow](GIT-WORKFLOW.md) |
+| Installing contributor linting and Git hooks | [Contributor tooling](CONTRIBUTOR-TOOLING.md) |
+| Configuring a release automation credential | [Release-token setup](RELEASE-TOKEN-SETUP.md) |
 | Maintaining the project documentation | [Maintenance](99-maintenance/README.md) |
 
 For the long-form project explanation, assumptions, tracks, stacks, and
@@ -74,6 +77,9 @@ docs/
 ├── NEW-DEVICE-SETUP-BLUEPRINT.md
 │                           Audit-backed fresh-device plan
 ├── PROJECT-GUIDE.md       Detailed project explanation
+├── GIT-WORKFLOW.md        Branch, pull-request, and release workflow
+├── CONTRIBUTOR-TOOLING.md Local linting and shared Git hooks
+├── RELEASE-TOKEN-SETUP.md Release automation credential setup
 ├── 00-preflight/          Existing-Mac safety before the setup flow
 ├── 01-required/           Phases 1–8 and required checkpoints
 ├── 02-optional/           Modules 9–14, only after Phase 8

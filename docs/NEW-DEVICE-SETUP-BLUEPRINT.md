@@ -38,8 +38,9 @@ optional or advanced modules.
 
 The audit covered:
 
-- 126 Markdown files, 75 shell scripts, GitHub Actions workflows, TSV catalogues,
-  release packaging, runtime management, tests, and validation rules;
+- extensive Markdown documentation and shell automation, GitHub Actions
+  workflows, TSV catalogues, release packaging, runtime management, tests, and
+  validation rules;
 - the active macOS, shell, Homebrew, language, editor, and container command
   environment;
 - configuration metadata and file presence, without printing tokens,
@@ -67,7 +68,7 @@ ahead of `origin/main`.
 | P1 | `uv`, `gh`, and `ghq` are missing; Azure CLI is installed but its status was not safely testable in the sandbox. | Install only the tools required by the chosen stack and hosting track, then authenticate interactively. | Track- and stack-based installation keeps the machine smaller. Authentication remains a manual security boundary. |
 | P1 | There is no repository `.editorconfig` or shared VS Code recommendation/task file. | Add a minimal `.editorconfig` and consider `.vscode/extensions.json` plus validation tasks. Keep personal settings out of the repo. | This reduces whitespace and task-discovery drift. Shared recommendations require maintenance and should remain intentionally small. |
 | P1 | GitHub Actions use version tags such as `actions/checkout@v5`. | Pin third-party actions to reviewed commit SHAs and enable automated update proposals for Actions. | SHA pinning reduces supply-chain risk. It makes updates less readable and shifts maintenance into dependency-update pull requests. |
-| P2 | Local Git hooks are not configured. | Keep CI authoritative; optionally add an opt-in hook that calls the existing validator before push. | Hooks provide earlier feedback but can surprise contributors and are easy to bypass. Do not duplicate validation logic in the hook. |
+| P2 | Husky now provides shared commit-message, pre-commit, and pre-push hooks for contributors. | Keep CI authoritative and keep each hook delegated to commitlint, lint-staged, or the existing validator. | Hooks provide earlier feedback but can be bypassed and require Node dependencies; CI must enforce the same important rules. |
 | P2 | `shfmt` is catalogued but formatting is not enforced. | Adopt it only after agreeing on a format and applying one reviewed repository-wide change. | Automatic formatting improves consistency but would otherwise create noisy churn in mature scripts. |
 
 ## Repository and tooling audit
@@ -249,20 +250,23 @@ aliases and application integrations after the required shell phase passes.
 
 ## Automation and consistency audit
 
-Validation CI and tag-driven release automation are present and appropriately
+Validation CI and Release Please automation are present and appropriately
 separate. The project also has runtime integrity checks, checksummed release
 assets, rollback support, a status command, a unified optional-module dashboard,
 and private audit outputs. These are strong controls for a bootstrap repository.
 
-No Makefile, Taskfile, Justfile, pre-commit framework, custom Git hooks,
-Dependabot configuration, or Renovate configuration was found. A task-runner
-wrapper is not necessary because the existing script names are clear. If a
-wrapper is added, it should call those scripts rather than create a second
-implementation of validation or release behavior.
+The repository now uses Husky, commitlint, lint-staged, and markdownlint-cli2
+as contributor-only Node tooling. The hooks validate commit messages, lint
+staged files, and call `scripts/validate.sh` before a push. They delegate to the
+existing project commands instead of implementing a second validation path.
 
-Keep CI as the source of truth. An opt-in pre-push hook may run
-`scripts/validate.sh`, but contributors must still be able to run the command
-directly and understand its output.
+No Makefile, Taskfile, Justfile, Dependabot configuration, or Renovate
+configuration was found. A task-runner wrapper is not necessary because the
+package scripts and existing shell-script names are clear.
+
+Keep CI as the source of truth. Contributors can bypass a local hook for a
+documented emergency, so continuous integration validates pull request titles,
+shell files, Markdown files, workflows, and the complete project independently.
 
 ## Fresh-device setup sequence
 

@@ -14,9 +14,20 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Install validation tools
-        run: brew install actionlint ripgrep shellcheck
+        run: brew install actionlint pnpm ripgrep shellcheck
+      - name: Install contributor dependencies
+        env:
+          HUSKY: 0
+        run: pnpm install --frozen-lockfile
+      - name: Validate pull request title
+        if: github.event_name == 'pull_request'
+        env:
+          PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
+        run: printf '%s\n' "$PULL_REQUEST_TITLE" | pnpm exec commitlint
       - name: Validate GitHub Actions workflows
         run: actionlint
+      - name: Lint shell and Markdown files
+        run: pnpm run lint
       - name: Check shell syntax
         run: bash -n scripts/*.sh scripts/lib/*.sh scripts/tests/*.sh install-day-one-mac
       - name: Run complete validation

@@ -1,0 +1,31 @@
+{
+  "name": "day-one-mac-contributor-tooling",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Contributor-only linting and Git hook tooling for Day One Mac",
+  "packageManager": "pnpm@12.4.2",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "lint": "scripts/lint.sh && markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.agents\"",
+    "lint:shell": "scripts/lint.sh",
+    "lint:markdown": "markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.agents\"",
+    "validate": "scripts/validate.sh",
+    "commitlint": "commitlint"
+  },
+  "lint-staged": {
+    "*.{md,mdx}": "markdownlint-cli2",
+    "*.{sh,bash}": "shellcheck --severity=style",
+    "install-day-one-mac": "shellcheck --severity=style"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.5.1",
+    "markdownlint-cli2": "^0.23.3"
+  }
+}

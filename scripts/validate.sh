@@ -20,7 +20,7 @@ RG_OUTPUT=""
 RG_STATUS=0
 rg_scan() {
   set +e
-  RG_OUTPUT="$(rg "$@" 2>&1)"
+  RG_OUTPUT="$(rg --glob '!node_modules/**' "$@" 2>&1)"
   RG_STATUS=$?
   set -e
   if [[ "$RG_STATUS" -gt 1 ]]; then
@@ -69,6 +69,13 @@ required_docs=(
   VERSION
   .release-please-manifest.json
   release-please-config.json
+  package.json
+  pnpm-lock.yaml
+  commitlint.config.cjs
+  .markdownlint-cli2.jsonc
+  .husky/commit-msg
+  .husky/pre-commit
+  .husky/pre-push
   LICENSE
   SECURITY.md
   CONTRIBUTING.md
@@ -79,6 +86,9 @@ required_docs=(
   docs/PROCESS-OVERVIEW.md
   docs/NEW-DEVICE-SETUP-BLUEPRINT.md
   docs/PROJECT-GUIDE.md
+  docs/GIT-WORKFLOW.md
+  docs/CONTRIBUTOR-TOOLING.md
+  docs/RELEASE-TOKEN-SETUP.md
   docs/01-required/README.md
   docs/01-required/MACOS-SETTINGS.md
   docs/01-required/01-first-boot-and-decisions.md
@@ -492,8 +502,20 @@ if [[ "$release_manifest_version" != "$project_version" ]] \
 else
   pass "Release Please waits for main validation and owns version, tag, release, and asset publication"
 fi
+if grep -Fq '"prepare": "husky"' "$PROJECT_DIR/package.json" \
+   && grep -Fq '"*.{md,mdx}": "markdownlint-cli2"' "$PROJECT_DIR/package.json" \
+   && grep -Fq 'node_modules/.bin/commitlint --edit "$1"' "$PROJECT_DIR/.husky/commit-msg" \
+   && grep -Fq 'node_modules/.bin/lint-staged' "$PROJECT_DIR/.husky/pre-commit" \
+   && grep -Fq 'scripts/validate.sh' "$PROJECT_DIR/.husky/pre-push" \
+   && grep -Fq 'pnpm exec commitlint' "$PROJECT_DIR/.github/workflows/validate.yml" \
+   && grep -Fq 'run: pnpm run lint' "$PROJECT_DIR/.github/workflows/validate.yml"; then
+  pass "contributor hooks and CI enforce conventional commits and delegated linting"
+else
+  fail "contributor hook or CI lint integration has drifted"
+  semantic_failed=1
+fi
 if rg -n 'raw\.githubusercontent\.com/CodeByKwakes/day-one-mac/main/install-day-one-mac|CodeByKwakes/MacOS|└── MacOS/' \
-  "$PROJECT_DIR" --glob '*.md' >/dev/null 2>&1; then
+  "$PROJECT_DIR" --glob '*.md' --glob '!node_modules/**' >/dev/null 2>&1; then
   fail "a guide still uses the moving main-branch installer or the retired monorepo layout"
   semantic_failed=1
 fi
@@ -514,7 +536,8 @@ if ! grep -Fq 'releases/latest/download/install-day-one-mac' "$PROJECT_DIR/READM
   fail "standalone installation, migration, or Phase 8 runtime guidance is incomplete"
   semantic_failed=1
 fi
-if rg -n '^cd day-one-mac/' "$PROJECT_DIR" --glob '*.md' >/dev/null 2>&1; then
+if rg -n '^cd day-one-mac/' "$PROJECT_DIR" \
+  --glob '*.md' --glob '!node_modules/**' >/dev/null 2>&1; then
   fail "a guide still assumes the reader's current directory with 'cd day-one-mac/...'"
   semantic_failed=1
 fi
@@ -522,7 +545,8 @@ fi
 # stale script paths and Markdown links instead of allowing two competing
 # structures to reappear.
 if rg -n 'docs/(preflight|required|optional|advanced|operations|app-guides|reference|maintenance)/|\]\((\.\./){0,2}(preflight|required|optional|advanced|operations|app-guides|reference|maintenance)/' \
-  "$PROJECT_DIR" --glob '*.md' --glob '*.sh' >/dev/null 2>&1; then
+  "$PROJECT_DIR" --glob '*.md' --glob '*.sh' \
+  --glob '!node_modules/**' >/dev/null 2>&1; then
   fail "a script or guide still refers to a retired unnumbered documentation folder"
   semantic_failed=1
 fi

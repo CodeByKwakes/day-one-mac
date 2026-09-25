@@ -34,11 +34,15 @@ if ! command -v shellcheck >/dev/null 2>&1; then
   exit 1
 fi
 
-# Collect scripts deterministically, skipping anything under .git.
+# Collect scripts deterministically, skipping Git metadata and third-party
+# dependencies. Dependencies are verified through the package lockfile; they
+# are not project source and must not be linted as if they were.
 scripts=()
 while IFS= read -r -d '' script; do
   scripts+=("$script")
-done < <(find "$PROJECT_DIR" -name '.git' -prune -o -type f -name '*.sh' -print0 | sort -z)
+done < <(find "$PROJECT_DIR" \
+  \( -name '.git' -o -name 'node_modules' -o -path '*/.husky/_' \) -prune \
+  -o -type f -name '*.sh' -print0 | sort -z)
 
 if [[ "${#scripts[@]}" -eq 0 ]]; then
   printf 'No shell scripts were found under %s\n' "$PROJECT_DIR" >&2

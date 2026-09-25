@@ -11,11 +11,15 @@ temporary="$(mktemp -d "${TMPDIR:-/tmp}/day-one-mac-release.XXXXXX")"
 trap 'rm -rf "$temporary"' EXIT HUP INT TERM
 mkdir -p "$temporary/day-one-mac" "$OUTPUT_DIR"
 
-ditto "$PROJECT_ROOT" "$temporary/day-one-mac"
-rm -rf \
-  "$temporary/day-one-mac/.git" \
-  "$temporary/day-one-mac/.github" \
-  "$temporary/day-one-mac/dist"
+# Copy the runtime without Git metadata, build output, or contributor-only
+# dependencies. Excluding node_modules during the copy keeps local release
+# builds fast and prevents development packages from entering public assets.
+rsync -a \
+  --exclude '/.git/' \
+  --exclude '/.github/' \
+  --exclude '/dist/' \
+  --exclude '/node_modules/' \
+  "$PROJECT_ROOT/" "$temporary/day-one-mac/"
 
 (
   cd "$temporary/day-one-mac"
