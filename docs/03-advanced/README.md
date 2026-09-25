@@ -18,6 +18,14 @@ day-one-mac advanced --guided
 day-one-mac advanced --module 15
 ```
 
+To combine this progress with Optional Modules 09–14 and machine-verifiable
+evidence, run:
+
+```bash
+day-one-mac optional-status
+day-one-mac optional-status --audit
+```
+
 The tracker never installs software or edits configuration. It opens the
 selected guide and records completion only when you explicitly mark it. If a
 completed guide later changes, its fingerprint becomes **review required**.

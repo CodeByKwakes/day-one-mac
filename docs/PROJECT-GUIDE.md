@@ -53,6 +53,8 @@ day-one-mac/
     ├── prepare-existing-mac.sh      Guided Route A / Route B entry point
     ├── application-inventory.sh     Brew and macOS application report
     ├── application-status.sh        Ownership check and missing-app installer
+    ├── configure-databases.sh       Resumable Optional 09 container installer
+    ├── optional-status.sh           Unified Modules 09–22 status and audit
     ├── workspace-manager.sh         Immutable projectless-task wizard and launch guard
     ├── advanced-audit.sh            Extended private environment report
     ├── advanced-setup.sh            Advanced guide/progress tracker
@@ -454,6 +456,7 @@ day-one-mac advanced --list
 day-one-mac advanced --status
 day-one-mac advanced --guided
 day-one-mac advanced-audit
+day-one-mac optional-status --audit
 ```
 
 The advanced tracker changes no configuration. It fingerprints completed guide
@@ -464,6 +467,10 @@ The advanced environment report is optional and belongs to Module 21 after the
 base setup. It is different from Stage 0's safety report. Use
 `day-one-mac advanced-audit`; upgrade-only command aliases are listed in
 [Upgrade notes](20-reference/UPGRADE-NOTES.md).
+
+For one combined Modules 09–22 view, use `day-one-mac optional-status`. Its
+`--audit` mode writes the module report and invokes the same private environment
+and repository audit without changing installed state.
 
 Generate a read-only application report at any time:
 

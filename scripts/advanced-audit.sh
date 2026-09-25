@@ -161,7 +161,7 @@ fi
 
 if command -v docker >/dev/null 2>&1; then
   if docker info >/dev/null 2>&1; then
-    CONTAINER_COUNT="$(docker ps -a --format '{{.Names}}' 2>/dev/null | awk 'NF {n++} END {print n+0}')"
+    CONTAINER_COUNT="$( (docker ps -a --format '{{.Names}}' 2>/dev/null || true) | awk 'NF {n++} END {print n+0}')"
     pass_gate "Container runtime" "Available; $CONTAINER_COUNT container(s) recorded"
   else
     review_gate "Container runtime" "Docker command exists but its engine is not running"

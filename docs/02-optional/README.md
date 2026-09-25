@@ -26,6 +26,16 @@ The selector saves the plan first. When Databases is selected, it then offers
 to run the database installer immediately. Saving a module is not a completion
 claim: each module must pass the verification in its guide.
 
+View all Optional and Advanced module states together:
+
+```bash
+day-one-mac optional-status
+day-one-mac optional-status --audit
+```
+
+See the [status and audit reference](../20-reference/OPTIONAL-STATUS.md) for
+status meanings, strict checks, report locations, and recovery commands.
+
 Resume or inspect Database setup directly:
 
 ```bash

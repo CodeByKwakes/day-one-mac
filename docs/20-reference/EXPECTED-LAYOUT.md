@@ -142,6 +142,9 @@ The required setup produces or manages the following structure. Entries marked
 │   ├── application-provenance.tsv        machine-readable application owner records
 │   ├── setup.log
 │   ├── verification.md                   Phase 8 gate report
+│   ├── optional-and-advanced-audit.md     unified Modules 09–22 evidence report
+│   ├── advanced-audit.md                  private required/environment audit
+│   ├── repository-audit.tsv               private repository state summary
 │   ├── finalized-at                      present after optional finalisation
 │   ├── finalization.md                   retained-state and archive report
 │   ├── finalized/                        checksum-protected evidence archives

@@ -8,6 +8,7 @@ phases that must all be completed before running the setup.
 | Question | Reference |
 |---|---|
 | Which command or script should I run? | [Complete command reference](COMMAND-REFERENCE.md) |
+| How do I see one status view for Optional and Advanced modules? | [Optional and advanced status dashboard](OPTIONAL-STATUS.md) |
 | How do I install or download `day-one-mac` before Phase 1? | [Portable command](PORTABLE-COMMAND.md) |
 | How do I update a Mac created before the standalone runtime? | [Upgrade notes](UPGRADE-NOTES.md) |
 | How do I add, edit, save, or remove a Zsh alias? | [Zsh aliases](ZSH-ALIASES.md) |

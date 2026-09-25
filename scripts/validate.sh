@@ -89,6 +89,7 @@ required_docs=(
   docs/01-required/08-verify-and-reproduce.md
   docs/20-reference/README.md
   docs/20-reference/COMMAND-REFERENCE.md
+  docs/20-reference/OPTIONAL-STATUS.md
   docs/20-reference/UPGRADE-NOTES.md
   docs/20-reference/GLOSSARY.md
   docs/20-reference/GITHUB-PRIVATE-REPOSITORY.md
@@ -313,6 +314,7 @@ required_scripts=(
   advanced-audit.sh
   advanced-setup.sh
   configure-databases.sh
+  optional-status.sh
   configure-cli-tools.sh
   configure-macos-settings.sh
   workspace-manager.sh
@@ -330,6 +332,7 @@ required_scripts=(
   lib/terminal-ui.sh
   tests/test-application-ownership.sh
   tests/test-configure-databases.sh
+  tests/test-optional-status.sh
   tests/test-chezmoi-vscode-tools.sh
   tests/test-day-one-mac.sh
   tests/test-preflight.sh
@@ -754,6 +757,15 @@ else
   fail "optional database installer or selector handoff is incomplete"
 fi
 
+if grep -Fq 'optional-status|modules) shift; exec "$PROJECT_ROOT/scripts/optional-status.sh"' "$SCRIPT_DIR/day-one-mac" \
+   && grep -Fq -- '--audit' "$SCRIPT_DIR/optional-status.sh" \
+   && grep -Fq 'Modules 09–22' "$SCRIPT_DIR/optional-status.sh" \
+   && grep -Fq 'OPTIONAL-STATUS.md' "$PROJECT_DIR/docs/20-reference/README.md"; then
+  pass "Modules 09–22 have one read-only status and audit dashboard"
+else
+  fail "unified optional and advanced status dashboard is incomplete"
+fi
+
 if grep -Fq $'core\talways\tstatus\tDay One · Status\td1s\t' "$PROJECT_DIR/config/raycast-commands.tsv" \
    && grep -Fq $'Recommended\tEveryone\tWarp\twarpdotdev\t' "$PROJECT_DIR/config/raycast-extensions.tsv" \
    && grep -Fq -- '--remove-generated' "$SCRIPT_DIR/configure-raycast.sh" \
@@ -772,6 +784,10 @@ run_fixture "Day One Mac regression fixture passes" \
 run_fixture "optional database installer is idempotent and diagnostic" \
   "optional database installer regression fixture failed" \
   "$SCRIPT_DIR/tests/test-configure-databases.sh" || true
+
+run_fixture "unified optional and advanced dashboard reports evidence safely" \
+  "unified optional and advanced dashboard fixture failed" \
+  "$SCRIPT_DIR/tests/test-optional-status.sh" || true
 
 run_fixture "Homebrew, external, App Store, missing, and conflict application fixtures pass" \
   "application ownership and provenance regression fixture failed" \

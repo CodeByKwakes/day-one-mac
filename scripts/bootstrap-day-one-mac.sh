@@ -746,6 +746,7 @@ run_optional_center() {
   if [[ -n "$OPTIONAL_MODULES" ]]; then
     info "Guides: $PROJECT_DIR/docs/02-optional/"
     info 'Saving a selection does not claim installation; each selected module must verify its own outcome.'
+    info 'Unified status: day-one-mac optional-status'
     if contains_csv "$OPTIONAL_MODULES" databases; then
       SINGLE_VALUES=(install finish)
       SINGLE_LABELS=(

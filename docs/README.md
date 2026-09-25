@@ -15,6 +15,7 @@ folder before starting.
 | Want a one-page map of the complete process | [Process overview](PROCESS-OVERVIEW.md) |
 | Following the required setup | [Required phases 1–8](01-required/README.md) |
 | Required Phase 8 has passed and you want extras | [Optional modules](02-optional/README.md) |
+| Need one status or audit view for Modules 09–22 | [Optional and advanced status dashboard](20-reference/OPTIONAL-STATUS.md) |
 | Need power-user automation or migration | [Advanced modules](03-advanced/README.md) |
 | Need help configuring an installed application | [Application guides](10-app-guides/README.md) |
 | Need to undo, finalise, or remove setup changes | [Operations](04-operations/README.md) |
