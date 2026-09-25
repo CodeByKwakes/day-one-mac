@@ -120,7 +120,14 @@ case "${1:-}" in
   raycast) shift; exec "$PROJECT_ROOT/scripts/configure-raycast.sh" "$@" ;;
   workspace) shift; exec "$PROJECT_ROOT/scripts/workspace-manager.sh" "$@" ;;
   macos-settings) shift; exec "$PROJECT_ROOT/scripts/configure-macos-settings.sh" "$@" ;;
-  optional) shift; exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" --optional "$@" ;;
+  optional)
+    shift
+    if [[ "${1:-}" == --status ]]; then
+      shift
+      exec "$PROJECT_ROOT/scripts/optional-status.sh" "$@"
+    fi
+    exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" --optional "$@"
+    ;;
   optional-status|modules) shift; exec "$PROJECT_ROOT/scripts/optional-status.sh" "$@" ;;
   databases) shift; exec "$PROJECT_ROOT/scripts/configure-databases.sh" "$@" ;;
   finalize) shift; exec "$PROJECT_ROOT/scripts/finalize-setup.sh" "$@" ;;
@@ -150,8 +157,7 @@ case "${1:-}" in
       '  raycast           manage optional Day One Raycast commands' \
       '  workspace         create and open bounded projectless tasks' \
       '  macos-settings    configure or restore optional macOS preferences' \
-      '  optional          choose post-Phase-8 modules' \
-      '  optional-status   show or audit optional and advanced Modules 09–22' \
+      '  optional          choose modules; --status shows or audits Modules 09–22' \
       '  databases         install, resume, or verify optional databases' \
       '  finalize          compact records or detach after Phase 8' \
       '  advanced          read and track optional advanced modules' \
@@ -167,7 +173,9 @@ case "${1:-}" in
       'Compatibility aliases:' \
       '  preflight         same as safety-report' \
       '  prepare-reset     same as prepare-existing' \
-      '  audit             same as advanced-audit'
+      '  audit             same as advanced-audit' \
+      '  optional-status   same as optional --status' \
+      '  modules           same as optional --status'
     ;;
   *) exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" "$@" ;;
 esac

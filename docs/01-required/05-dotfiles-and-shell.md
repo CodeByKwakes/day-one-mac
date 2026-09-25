@@ -447,7 +447,7 @@ day-one-mac ssh-pin [provider]   Save a 1Password public key to ~/.ssh
 day-one-mac workspace --guided   Create or open a bounded projectless task
 day-one-mac macos-settings       Configure, inspect, or restore optional settings
 day-one-mac optional --guided    Choose post-Phase-8 optional modules
-day-one-mac optional-status      Show or audit Modules 09–22 together
+day-one-mac optional --status      Show or audit Modules 09–22 together
 day-one-mac databases            Install, resume, or verify optional databases
 day-one-mac finalize             Preview post-Phase-8 evidence compaction
 day-one-mac advanced             Read and track advanced Modules 15–22

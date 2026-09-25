@@ -29,8 +29,8 @@ claim: each module must pass the verification in its guide.
 View all Optional and Advanced module states together:
 
 ```bash
-day-one-mac optional-status
-day-one-mac optional-status --audit
+day-one-mac optional --status
+day-one-mac optional --status --audit
 ```
 
 See the [status and audit reference](../20-reference/OPTIONAL-STATUS.md) for

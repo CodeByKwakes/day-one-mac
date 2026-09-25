@@ -56,6 +56,14 @@ run_status() {
     "$SCRIPT_DIR/optional-status.sh" "$@"
 }
 
+run_public_status() {
+  HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE" \
+    DAY_ONE_MAC_APPLICATIONS_ROOT="$TEST_ROOT/no-applications" \
+    DAY_ONE_MAC_APPLICATION_BREW_LOOKUP=disabled \
+    PATH="$MOCK_BIN:/usr/bin:/bin:/usr/sbin:/sbin" \
+    "$SCRIPT_DIR/day-one-mac" optional --status "$@"
+}
+
 run_status > "$TEST_ROOT/status.txt"
 grep -Eq 'ready +09 — Local databases' "$TEST_ROOT/status.txt"
 grep -Eq 'partial +10 — AI clients' "$TEST_ROOT/status.txt"
@@ -64,7 +72,22 @@ grep -Eq 'ready +13 — Enhanced CLI tools' "$TEST_ROOT/status.txt"
 grep -Eq 'ready +15 — Full dotfiles and bootstrap' "$TEST_ROOT/status.txt"
 grep -Eq 'pending +16 — Brewfile, applications, and editor inventory' "$TEST_ROOT/status.txt"
 
-if run_status --check >/dev/null 2>&1; then
+run_public_status > "$TEST_ROOT/public-status.txt"
+grep -Eq 'ready +09 — Local databases' "$TEST_ROOT/public-status.txt"
+HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE" \
+  DAY_ONE_MAC_APPLICATIONS_ROOT="$TEST_ROOT/no-applications" \
+  DAY_ONE_MAC_APPLICATION_BREW_LOOKUP=disabled \
+  PATH="$MOCK_BIN:/usr/bin:/bin:/usr/sbin:/sbin" \
+  "$SCRIPT_DIR/day-one-mac" optional-status > "$TEST_ROOT/compatibility-status.txt"
+grep -Eq 'ready +09 — Local databases' "$TEST_ROOT/compatibility-status.txt"
+HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE" \
+  DAY_ONE_MAC_APPLICATIONS_ROOT="$TEST_ROOT/no-applications" \
+  DAY_ONE_MAC_APPLICATION_BREW_LOOKUP=disabled \
+  PATH="$MOCK_BIN:/usr/bin:/bin:/usr/sbin:/sbin" \
+  "$SCRIPT_DIR/day-one-mac" modules > "$TEST_ROOT/modules-status.txt"
+grep -Eq 'ready +09 — Local databases' "$TEST_ROOT/modules-status.txt"
+
+if run_public_status --check >/dev/null 2>&1; then
   printf 'FAIL: --check accepted selected partial and pending modules\n' >&2
   exit 1
 fi

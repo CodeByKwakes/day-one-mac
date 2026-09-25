@@ -437,7 +437,7 @@ if grep -Fq 'exec bash "$HERE/setup.sh" "$@"' "$SCRIPT_DIR/bootstrap-day-one-mac
    && grep -Fq 'workspace) shift; exec "$PROJECT_ROOT/scripts/workspace-manager.sh"' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'raycast) shift; exec "$PROJECT_ROOT/scripts/configure-raycast.sh"' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'shell-status) shift; exec "$PROJECT_ROOT/scripts/shell-status.sh"' "$SCRIPT_DIR/day-one-mac" \
-   && grep -Fq 'optional) shift; exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" --optional' "$SCRIPT_DIR/day-one-mac" \
+   && grep -Fq 'exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" --optional "$@"' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'finalize) shift; exec "$PROJECT_ROOT/scripts/finalize-setup.sh"' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'remove) shift; exec "$PROJECT_ROOT/scripts/remove-day-one-mac.sh"' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'runtime-status) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" status' "$SCRIPT_DIR/day-one-mac" \
@@ -784,7 +784,8 @@ else
   fail "optional database installer or selector handoff is incomplete"
 fi
 
-if grep -Fq 'optional-status|modules) shift; exec "$PROJECT_ROOT/scripts/optional-status.sh"' "$SCRIPT_DIR/day-one-mac" \
+if grep -Fq 'if [[ "${1:-}" == --status ]]' "$SCRIPT_DIR/day-one-mac" \
+   && grep -Fq 'optional-status|modules) shift; exec "$PROJECT_ROOT/scripts/optional-status.sh"' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq -- '--audit' "$SCRIPT_DIR/optional-status.sh" \
    && grep -Fq 'Modules 09–22' "$SCRIPT_DIR/optional-status.sh" \
    && grep -Fq 'OPTIONAL-STATUS.md' "$PROJECT_DIR/docs/20-reference/README.md"; then

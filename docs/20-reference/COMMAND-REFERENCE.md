@@ -76,7 +76,7 @@ updates and rollback.
 | `day-one-mac workspace [command]` | `./workspace-manager.sh [command]` | Create, inspect, complete, or open a bounded projectless task. |
 | `day-one-mac raycast [options]` | `./configure-raycast.sh [options]` | Preview, generate, inspect, or archive the optional track-aware Raycast Script Commands. |
 | `day-one-mac optional --guided` | `./bootstrap-day-one-mac.sh --optional --guided` | Choose optional modules after required Phase 8 passes and continue to available installers. |
-| `day-one-mac optional-status [options]` | `./optional-status.sh [options]` | Show one read-only status dashboard for Modules 09–22 or write the combined module, environment, and repository audit. Alias: `day-one-mac modules`. |
+| `day-one-mac optional --status [options]` | `./optional-status.sh [options]` | Show one read-only status dashboard for Modules 09–22 or write the combined module, environment, and repository audit. Compatibility aliases: `day-one-mac optional-status` and `day-one-mac modules`. |
 | `day-one-mac databases [options]` | `./configure-databases.sh [options]` | Install, resume, inspect, or verify the selected PostgreSQL, Redis, and MongoDB containers. |
 | `day-one-mac safety-report [options]` | `./preflight-audit.sh [options]` | Create the read-only Stage 0 report on an existing Mac before choosing a reset or cleanup route. |
 | `day-one-mac prepare-existing [options]` | `./prepare-existing-mac.sh [options]` | Open the resumable Route A/Route B dashboard for a Mac that already contains data or setup. With no arguments, the portable command adds `--guided`. |
@@ -263,9 +263,9 @@ day-one-mac databases --saved
 day-one-mac databases --services postgres,redis --dry-run
 day-one-mac databases --saved --check
 
-day-one-mac optional-status
-day-one-mac optional-status --check
-day-one-mac optional-status --audit
+day-one-mac optional --status
+day-one-mac optional --status --check
+day-one-mac optional --status --audit
 
 day-one-mac advanced --list
 day-one-mac advanced --status

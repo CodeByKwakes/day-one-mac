@@ -5,7 +5,7 @@
 Use one read-only command to review Modules 09–22:
 
 ```bash
-day-one-mac optional-status
+day-one-mac optional --status
 ```
 
 The dashboard reads the saved optional plan, installed payloads, Docker state,
@@ -35,7 +35,7 @@ Generate the module dashboard plus the existing environment and repository
 audits:
 
 ```bash
-day-one-mac optional-status --audit
+day-one-mac optional --status --audit
 ```
 
 The command writes private, permission-restricted reports under
@@ -51,7 +51,7 @@ Choose another destination when the reports must be reviewed or archived
 elsewhere:
 
 ```bash
-day-one-mac optional-status --audit \
+day-one-mac optional --status --audit \
   --report "/absolute/private/path/module-audit.md"
 ```
 
@@ -65,7 +65,7 @@ For a script or maintenance check, return a non-zero status when any selected
 module is blocked, pending, partial, or needs review:
 
 ```bash
-day-one-mac optional-status --check
+day-one-mac optional --status --check
 ```
 
 This strict mode treats `partial` as unfinished because its manual checklist
@@ -76,7 +76,7 @@ Combine both flags to enforce the selected-module gate and the required-base
 environment gates from the full audit:
 
 ```bash
-day-one-mac optional-status --audit --check
+day-one-mac optional --status --audit --check
 ```
 
 ## Resolve common results

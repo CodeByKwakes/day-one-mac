@@ -22,8 +22,8 @@ To combine this progress with Optional Modules 09–14 and machine-verifiable
 evidence, run:
 
 ```bash
-day-one-mac optional-status
-day-one-mac optional-status --audit
+day-one-mac optional --status
+day-one-mac optional --status --audit
 ```
 
 The tracker never installs software or edits configuration. It opens the

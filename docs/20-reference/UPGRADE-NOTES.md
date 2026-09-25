@@ -38,6 +38,8 @@ upgraded safely. Do not use them in new notes, aliases, or Warp workflows.
 | `day-one-mac preflight` | `day-one-mac safety-report` |
 | `day-one-mac prepare-reset` | `day-one-mac prepare-existing` |
 | `day-one-mac audit` | `day-one-mac advanced-audit` |
+| `day-one-mac optional-status` | `day-one-mac optional --status` |
+| `day-one-mac modules` | `day-one-mac optional --status` |
 | `prepare-existing-mac.sh --audit-only` | `day-one-mac prepare-existing --safety-report` |
 | `prepare-existing-mac.sh --audit PATH` | `day-one-mac prepare-existing --preflight-report PATH` |
 | `clean-development-state.sh --archive-container-data` | Use both `--archive-docker-data` and `--archive-orbstack-data` |

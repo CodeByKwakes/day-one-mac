@@ -373,9 +373,9 @@ Choose optional modules only after Phase 8 passes. Use the unified dashboard to
 distinguish installed evidence from manual sign-in or trust work:
 
 ```bash
-day-one-mac optional-status
-day-one-mac optional-status --audit
-day-one-mac optional-status --check
+day-one-mac optional --status
+day-one-mac optional --status --audit
+day-one-mac optional --status --check
 ```
 
 For databases, first verify the container engine in a normal Terminal:
@@ -398,7 +398,7 @@ the machine reflects the desired setup. Then verify without upgrading:
 ```bash
 brew bundle check --file="$HOME/Brewfile" --no-upgrade
 chezmoi status
-day-one-mac optional-status --audit --check
+day-one-mac optional --status --audit --check
 ```
 
 Commit the private dotfile source only after reviewing its diff for secrets.
@@ -441,7 +441,7 @@ A new device is ready when all of the following are true:
   run successfully.
 - the container engine responds to `docker info` if a container module was
   selected.
-- `day-one-mac optional-status --audit --check` passes for every selected
+- `day-one-mac optional --status --audit --check` passes for every selected
   optional or advanced module.
 - a restart and a fresh login shell preserve the same successful checks.
 
