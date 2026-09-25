@@ -35,18 +35,23 @@ your notes.
 ## Start here
 
 1. Read [Prerequisites and boundaries](01-PREREQUISITES.md).
-2. Run the local planner in preview mode:
+2. Choose one local setup route:
+
+   - **Manual route:** skip the planner and record the decisions from the
+     prerequisites page yourself. Build the cloud workspace in Steps 2–9.
+   - **Script-assisted planning route:** run the local planner in preview mode:
 
    ```bash
    cd "$(day-one-mac root)/second-brain/notion"
    ./scripts/notion-second-brain-manager.sh --guided
    ```
 
-3. Run it again with `--apply` to save the approved, non-secret local plan.
+3. On the script-assisted route, run it again with `--apply` to save the
+   approved, non-secret local plan. Manual-route readers skip this step.
 4. Build the workspace in the order shown below.
 5. Complete the [verification checklist](CHECKLIST.md).
 
-The planner does not sign in to Notion, create cloud pages, or store an API
+The optional planner does not sign in to Notion, create cloud pages, or store an API
 token. Notion templates, relations, forms, permissions, dashboard layout, and
 automations are deliberately completed in Notion so you can review their
 effect before they become active.

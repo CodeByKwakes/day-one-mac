@@ -68,7 +68,18 @@ The saved choices add only the relevant tools:
 A Homebrew command-line package is called a **formula**. A Homebrew macOS app
 or font is called a **cask**. See [Glossary](../20-reference/GLOSSARY.md) for more terms.
 
-## Recommended automatic flow
+## Manual route — install and verify each item
+
+Manual-route readers do not run the Installation Centre. Use the catalogue
+above to check each item, preserve an existing approved owner, and install only
+missing software. Run the version or application check for every item before
+continuing to Manual 3. Keep your own record of the selected installer because
+the manual route does not create provenance or rollback manifests.
+
+The complete commands and checks are in
+[Manual 3 and Manual 4](../20-reference/NOTION-SETUP-GUIDE.md#manual-3--configure-git-authentication-and-filevault).
+
+## Script-assisted route — recommended automatic flow
 
 Start or resume the normal wizard:
 
@@ -134,7 +145,7 @@ useful later.
 |---|---|
 | An app is marked **External installation** | Continue; its current owner remains responsible for updates |
 | An app is marked **Needs review** | Stop and resolve the duplicate, receipt, bundle-ID, or location conflict shown |
-| Company Portal is slow | Stop safely, finish it later, then rerun `--install-centre` |
+| Company Portal is slow | Stop safely, finish it later, then rerun `day-one-mac install` |
 | Homebrew reports a network error | Check Wi-Fi, VPN, proxy, DNS, and system time; rerun the checkpoint |
 | A later phase says software is missing | Rerun `day-one-mac install`; the phase will not silently install it |
 | Track or stack changed | Rerun the checkpoint so its conditional formulae are revalidated |

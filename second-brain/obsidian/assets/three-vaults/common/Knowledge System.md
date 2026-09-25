@@ -14,8 +14,8 @@ topics:
 ## Properties
 
 - `domain`: this vault's documented domain, or `shared` for system notes.
-- `type`: `capture`, `project`, `learning`, `content`, `source`, `person`, or
-  `review`.
+- `type`: `capture`, `project`, `learning`, `content`, `source`, `person`,
+  `review`, or `index`.
 - `status`: `inbox`, `active`, `incubating`, `drafting`, `review`, `scheduled`,
   `published`, `done`, or `archived`.
 - `created`: ISO date.

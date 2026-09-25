@@ -1,11 +1,13 @@
 # Day One Mac documentation audit
 
-**Audit date:** 24 September 2026
+**Audit date:** 25 September 2026
 
 **Release baseline:** 1.0.6 and later
-**Scope:** every Markdown file, navigation link, setup entry point, phase gate,
-application guide, operational guide, Second Brain guide, and Warp workflow in
-the standalone Day One Mac project.
+**Scope:** all 125 Markdown files in the repository, including navigation,
+setup, reference, operations, contribution and security documents; Second Brain
+guides; Obsidian vault templates, dashboards and embedded AI instructions; and
+the Warp command catalogue. The documentation-writer skill itself was reviewed
+as process guidance and was not rewritten as product documentation.
 
 This is a current-state report, not a history of earlier playbooks. Upgrade-only
 names and aliases are isolated in
@@ -13,27 +15,40 @@ names and aliases are isolated in
 
 ## Result
 
-The required path is coherent and executable:
+The repository now documents two coherent execution routes:
 
 ```text
-public release installer
-  → verified standalone runtime
-  → setup wizard
-  → Phases 1–8
-  → completion report
-  → optional Modules 9–14
-  → advanced Modules 15–22 when needed
+manual route                         script-assisted route
+  → no Day One Mac runtime             → verified standalone runtime
+  → Manual 1–8                          → setup wizard and Phases 1–8
+  → user-kept verification record       → saved report and ownership records
+                 └──── optional Modules 9–14 ────┘
+                          → advanced Modules 15–22 when needed
 ```
 
-The audit found and corrected two blocking classes of issue:
+The audit found and corrected these documentation-level issues:
 
-1. Phase 8's chezmoi regression test assumed Python provided `tomllib`. Apple
-   can supply an older `python3`, even after uv installs a newer optional Python.
-   The test now uses `tomllib` when present and a POSIX `awk` structure check
-   otherwise.
-2. Upgrade terminology and retired names were repeated across normal setup
-   guides. Current guides now teach current commands only; compatibility names
-   live on one upgrade-only reference page.
+1. The entry pages exposed only the script-assisted route, while the complete
+   manual flow was hidden behind a Notion-oriented filename.
+2. The manual flow installed the runtime before route selection and later
+   delegated SSH configuration back to the phase runner.
+3. The manual flow assumed 1Password although the product supports 1Password,
+   macOS Keychain, an external agent, and HTTPS.
+4. Public command forms drifted between `--phase`, `setup --phase`, the internal
+   `--install-centre` option, and the public `install` subcommand.
+5. “Manual,” “assisted,” “automated,” and “scripted” were used for different
+   concepts. “Manual” sometimes meant only a GUI action inside an automated
+   phase.
+6. The consolidated guide linked to application guides from the wrong relative
+   directory and invoked a validator from an invalid working directory.
+7. The standalone runtime container and its active `current` link were named
+   without explaining their relationship.
+8. 1Password was described as universally required in several overview pages
+   even though it is conditional on the selected authentication mode.
+
+The revised contract uses **manual route**, **script-assisted route**, and
+**shared manual action**. Entry points expose both routes, each required phase
+states how the routes apply, and Second Brain guides use the same vocabulary.
 
 ## Authoritative entry points
 
@@ -82,6 +97,13 @@ The following rules now apply across normal user documentation:
   to contributor work, regression testing, or explicitly labelled recovery.
 - required work is called a **phase**; optional and advanced work is called a
   **module**.
+- **manual route** means no Day One Mac scripts are installed or invoked;
+- **script-assisted route** means the installed `day-one-mac` command performs
+  the recorded work;
+- **shared manual action** means an approval, sign-in, or GUI task required on
+  either route;
+- the public one-phase form is `day-one-mac setup --phase NN`;
+- the public Installation Centre command is `day-one-mac install`.
 
 ## Accessibility audit
 
@@ -170,11 +192,14 @@ Before publishing a release:
 
 ## Current conclusion
 
-The Day One Mac documents, phase runner and standalone runtime describe one
-setup system. Phase 8 no longer depends on Python's optional TOML module, and
-normal user guides no longer mix current setup instructions with upgrade-only
-names. Future drift should be rejected by the validator before a release is
-published.
+The Day One Mac documents now describe one setup system with two explicit ways
+to execute it. Manual readers can complete the base without installing or
+invoking Day One Mac scripts. Script-assisted readers receive the same target
+outcomes plus resumability, provenance, phase fingerprints, and recorded
+rollback. Asset templates and embedded AI instructions retain their specialised
+purpose while following the same privacy terminology used by their owning
+Second Brain guides. Future route, command, link, or terminology drift should
+be rejected during documentation review and project validation.
 
 ---
 

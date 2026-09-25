@@ -60,7 +60,7 @@ written. The workflow does not depend on a patch release.
 
 ## Step 3 — Create the vault and its folders
 
-### Assisted path
+### Script-assisted path
 
 Recommended dynamic wizard—select Raycast when the integration toggles appear:
 
@@ -78,7 +78,7 @@ For the standard one-vault preset:
 The first command is a preview. The second delegates to the manager and applies
 only the reviewed, managed layout.
 
-### Manual path
+### Manual path — no setup scripts
 
 ```bash
 mkdir -p "$HOME/Vaults/Second Brain"/{"00 Inbox","01 Dashboards"}
@@ -141,7 +141,7 @@ Every reusable note uses a small property vocabulary:
 | Property | Allowed values or rule |
 |---|---|
 | `domain` | `development`, `software-content`, `tech-content`, or `shared` |
-| `type` | `capture`, `project`, `learning`, `content`, `source`, `person`, `review` |
+| `type` | `capture`, `project`, `learning`, `content`, `source`, `person`, `review`, or `index` |
 | `status` | `inbox`, `active`, `incubating`, `drafting`, `review`, `scheduled`, `published`, `done`, `archived` |
 | `created` | ISO date, `YYYY-MM-DD` |
 | `sensitivity` | `public`, `personal`, or `work-confidential` |

@@ -20,7 +20,11 @@ environment.
 
 ## How to use this phase
 
-Run `day-one-mac setup --phase 08`. The runner performs Step 8.1,
+- **Manual route:** complete
+  [Manual 8](../20-reference/NOTION-SETUP-GUIDE.md#manual-8--record-and-verify-the-finished-environment)
+  and retain your own verification record. The manual route has no runner
+  ownership manifest or phase marker.
+- **Script-assisted route:** run `day-one-mac setup --phase 08`. The runner performs Step 8.1,
 writes the machine report, records the Brewfile, and checks the chosen dotfiles
 mode. Private-Git mode verifies the remote and pushed branch. Local-only mode
 secret-scans the source and records that remote recovery is intentionally absent.

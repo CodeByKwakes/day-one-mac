@@ -90,7 +90,7 @@ billing may change, so confirm them in the current Anthropic documentation.
 
 ## Step 3 — Create the vault and folders
 
-### Assisted path
+### Script-assisted path
 
 Recommended dynamic wizard—select Claude Code only for vaults approved for its
 account:
@@ -109,7 +109,7 @@ Standard one-vault compatibility preset:
 Both routes save the manifest used by the dynamic `second-brain-claude` vault
 selector.
 
-### Manual path
+### Manual path — no setup scripts
 
 ```bash
 mkdir -p "$HOME/Vaults/Second Brain"/{"00 Inbox","01 Dashboards"}
@@ -120,7 +120,7 @@ mkdir -p "$HOME/Vaults/Second Brain"/{"40 Sources","50 People","80 Attachments",
 ```
 
 Copy everything from `assets/vault/` into the vault, including `CLAUDE.md`.
-The assisted path updates only manager-marked generated files. It preserves an
+The script-assisted path updates only manager-marked generated files. It preserves an
 unrecognised pre-existing file and writes a proposed comparison beside it.
 
 The folders mean:
@@ -195,7 +195,7 @@ memory deliberately.
 
 ## Step 7 — Start Claude inside the vault in plan mode
 
-The assisted setup installs a launcher:
+The script-assisted setup installs a launcher:
 
 ```bash
 second-brain-claude

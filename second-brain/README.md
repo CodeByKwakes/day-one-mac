@@ -39,3 +39,16 @@ second-brain/
 The two editions are independent. The Obsidian manager writes its own local
 vault manifest. The Notion planner stores only non-secret workspace choices
 and URLs; it never stores a Notion integration token.
+
+## Shared terminology across platforms
+
+The systems use the same concepts with platform-appropriate spelling:
+
+| Concept | Obsidian YAML | Notion property |
+|---|---|---|
+| Domain | `domain` | Domain |
+| Sensitivity | `public`, `personal`, `work-confidential` | Public, Personal, Confidential, or Work Restricted |
+| AI review decision | `ai_allowed` | AI Allowed |
+
+`work-confidential` and **Work Restricted** are the equivalent employer-data
+labels. Neither label, nor an AI checkbox, creates a permission boundary.

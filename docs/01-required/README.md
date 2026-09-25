@@ -2,14 +2,22 @@
 
 # Required Day One Mac setup
 
-This folder contains the complete required route. Run the main wizard rather
-than treating every command block as a separate checklist:
+This folder explains the required outcomes and their verification gates. Choose
+one execution route before starting:
+
+- **Script-assisted:** run the main wizard rather than treating every command
+  block as a separate checklist:
 
 ```bash
 day-one-mac --wizard
 ```
 
-The runner prints the relevant guide whenever a phase needs manual input.
+- **Manual:** follow [Manual 1 through Manual 8](../20-reference/NOTION-SETUP-GUIDE.md#manual-setup-flow)
+  without installing or invoking `day-one-mac`.
+
+The runner prints the relevant guide whenever the script-assisted route needs a
+shared manual action. Manual-route readers use the phase guides for context and
+the complete manual flow for commands. Do not combine the routes step by step.
 
 ## Required order
 

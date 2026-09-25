@@ -7,7 +7,18 @@ settings from an earlier setup. Skip it only on a new or factory-reset Mac.
 Day One Mac supports Apple-silicon Macs running a native `arm64` terminal only;
 the Stage 0 wizard stops before work begins on Intel hardware or under Rosetta.
 
-## Start here
+## Choose an existing-Mac route
+
+- **Script-assisted route:** use the guided command below. This is the complete
+  Stage 0 workflow documented by this repository.
+- **Manual route:** if project scripts are prohibited, use an organisation's
+  approved migration and reset procedure. For a personal Mac, independently
+  inventory and verify the backup, then use Apple's erase flow described by
+  Route A. Do not reconstruct Route B cleanup from isolated commands; without
+  the script's gates and manifests, its removal scope is not reliably
+  reversible.
+
+## Script-assisted route — start here
 
 Open Terminal and run:
 

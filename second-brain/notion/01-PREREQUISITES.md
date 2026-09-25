@@ -58,7 +58,10 @@ Domains remain dynamic. Adding one later does not require another database.
 - **Multiple assistants:** use one shared AI Review queue and never let two
   assistants silently rewrite the same canonical page.
 
-## Optional local plan
+## Optional script-assisted local plan
+
+Manual-route readers can record the same account boundary, domains, assistant
+level, and URLs in their own private notes and skip these commands.
 
 Preview the wizard without writing anything:
 

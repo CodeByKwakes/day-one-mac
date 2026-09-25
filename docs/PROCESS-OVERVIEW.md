@@ -24,7 +24,14 @@ Existing Mac safety preparation, when needed
 
 ### New or factory-reset Mac
 
-Install the standalone runtime, then start the main wizard:
+Choose one route before starting:
+
+- **Manual route:** follow the
+  [complete manual flow](20-reference/NOTION-SETUP-GUIDE.md#manual-setup-flow).
+  It does not install or invoke Day One Mac scripts and requires you to record
+  progress yourself.
+- **Script-assisted route:** install the standalone runtime, then start the
+  main wizard:
 
 ```bash
 INSTALLER="$HOME/Downloads/install-day-one-mac"
@@ -308,7 +315,7 @@ day-one-mac --status
 day-one-mac --wizard --dry-run
 
 # Retry or revalidate one phase.
-day-one-mac --phase 03
+day-one-mac setup --phase 03
 
 # Validate the active runtime and completed environment.
 day-one-mac validate
@@ -366,7 +373,7 @@ After Phase 8, the Mac has:
 - a current, FileVault-protected macOS installation;
 - Apple Command Line Tools and Homebrew;
 - GitHub, Azure DevOps, or both authenticated;
-- 1Password-backed SSH;
+- the selected Git authentication mode;
 - a predictable `~/Developer` layout managed with `ghq`;
 - chezmoi-managed dotfiles and a Starship-enabled zsh shell;
 - Node with npm/pnpm, Python with uv, or both;

@@ -13,9 +13,12 @@ guide does not freeze versions that will become stale.
 
 ## How to use this phase
 
-Run `day-one-mac setup --phase 06`. It performs only the Node and/or
-Python route saved in Phase 1. The detailed commands below are for understanding
-and recovery. **LTS** means a longer-supported Node release; a **lockfile**
+- **Manual route:** complete the selected stack under
+  [Manual 6](../20-reference/NOTION-SETUP-GUIDE.md#manual-6--install-the-selected-language-toolchains),
+  then use the checks below.
+- **Script-assisted route:** run `day-one-mac setup --phase 06`. It performs
+  only the Node and/or Python route saved in Phase 1. The detailed commands
+  below are for understanding and recovery. **LTS** means a longer-supported Node release; a **lockfile**
 records exact project dependencies. See [GLOSSARY.md](../20-reference/GLOSSARY.md).
 
 ## Ownership model

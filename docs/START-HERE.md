@@ -1,4 +1,4 @@
-[← Day One Mac home](README.md) · [Complete command reference](20-reference/COMMAND-REFERENCE.md) · [Complete manual/script guide](20-reference/NOTION-SETUP-GUIDE.md) · [Whole process overview](PROCESS-OVERVIEW.md) · [Glossary](20-reference/GLOSSARY.md) · [Start Phase 1 →](01-required/01-first-boot-and-decisions.md)
+[← Day One Mac home](README.md) · [Complete command reference](20-reference/COMMAND-REFERENCE.md) · [Manual and script-assisted routes](20-reference/NOTION-SETUP-GUIDE.md) · [Whole process overview](PROCESS-OVERVIEW.md) · [Glossary](20-reference/GLOSSARY.md) · [Start Phase 1 →](01-required/01-first-boot-and-decisions.md)
 
 # Start here
 
@@ -33,7 +33,8 @@ You need:
 - at least 30 GB of free storage for the required base; full Xcode, container
   images, databases, AI models, and project dependencies need additional space;
 - a separate, readable backup of anything you need from the old Mac;
-- your 1Password account and recovery information;
+- credentials and recovery information for the selected Git authentication
+  mode; 1Password details are needed only in `1password` mode;
 - a GitHub account, an Azure DevOps account, or both, depending on your track;
 - a half day for the first complete pass, plus download and macOS-update time.
 
@@ -43,14 +44,21 @@ start with [Stage 0 — Safely prepare an existing Mac](00-preflight/README.md).
 wizard first shows Route A (erase with Apple) and Route B (keep the account),
 then makes the read-only safety report the first step for either route.
 
-## The shortest safe route
+## Choose one setup route
 
-If you want instructions without reading every reference page first, follow
-this sequence. The wizard prints the next action whenever it must pause.
+Choose once and stay on that route unless a troubleshooting instruction tells
+you to switch. Both routes include shared manual actions that macOS or an
+account provider requires you to approve.
+
+### Script-assisted route — recommended
+
+Use this route when local policy allows the Day One Mac scripts and you want
+resumable phases, saved verification, and recorded ownership.
 
 1. Finish macOS Setup Assistant and install every Software Update.
-2. Put this repository in the recommended location shown below.
-3. Install the portable command and run `day-one-mac --wizard` once.
+2. Install the standalone command as shown below. A repository checkout is not
+   required.
+3. Run `day-one-mac --wizard` once.
 4. Complete the eight required phases in order. Press Return when the wizard
    offers the next phase; use `q` when you need to stop.
 5. When a phase stops, read **only that phase's** printed `Guide:` path and its
@@ -59,6 +67,15 @@ this sequence. The wizard prints the next action whenever it must pause.
 6. Stop after Phase 8 when you need only the working development foundation.
    Databases, AI clients, MCP servers, profiles, and advanced tools are optional
    and remain available later.
+
+### Manual route — no Day One Mac scripts
+
+Use this route when policy prohibits the project scripts or when you want to
+perform and record every underlying change yourself. Do not install the
+standalone runtime. Follow the [complete manual setup flow](20-reference/NOTION-SETUP-GUIDE.md#manual-setup-flow)
+from Manual 1 through Manual 8, including every checkpoint. The manual route
+does not create phase markers, ownership manifests, or precise automated
+rollback evidence, so keep your own completion record.
 
 Every required phase follows the same reading pattern: **Outcome** explains the
 result, **How to use this phase** gives the recommended command, numbered steps
@@ -109,9 +126,10 @@ NO_COLOR=1 day-one-mac --status
 The words and symbols remain, so plain output and screen readers retain the
 same meaning.
 
-## Install the standalone command
+## Install the standalone command for the script-assisted route
 
-The recommended setup does not require you to keep a Git repository. It
+Skip this section if you chose the manual route. The script-assisted setup does
+not require you to keep a Git repository. It
 installs a checksum-verified runtime under your home folder.
 
 On a factory-reset Mac, first ask macOS to install the Apple command-line
@@ -260,7 +278,7 @@ day-one-mac --status
 To retry one phase:
 
 ```bash
-day-one-mac --phase 03
+day-one-mac setup --phase 03
 ```
 
 Replace `03` with the phase number shown in the error. When a phase stops,
@@ -274,7 +292,7 @@ combine closely related explanations:
 1. Read **Outcome** and **How to use this phase**.
 2. Complete any clearly labelled manual batch near the beginning.
 3. Follow the numbered steps in order; command blocks explain or recover the
-   automated route unless the text explicitly asks you to run them.
+   script-assisted route unless the text explicitly asks you to run them.
 4. If a gate stops, use **Troubleshooting** and the terminal's **Next action**.
 5. Continue only when the phase completion checklist is true.
 

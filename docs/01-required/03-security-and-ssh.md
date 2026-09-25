@@ -25,10 +25,14 @@ redundant copy.
 
 ## How to use this phase
 
-This phase is mostly manual work in the 1Password app and a browser, because a
-script cannot sign in to your vault or click through GitHub for you. **Do every
-step in order, then run the phase once at the end.** Nothing here asks you to
-run the phase twice.
+Choose the authentication mode in Step 3.0 before following a branch.
+
+- **Manual route:** use the matching branch in
+  [Manual 3](../20-reference/NOTION-SETUP-GUIDE.md#manual-3--configure-git-authentication-and-filevault)
+  and the relevant provider steps below. Do not run Step 3.9.
+- **Script-assisted route:** complete the applicable shared manual actions in
+  the app, browser, and System Settings, then run Step 3.9 once. The script
+  cannot approve those actions for you.
 
 | Step | What you do | Where |
 |---|---|---|
@@ -43,7 +47,7 @@ run the phase twice.
 | 3.8 | Turn on FileVault | System Settings |
 | 3.9 | Run the phase | Terminal |
 
-Step 3.6 can be done in a browser or scripted with `gh`; both routes are
+Step 3.6 can be done in a browser or with the `gh` CLI; both methods are
 documented and give the same result.
 
 The Installation Centre already installed or accepted 1Password and its CLI.
@@ -458,9 +462,9 @@ There are two routes. They produce exactly the same result, so pick one:
 | Route | Use it when |
 |---|---|
 | **Manual** (3.6a / 3.6c) | The normal choice. Works for every provider, needs nothing installed |
-| **Scripted** (3.6b) | GitHub only, and you would rather not leave the terminal |
+| **GitHub CLI** (3.6b) | GitHub only, and you would rather not leave the terminal |
 
-Azure DevOps has no scripted route — see 3.6c.
+Azure DevOps has no script-assisted registration route — see 3.6c.
 
 ### First: copy the public key
 
@@ -528,7 +532,7 @@ fingerprints rather than adding a duplicate.
 Same outcome as 3.6a, from the terminal. GitHub only.
 
 `gh` is already installed by the Installation Centre, but it is not signed in
-until Phase 4. The scripted route therefore needs two one-off preparations.
+until Phase 4. The script-assisted route therefore needs two one-off preparations.
 
 **1. Sign `gh` in.** This is Phase 4 Step 4.4 brought forward; doing it now is
 safe and you will not need to repeat it. It is a browser flow and needs no SSH

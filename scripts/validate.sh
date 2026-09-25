@@ -617,11 +617,11 @@ if ! grep -Fq 'Shell (PS1)' "$PROJECT_DIR/docs/10-app-guides/WARP.md" \
   fail "Warp app guide is missing Starship, sync, export, or secret-handling guidance"
   semantic_failed=1
 fi
-if ! grep -Fq 'use the wizard in Step 1.9' "$PROJECT_DIR/docs/01-required/01-first-boot-and-decisions.md" \
+if ! grep -Fq 'For the script-assisted route, start the Day One Mac wizard' "$PROJECT_DIR/docs/01-required/01-first-boot-and-decisions.md" \
    || ! grep -Fq '[Continue to early macOS settings →](MACOS-SETTINGS.md)' "$PROJECT_DIR/docs/01-required/01-first-boot-and-decisions.md" \
    || ! grep -Fq '[← Early macOS settings](MACOS-SETTINGS.md)' "$PROJECT_DIR/docs/01-required/02-command-line-foundation.md" \
    || ! grep -Fq 'Existing Homebrew found at' "$SCRIPT_DIR/setup.sh" \
-   || ! grep -Fq 'The shortest safe route' "$PROJECT_DIR/docs/START-HERE.md" \
+   || ! grep -Fq 'Choose one setup route' "$PROJECT_DIR/docs/START-HERE.md" \
    || ! grep -Fq 'day-one-mac finalize' "$PROJECT_DIR/docs/01-required/05-dotfiles-and-shell.md" \
    || ! grep -Fq 'Read **Outcome** and **How to use this phase**' "$PROJECT_DIR/docs/START-HERE.md" \
    || ! grep -Fq 'report_check "post-setup finalisation command" day-one-mac finalize --help' "$SCRIPT_DIR/setup.sh"; then

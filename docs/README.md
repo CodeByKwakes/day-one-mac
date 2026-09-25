@@ -9,7 +9,8 @@ folder before starting.
 
 | Your situation | Open this |
 |---|---|
-| New or factory-reset Mac | [Start Here](START-HERE.md) |
+| New or factory-reset Mac; use the guided scripts | [Start Here](START-HERE.md) |
+| New or factory-reset Mac; do not use Day One Mac scripts | [Complete manual route](20-reference/NOTION-SETUP-GUIDE.md#manual-setup-flow) |
 | Existing Mac that still contains data or settings | [Stage 0 preflight](00-preflight/README.md) |
 | Want a one-page map of the complete process | [Process overview](PROCESS-OVERVIEW.md) |
 | Following the required setup | [Required phases 1–8](01-required/README.md) |
@@ -23,6 +24,25 @@ folder before starting.
 
 For the long-form project explanation, assumptions, tracks, stacks, and
 implementation details, read the [complete project guide](PROJECT-GUIDE.md).
+
+## Documentation conventions
+
+The documentation uses these terms consistently:
+
+- **Manual route** means completing the setup without installing or invoking
+  the `day-one-mac` runtime. Commands from macOS, Homebrew, and the selected
+  tools are still used.
+- **Script-assisted route** means using the installed `day-one-mac` command.
+- **Shared manual action** means a decision or graphical action that remains
+  manual on both routes, such as approving FileVault or signing in to an app.
+- **Phase** means required work numbered 1–8. A **checkpoint** is an inserted
+  decision or installation gate. A **module** is optional or advanced work.
+
+When a phase guide discusses what the runner does, manual-route readers should
+use the corresponding numbered section in the
+[complete manual and script-assisted setup guide](20-reference/NOTION-SETUP-GUIDE.md).
+Do not alternate between routes unless a troubleshooting instruction explicitly
+requires it.
 
 ## The normal reading flow
 

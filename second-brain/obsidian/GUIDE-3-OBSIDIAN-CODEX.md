@@ -96,7 +96,7 @@ secret. Never copy it into Obsidian, Git, a backup report, or a prompt.
 
 ## Step 4 — Create the vault
 
-### Assisted path
+### Script-assisted path
 
 Recommended dynamic wizard—select Codex only for vaults approved for the
 signed-in OpenAI account:
@@ -115,7 +115,7 @@ Standard one-vault compatibility preset:
 Use `--tools raycast-codex` for Raycast plus Codex, or `--tools all` for
 Raycast, Claude Code, and Codex.
 
-### Manual path
+### Manual path — no setup scripts
 
 ```bash
 mkdir -p "$HOME/Vaults/Second Brain"/{"00 Inbox","01 Dashboards"}
@@ -127,7 +127,7 @@ mkdir -p "$HOME/Vaults/Second Brain"/{"40 Sources","50 People","80 Attachments",
 
 Copy the starter folders and `.gitignore` from `assets/vault/`, then copy
 `AGENTS.md` to the vault root. For a Codex-only setup, skip `CLAUDE.md`. The
-assisted setup updates only manager-marked generated files. It preserves an
+The script-assisted setup updates only manager-marked generated files. It preserves an
 unrecognised existing note and writes a proposed comparison beside it.
 
 ## Step 5 — Configure Obsidian
@@ -184,7 +184,7 @@ present deeper in the tree.
 
 ## Step 8 — Start Codex with a bounded working directory
 
-The assisted setup installs a manifest-aware launcher. If several vaults allow
+The script-assisted setup installs a manifest-aware launcher. If several vaults allow
 Codex, it asks which one to open:
 
 ```bash

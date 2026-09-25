@@ -12,7 +12,10 @@ selected in Phase 1 passes both CLI and SSH authentication.
 
 ## How to use this phase
 
-Run `day-one-mac setup --phase 04`. The runner rechecks the required
+- **Manual route:** complete
+  [Manual 4](../20-reference/NOTION-SETUP-GUIDE.md#manual-4--install-core-tools-applications-and-hosting-clis),
+  then use this page to verify the selected track. Do not invoke the runner.
+- **Script-assisted route:** run `day-one-mac setup --phase 04`. The runner rechecks the required
 applications and command-line tools prepared by the
 [Installation Centre](INSTALLATION-CENTRE.md). It does not install them here.
 The phase creates the selected hosting folders, sets Git defaults, opens

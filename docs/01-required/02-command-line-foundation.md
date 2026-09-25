@@ -13,11 +13,13 @@ that follows this phase.
 
 ## How to use this phase
 
-The recommended route is to run
-`day-one-mac setup --phase 02` from any directory
-shown in Phase 1. Use Steps 2.1–2.3 to understand what the runner does or to
-recover if it pauses. If the phase passes, do not run the same installation
-commands again. See [Start Here](../START-HERE.md) for Terminal basics.
+- **Manual route:** complete Steps 2.1–2.3 and verify every item in the final
+  checklist. Do not run Step 2.4.
+- **Script-assisted route:** run `day-one-mac setup --phase 02` from any
+  directory. Use Steps 2.1–2.3 to understand a pause, but do not repeat
+  successful installation commands.
+
+See [Start Here](../START-HERE.md) for Terminal basics.
 
 ## What this phase changes
 

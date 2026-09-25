@@ -1,4 +1,4 @@
-[← Day One Mac home](../README.md) · **Required app setup** · [Phase 3 — 1Password →](../01-required/03-security-and-ssh.md)
+[← Day One Mac home](../README.md) · **Required app setup** · [Phase 3 — authentication and FileVault →](../01-required/03-security-and-ssh.md)
 
 # Required application setup
 
@@ -32,7 +32,7 @@ Universal Autofill and Warp Drive.
 
 | Application | Installed in | Configuration guide | Required outcome |
 |---|---|---|---|
-| 1Password and 1Password CLI | Installation Centre; configured in Phase 3 | [Security, new keys, and existing-key import](../01-required/03-security-and-ssh.md); approval policy reference: [1Password SSH approval](1PASSWORD-SSH-APPROVAL.md) | Vault access, CLI integration, provider-compatible keys, and the SSH agent work |
+| 1Password and 1Password CLI | Installation Centre only in `1password` authentication mode; configured in Phase 3 | [Security, authentication modes, new keys, and existing-key import](../01-required/03-security-and-ssh.md); approval policy reference: [1Password SSH approval](1PASSWORD-SSH-APPROVAL.md) | In `1password` mode, vault access, CLI integration, provider-compatible keys, and the SSH agent work |
 | Raycast | Installation Centre, official download, or company-approved installer | [Install and configure Raycast](RAYCAST.md) · [manual or generated Day One commands](RAYCAST-COMMANDS.md) · [optional AI providers](RAYCAST-AI-PROVIDERS.md) | Opens reliably and has only the permissions you chose |
 | Warp | Installation Centre | [Warp setup](WARP.md) | Starts zsh and displays the Starship prompt correctly |
 | VS Code | Installation Centre; configured in Phase 7 | [VS Code setup](VSCODE.md) | The `code` command, clean settings, zsh terminal, and font work |
@@ -50,7 +50,7 @@ without them.
 Follow the application guides at these points in the main setup:
 
 1. Complete the Installation Centre so every required application and font is ready.
-2. Complete Phase 3 and its 1Password checks.
+2. Complete Phase 3 and the checks for the selected authentication mode.
 3. Complete the first-launch sections in the [Raycast](RAYCAST.md) and
    [Warp](WARP.md) guides. Do not import old settings yet.
 4. Complete Phase 7 and the [VS Code guide](VSCODE.md).

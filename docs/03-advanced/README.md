@@ -50,7 +50,7 @@ present Day One Mac design; it is not a second sequence to complete.
 | External backup and system snapshots | Advanced 20 | Optional on a genuinely clean Mac |
 | Full teardown and package removal | `ROLLBACK.md` and the two cleanup tools | Kept outside setup; never a required phase |
 | Xcode tools and Homebrew | Required Phase 2 | Kept |
-| 1Password SSH and FileVault | Required Phase 3 | Kept; advanced secret inventory in 15/22 |
+| Selected Git authentication mode and FileVault | Required Phase 3 | Kept; advanced secret inventory in 15/22 |
 | Folder architecture and ghq | Required Phase 4 | Kept |
 | Complete chezmoi inventory and hooks | Advanced 15 | Optional expansion of required Phase 5 |
 | Audited Brewfile and application selection | Required Phase 8 plus Advanced 16 | Minimal capture first, curation later |

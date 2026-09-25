@@ -1,8 +1,8 @@
-# Day One Mac — complete developer setup
+# Day One Mac — complete manual and script-assisted setup
 
 > 🍎 **Purpose**
 > Use this page to turn a new or factory-reset Apple-silicon Mac into a secure,
-> working development computer. Choose either the manual route or the automated
+> working development computer. Choose either the manual route or the script-assisted
 > route. Do not combine the two routes step by step unless a troubleshooting
 > note explicitly tells you to do so.
 
@@ -17,7 +17,7 @@
 2. [Prepare before either route](#prepare-before-either-route)
 3. [Record the setup decisions](#record-the-setup-decisions)
 4. [Manual setup flow](#manual-setup-flow)
-5. [Script-based setup flow](#script-based-setup-flow)
+5. [Script-assisted setup flow](#script-assisted-setup-flow)
 6. [Compare the routes](#compare-the-routes)
 7. [Final ready-for-work checklist](#final-ready-for-work-checklist)
 
@@ -26,20 +26,20 @@
 | Route | Best for | Main advantage | Main responsibility |
 |---|---|---|---|
 | **Script-based — recommended** | Most developers, repeatable team onboarding, and future rebuilds | Resumable phases, ownership records, automatic checks, and precise rollback evidence | Read every prompt and complete the named manual security actions |
-| **Manual** | Learning, restricted work Macs, or environments where scripts cannot make changes | Every change is visible and individually approved | Track progress yourself and avoid repeating installation commands |
+| **Manual — no Day One Mac scripts** | Learning, restricted work Macs, or environments where project scripts cannot make changes | Every change is visible and individually approved | Track progress yourself and avoid repeating installation commands |
 
 Both routes produce the same working foundation:
 
 - Apple Command Line Tools and native Homebrew;
 - Git and a predictable `~/Developer` repository layout;
 - GitHub, Azure DevOps, or both, according to the selected track;
-- 1Password-backed SSH and FileVault;
+- the selected Git authentication mode and FileVault;
 - chezmoi-managed shell files and a Starship prompt;
 - Node with npm and pnpm, Python with uv, or both;
 - Raycast, Warp, Visual Studio Code, and the required Nerd Font; and
 - a reviewed Brewfile and verified environment.
 
-The script route additionally records what it changed under
+The script-assisted route additionally records what it changed under
 `~/.day-one-mac/`, installs the portable `day-one-mac` helper, and supports
 phase fingerprints and manifest-owned rollback.
 
@@ -52,7 +52,9 @@ phase fingerprints and manifest-owned rollback.
 - [ ] The Mac is connected to power and reliable internet.
 - [ ] At least 30 GB is free, plus space required by real projects.
 - [ ] Important files and repositories exist in a separate, tested backup.
-- [ ] The 1Password account and its recovery method are available.
+- [ ] The credentials and recovery method for the selected Git authentication
+      mode are available. A 1Password account is required only for
+      `1password` mode.
 - [ ] The required GitHub and/or Azure DevOps account can be opened in a browser.
 - [ ] Company policy permits each selected application and developer tool.
 
@@ -66,9 +68,10 @@ Expected result: `arm64`.
 
 ### Choose the correct starting point
 
-- [ ] **New or factory-reset Mac:** continue below.
-- [ ] **Existing Mac or uncertain:** install the standalone runtime in the next
-      section, but do not start the Phase 1 wizard. Run Stage 0 instead:
+- [ ] **New or factory-reset Mac:** continue below with either route.
+- [ ] **Existing Mac or uncertain, script-assisted route:** install the
+      standalone runtime in the next section, but do not start Phase 1. Run
+      Stage 0 instead:
 
 ```bash
 day-one-mac prepare-existing --guided
@@ -78,7 +81,13 @@ Stage 0 first creates a read-only safety report. Route A hands off to Apple's
 erase process; Route B keeps the account and performs a backup-gated development
 cleanup. The script itself never formats a disk.
 
-### Install the initial Apple tools and standalone runtime
+For an existing Mac where Day One Mac scripts are prohibited, do not improvise
+the Route B cleanup from isolated commands. Use the organisation's approved
+backup and device-reset process, or create and verify an independent backup and
+use Apple's Route A erase flow. Begin Manual 1 only after the Mac is genuinely
+new or factory-reset.
+
+### Install the initial Apple tools
 
 Open **Terminal** from **Applications → Utilities → Terminal**, then run:
 
@@ -86,7 +95,14 @@ Open **Terminal** from **Applications → Utilities → Terminal**, then run:
 xcode-select --install
 ```
 
-Finish the graphical installer. Then download and inspect the public installer:
+Finish the graphical installer. Manual-route readers continue to
+[Record the setup decisions](#record-the-setup-decisions) and do not install the
+Day One Mac runtime.
+
+### Script-assisted route only — install the standalone runtime
+
+Skip this section if you chose the manual route. Download and inspect the public
+installer:
 
 ```bash
 INSTALLER="$HOME/Downloads/install-day-one-mac"
@@ -123,6 +139,7 @@ Complete this worksheet before choosing either route.
 
 - [ ] Git author name: `________________________________`
 - [ ] Primary Git email: `________________________________`
+- [ ] Git authentication: `1password` / `keychain` / `external` / `https`
 - [ ] Primary IDE: VS Code Git integration / another IDE; leave Git tools unchanged
 - [ ] chezmoi source: existing private repository / new private Git / local-only
 - [ ] After Phase 1, choose early macOS preferences: configure / skip for now
@@ -169,16 +186,10 @@ Expected results: FileVault is on and Gatekeeper reports assessments enabled.
 You may configure Finder, Dock, keyboard, trackpad, battery, and screenshot
 preferences now, or skip them without blocking development setup.
 
-For the reviewed interactive selector:
-
-```bash
-day-one-mac macos-settings --preview
-day-one-mac macos-settings --wizard
-```
-
-To remain fully manual, open the documented System Settings locations in
-`MACOS-SETTINGS.md` and change only the preferences you understand. Do not
-disable Gatekeeper.
+Open the documented System Settings locations in
+[Early macOS settings](../01-required/MACOS-SETTINGS.md) and change only the
+preferences you understand. Do not run the settings wizard on this route, and
+do not disable Gatekeeper.
 
 **Checkpoint**
 
@@ -244,10 +255,28 @@ Expected result: `brew --prefix` prints `/opt/homebrew`.
 - [ ] `brew --prefix` is `/opt/homebrew`.
 - [ ] Homebrew warnings were reviewed rather than ignored.
 
-### Manual 3 — configure 1Password, SSH, and FileVault
+### Manual 3 — configure Git authentication and FileVault
 
-**Purpose:** keep private SSH keys out of plaintext files while allowing Git to
-authenticate to the selected hosting provider.
+**Purpose:** configure the authentication mode selected in the worksheet and
+protect the disk with FileVault.
+
+Choose exactly one authentication branch. The detailed trade-offs are in
+[Phase 3 Step 3.0](../01-required/03-security-and-ssh.md#step-30--choose-how-git-authenticates):
+
+- **`1password`:** complete the 1Password instructions below. No new private
+  key is written to `~/.ssh`.
+- **`keychain`:** create a passphrase-protected key with `ssh-keygen`, add it
+  with `ssh-add --apple-use-keychain`, add `UseKeychain yes` to the relevant
+  host block in `~/.ssh/config`, and register only the `.pub` file. Use Ed25519
+  for GitHub and RSA 3072 for Azure DevOps.
+- **`external`:** load the intended identity into the approved external agent,
+  confirm it with `ssh-add -l`, and register its public key. Do not create a
+  second key.
+- **`https`:** skip the SSH-key and agent steps. In Manual 4, authenticate the
+  selected provider over HTTPS and select HTTPS for Git operations.
+
+The remainder of this section is the `1password` branch. Readers using another
+mode resume at the FileVault check and the checkpoint at the end.
 
 Before installing, check whether work management or another trusted installer
 already supplied the app and command:
@@ -283,9 +312,10 @@ brew install --cask 1password-cli
 - [ ] Copy only the public key and register it with the provider required by
       the selected track.
 
-Run Phase 3 to create or safely merge a marked, track-specific block into
-`~/.ssh/config`. A GitHub block looks like this; Azure DevOps uses the same
-agent path under `Host ssh.dev.azure.com`:
+Create or safely merge a track-specific block into `~/.ssh/config`. Back up an
+existing file first and preserve every unrelated host. A GitHub block looks
+like this; Azure DevOps uses the same agent path under
+`Host ssh.dev.azure.com`:
 
 ```sshconfig
 # >>> Day One Mac: 1Password SSH agent >>>
@@ -300,7 +330,8 @@ Host github.com
 
 If the corresponding public key is saved as `~/.ssh/github-auth.pub` or
 `~/.ssh/azure-devops-auth.pub`, rerunning
-Phase 3 also adds the public `IdentityFile` line — together with
+When the corresponding public key exists, add its public `IdentityFile` line
+together with
 `IdentitiesOnly yes` — so 1Password offers the right private identity. Those two
 lines always appear as a pair: `IdentitiesOnly yes` without an `IdentityFile`
 would stop OpenSSH from using the 1Password agent at all. Existing SSH settings
@@ -323,8 +354,9 @@ list` can use the unlocked desktop app.
 
 **Checkpoint**
 
-- [ ] 1Password is recoverable and its CLI works.
-- [ ] The SSH agent offers the intended public identity.
+- [ ] The selected authentication method is recoverable.
+- [ ] The selected SSH agent offers the intended public identity, unless HTTPS
+      was selected.
 - [ ] Only the public key was registered with hosting providers.
 - [ ] No *unexpected* plaintext `~/.ssh/id_*` private key was created. Only
       the `keychain` authentication mode creates one, on purpose.
@@ -404,12 +436,16 @@ git config --global core.excludesFile "$HOME/.gitignore_global"
 git config --global merge.conflictStyle zdiff3
 ```
 
-The script also adds `git lg` and creates the small global ignore file described
-in Phase 4. If VS Code was selected as the primary IDE, it configures VS Code
-for Git editing, visual diffs, and merge conflicts. Otherwise those editor
-settings remain untouched.
+To match the shared baseline, also create the small global ignore file and add
+the reviewed `git lg` alias described in
+[Phase 4](../01-required/04-core-tools-and-hosting.md). If VS Code is the
+primary IDE, apply the Git editor, diff, and merge settings from that phase.
+If another IDE is primary, leave existing editor settings unchanged.
 
-Authenticate only the selected providers:
+Authenticate only the selected providers. Choose the command block that
+matches the authentication mode from the worksheet.
+
+For `1password`, `keychain`, or `external` mode:
 
 ```bash
 # Track 1 or 3
@@ -424,6 +460,25 @@ az extension add --name azure-devops
 az account show
 ssh -T git@ssh.dev.azure.com
 ```
+
+For `https` mode:
+
+```bash
+# Track 1 or 3
+gh auth login --git-protocol https --web
+gh config set git_protocol https
+gh auth setup-git
+gh auth status
+
+# Track 2 or 3
+az login
+az extension add --name azure-devops
+az account show
+git config --global credential.https://dev.azure.com.useHttpPath true
+```
+
+Do not run the SSH tests in HTTPS mode. Verify by cloning or fetching a small
+repository over an `https://` remote instead.
 
 GitHub may return a non-zero shell status while printing “successfully
 authenticated”; Azure may print “Shell access is not supported.” Those messages
@@ -524,7 +579,7 @@ alias cmmerge='chezmoi merge'
 alias brewcleanpreview='brew cleanup --dry-run'
 ```
 
-The script route also adds `cdayone`, which relies on its portable
+The script-assisted route also adds `cdayone`, which relies on its portable
 `day-one-mac` helper. Omit that alias in the fully manual route.
 
 Register Homebrew zsh and make it the account login shell. The append is safe
@@ -772,9 +827,9 @@ backup contains `~/.local/share/chezmoi`.
 - [ ] The chezmoi source is secret-free and recoverable.
 - [ ] A small real repository opens, installs dependencies, and runs its tests.
 
-## Script-based setup flow
+## Script-assisted setup flow
 
-The automated route uses the same eight phases. It adds saved decisions,
+The script-assisted route uses the same eight phases. It adds saved decisions,
 resumable progress, application-ownership checks, reports, and rollback
 manifests. It does not automate account sign-in or security decisions.
 
@@ -785,7 +840,7 @@ Portal, the App Store, or a vendor installer, leave the terminal open, complete
 the installation, then press Enter. The runner rechecks the real app, command,
 or font before continuing.
 
-### Automated 1 — preview the complete plan
+### Script-assisted 1 — preview the complete plan
 
 Using the standalone command installed above:
 
@@ -804,6 +859,8 @@ The wizard asks for:
 - Mac state: clean, existing, or uncertain;
 - hosting track and development stack;
 - Git author name and primary email;
+- Git authentication mode;
+- whether VS Code should be Git's primary editor and comparison tool;
 - existing, new private-Git, or local-only chezmoi source.
 
 After Phase 1, a separate checkpoint asks whether to configure or skip early
@@ -812,9 +869,9 @@ passed.
 
 - [ ] Read the final plan.
 - [ ] Confirm that the review contains only required-base decisions.
-- [ ] Confirm the track, stack, identity, and dotfiles choice.
+- [ ] Confirm the track, stack, authentication, IDE, identity, and dotfiles choices.
 
-### Automated 2 — run or resume the wizard
+### Script-assisted 2 — run or resume the wizard
 
 ```bash
 day-one-mac --wizard
@@ -822,7 +879,7 @@ day-one-mac --wizard
 
 The runner performs these equivalents:
 
-| Automated phase | Manual equivalent | What can still require you |
+| Script-assisted phase | Manual equivalent | Shared manual action |
 |---|---|---|
 | Phase 1 | Manual 1 decisions and system checks | Finish Software Update and confirm the clean-machine boundary |
 | Early settings | Optional macOS preference section | Complete selected graphical preferences or skip |
@@ -839,7 +896,7 @@ The runner performs these equivalents:
 > Quit between phases. Completed current phases remain recorded. Rerun the same
 > wizard to continue at the first incomplete or changed phase.
 
-### Automated 2a — choose optional work only after Phase 8
+### Script-assisted 2a — choose optional work only after Phase 8
 
 When Phase 8 passes, choose **Finish and exit** or open the optional setup
 centre. To return later:
@@ -851,12 +908,13 @@ day-one-mac optional --guided
 The optional centre saves a plan; it does not bulk-install every selected
 module.
 
-### Automated 3 — complete the manual batches when prompted
+### Script-assisted 3 — complete shared manual actions when prompted
 
 Do not skip a manual gate just to reach the next phase.
 
 - [ ] Phase 1: macOS updates and backup boundary confirmed.
-- [ ] Phase 3: 1Password CLI and agent enabled; public key registered; FileVault on.
+- [ ] Phase 3: the selected authentication mode works; any required public key
+      is registered; FileVault is on.
 - [ ] Phase 4: selected hosting provider browser and SSH authentication complete.
 - [ ] Phase 4/7: Raycast, Warp, and VS Code first-launch settings reviewed.
 - [ ] Phase 8: dotfiles private remote pushed or local-only backup plan confirmed.
@@ -868,14 +926,14 @@ choice. Add `--app-install-policy homebrew` to authorize Homebrew for missing
 apps, or `--app-install-policy check-only` to report and stop without installing.
 The ordinary `--yes` flag does not select an application owner.
 
-### Automated 4 — inspect status and retry only what failed
+### Script-assisted 4 — inspect status and retry only what failed
 
 ```bash
 # Show choices, completed phases, and the next action.
 day-one-mac --status
 
 # Retry one phase. Replace 03 with the displayed number.
-day-one-mac --phase 03
+day-one-mac setup --phase 03
 
 # Reopen the early preference selector.
 day-one-mac macos-settings --wizard
@@ -884,7 +942,7 @@ day-one-mac macos-settings --wizard
 Do not manually create a completion marker. A phase receives `✓` only after its
 current checks pass.
 
-### Automated 5 — review the reports
+### Script-assisted 5 — review the reports
 
 After Phase 8, inspect:
 
@@ -910,27 +968,27 @@ chezmoi --use-builtin-diff diff --no-pager
 - [ ] Only software actually installed by Day One Mac appears as runner-owned.
 - [ ] The Brewfile and chezmoi source contain no secrets.
 
-### Automated 6 — complete application setup
+### Script-assisted 6 — complete application setup
 
 The runner installs or recognizes applications but does not sign into them,
 grant privacy permissions, enable cloud synchronization, or import old settings.
 
-- [ ] Follow `app-guides/RAYCAST.md`.
-- [ ] Follow `app-guides/WARP.md`.
-- [ ] Follow `app-guides/VSCODE.md` alongside Phase 7.
+- [ ] Follow [Raycast](../10-app-guides/RAYCAST.md).
+- [ ] Follow [Warp](../10-app-guides/WARP.md).
+- [ ] Follow [VS Code](../10-app-guides/VSCODE.md) alongside Phase 7.
 - [ ] Export the clean known-good baseline outside the setup repository.
 
-### Automated 7 — validate the project and machine state
+### Script-assisted 7 — validate the project and machine state
 
 ```bash
-./validate.sh
-day-one-mac --phase 08
+day-one-mac validate
+day-one-mac setup --phase 08
 ```
 
 The first command validates the Day One Mac project. Phase 8 validates the
 actual selected track, stack, apps, toolchain, and dotfiles protection.
 
-**Script route complete**
+**Script-assisted route complete**
 
 - [ ] The wizard reports all eight phases current.
 - [ ] Phase 8 verification contains no unexplained failure.

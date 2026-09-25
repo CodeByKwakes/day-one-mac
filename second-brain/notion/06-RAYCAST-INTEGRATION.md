@@ -6,13 +6,13 @@
 
 Open the dashboard or capture form without navigating through Notion.
 
-## Recommended route: Quicklinks
+## Manual route — create Quicklinks
 
 After creating the HQ page and private capture form:
 
 1. Copy the HQ page URL.
 2. Copy the capture form URL.
-3. Rerun the planner:
+3. If you used the script-assisted planner, rerun it to save the URLs:
 
    ```bash
    ./scripts/notion-second-brain-manager.sh --guided --apply
@@ -26,9 +26,10 @@ After creating the HQ page and private capture form:
 
 Quicklinks are simpler than an API integration and contain no API secret.
 
-## Script Commands created by the planner
+## Script-assisted route — use commands created by the planner
 
-When Raycast is selected, the planner installs two small commands under:
+Skip this section on the manual route. When Raycast is selected, the planner
+installs two small commands under:
 
 ```text
 ~/.local/share/second-brain-notion/raycast

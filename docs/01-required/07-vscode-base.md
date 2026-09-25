@@ -17,7 +17,10 @@ installed.
 
 ## How to use this phase
 
-Run `day-one-mac setup --phase 07`. The runner creates the minimal
+- **Manual route:** complete
+  [Manual 7](../20-reference/NOTION-SETUP-GUIDE.md#manual-7--configure-vs-code-warp-and-raycast)
+  and the relevant first-launch steps in the application guide.
+- **Script-assisted route:** run `day-one-mac setup --phase 07`. The runner creates the minimal
 settings file only when none exists; it does not overwrite an existing file.
 Use the reference steps below to review an existing setup or fix the `code`
 launcher. Profiles and large extension sets are not part of this required gate.
@@ -26,7 +29,7 @@ For the complete first-launch, settings-level, selective import, export,
 Settings Sync, clean-cloud reset, and later-change procedure, keep the
 [detailed VS Code application guide](../10-app-guides/VSCODE.md) open alongside this
 phase. This phase remains the concise required gate; the application guide
-explains every manual decision.
+explains every shared manual decision.
 
 ## Step 7.1 — Confirm the installation
 

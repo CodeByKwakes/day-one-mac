@@ -7,7 +7,8 @@ base is working.
 
 ## Start here
 
-- **New or factory-reset Mac:** [open the beginner-safe start page](docs/START-HERE.md).
+- **New or factory-reset Mac, using the guided scripts:** [open the beginner-safe start page](docs/START-HERE.md).
+- **New or factory-reset Mac, without Day One Mac scripts:** [follow the complete manual route](docs/20-reference/NOTION-SETUP-GUIDE.md#manual-setup-flow).
 - **Existing Mac with files or settings:** [start with the read-only safety process](docs/00-preflight/README.md).
 - **Need the complete map first:** [read the process overview](docs/PROCESS-OVERVIEW.md).
 - **Need one specific command:** [open the command reference](docs/20-reference/COMMAND-REFERENCE.md).
@@ -30,8 +31,9 @@ export PATH="$HOME/.local/bin:$PATH"
 day-one-mac --wizard
 ```
 
-The runtime is installed under `~/.local/share/day-one-mac`; no Git checkout
-is required afterward. The wizard saves completed phases and tells you which
+The runtime container is `~/.local/share/day-one-mac`; its `current` link points
+to the active versioned release. No Git checkout is required afterward. The
+wizard saves completed phases and tells you which
 guide to open when a manual action is required. It also asks whether VS Code
 should become Git's primary editor, diff viewer, and merge tool; choosing
 another primary IDE leaves those Git settings unchanged. Read the

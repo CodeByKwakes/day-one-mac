@@ -28,7 +28,9 @@ Keep these nearby:
 
 - The administrator password for this Mac.
 - A trusted device for Apple, GitHub, Azure, and 1Password sign-in.
-- The 1Password account emergency kit or another verified recovery method.
+- Credentials and a verified recovery method for the Git authentication mode
+  you intend to select. 1Password details are required only for `1password`
+  mode.
 - Confirmation that old documents and repositories exist in a separate backup.
 - Work account details if this Mac will access Azure DevOps.
 
@@ -229,11 +231,15 @@ dotfiles repository.
 
 ## Step 1.9 — Start the wizard
 
-From this project's scripts directory, start the Day One Mac wizard:
+For the script-assisted route, start the Day One Mac wizard from any directory:
 
 ```bash
-day-one-mac
+day-one-mac --wizard
 ```
+
+For the route that does not use Day One Mac scripts, record the same decisions
+in the worksheet under [Record the setup decisions](../20-reference/NOTION-SETUP-GUIDE.md#record-the-setup-decisions),
+then continue with Manual 1. Do not create or edit runner state files.
 
 Use Up/Down (or `j`/`k`) to move. Space or Enter accepts one highlighted
 choice. On a multi-choice screen, Space toggles an item and Enter accepts the

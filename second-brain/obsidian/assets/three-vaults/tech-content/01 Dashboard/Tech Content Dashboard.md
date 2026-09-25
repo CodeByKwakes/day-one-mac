@@ -1,3 +1,14 @@
+---
+domain: tech-content
+type: review
+status: active
+created: 2026-09-12
+sensitivity: personal
+ai_allowed: true
+topics:
+  - dashboard
+---
+
 # Tech Content dashboard
 
 ## Start

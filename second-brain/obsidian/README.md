@@ -89,7 +89,18 @@ that independent vaults behave like one Obsidian database.
 | `scripts/three-vault-health-report.sh` | Fixed three-vault aggregate report |
 | `scripts/validate.sh` | Validates this project and, optionally, an installed vault |
 
-## Fastest safe start
+## Choose a setup route
+
+- **Script-assisted route:** use the manager or a preset below. It saves a
+  manifest, previews changes, and updates only manager-owned files.
+- **Manual route:** create the folders shown in the relevant integration guide,
+  copy the matching files from `assets/`, and keep your own record. Do not run
+  the manager or preset scripts.
+
+Choose one route for initial creation. Both routes still require shared manual
+work in Obsidian, Raycast, and any selected AI client.
+
+## Script-assisted route — fastest safe start
 
 Run the reason-first wizard and approve the resulting plan in the same session:
 
