@@ -489,18 +489,23 @@ semantic_failed=0
 release_manifest_version="$(sed -n 's/^[[:space:]]*"\.":[[:space:]]*"\([^"]*\)".*/\1/p' \
   "$PROJECT_DIR/.release-please-manifest.json")"
 project_version="$(sed -n '1p' "$PROJECT_DIR/VERSION")"
+package_version="$(sed -n 's/^[[:space:]]*"version":[[:space:]]*"\([^"]*\)".*/\1/p' \
+  "$PROJECT_DIR/package.json" | head -1)"
 if [[ "$release_manifest_version" != "$project_version" ]] \
+   || [[ "$package_version" != "$project_version" ]] \
    || ! grep -Fq 'workflows: [Validate]' "$PROJECT_DIR/.github/workflows/release.yml" \
    || ! grep -Fq "github.event.workflow_run.conclusion == 'success'" "$PROJECT_DIR/.github/workflows/release.yml" \
    || ! grep -Fq 'googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071' "$PROJECT_DIR/.github/workflows/release.yml" \
    || ! grep -Fq 'token: ${{ secrets.RELEASE_PLEASE_TOKEN }}' "$PROJECT_DIR/.github/workflows/release.yml" \
    || ! grep -Fq 'steps.release.outputs.release_created' "$PROJECT_DIR/.github/workflows/release.yml" \
    || ! grep -Fq 'gh release upload "$RELEASE_TAG"' "$PROJECT_DIR/.github/workflows/release.yml" \
-   || ! grep -Fq '"version-file": "VERSION"' "$PROJECT_DIR/release-please-config.json"; then
-  fail "Release Please versioning, validation gate, action pin, or asset publication is incomplete"
+   || ! grep -Fq '"version-file": "VERSION"' "$PROJECT_DIR/release-please-config.json" \
+   || ! grep -Fq '"path": "package.json"' "$PROJECT_DIR/release-please-config.json" \
+   || ! grep -Fq '"jsonpath": "$.version"' "$PROJECT_DIR/release-please-config.json"; then
+  fail "Release Please version synchronization, validation gate, action pin, or asset publication is incomplete"
   semantic_failed=1
 else
-  pass "Release Please waits for main validation and owns version, tag, release, and asset publication"
+  pass "Release Please synchronizes every version record after main validation and owns release publication"
 fi
 if grep -Fq '"prepare": "husky"' "$PROJECT_DIR/package.json" \
    && grep -Fq '"*.{md,mdx}": "markdownlint-cli2"' "$PROJECT_DIR/package.json" \

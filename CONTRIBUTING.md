@@ -50,10 +50,11 @@ semantic version:
 
 Do not update `VERSION`, create a release tag, or publish a GitHub Release by
 hand during normal development. After validation succeeds on `main`, Release
-Please updates one release pull request containing `VERSION`, `CHANGELOG.md`,
-and the release manifest. Review and merge that pull request when the changes
-are ready to publish. The release workflow then creates the tag and GitHub
-Release and attaches the verified runtime archive, checksum, and installer.
+Please updates one release pull request containing `VERSION`, the private
+contributor-tooling version in `package.json`, `CHANGELOG.md`, and the release
+manifest. Review and merge that pull request when the changes are ready to
+publish. The release workflow then creates the tag and GitHub Release and
+attaches the verified runtime archive, checksum, and installer.
 
 Repository maintainers must keep the narrowly scoped `RELEASE_PLEASE_TOKEN`
 Actions secret available so the generated release pull request receives the

@@ -85,8 +85,9 @@ application. Its implementation and documentation formats are:
 - TSV for application, formula, Raycast, and related catalogues;
 - small JSON and TOML examples where an installed tool requires them.
 
-There is deliberately no `package.json`, Python project file, application
-framework, or language dependency lockfile at the repository root. Host
+The root `package.json` and `pnpm-lock.yaml` exist only for contributor linting,
+Conventional Commit checks, and shared Git hooks. Day One Mac is not a Node
+application, and the public runtime does not include `node_modules`. Runtime
 dependencies come from macOS, Xcode Command Line Tools, Homebrew, and the
 catalogues managed by the project. Release assets are produced by
 `scripts/build-release.sh`, with checksums and a standalone installer.
@@ -108,8 +109,9 @@ Version `1.0.7` is declared in `VERSION`.
   suppressions in scattered scripts.
 - After validation succeeds on `main`, Release Please updates one release pull
   request from the Conventional Commit history. Merging that pull request
-  updates `VERSION` and `CHANGELOG.md`, creates the matching tag and GitHub
-  Release, then builds and attaches the checksummed runtime assets.
+  updates `VERSION`, `package.json`, the release manifest, and `CHANGELOG.md`,
+  creates the matching tag and GitHub Release, then builds and attaches the
+  checksummed runtime assets.
 
 ### What should change
 

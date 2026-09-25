@@ -216,6 +216,7 @@ one release pull request. That pull request collects the releasable commits and
 updates:
 
 - `VERSION`;
+- the private contributor-tooling version in `package.json`;
 - `CHANGELOG.md`; and
 - `.release-please-manifest.json`.
 
@@ -226,7 +227,8 @@ standalone installer.
 
 During normal development, do not manually:
 
-- edit `VERSION` or `.release-please-manifest.json`;
+- edit the version in `VERSION`, `package.json`, or
+  `.release-please-manifest.json`;
 - create a release tag;
 - create a duplicate GitHub Release; or
 - upload release assets by hand.

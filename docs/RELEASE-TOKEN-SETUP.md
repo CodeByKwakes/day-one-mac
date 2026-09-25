@@ -166,6 +166,7 @@ when the proposed version and changelog are ready to publish.
 For Day One Mac, a successful release pull request updates:
 
 - `VERSION`;
+- the private contributor-tooling version in `package.json`;
 - `CHANGELOG.md`; and
 - `.release-please-manifest.json`.
 
