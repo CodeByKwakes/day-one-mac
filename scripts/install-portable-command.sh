@@ -203,4 +203,8 @@ printf '%s\n' \
   '' \
   'Then run:' \
   '  day-one-mac runtime-status' \
-  '  day-one-mac --wizard'
+  '  day-one-mac --wizard' \
+  '' \
+  'View the installed documentation:' \
+  '  day-one-mac docs --list' \
+  '  day-one-mac docs start --open'

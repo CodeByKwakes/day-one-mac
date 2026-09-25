@@ -137,7 +137,7 @@ case "${1:-}" in
       '  update            install the latest verified public release' \
       '  rollback-runtime  preview or select a previous installed runtime' \
       '  uninstall-runtime remove only the command and runtime; preserve setup' \
-      '  docs              print the installed Start Here guide path' \
+      '  docs              list, locate, or open installed documentation' \
       '  setup [options]   run or inspect the eight required phases' \
       '  shell-status      inspect zsh, PATH, completions and shell tools' \
       '  safety-report     create the Stage 0 read-only safety report' \

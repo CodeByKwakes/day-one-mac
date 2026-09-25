@@ -14,7 +14,9 @@ Usage: day-one-mac runtime-status
        day-one-mac update
        day-one-mac rollback-runtime [--version VERSION] [--execute]
        day-one-mac uninstall-runtime [--execute]
-       day-one-mac docs [--open]
+       day-one-mac docs [TOPIC] [--open]
+       day-one-mac docs --list
+       day-one-mac docs --folder [--open]
 EOF
 }
 
@@ -115,12 +117,76 @@ uninstall_runtime() {
 }
 
 open_docs() {
-  local index="$RUNTIME_ROOT/docs/START-HERE.md"
-  [[ -f "$index" ]] || { printf 'Documentation is missing: %s\n' "$index" >&2; return 1; }
-  if [[ "${1:-}" == --open ]]; then
-    open "$index"
+  local topic='start' target='' should_open=0 show_list=0 use_folder=0 topic_set=0
+  while (( $# )); do
+    case "$1" in
+      --open) should_open=1; shift ;;
+      --list) show_list=1; shift ;;
+      --folder) use_folder=1; shift ;;
+      -h|--help|help)
+        printf '%s\n' \
+          'Usage: day-one-mac docs [TOPIC] [--open]' \
+          '       day-one-mac docs --list' \
+          '       day-one-mac docs --folder [--open]' \
+          '' \
+          'Topics: start, index, manual, process, project, commands, second-brain' \
+          '' \
+          'Without --open, the command prints the installed path.'
+        return 0
+        ;;
+      --*) printf 'Unknown docs option: %s\n' "$1" >&2; return 2 ;;
+      *)
+        [[ "$topic_set" == 0 ]] || {
+          printf 'Choose only one documentation topic.\n' >&2; return 2; }
+        topic="$1"
+        topic_set=1
+        shift
+        ;;
+    esac
+  done
+
+  if [[ "$show_list" == 1 ]]; then
+    printf '%-14s %s\n' \
+      'TOPIC' 'INSTALLED DOCUMENT' \
+      'start' "$RUNTIME_ROOT/docs/START-HERE.md" \
+      'index' "$RUNTIME_ROOT/docs/README.md" \
+      'manual' "$RUNTIME_ROOT/docs/20-reference/NOTION-SETUP-GUIDE.md" \
+      'process' "$RUNTIME_ROOT/docs/PROCESS-OVERVIEW.md" \
+      'project' "$RUNTIME_ROOT/docs/PROJECT-GUIDE.md" \
+      'commands' "$RUNTIME_ROOT/docs/20-reference/COMMAND-REFERENCE.md" \
+      'second-brain' "$RUNTIME_ROOT/second-brain/README.md"
+    return 0
+  fi
+
+  if [[ "$use_folder" == 1 ]]; then
+    target="$RUNTIME_ROOT/docs"
   else
-    printf '%s\n' "$index"
+    case "$topic" in
+      start) target="$RUNTIME_ROOT/docs/START-HERE.md" ;;
+      index) target="$RUNTIME_ROOT/docs/README.md" ;;
+      manual) target="$RUNTIME_ROOT/docs/20-reference/NOTION-SETUP-GUIDE.md" ;;
+      process) target="$RUNTIME_ROOT/docs/PROCESS-OVERVIEW.md" ;;
+      project) target="$RUNTIME_ROOT/docs/PROJECT-GUIDE.md" ;;
+      commands) target="$RUNTIME_ROOT/docs/20-reference/COMMAND-REFERENCE.md" ;;
+      second-brain) target="$RUNTIME_ROOT/second-brain/README.md" ;;
+      *)
+        printf 'Unknown documentation topic: %s\n' "$topic" >&2
+        printf 'Run `day-one-mac docs --list` to see available topics.\n' >&2
+        return 2
+        ;;
+    esac
+  fi
+
+  [[ -e "$target" ]] || {
+    printf 'Documentation is missing: %s\n' "$target" >&2; return 1; }
+  if [[ "$should_open" == 1 ]]; then
+    command -v open >/dev/null 2>&1 || {
+      printf 'The macOS open command is unavailable. Document: %s\n' "$target" >&2
+      return 1
+    }
+    open "$target"
+  else
+    printf '%s\n' "$target"
   fi
 }
 

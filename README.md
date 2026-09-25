@@ -31,6 +31,14 @@ export PATH="$HOME/.local/bin:$PATH"
 day-one-mac --wizard
 ```
 
+The installer includes the complete documentation set. List or open installed
+guides at any time:
+
+```bash
+day-one-mac docs --list
+day-one-mac docs start --open
+```
+
 The runtime container is `~/.local/share/day-one-mac`; its `current` link points
 to the active versioned release. No Git checkout is required afterward. The
 wizard saves completed phases and tells you which

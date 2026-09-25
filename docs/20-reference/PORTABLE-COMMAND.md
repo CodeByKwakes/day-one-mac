@@ -93,10 +93,21 @@ Expected results:
 - mode: `standalone runtime`;
 - integrity: `verified`.
 
-Open the installed Start Here guide:
+List the installed guides, open one by topic, or reveal the complete
+documentation folder:
 
 ```bash
-day-one-mac docs --open
+day-one-mac docs --list
+day-one-mac docs start --open
+day-one-mac docs manual --open
+day-one-mac docs --folder --open
+```
+
+Without `--open`, the command prints the installed path. This is useful when
+opening a guide in a specific editor, for example:
+
+```bash
+code "$(day-one-mac docs commands)"
 ```
 
 ## Move an already-completed Mac to standalone mode
