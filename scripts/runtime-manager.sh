@@ -129,7 +129,7 @@ open_docs() {
           '       day-one-mac docs --list' \
           '       day-one-mac docs --folder [--open]' \
           '' \
-          'Topics: start, index, manual, process, project, commands, second-brain' \
+          'Topics: start, index, manual, process, project, commands, optional, advanced, second-brain' \
           '' \
           'Without --open, the command prints the installed path.'
         return 0
@@ -154,6 +154,8 @@ open_docs() {
       'process' "$RUNTIME_ROOT/docs/PROCESS-OVERVIEW.md" \
       'project' "$RUNTIME_ROOT/docs/PROJECT-GUIDE.md" \
       'commands' "$RUNTIME_ROOT/docs/20-reference/COMMAND-REFERENCE.md" \
+      'optional' "$RUNTIME_ROOT/docs/02-optional/README.md" \
+      'advanced' "$RUNTIME_ROOT/docs/03-advanced/README.md" \
       'second-brain' "$RUNTIME_ROOT/second-brain/README.md"
     return 0
   fi
@@ -168,6 +170,8 @@ open_docs() {
       process) target="$RUNTIME_ROOT/docs/PROCESS-OVERVIEW.md" ;;
       project) target="$RUNTIME_ROOT/docs/PROJECT-GUIDE.md" ;;
       commands) target="$RUNTIME_ROOT/docs/20-reference/COMMAND-REFERENCE.md" ;;
+      optional) target="$RUNTIME_ROOT/docs/02-optional/README.md" ;;
+      advanced) target="$RUNTIME_ROOT/docs/03-advanced/README.md" ;;
       second-brain) target="$RUNTIME_ROOT/second-brain/README.md" ;;
       *)
         printf 'Unknown documentation topic: %s\n' "$topic" >&2

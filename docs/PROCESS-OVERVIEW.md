@@ -158,7 +158,9 @@ or phase documents change later, the saved fingerprint requires revalidation.
 
 After Phase 8, choose **Finish and exit** or open the optional setup centre.
 The centre records a plan for databases, AI clients, MCP servers, profiles, and
-other extras; it does not install them silently. Open it later with:
+other extras before making changes. A selected Database module can continue
+into its explicit installer; other modules identify their installer or guided
+procedure. Open the centre later with:
 
 ```bash
 day-one-mac optional --guided

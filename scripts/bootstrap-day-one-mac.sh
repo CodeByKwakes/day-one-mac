@@ -723,7 +723,7 @@ run_optional_center() {
     build_application_review_cache 1
     SINGLE_VALUES=(save change exit)
     SINGLE_LABELS=(
-      'Save this optional plan — modules remain manual and separately resumable'
+      'Save this optional plan — then continue to available installers and guides'
       'Go back and change optional choices'
       'Exit without changing the saved optional plan'
     )
@@ -745,7 +745,33 @@ run_optional_center() {
   info "Saved modules: $(csv_label "$OPTIONAL_MODULES")"
   if [[ -n "$OPTIONAL_MODULES" ]]; then
     info "Guides: $PROJECT_DIR/docs/02-optional/"
-    info 'Nothing optional was installed automatically.'
+    info 'Saving a selection does not claim installation; each selected module must verify its own outcome.'
+    if contains_csv "$OPTIONAL_MODULES" databases; then
+      SINGLE_VALUES=(install finish)
+      SINGLE_LABELS=(
+        'Install or resume the selected database services now'
+        'Exit with the database selection saved for later'
+      )
+      select_one 'Databases are selected. Continue now?' 0
+      if [[ "$SINGLE_RESULT" == install ]]; then
+        bash "$HERE/configure-databases.sh" --services "$DATABASE_SERVICES"
+      else
+        info "Resume later: day-one-mac databases --saved"
+      fi
+    fi
+    contains_csv "$OPTIONAL_MODULES" enhanced-cli \
+      && info 'Enhanced CLI installer: day-one-mac cli-tools'
+    contains_csv "$OPTIONAL_MODULES" advanced \
+      && info 'Advanced guided tracker: day-one-mac advanced --guided'
+    if contains_csv "$OPTIONAL_MODULES" ai-clients \
+       || contains_csv "$OPTIONAL_MODULES" omniroute \
+       || contains_csv "$OPTIONAL_MODULES" mcp-servers \
+       || contains_csv "$OPTIONAL_MODULES" vscode-profiles \
+       || contains_csv "$OPTIONAL_MODULES" warp-drive \
+       || contains_csv "$OPTIONAL_MODULES" second-brain; then
+      info 'The remaining selected modules contain account, secret, or application UI decisions; follow their installed guides.'
+      info 'Open them with: day-one-mac docs optional --open'
+    fi
   else
     ok 'No optional modules selected. The required setup remains complete.'
   fi

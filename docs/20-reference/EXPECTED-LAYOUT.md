@@ -326,9 +326,11 @@ an Intel or Rosetta setup and is not accepted by the required phases.
 
 The required eight phases do not create database or OmniRoute containers, AI
 authentication, MCP client configuration, custom VS Code profiles, imported
-Warp Drive objects, or Second Brain vaults. Wizard selections for these
-features are a plan only. Their optional guides own the later files and
-verification.
+Warp Drive objects, or Second Brain vaults. Wizard selections are saved before
+execution. The selector can hand a Database selection to its dedicated
+installer; the other optional guides state whether their work is installed,
+generated, or guided manually. No saved selection by itself is a completion
+claim.
 
 When Optional 10A is completed, its dynamic state is expected to include the
 Docker container `omniroute`, named volume `omniroute-data`, and only the

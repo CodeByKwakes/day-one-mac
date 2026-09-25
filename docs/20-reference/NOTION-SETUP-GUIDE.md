@@ -905,8 +905,10 @@ centre. To return later:
 day-one-mac optional --guided
 ```
 
-The optional centre saves a plan; it does not bulk-install every selected
-module.
+The optional centre saves a plan before making changes. A selected Database
+module can continue directly into its resumable installer. Other modules use
+the installer or guided procedure identified in the Optional Modules index;
+the centre does not claim that saving a selection completed it.
 
 ### Script-assisted 3 — complete shared manual actions when prompted
 

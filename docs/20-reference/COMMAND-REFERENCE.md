@@ -66,7 +66,7 @@ updates and rollback.
 | `day-one-mac update` | `./runtime-manager.sh update` | Download and install the latest verified public release beside the current version. |
 | `day-one-mac rollback-runtime [options]` | `./runtime-manager.sh rollback [options]` | Preview or select a previous installed runtime without undoing setup changes. |
 | `day-one-mac uninstall-runtime [options]` | `./runtime-manager.sh uninstall [options]` | Remove only the launcher and runtime while preserving setup state and the configured environment. |
-| `day-one-mac docs [TOPIC] [--open]` | `./runtime-manager.sh docs …` | List, locate, or open documentation inside the active runtime. Use `--list` for topics or `--folder --open` for the complete documentation folder. |
+| `day-one-mac docs [TOPIC] [--open]` | `./runtime-manager.sh docs …` | List, locate, or open documentation inside the active runtime. Topics include `optional` and `advanced`; use `--list` for all topics or `--folder --open` for the complete documentation folder. |
 | `day-one-mac shell-status` | `./shell-status.sh` | Run a read-only check of Homebrew zsh, startup files, clean-shell PATHs, completions and selected tools. |
 | `day-one-mac setup [options]` | `./bootstrap-day-one-mac.sh [options]` | Start, resume, inspect, or reset the required eight-phase setup. |
 | `day-one-mac install [options]` | `./bootstrap-day-one-mac.sh --install-centre [options]` | Install or revalidate required applications and command-line tools after Phase 2. |
@@ -75,7 +75,8 @@ updates and rollback.
 | `day-one-mac macos-settings [options]` | `./configure-macos-settings.sh [options]` | Configure, inspect, preview, or restore optional Finder, Dock, keyboard, and trackpad preferences. |
 | `day-one-mac workspace [command]` | `./workspace-manager.sh [command]` | Create, inspect, complete, or open a bounded projectless task. |
 | `day-one-mac raycast [options]` | `./configure-raycast.sh [options]` | Preview, generate, inspect, or archive the optional track-aware Raycast Script Commands. |
-| `day-one-mac optional --guided` | `./bootstrap-day-one-mac.sh --optional --guided` | Choose optional modules after required Phase 8 passes. |
+| `day-one-mac optional --guided` | `./bootstrap-day-one-mac.sh --optional --guided` | Choose optional modules after required Phase 8 passes and continue to available installers. |
+| `day-one-mac databases [options]` | `./configure-databases.sh [options]` | Install, resume, inspect, or verify the selected PostgreSQL, Redis, and MongoDB containers. |
 | `day-one-mac safety-report [options]` | `./preflight-audit.sh [options]` | Create the read-only Stage 0 report on an existing Mac before choosing a reset or cleanup route. |
 | `day-one-mac prepare-existing [options]` | `./prepare-existing-mac.sh [options]` | Open the resumable Route A/Route B dashboard for a Mac that already contains data or setup. With no arguments, the portable command adds `--guided`. |
 | `day-one-mac inventory [options]` | `./application-inventory.sh [options]` | Write a complete report of Homebrew, Mac App Store, system, and other application bundles. |
@@ -256,6 +257,10 @@ day-one-mac inventory --output "/absolute/path/applications.md"
 day-one-mac cli-tools --list
 day-one-mac cli-tools --check
 day-one-mac cli-tools --packages eza,fd,lazygit --dry-run
+
+day-one-mac databases --saved
+day-one-mac databases --services postgres,redis --dry-run
+day-one-mac databases --saved --check
 
 day-one-mac advanced --list
 day-one-mac advanced --status

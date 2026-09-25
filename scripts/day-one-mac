@@ -121,6 +121,7 @@ case "${1:-}" in
   workspace) shift; exec "$PROJECT_ROOT/scripts/workspace-manager.sh" "$@" ;;
   macos-settings) shift; exec "$PROJECT_ROOT/scripts/configure-macos-settings.sh" "$@" ;;
   optional) shift; exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" --optional "$@" ;;
+  databases) shift; exec "$PROJECT_ROOT/scripts/configure-databases.sh" "$@" ;;
   finalize) shift; exec "$PROJECT_ROOT/scripts/finalize-setup.sh" "$@" ;;
   advanced-audit|audit) shift; exec "$PROJECT_ROOT/scripts/advanced-audit.sh" "$@" ;;
   advanced) shift; exec "$PROJECT_ROOT/scripts/advanced-setup.sh" "$@" ;;
@@ -149,6 +150,7 @@ case "${1:-}" in
       '  workspace         create and open bounded projectless tasks' \
       '  macos-settings    configure or restore optional macOS preferences' \
       '  optional          choose post-Phase-8 modules' \
+      '  databases         install, resume, or verify optional databases' \
       '  finalize          compact records or detach after Phase 8' \
       '  advanced          read and track optional advanced modules' \
       '  advanced-audit    write the private extended audit' \

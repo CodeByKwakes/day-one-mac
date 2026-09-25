@@ -312,6 +312,7 @@ required_scripts=(
   build-release.sh
   advanced-audit.sh
   advanced-setup.sh
+  configure-databases.sh
   configure-cli-tools.sh
   configure-macos-settings.sh
   workspace-manager.sh
@@ -328,6 +329,7 @@ required_scripts=(
   lib/platform.sh
   lib/terminal-ui.sh
   tests/test-application-ownership.sh
+  tests/test-configure-databases.sh
   tests/test-chezmoi-vscode-tools.sh
   tests/test-day-one-mac.sh
   tests/test-preflight.sh
@@ -742,6 +744,16 @@ else
   fail "optional CLI catalogue or selector policy is incomplete"
 fi
 
+if grep -Fq 'databases) shift; exec "$PROJECT_ROOT/scripts/configure-databases.sh"' "$SCRIPT_DIR/day-one-mac" \
+   && grep -Fq -- '--services CSV' "$SCRIPT_DIR/configure-databases.sh" \
+   && grep -Fq 'Existing containers and named volumes are preserved.' "$SCRIPT_DIR/configure-databases.sh" \
+   && grep -Fq 'Install or resume the selected database services now' "$SCRIPT_DIR/bootstrap-day-one-mac.sh" \
+   && grep -Fq "optional) target=\"\$RUNTIME_ROOT/docs/02-optional/README.md\"" "$SCRIPT_DIR/runtime-manager.sh"; then
+  pass "optional database selections have a resumable installer and explicit verification"
+else
+  fail "optional database installer or selector handoff is incomplete"
+fi
+
 if grep -Fq $'core\talways\tstatus\tDay One · Status\td1s\t' "$PROJECT_DIR/config/raycast-commands.tsv" \
    && grep -Fq $'Recommended\tEveryone\tWarp\twarpdotdev\t' "$PROJECT_DIR/config/raycast-extensions.tsv" \
    && grep -Fq -- '--remove-generated' "$SCRIPT_DIR/configure-raycast.sh" \
@@ -756,6 +768,10 @@ fi
 run_fixture "Day One Mac regression fixture passes" \
   "Day One Mac regression fixture failed" \
   "$SCRIPT_DIR/tests/test-day-one-mac.sh" || true
+
+run_fixture "optional database installer is idempotent and diagnostic" \
+  "optional database installer regression fixture failed" \
+  "$SCRIPT_DIR/tests/test-configure-databases.sh" || true
 
 run_fixture "Homebrew, external, App Store, missing, and conflict application fixtures pass" \
   "application ownership and provenance regression fixture failed" \

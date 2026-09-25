@@ -136,6 +136,7 @@ After verification, continue directly to optional work when wanted:
 
 ```bash
 day-one-mac optional --guided
+day-one-mac databases --saved    # when Databases was selected
 ```
 
 ## Update safely

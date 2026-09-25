@@ -22,18 +22,24 @@ The tracker never installs software or edits configuration. It opens the
 selected guide and records completion only when you explicitly mark it. If a
 completed guide later changes, its fingerprint becomes **review required**.
 
+This is intentional: Modules 15–22 combine personal inventory choices,
+credentials, identity routing, restore sources, and application UI changes.
+They are guided procedures, not unattended installers. Commands inside a guide
+may automate a bounded operation, but `day-one-mac advanced` itself never
+claims that it performed that operation.
+
 ## Recommended order
 
-| Module | Capability | Add it when |
-|---|---|---|
-| [15 · Full dotfiles and bootstrap](15-full-dotfiles-and-bootstrap.md) | Expanded chezmoi inventory, machine data, templates, hooks, and secret audit | More than the minimal five configuration areas must reproduce |
-| [16 · Brewfile, applications, and editor inventory](16-brewfile-apps-and-editor.md) | Curated formula/cask/MAS/VS Code desired state and safe cleanup | The Mac needs a wider application catalogue |
-| [17 · Shell and package automation](17-shell-and-package-automation.md) | ghq navigation, Git helpers, manager detection, repo/package audits | Repeated terminal work justifies aliases and helpers |
-| [18 · Hosting identities, Azure, and worktrees](18-hosting-identities-azure-and-worktrees.md) | Personal/work identity routing, Azure defaults, repository layout, and the linked [VS Code/AI worktree guide](GIT-WORKTREES-VSCODE-AND-AI.md) | Multiple identities/providers or concurrent branches are real requirements |
-| [19 · macOS, GUI, and local HTTPS](19-macos-gui-and-local-https.md) | Reviewed defaults, permissions, launch-at-login, Raycast/menu bar, local certificates | The base tools are stable and personal ergonomics are understood |
-| [20 · Restore and migrate selected data](20-restore-and-migrate.md) | Verified-volume restore, repo re-cloning, project data, database imports | A clean Mac needs selected content from a previous machine |
-| [21 · Audit, maintenance, and rebuild](21-audit-maintenance-and-rebuild.md) | Drift reports, update routine, private commits, and rebuild rehearsal | The setup must remain reproducible over time |
-| [22 · Shared AI skills and MCP operations](22-ai-skills-and-mcp-operations.md) | One reviewed skill source, client-specific agents, MCP lifecycle, and trust checks | Optional AI clients are installed and repeated workflows need governance |
+| Module | Capability | Execution model | Add it when |
+|---|---|---|---|
+| [15 · Full dotfiles and bootstrap](15-full-dotfiles-and-bootstrap.md) | Expanded chezmoi inventory, machine data, templates, hooks, and secret audit | Guided commands and review | More than the minimal five configuration areas must reproduce |
+| [16 · Brewfile, applications, and editor inventory](16-brewfile-apps-and-editor.md) | Curated formula/cask/MAS/VS Code desired state and safe cleanup | Generated inventory plus reviewed install commands | The Mac needs a wider application catalogue |
+| [17 · Shell and package automation](17-shell-and-package-automation.md) | ghq navigation, Git helpers, manager detection, repo/package audits | Guided file edits and verification | Repeated terminal work justifies aliases and helpers |
+| [18 · Hosting identities, Azure, and worktrees](18-hosting-identities-azure-and-worktrees.md) | Personal/work identity routing, Azure defaults, repository layout, and the linked [VS Code/AI worktree guide](GIT-WORKTREES-VSCODE-AND-AI.md) | Guided identity and repository configuration | Multiple identities/providers or concurrent branches are real requirements |
+| [19 · macOS, GUI, and local HTTPS](19-macos-gui-and-local-https.md) | Reviewed defaults, permissions, launch-at-login, Raycast/menu bar, local certificates | Guided system and application configuration | The base tools are stable and personal ergonomics are understood |
+| [20 · Restore and migrate selected data](20-restore-and-migrate.md) | Verified-volume restore, repo re-cloning, project data, database imports | Source-reviewed restore procedure | A clean Mac needs selected content from a previous machine |
+| [21 · Audit, maintenance, and rebuild](21-audit-maintenance-and-rebuild.md) | Drift reports, update routine, private commits, and rebuild rehearsal | Read-only audit plus guided maintenance | The setup must remain reproducible over time |
+| [22 · Shared AI skills and MCP operations](22-ai-skills-and-mcp-operations.md) | One reviewed skill source, client-specific agents, MCP lifecycle, and trust checks | Guided trust, secret, and client configuration | Optional AI clients are installed and repeated workflows need governance |
 
 Modules 09–14 remain the first optional layer: databases, AI clients, the 10A
 OmniRoute gateway, MCP, VS Code profiles, enhanced CLI formulae, and Warp

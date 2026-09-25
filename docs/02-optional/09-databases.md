@@ -14,6 +14,49 @@ A selected database runs in an isolated container with a named volume, a health
 check, documented development credentials, and an explicit backup/removal
 procedure. Skipping this module does not affect the required setup.
 
+## Choose one path
+
+Both paths create the same container names, volumes, ports, and health checks.
+Do not mix paths during the initial setup.
+
+### Script-assisted path — recommended
+
+If Databases was saved in the Optional Setup Center, install or resume exactly
+those services:
+
+```bash
+day-one-mac databases --saved
+```
+
+Or name the services directly:
+
+```bash
+day-one-mac databases --services postgres,redis --dry-run
+day-one-mac databases --services postgres,redis
+```
+
+The installer preserves existing containers and volumes, starts a stopped
+selected container, waits for its health check, and writes
+`~/.day-one-mac/database-status.md`. Check it later with:
+
+```bash
+day-one-mac databases --saved --status
+```
+
+If it reports that the Docker server is unreachable, open the application that
+owns the active Docker context, wait for its engine to start, confirm that
+`docker info` shows a **Server** section, and rerun the same command. Do not run
+Docker with `sudo`.
+
+After the installer passes, continue at [Step 9.7](#step-97--daily-lifecycle-commands)
+to learn the lifecycle and backup commands.
+
+### Fully manual path
+
+Complete Steps 9.1–9.6 below in order. Run only the service blocks selected in
+Step 9.1, then complete the same lifecycle, backup, and checklist sections as
+the script-assisted path.
+
 ## Step 9.1 — Choose only what is needed
 
 | Service | Default port | Add it when |
@@ -26,7 +69,7 @@ Do not start all services “just in case.” A repository-owned `compose.yaml` 
 preferable when the service belongs to one project. The commands below provide
 a simple machine-level development service without requiring Docker Compose.
 
-## Step 9.2 — Install and start OrbStack
+## Step 9.2 — Manual path: install and start OrbStack
 
 ```bash
 day-one-mac applications --id orbstack --install-missing
@@ -51,7 +94,7 @@ docker context show
 The server section must be present. If only the client appears, open OrbStack
 and wait for its Linux environment to start.
 
-## Step 9.3 — Create a shared development network
+## Step 9.3 — Manual path: create a shared development network
 
 ```bash
 docker network inspect dev-net >/dev/null 2>&1 || \
@@ -61,7 +104,7 @@ docker network inspect dev-net >/dev/null 2>&1 || \
 This makes later project containers able to reach a database by container name
 without exposing additional internal ports.
 
-## Step 9.4 — PostgreSQL option
+## Step 9.4 — Manual path: PostgreSQL option
 
 This uses `postgres` for the development-only username, password, and default
 database, matching the common one-line setup while adding persistence and a
@@ -104,7 +147,7 @@ Connection URL from macOS:
 postgresql://postgres:postgres@localhost:5432/postgres
 ```
 
-## Step 9.5 — Redis option
+## Step 9.5 — Manual path: Redis option
 
 ```bash
 docker volume inspect dev-redisdata >/dev/null 2>&1 || \
@@ -131,7 +174,7 @@ docker inspect --format='{{.State.Health.Status}}' dev-redis
 docker exec dev-redis redis-cli ping
 ```
 
-## Step 9.6 — MongoDB option
+## Step 9.6 — Manual path: MongoDB option
 
 ```bash
 docker volume inspect dev-mongodata >/dev/null 2>&1 || \
@@ -228,6 +271,7 @@ existing automation still uses an earlier flag name.
 - [ ] Ports are bound to localhost and do not conflict with another service.
 - [ ] Development credentials are not reused outside this Mac.
 - [ ] A backup and explicit volume-deletion procedure are understood.
+- [ ] `day-one-mac databases --saved --check` passes (script-assisted path), or each manual ping query passes.
 
 ---
 
