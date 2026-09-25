@@ -75,6 +75,37 @@ Run non-preview cleanup only after reading its candidates. `brew doctor`
 warnings are context-dependent; do not recursively change ownership or delete
 paths simply to produce an empty report.
 
+### Optional GUI cleanup with Purge
+
+Purge is an optional, third-party maintenance application. It complements the
+Day One Mac cleanup previews; it does not replace the backup-gated Stage 0
+cleanup or the ownership-aware rollback commands.
+
+Inspect ownership first, then install it only when wanted:
+
+```bash
+day-one-mac applications --id purge
+day-one-mac applications --id purge --install-missing
+```
+
+The Homebrew route uses the fully qualified third-party cask
+`jithin-sabu/tap/purge`. Review that tap and the displayed cask before granting
+Purge Full Disk Access. After installation:
+
+1. Leave scheduled cleaning disabled.
+2. Review every selected path and keep all removals recoverable in Trash.
+3. Do not enable its privileged uninstall helper unless a root-owned
+   application must be removed and its complete footprint has been reviewed.
+4. When Homebrew owns Purge, disable automatic update checks in Purge and use
+   `brew upgrade --cask jithin-sabu/tap/purge` as the update route rather than
+   allowing two update owners to drift.
+5. Choose Purge or another general-purpose app cleaner, not both.
+6. Confirm the Mac works normally before emptying Trash.
+
+Purge is never invoked by a Day One Mac script, Raycast command, scheduled
+task, audit, or maintenance alias. Full Disk Access and every cleanup approval
+remain manual security decisions.
+
 ## Step 21.4 — Maintain Node, npm, and pnpm ownership
 
 The base ownership model is:
@@ -266,6 +297,8 @@ destinations without deleting the working environment.
 - [ ] Required and advanced progress reports contain no unexplained review state.
 - [ ] The extended audit has no unexplained failure.
 - [ ] Homebrew updates are reviewed before upgrade or cleanup.
+- [ ] If Purge is selected, scheduling is disabled, Full Disk Access is
+      understood, and no overlapping general-purpose cleaner is installed.
 - [ ] fnm/Node/npm/pnpm and uv have one owner each.
 - [ ] chezmoi and Brewfile drift are understood and privately committed.
 - [ ] Dirty, ahead, and `NO-REMOTE` repositories are resolved or documented.

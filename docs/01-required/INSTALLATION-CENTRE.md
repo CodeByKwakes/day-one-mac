@@ -133,11 +133,11 @@ lets rollback preserve pre-existing and company-managed software.
 
 ## What is deliberately not installed here
 
-Databases, OrbStack, Docker workloads, AI clients, MCP servers, Obsidian,
-VS Code profiles, and enhanced command-line tools remain optional. They are
-offered only after the required Phase 8 verification succeeds. This keeps the
-base predictable and avoids installing software merely because it may be
-useful later.
+Databases, OrbStack, DBeaver, Docker workloads, AI clients, MCP servers,
+Obsidian, Purge, VS Code profiles, and enhanced command-line tools remain
+optional. They are offered only after the required Phase 8 verification
+succeeds. This keeps the base predictable and avoids installing software
+merely because it may be useful later.
 
 ## Troubleshooting
 

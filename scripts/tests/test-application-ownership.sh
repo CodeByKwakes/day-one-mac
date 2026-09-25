@@ -17,7 +17,8 @@ export DAY_ONE_MAC_SYSTEM_FONTS_ROOT="$TEST_ROOT/Library/Fonts"
 export DAY_ONE_MAC_USER_FONTS_ROOT="$HOME/Library/Fonts"
 export DAY_ONE_MAC_APPLICATION_BREW_LOOKUP=disabled
 mkdir -p "$HOME" "$DAY_ONE_MAC_APPLICATIONS_ROOT/Raycast.app/Contents" \
-  "$DAY_ONE_MAC_APPLICATIONS_ROOT/Copilot.app/Contents"
+  "$DAY_ONE_MAC_APPLICATIONS_ROOT/Copilot.app/Contents" \
+  "$DAY_ONE_MAC_APPLICATIONS_ROOT/Purge.app/Contents"
 
 cat > "$DAY_ONE_MAC_APPLICATIONS_ROOT/Raycast.app/Contents/Info.plist" <<'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -25,6 +26,15 @@ cat > "$DAY_ONE_MAC_APPLICATIONS_ROOT/Raycast.app/Contents/Info.plist" <<'EOF'
 <plist version="1.0"><dict>
   <key>CFBundleIdentifier</key><string>com.raycast.macos</string>
   <key>CFBundleShortVersionString</key><string>99.1-test</string>
+</dict></plist>
+EOF
+
+cat > "$DAY_ONE_MAC_APPLICATIONS_ROOT/Purge.app/Contents/Info.plist" <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>CFBundleIdentifier</key><string>io.getpurge.app</string>
+  <key>CFBundleShortVersionString</key><string>1.5.3-test</string>
 </dict></plist>
 EOF
 
@@ -74,6 +84,9 @@ day_one_app_detect 1password-cli
 [[ "$DAY_ONE_APP_STATUS" == ready && "$DAY_ONE_APP_SOURCE" == external ]]
 day_one_app_detect warp
 [[ "$DAY_ONE_APP_STATUS" == missing && "$DAY_ONE_APP_SOURCE" == missing ]]
+day_one_app_detect purge
+[[ "$DAY_ONE_APP_STATUS" == ready && "$DAY_ONE_APP_SOURCE" == external ]]
+[[ "$DAY_ONE_APP_CASK" == jithin-sabu/tap/purge ]]
 day_one_app_choose_install_route homebrew
 [[ "$DAY_ONE_APP_INSTALL_CHOICE" == homebrew ]]
 day_one_app_choose_install_route check-only
@@ -100,12 +113,15 @@ cp "$DAY_ONE_MAC_APPLICATIONS_ROOT/Copilot.app.not-installed/Contents/Info.plist
 cat > "$TEST_ROOT/bin/brew" <<'EOF'
 #!/usr/bin/env bash
 [[ "$1" == list && "$2" == --cask ]] \
-  && [[ "$3" == raycast || "$3" == github-copilot-app ]]
+  && [[ "$3" == raycast || "$3" == github-copilot-app || "$3" == jithin-sabu/tap/purge ]]
 EOF
 chmod +x "$TEST_ROOT/bin/brew"
 day_one_app_detect copilot-app
 [[ "$DAY_ONE_APP_STATUS" == ready && "$DAY_ONE_APP_SOURCE" == homebrew ]]
 [[ "$DAY_ONE_APP_FOUND_PATH" == "$DAY_ONE_MAC_APPLICATIONS_ROOT/GitHub Copilot.app" ]]
+day_one_app_detect purge
+[[ "$DAY_ONE_APP_STATUS" == ready && "$DAY_ONE_APP_SOURCE" == homebrew ]]
+[[ "$DAY_ONE_APP_VERSION" == 1.5.3-test ]]
 
 REPORT_DIR="$TEST_ROOT/state"
 mkdir -p "$REPORT_DIR"

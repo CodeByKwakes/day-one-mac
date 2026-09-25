@@ -211,14 +211,40 @@ if rg_scan -n -i \
   fi
 fi
 for app_id in 1password 1password-cli jetbrains-mono-nerd-font raycast visual-studio-code warp \
-              orbstack claude-code codex copilot-app copilot-cli obsidian; do
+              orbstack dbeaver-community claude-code codex copilot-app copilot-cli obsidian purge; do
   if ! awk -F '\t' -v wanted="$app_id" '$0 !~ /^#/ && $1 == wanted {found=1} END {exit !found}' \
       "$PROJECT_DIR/config/applications.tsv"; then
     fail "application catalogue is missing: $app_id"
     catalog_failed=1
   fi
 done
-[[ "$catalog_failed" == 0 ]] && pass "application catalogue has valid unique required and optional entries"
+
+if awk -F '\t' '
+  $1 == "purge" && $2 == "optional" && $3 == "21" \
+    && $5 == "jithin-sabu/tap/purge" && $6 == "app" \
+    && $7 == "/Applications/Purge.app" && $8 == "io.getpurge.app" {found=1}
+  END {exit !found}
+' "$PROJECT_DIR/config/applications.tsv" \
+   && grep -Fq 'Leave scheduled cleaning disabled.' \
+      "$PROJECT_DIR/docs/03-advanced/21-audit-maintenance-and-rebuild.md" \
+   && grep -Fq 'Purge is never invoked by a Day One Mac script' \
+      "$PROJECT_DIR/docs/03-advanced/21-audit-maintenance-and-rebuild.md"; then
+  pass "Purge remains optional, fully qualified, and manual at every destructive boundary"
+else
+  fail "Purge catalogue identity or manual-only safety guidance has drifted"
+  catalog_failed=1
+fi
+
+for formula in actionlint mas; do
+  if ! awk -F '\t' -v wanted="$formula" \
+      '$0 !~ /^#/ && $2 == wanted {found=1} END {exit !found}' \
+      "$PROJECT_DIR/config/optional-formulae.tsv"; then
+    fail "optional formula catalogue is missing: $formula"
+    catalog_failed=1
+  fi
+done
+[[ "$catalog_failed" == 0 ]] \
+  && pass "application and optional formula catalogues have valid required entries"
 
 link_failed=0
 rg_scan --no-heading -o '\]\([^)]*\.md(#[^)]*)?\)' "$PROJECT_DIR" --glob '*.md' || link_failed=1

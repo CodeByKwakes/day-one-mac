@@ -5,6 +5,7 @@ Content	ffmpeg	Convert and inspect audio and video
 Content	gifsicle	Create and optimise GIF files
 Content	imagemagick	Convert and inspect raster images
 Development	act	Run GitHub Actions workflows locally
+Development	actionlint	Statically check GitHub Actions workflow files
 Development	httpie	Human-friendly HTTP client
 Development	mkcert	Create locally trusted development certificates
 Development	shellcheck	Static analysis for shell scripts
@@ -30,5 +31,6 @@ System	btop	Interactive process and resource monitor
 System	duf	Readable filesystem usage
 System	dust	Readable directory size analysis
 System	hyperfine	Command-line benchmarking
+System	mas	Inventory and manage Mac App Store applications
 System	tlrc	Maintained tldr client for concise command examples
 System	watch	Repeat a command and display changes

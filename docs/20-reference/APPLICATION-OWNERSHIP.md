@@ -39,8 +39,9 @@ not pretend to know more than it can verify.
 5. Phase 7 rechecks VS Code before configuring its settings and launcher.
 6. Phase 8 rechecks every required application and records its source in the
    final verification report.
-7. Optional application commands use the same choice and recheck flow before installing
-   OrbStack, Obsidian, Claude Code, Codex, the GitHub Copilot app, or GitHub Copilot CLI.
+7. Optional application commands use the same choice and recheck flow before
+   installing OrbStack, DBeaver Community, Obsidian, Purge, Claude Code, Codex,
+   the GitHub Copilot app, or GitHub Copilot CLI.
 
 The application version is reported for normal `.app` bundles, but an ordinary
 version update does not transfer ownership to Homebrew.
@@ -74,7 +75,14 @@ Check one optional application and offer to install it only when missing:
 ```bash
 day-one-mac applications --id orbstack --install-missing
 day-one-mac applications --id codex --install-missing
+day-one-mac applications --id dbeaver-community --install-missing
+day-one-mac applications --id purge --install-missing
 ```
+
+Purge comes from a third-party tap, so its catalogue entry and Homebrew command
+use the fully qualified cask `jithin-sabu/tap/purge`. Installing that selected
+item does not authorize Day One Mac to grant Full Disk Access, enable its
+schedule or privileged helper, or run a cleanup.
 
 For every missing item, the command offers three choices:
 

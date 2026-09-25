@@ -204,6 +204,23 @@ docker exec dev-mongo mongosh \
   --eval 'db.runCommand({ ping: 1 })'
 ```
 
+## Optional graphical database client
+
+DBeaver Community is available when a project benefits from browsing schemas,
+running reviewed queries, or comparing more than one database engine. It is not
+needed for the container health checks and is never installed automatically:
+
+```bash
+day-one-mac applications --id dbeaver-community
+day-one-mac applications --id dbeaver-community --install-missing
+```
+
+The first command is read-only. In the second command, choose Homebrew or an
+approved external installer only after reviewing the displayed owner. Store
+saved production credentials in the approved secret manager; do not commit
+them in a DBeaver project or export. Use the localhost development credentials
+from this guide only with the local containers.
+
 ## Step 9.7 — Daily lifecycle commands
 
 ```bash
@@ -270,6 +287,8 @@ existing automation still uses an earlier flag name.
 - [ ] Every selected container is healthy or responds to its ping query.
 - [ ] Ports are bound to localhost and do not conflict with another service.
 - [ ] Development credentials are not reused outside this Mac.
+- [ ] DBeaver is installed only if a graphical client is useful, and its saved
+      connections contain no committed or exported production secrets.
 - [ ] A backup and explicit volume-deletion procedure are understood.
 - [ ] `day-one-mac databases --saved --check` passes (script-assisted path), or each manual ping query passes.
 

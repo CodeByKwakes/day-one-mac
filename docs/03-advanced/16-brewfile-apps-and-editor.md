@@ -67,7 +67,12 @@ cask "visual-studio-code"
 cask "warp"
 
 # Optional desktop applications
+cask "dbeaver-community"
 cask "orbstack"
+
+# Third-party optional maintenance application
+tap "jithin-sabu/tap"
+cask "jithin-sabu/tap/purge"
 
 # Mac App Store — only when mas is intentionally used
 # mas "Example", id: 123456789
