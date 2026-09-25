@@ -15,9 +15,9 @@ automation are separate optional additions.
 ```text
 Existing Mac safety preparation, when needed
                     ↓
- Eight required phases plus the software checkpoint
+ Eight required phases, with settings and software checkpoints
                     ↓
- Optional modules and advanced configuration
+ Keep or finalise records; optionally add modules
 ```
 
 ## 1. Choose the correct starting point
@@ -80,29 +80,33 @@ the full [existing-Mac route](00-preflight/README.md) before applying cleanup.
 
 ## 2. Make the setup decisions
 
-The main wizard collects choices before it installs anything.
+Both routes make the same decisions. The script-assisted route records them in
+the main wizard before the required phases install software. The manual route
+records them in your own setup notes while following
+[Manual 1](20-reference/NOTION-SETUP-GUIDE.md#manual-1--finish-macos-and-security-prerequisites).
 
-It also records whether VS Code is the primary IDE. That answer controls Git's
-editor, diff, and merge-tool integration only; it does not remove VS Code from
-the required compatibility base.
+Both routes also record whether VS Code is the primary IDE. That answer
+controls Git's editor, diff, and merge-tool integration only; it does not
+remove VS Code from the required compatibility base.
 
 ### Hosting track
 
-| Track | Hosting services | Required authentication |
+| Track | Hosting services | Provider sign-in and Git transport |
 |---|---|---|
-| **1** | GitHub | GitHub browser login and SSH |
-| **2** | Azure DevOps 🏢 | Azure login and Azure SSH |
-| **3** | GitHub and Azure DevOps 🏢 | Both providers |
+| **1** | GitHub | GitHub browser login plus the selected SSH or HTTPS mode |
+| **2** | Azure DevOps 🏢 | Azure login plus the selected SSH or HTTPS mode |
+| **3** | GitHub and Azure DevOps 🏢 | Both provider logins plus the selected SSH or HTTPS mode |
 
-The track controls provider folders, command-line tools, authentication gates,
-and SSH tests. It does not choose an AI client or database.
+The track controls provider folders, command-line tools, account gates, and
+provider tests. The authentication mode independently controls whether Git
+uses SSH or HTTPS. The track does not choose an AI client or database.
 
 ### Git authentication
 
 | Mode | Identity comes from | Private key in `~/.ssh`? |
 |---|---|---|
 | **`1password`** *(default)* | The 1Password SSH agent | No |
-| **`keychain`** | A key file held by the macOS Keychain | Yes, deliberately |
+| **`keychain`** | A key file in `~/.ssh`; its passphrase is held by the macOS Keychain | Yes, deliberately |
 | **`external`** | An agent you already run | No |
 | **`https`** | No SSH — Git over HTTPS | No |
 
@@ -124,11 +128,15 @@ such as `.node-version`, `packageManager`, lockfiles, and `pyproject.toml`.
 
 ### Identity and dotfiles
 
-The wizard also records:
+Both routes record:
 
 - the Git author name and primary email;
 - whether chezmoi should use an existing private source, create a new source
   protected by private Git, or create a local-only source with no Git gate.
+
+On the script-assisted route, the wizard saves these choices. On the manual
+route, keep them with your setup record so later steps use the same track,
+stack, authentication mode, identity, IDE, and dotfiles protection.
 
 After Phase 1, a separate checkpoint asks whether to configure or skip optional
 macOS preferences. Other optional planning is deliberately withheld until the
@@ -136,8 +144,10 @@ required base passes Phase 8.
 
 ## 3. Complete the eight required phases
 
-After Phase 1, the optional [macOS Settings Wizard](01-required/MACOS-SETTINGS.md) runs
-before Phase 2 when selected. It may be intentionally skipped without blocking
+After Phase 1, the script-assisted route opens the optional
+[macOS Settings Wizard](01-required/MACOS-SETTINGS.md) before Phase 2 when
+selected. The manual route follows the same document without invoking the
+wizard. Either route may intentionally skip these preferences without blocking
 the required setup. Security gates remain in their required phases.
 
 | Phase | Result |
@@ -145,16 +155,18 @@ the required setup. Security gates remain in their required phases.
 | [**1 — First boot and decisions**](01-required/01-first-boot-and-decisions.md) | Finish Setup Assistant, install macOS updates, confirm the backup boundary, and save the track, stack, Git name, and email. |
 | [**⚙️ Early macOS settings — optional**](01-required/MACOS-SETTINGS.md) | Review security status and select Finder, Dock, keyboard, trackpad, menu-bar, and screenshot preferences before development tooling. |
 | [**2 — Command-line foundation**](01-required/02-command-line-foundation.md) | Verify Apple Command Line Tools, detect and reuse an existing native Homebrew installation, or install it only when missing. |
-| [**📦 Required Installation Centre**](01-required/INSTALLATION-CENTRE.md) | Install or accept every required app, font, and command-line tool in one pass before configuration begins. |
+| [**📦 Required Installation Centre**](01-required/INSTALLATION-CENTRE.md) | On the script-assisted route, install or accept every required app, font, and command-line tool in one pass. The manual route installs the same mode-aware set in Manual 2. |
 | [**3 — Security and SSH**](01-required/03-security-and-ssh.md) | Set up the chosen authentication mode — by default 1Password, its CLI and SSH agent — register provider keys, and verify FileVault. |
 | [**4 — Core tools and hosting**](01-required/04-core-tools-and-hosting.md) | Verify the prepared tools, create the `~/Developer` structure, configure Git, and authenticate the selected providers. |
 | [**5 — Dotfiles and shell**](01-required/05-dotfiles-and-shell.md) | Establish the chezmoi source, configure zsh and Starship, and ensure the standalone runtime—not chezmoi—owns the launcher. |
 | [**6 — Language toolchains**](01-required/06-language-toolchains.md) | Configure Node with npm/pnpm, Python with uv, or both in a new login shell. |
 | [**7 — VS Code base**](01-required/07-vscode-base.md) | Apply a small portable editor baseline with zsh, the Nerd Font, and safe approval defaults. |
-| [**8 — Verify and reproduce**](01-required/08-verify-and-reproduce.md) | Run the complete audit, record the Brewfile, scan for secrets, and verify private-Git or local-only dotfiles protection. |
+| [**8 — Verify and reproduce**](01-required/08-verify-and-reproduce.md) | Complete the track-aware verification, record the Brewfile, scan for secrets, and verify private-Git or local-only dotfiles protection. The script-assisted route writes the machine report. |
 
-A phase receives a `✓` only after its current checks pass. If inputs, scripts,
-or phase documents change later, the saved fingerprint requires revalidation.
+On the script-assisted route, a phase receives a `✓` only after its current
+checks pass. If inputs, scripts, or phase documents change later, the saved
+fingerprint requires revalidation. The manual route has no runner fingerprint;
+record each completed verification in your own setup notes.
 
 After Phase 8, choose **Finish and exit** or open the optional setup centre.
 The centre records a plan for databases, AI clients, MCP servers, profiles, and
@@ -166,17 +178,60 @@ procedure. Open the centre later with:
 day-one-mac optional --guided
 ```
 
-## 4. Understand required applications
+Manual-route readers make the same finish-or-continue decision without opening
+the optional selector. Follow only the optional guide for a module you actually
+need.
 
-The base setup expects these applications or payloads:
+## 4. Decide what happens after Phase 8
 
-- 1Password and 1Password CLI;
+Once the required foundation is stable, choose the next actions that apply.
+Finalisation and optional modules are independent: you can finalise the setup
+records and still add optional modules later.
+
+```text
+Phase 8 passes
+    ├── Keep the current records or finalise script-assisted evidence
+    └── Finish the required setup or continue to selected optional modules
+```
+
+Finalisation is optional and applies only to the script-assisted route. Its
+default command is a read-only preview:
+
+```bash
+day-one-mac finalize
+day-one-mac finalize --execute
+day-one-mac finalize --status
+```
+
+Normal finalisation creates a checksum-protected evidence archive, compacts the
+setup log, and retains the operational state used by status, ownership checks,
+settings restore, rollback, and the portable command. It does not uninstall or
+reconfigure the completed environment.
+
+A separate detach mode moves the complete state and portable command into a
+recovery directory. Read
+[Finalise or detach Day One Mac](04-operations/FINALIZE.md) before choosing it.
+Do not delete `~/.day-one-mac` manually.
+
+The manual route has no runner state to finalise. Retain the verification and
+backup records you created while following the manual guide.
+
+## 5. Understand required applications
+
+The base setup always expects these applications or payloads:
+
 - Raycast;
 - Warp;
 - Visual Studio Code;
 - JetBrains Mono Nerd Font.
 
-The Installation Centre checks ownership before installing anything:
+The `1password` authentication mode additionally requires 1Password and the
+1Password CLI. The `keychain`, `external`, and `https` modes do not install or
+gate progress on either component.
+
+On the script-assisted route, the Installation Centre checks ownership before
+installing anything. Manual-route readers use the same ownership decision
+before running the approved installer themselves:
 
 ```text
 Valid Company Portal, Mac App Store, or manual installation
@@ -194,12 +249,13 @@ This permits one playbook to work on personal and company-managed Macs. Follow
 the [application setup hub](10-app-guides/README.md) for first launch, settings,
 import, export, and later changes.
 
-## 5. Understand the chezmoi boundary
+## 6. Understand the chezmoi boundary
 
 The required setup keeps the managed source deliberately small and clear:
 
 - `~/.zprofile`, `~/.zshrc`, and the managed files under `~/.config/zsh`;
 - `~/.gitconfig`;
+- `~/.gitignore_global`;
 - `~/.ssh/config`;
 - `~/.config/starship.toml`;
 - `~/Brewfile`.
@@ -209,9 +265,14 @@ the runtime cannot be undone by an older dotfiles source.
 
 Machine-specific choices stay in the local chezmoi configuration. Passwords,
 API tokens, private SSH keys, and provider credentials must never enter the
-dotfiles source. The normal SSH design keeps private key material in 1Password.
+dotfiles source. The default `1password` authentication mode keeps private key
+material in 1Password; other modes follow their explicitly selected owner.
 
-## 6. Expected runtime and project layout
+Use the [complete chezmoi setup tutorial](20-reference/CHEZMOI-SETUP-TUTORIAL.md)
+for the script-assisted and manual setup paths, daily usage, command selection,
+and ownership boundaries.
+
+## 7. Expected runtime and project layout
 
 The standalone runtime is:
 
@@ -232,16 +293,21 @@ The standalone runtime is:
 See [Expected Day One Mac layout](20-reference/EXPECTED-LAYOUT.md) for the complete
 filesystem and ownership map.
 
-## 7. Know which actions remain manual
+## 8. Know which actions remain manual
 
 Automation handles package installation, file creation, saved state, and
 verification. Security and account decisions remain manual:
 
 - complete Setup Assistant and Software Update;
-- sign in to 1Password and enable its CLI and SSH agent;
-- choose the 1Password approval duration;
-- create or import an SSH key and register its public key;
-- finish browser-based GitHub or Azure authentication;
+- finish browser-based GitHub or Azure authentication for the selected track;
+- complete the selected Git authentication route:
+  - for `1password`, sign in, enable its CLI and SSH agent, choose the approval
+    duration, and create or import the provider keys;
+  - for `keychain`, choose a key passphrase and register the generated public
+    key;
+  - for `external`, load and register the agent-managed public key;
+  - for `https`, complete the provider credential-helper login instead of
+    creating an SSH key;
 - confirm FileVault recovery arrangements;
 - review the dotfiles source and either publish it privately or confirm the
   local-only encrypted-backup plan;
@@ -250,11 +316,11 @@ verification. Security and account decisions remain manual:
 Each phase puts its manual batch near the beginning so the runner does not
 repeatedly stop for unrelated choices.
 
-## 8. Add optional modules only after Phase 8
+## 9. Add optional modules only after Phase 8
 
 | Module | Adds |
 |---|---|
-| [**9 — Databases**](02-optional/09-databases.md) | PostgreSQL, Redis, or MongoDB through OrbStack containers |
+| [**9 — Databases**](02-optional/09-databases.md) | PostgreSQL, Redis, or MongoDB through OrbStack containers, with optional DBeaver Community |
 | [**10 — AI clients**](02-optional/10-ai-agents.md) | Claude Code, Codex, GitHub Copilot app, Copilot in VS Code, Copilot CLI, or Raycast AI |
 | [**10A — OmniRoute**](02-optional/10a-omniroute.md) | A local Docker AI gateway for selected compatible clients |
 | [**11 — MCP servers**](02-optional/11-mcp-servers.md) | Reviewed external tools and data sources for selected AI clients |
@@ -265,14 +331,29 @@ repeatedly stop for unrelated choices.
 Unselected clients and applications are left unchanged. Deselecting something
 is not permission to uninstall it.
 
-## 9. Add advanced capabilities when justified
+On the script-assisted route, use the unified read-only dashboard to inspect
+Optional Modules 09–14 and Advanced Modules 15–22 together:
+
+```bash
+day-one-mac optional --status
+day-one-mac optional --status --check
+day-one-mac optional --status --audit
+```
+
+`--check` exits non-zero when a selected module is not ready or current.
+`--audit` writes the combined module, environment, and repository report. The
+dashboard never installs software or marks a checklist complete.
+Manual-route readers track the same guide checklists in their own setup record.
+
+## 10. Add advanced capabilities when justified
 
 [Advanced Modules 15–22](03-advanced/README.md) cover expanded dotfiles,
 application curation, shell automation, multiple identities, worktrees, macOS
 preferences, selective restore, maintenance rehearsals, shared AI skills, and
 governed MCP operations.
 
-After installing the portable command, inspect the tracker from any directory:
+On the script-assisted route, inspect the advanced progress tracker from any
+directory:
 
 ```bash
 day-one-mac advanced --list
@@ -281,13 +362,17 @@ day-one-mac advanced --guided
 ```
 
 The tracker opens guides and records reviewed completion; it does not silently
-install advanced features.
+install advanced features. Manual-route readers can follow the same module
+guides but keep their own completion record.
 
-## 10. Add the Second Brain separately
+## 11. Add the Second Brain separately
 
-The [Second Brain chooser](../second-brain/README.md) offers an Obsidian build for
-local Markdown vaults and a Notion build for connected databases and visual
+The [Second Brain chooser](../second-brain/README.md) offers an Obsidian build
+for local Markdown vaults and a Notion build for connected databases and visual
 dashboards. Both are optional and independent of the eight-phase foundation.
+The commands below are script-assisted workflows; manual-route readers should
+review the corresponding chooser and platform guides before deciding whether
+to opt into those scripts.
 
 Start the Obsidian wizard with:
 
@@ -303,11 +388,12 @@ cd "$(day-one-mac root)/second-brain/notion"
 ./scripts/notion-second-brain-manager.sh --guided
 ```
 
-## 11. Stop, resume, and inspect progress
+## 12. Stop, resume, and inspect progress
 
-Private setup evidence is kept under `~/.day-one-mac/`. It includes saved
-wizard choices, phase fingerprints, logs, original files, package/path
-manifests, application provenance, and the Phase 8 verification report.
+On the script-assisted route, private setup evidence is kept under
+`~/.day-one-mac/`. It includes saved wizard choices, phase fingerprints, logs,
+original files, package/path manifests, application provenance, and the Phase
+8 verification report.
 
 ```bash
 # Show saved choices and phase status.
@@ -319,19 +405,30 @@ day-one-mac --wizard --dry-run
 # Retry or revalidate one phase.
 day-one-mac setup --phase 03
 
-# Validate the active runtime and completed environment.
+# Verify the installed runtime and shell environment.
+day-one-mac runtime-status
+day-one-mac shell-status
+
+# Validate the installed Day One Mac project and its regression fixtures.
 day-one-mac validate
 ```
 
 It is safe to exit between phases. Rerunning the wizard resumes the first
-incomplete or changed phase.
+incomplete or changed phase. Manual-route readers instead resume at the first
+unchecked item in their own setup record; they do not have runner fingerprints,
+manifests, or automatic resume state.
 
-## 12. Understand cleanup and rollback
+## 13. Understand cleanup and rollback
 
-Start with `day-one-mac remove --guided` when you want an ownership report and
-a choice between recorded-only, selected sections, or full development
-removal. `~/Developer` and non-Homebrew applications remain protected unless
-explicitly selected. See [Remove Day One Mac safely](04-operations/REMOVE-DAY-ONE-MAC.md).
+On the script-assisted route, start with `day-one-mac remove --guided` when you
+want an ownership report and a choice between recorded-only, selected sections,
+or full development removal. `~/Developer` and non-Homebrew applications
+remain protected unless explicitly selected. See
+[Remove Day One Mac safely](04-operations/REMOVE-DAY-ONE-MAC.md).
+
+The manual route has no runner ownership manifest. Remove components through
+their documented owner, preserve your own recovery record, and do not claim
+the narrower recorded-rollback boundary.
 
 Day One Mac has two cleanup boundaries:
 
@@ -348,26 +445,6 @@ rebuildable caches, and Keychain reset instructions.
 Neither cleanup script formats or erases a drive. Read [Rollback and clean
 state](04-operations/ROLLBACK.md) before using either mode.
 
-## 13. Finalise setup records when the base build is stable
-
-This step is optional and happens only after Phase 8. The recommended mode
-creates a checksum-protected evidence archive, compacts the setup log, and
-keeps the small operational state used by status, settings restore, ownership
-checks, rollback, and the portable `day-one-mac` command:
-
-```bash
-day-one-mac finalize
-day-one-mac finalize --execute
-day-one-mac finalize --status
-```
-
-If you no longer want any Day One Mac commands or state, the separate detach
-mode moves the complete state and portable command into a recovery directory
-without uninstalling the configured environment. Read
-[Finalise or detach Day One Mac](04-operations/FINALIZE.md) before choosing that mode. Do not
-delete `~/.day-one-mac` manually: it contains the evidence needed to understand
-or reverse recorded changes.
-
 ## Completion point
 
 After Phase 8, the Mac has:
@@ -380,9 +457,11 @@ After Phase 8, the Mac has:
 - chezmoi-managed dotfiles and a Starship-enabled zsh shell;
 - Node with npm/pnpm, Python with uv, or both;
 - Raycast, Warp, and VS Code;
-- a reviewed Brewfile and either a private dotfiles remote or a recorded
-  local-only source;
-- application provenance, audit evidence, and precise rollback records.
+- a reviewed Brewfile and either a private dotfiles remote or a protected
+  local-only source; and
+- on the script-assisted route, application provenance, audit evidence, and
+  precise rollback records; or on the manual route, the verification and
+  recovery records you maintained yourself.
 
 At that point the required build is complete. Add optional complexity only
 when a real project or workflow needs it.
