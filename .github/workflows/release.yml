@@ -1,24 +1,61 @@
-name: Publish runtime release
+name: Prepare and publish runtime release
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_run:
+    workflows: [Validate]
+    types: [completed]
+  workflow_dispatch:
 
 permissions:
   contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: release-please-main
+  cancel-in-progress: false
 
 jobs:
   release:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_branch == 'main')
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v5
-      - name: Require tag and VERSION to agree
-        run: |
-          test "v$(sed -n '1p' VERSION)" = "$GITHUB_REF_NAME"
+      - name: Update the release pull request or create the GitHub release
+        id: release
+        uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      - name: Check out the released commit
+        if: steps.release.outputs.release_created == 'true'
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ steps.release.outputs.sha }}
+
+      - name: Require the release tag and VERSION to agree
+        if: steps.release.outputs.release_created == 'true'
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag_name }}
+        run: test "v$(sed -n '1p' VERSION)" = "$RELEASE_TAG"
+
       - name: Build verified runtime assets
+        if: steps.release.outputs.release_created == 'true'
         run: scripts/build-release.sh
-      - name: Publish GitHub release
+
+      - name: Attach runtime assets to the GitHub release
+        if: steps.release.outputs.release_created == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/day-one-mac-runtime.tar.gz dist/day-one-mac-runtime.tar.gz.sha256 dist/install-day-one-mac --generate-notes --title "Day One Mac $GITHUB_REF_NAME"
+          RELEASE_TAG: ${{ steps.release.outputs.tag_name }}
+        run: >-
+          gh release upload "$RELEASE_TAG"
+          dist/day-one-mac-runtime.tar.gz
+          dist/day-one-mac-runtime.tar.gz.sha256
+          dist/install-day-one-mac
+          --clobber

@@ -12,9 +12,11 @@ jobs:
   validate:
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Install validation tools
-        run: brew install ripgrep shellcheck
+        run: brew install actionlint ripgrep shellcheck
+      - name: Validate GitHub Actions workflows
+        run: actionlint
       - name: Check shell syntax
         run: bash -n scripts/*.sh scripts/lib/*.sh scripts/tests/*.sh install-day-one-mac
       - name: Run complete validation

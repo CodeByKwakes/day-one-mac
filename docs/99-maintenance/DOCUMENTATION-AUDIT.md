@@ -179,8 +179,10 @@ The validator checks:
 
 ## Maintainer checklist
 
-Before publishing a release:
+Before merging the generated Release Please pull request:
 
+- [ ] Confirm the `RELEASE_PLEASE_TOKEN` Actions secret is available and
+      narrowly scoped to contents, pull requests, and issue-label writes.
 - [ ] Update scripts and the owning guide together.
 - [ ] Use current command names in normal documentation.
 - [ ] Put upgrade-only names in `UPGRADE-NOTES.md`.
@@ -188,7 +190,9 @@ Before publishing a release:
 - [ ] Run `scripts/validate.sh`.
 - [ ] Build the release archive and run `shasum -a 256 -c` on its checksum.
 - [ ] Extract the archive and verify its internal `SHA256SUMS` manifest.
-- [ ] Confirm the published release repeats both checksum checks.
+- [ ] Confirm `VERSION`, the proposed tag, and the release pull request agree.
+- [ ] After merge, confirm the workflow attaches the archive, checksum, and
+      standalone installer to the generated GitHub Release.
 
 ## Current conclusion
 

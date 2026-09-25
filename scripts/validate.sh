@@ -67,6 +67,8 @@ fi
 required_docs=(
   README.md
   VERSION
+  .release-please-manifest.json
+  release-please-config.json
   LICENSE
   SECURITY.md
   CONTRIBUTING.md
@@ -474,6 +476,22 @@ else
 fi
 
 semantic_failed=0
+release_manifest_version="$(sed -n 's/^[[:space:]]*"\.":[[:space:]]*"\([^"]*\)".*/\1/p' \
+  "$PROJECT_DIR/.release-please-manifest.json")"
+project_version="$(sed -n '1p' "$PROJECT_DIR/VERSION")"
+if [[ "$release_manifest_version" != "$project_version" ]] \
+   || ! grep -Fq 'workflows: [Validate]' "$PROJECT_DIR/.github/workflows/release.yml" \
+   || ! grep -Fq "github.event.workflow_run.conclusion == 'success'" "$PROJECT_DIR/.github/workflows/release.yml" \
+   || ! grep -Fq 'googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071' "$PROJECT_DIR/.github/workflows/release.yml" \
+   || ! grep -Fq 'token: ${{ secrets.RELEASE_PLEASE_TOKEN }}' "$PROJECT_DIR/.github/workflows/release.yml" \
+   || ! grep -Fq 'steps.release.outputs.release_created' "$PROJECT_DIR/.github/workflows/release.yml" \
+   || ! grep -Fq 'gh release upload "$RELEASE_TAG"' "$PROJECT_DIR/.github/workflows/release.yml" \
+   || ! grep -Fq '"version-file": "VERSION"' "$PROJECT_DIR/release-please-config.json"; then
+  fail "Release Please versioning, validation gate, action pin, or asset publication is incomplete"
+  semantic_failed=1
+else
+  pass "Release Please waits for main validation and owns version, tag, release, and asset publication"
+fi
 if rg -n 'raw\.githubusercontent\.com/CodeByKwakes/day-one-mac/main/install-day-one-mac|CodeByKwakes/MacOS|└── MacOS/' \
   "$PROJECT_DIR" --glob '*.md' >/dev/null 2>&1; then
   fail "a guide still uses the moving main-branch installer or the retired monorepo layout"

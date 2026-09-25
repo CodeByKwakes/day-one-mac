@@ -105,8 +105,10 @@ Version `1.0.7` is declared in `VERSION`.
   shell syntax, naming consistency, portable dispatch, and regression fixtures.
 - `.shellcheckrc` documents each project-wide exception instead of hiding
   suppressions in scattered scripts.
-- Release creation verifies that the Git tag matches `VERSION`, builds assets,
-  and publishes checksums.
+- After validation succeeds on `main`, Release Please updates one release pull
+  request from the Conventional Commit history. Merging that pull request
+  updates `VERSION` and `CHANGELOG.md`, creates the matching tag and GitHub
+  Release, then builds and attaches the checksummed runtime assets.
 
 ### What should change
 
@@ -116,9 +118,9 @@ VS Code recommendation file can suggest ShellCheck, Markdown linting, and YAML
 support; a task can invoke `scripts/validate.sh`. Avoid committing personal UI,
 theme, AI-provider, account, or machine paths.
 
-Consider pinning workflow actions to full commit SHAs and adding an automated
-update configuration for GitHub Actions. The existing release and validation
-jobs are sound, so this is hardening rather than a workflow redesign.
+Workflow actions are pinned to reviewed commit SHAs. Add an automated update
+configuration for GitHub Actions so those pins receive reviewable update pull
+requests rather than becoming stale.
 
 ## Development workflow audit
 
@@ -159,15 +161,32 @@ git diff --check
 also checks Bash syntax and runs the repository's fixtures, including portable
 command behavior. CI runs on `macos-26` for pushes to `main` and pull requests.
 
-For release work, build locally before creating a tag:
+For release work, build locally before merging the generated release pull
+request:
 
 ```bash
 scripts/build-release.sh
 ```
 
-The release workflow runs only for tags matching `v*` and rejects a tag that
-does not match `VERSION`. Updating and pushing `VERSION` alone does not start a
-release; pushing the matching version tag does.
+Every successful validation of a push to `main` updates the Release Please pull
+request. Conventional `fix:` commits propose a patch, `feat:` commits propose a
+minor release, and an explicit breaking change proposes a major release.
+Documentation and maintenance commits do not force a version bump by
+themselves. Review and merge the generated release pull request when the
+accumulated changes are ready to publish.
+
+The release workflow then verifies that the generated tag matches `VERSION`,
+builds the runtime archive, checksums it, and attaches the archive, checksum,
+and standalone installer to the same GitHub Release. Do not create a second
+manual tag for the same version.
+
+The repository must contain an Actions secret named `RELEASE_PLEASE_TOKEN`.
+Use a narrowly scoped fine-grained token or GitHub App token that can write
+repository contents, pull requests, and issue labels. Release Please uses it to
+create the release pull request, tag, and release. A dedicated token is needed
+because GitHub suppresses follow-on workflow runs for pull requests and tags
+created with the default `GITHUB_TOKEN`; the release pull request must receive
+the normal validation workflow before it is merged.
 
 ### Debugging
 
