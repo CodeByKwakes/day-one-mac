@@ -39,7 +39,8 @@ grep -Fq 'chezmoi' <<<"$docs_list" \
   || fail_test 'installed runtime did not resolve the chezmoi setup tutorial'
 [[ "$(HOME="$test_home" "$portable" docs --folder)" == *'/docs' ]] \
   || fail_test 'installed runtime did not resolve the documentation folder'
-HOME="$test_home" "$portable" docs --help | grep -Fq 'Topics: start, index, manual' \
+docs_help="$(HOME="$test_home" "$portable" docs --help)"
+grep -Fq 'Topics: start, index, manual' <<<"$docs_help" \
   || fail_test 'installed runtime documentation help is incomplete'
 grep -Fqx '[[ -r "$HOME/.config/zsh/path.zsh" ]] && source "$HOME/.config/zsh/path.zsh"' "$test_home/.zprofile" \
   || fail_test 'installer did not add the shared PATH source to .zprofile'
