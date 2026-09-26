@@ -14,10 +14,12 @@ CATALOG="$PROJECT_DIR/config/raycast-commands.tsv"
 EXTENSIONS="$PROJECT_DIR/config/raycast-extensions.tsv"
 TARGET_DIR="${DAY_ONE_RAYCAST_COMMAND_DIR:-$HOME/.local/share/day-one-mac/raycast}"
 BACKUP_ROOT="$STATE_ROOT/raycast-command-backups"
+LAUNCHER_MODE_FILE="$STATE_DIR/raycast-launcher-mode"
 MANAGED_MARKER='.day-one-raycast-managed'
 ASSUME_YES=0
 MODE=wizard
 GROUP_CSV=""
+LAUNCHER_MODE=""
 
 GROUP_IDS=(core documentation ai hosting safety second-brain)
 GROUP_LABELS=(
@@ -39,14 +41,19 @@ Usage: ./configure-raycast.sh [options]
   --apply                  apply the default plan after confirmation
   --groups A,B             use selected groups non-interactively
                            core,documentation,ai,hosting,safety,second-brain
+  --launcher-mode MODE     choose shortcut guidance: alongside-spotlight
+                           (recommended) or raycast-only
   --status                 show the managed directory and saved machine choices
   --extensions             print the reviewed Raycast extension recommendations
   --remove-generated       archive the Day One generated directory
   --yes                    accept the ordinary apply/remove confirmation
   -h, --help               show this help
 
-The script never installs Store extensions, changes Raycast's private database,
-adds destructive --execute commands, or writes a credential into a command.
+The script never changes macOS shortcuts or Raycast's private database. Both
+launcher modes use ⌥Space for Raycast and keep Spotlight indexing on.
+Alongside mode keeps ⌘Space for Spotlight; Raycast-only mode disables
+only Spotlight's window shortcut. The script also never installs Store
+extensions, adds destructive --execute commands, or writes a credential.
 After applying once, add the printed directory in Raycast Settings under Script
 Commands. Raycast detects later safe refreshes automatically.
 EOF
@@ -92,6 +99,53 @@ group_enabled() {
   [[ "${GROUP_SELECTED[$index]}" == 1 ]]
 }
 
+set_launcher_mode() {
+  case "$1" in
+    alongside-spotlight|raycast-only) LAUNCHER_MODE="$1" ;;
+    *) die "unknown Raycast launcher mode: $1 (use alongside-spotlight or raycast-only)" ;;
+  esac
+}
+
+launcher_mode_label() {
+  case "$1" in
+    alongside-spotlight) printf '%s\n' 'Raycast alongside Spotlight' ;;
+    raycast-only) printf '%s\n' 'Raycast-only launcher' ;;
+  esac
+}
+
+print_launcher_plan() {
+  local launcher_mode="$1"
+  printf '\nLauncher shortcuts\n'
+  printf '  Raycast Root Search: ⌥Space (both modes)\n'
+  if [[ "$launcher_mode" == alongside-spotlight ]]; then
+    printf '  Spotlight Search:    ⌘Space (keep enabled)\n'
+  else
+    printf '  Spotlight Search:    disabled shortcut; ⌘Space remains unassigned\n'
+  fi
+  printf '  Spotlight indexing:  enabled\n'
+  printf '  Raycast Quick AI:    no default global shortcut\n'
+  printf '  Settings remain manual; this plan does not claim they were applied.\n'
+}
+
+interactive_launcher_mode() {
+  local answer default_choice=1
+  [[ -t 0 && -t 1 ]] || die 'the Raycast wizard needs a terminal; use --launcher-mode with --preview or --apply'
+  [[ "$LAUNCHER_MODE" == raycast-only ]] && default_choice=2
+  ui_banner '🔎' 'Choose launcher behaviour'
+  printf '  1. Raycast alongside Spotlight (recommended)\n'
+  printf '     Raycast: ⌥Space · Spotlight: ⌘Space\n'
+  printf '  2. Raycast-only launcher\n'
+  printf '     Raycast: ⌥Space · Spotlight shortcut: disabled\n\n'
+  printf 'Choose 1 or 2 [%s]: ' "$default_choice"
+  IFS= read -r answer
+  [[ -n "$answer" ]] || answer="$default_choice"
+  case "$answer" in
+    1) LAUNCHER_MODE=alongside-spotlight ;;
+    2) LAUNCHER_MODE=raycast-only ;;
+    *) die 'launcher choice must be 1 or 2' ;;
+  esac
+}
+
 condition_matches() {
   local condition="$1" track="$2" ai_clients="$3"
   case "$condition" in
@@ -134,11 +188,14 @@ selected_count() {
 }
 
 print_plan() {
-  local track="$1" ai_clients="$2" group condition id title alias mode action description last_group=""
+  local track="$1" ai_clients="$2" launcher_mode="$3"
+  local group condition id title alias mode action description last_group=""
   ui_title '🚀' 'Raycast command plan'
   ui_label 'Track' "${track:-not selected}"
   ui_label 'AI clients' "${ai_clients:-none selected}"
+  ui_label 'Launcher mode' "$(launcher_mode_label "$launcher_mode")"
   ui_label 'Managed directory' "$TARGET_DIR"
+  print_launcher_plan "$launcher_mode"
   while IFS=$'\t' read -r group condition id title alias mode action description; do
     [[ -n "$group" && "${group#\#}" == "$group" ]] || continue
     group_enabled "$group" || continue
@@ -310,7 +367,8 @@ write_command() {
 }
 
 generate_directory() {
-  local destination="$1" track="$2" ai_clients="$3" group condition id title alias mode action description count=0
+  local destination="$1" track="$2" ai_clients="$3" launcher_mode="$4"
+  local group condition id title alias mode action description count=0
   mkdir -p "$destination"
   chmod 700 "$destination"
   write_library "$destination"
@@ -321,8 +379,8 @@ generate_directory() {
     count=$((count + 1))
     write_command "$destination" "$count" "$id" "$title" "$alias" "$mode" "$action" "$description"
   done < "$CATALOG"
-  printf 'schema=1\ntrack=%s\nai_clients=%s\ncommands=%s\n' \
-    "$track" "$ai_clients" "$count" > "$destination/$MANAGED_MARKER"
+  printf 'schema=2\ntrack=%s\nai_clients=%s\nlauncher_mode=%s\ncommands=%s\n' \
+    "$track" "$ai_clients" "$launcher_mode" "$count" > "$destination/$MANAGED_MARKER"
   chmod 600 "$destination/$MANAGED_MARKER"
 }
 
@@ -335,8 +393,15 @@ confirm_action() {
   [[ "$answer" == y || "$answer" == Y || "$answer" == yes || "$answer" == YES ]]
 }
 
+save_launcher_mode() {
+  mkdir -p "$STATE_DIR"
+  chmod 700 "$STATE_DIR"
+  printf '%s\n' "$1" > "$LAUNCHER_MODE_FILE"
+  chmod 600 "$LAUNCHER_MODE_FILE"
+}
+
 apply_plan() {
-  local track="$1" ai_clients="$2" temporary backup stamp count
+  local track="$1" ai_clients="$2" launcher_mode="$3" temporary backup stamp count
   [[ -x "$HOME/.local/bin/day-one-mac" ]] || die 'complete or rerun Phase 5 before applying Raycast commands; the portable day-one-mac command is required'
   count="$(selected_count "$track" "$ai_clients")"
   [[ "$count" -gt 0 ]] || die 'no Raycast commands are selected'
@@ -344,10 +409,12 @@ apply_plan() {
     die "refusing to replace an unmanaged directory: $TARGET_DIR"
   fi
   temporary="$(mktemp -d "${TMPDIR:-/tmp}/day-one-raycast.XXXXXX")"
-  generate_directory "$temporary" "$track" "$ai_clients"
+  generate_directory "$temporary" "$track" "$ai_clients" "$launcher_mode"
   if [[ -d "$TARGET_DIR" ]] && diff -qr "$TARGET_DIR" "$temporary" >/dev/null 2>&1; then
     rm -rf "$temporary"
+    save_launcher_mode "$launcher_mode"
     ok "Raycast command directory is already current"
+    print_launcher_plan "$launcher_mode"
     return 0
   fi
   mkdir -p "$(dirname "$TARGET_DIR")" "$BACKUP_ROOT"
@@ -359,21 +426,30 @@ apply_plan() {
     info "previous generated commands archived at $backup"
   fi
   mv "$temporary" "$TARGET_DIR"
+  save_launcher_mode "$launcher_mode"
   ok "generated $count Raycast commands in $TARGET_DIR"
   printf '\nOne-time Raycast step:\n'
   printf '  1. Open Raycast Settings → Extensions → Script Commands.\n'
   printf '  2. Choose Add Script Directory.\n'
   printf '  3. Select %s\n' "$TARGET_DIR"
   printf '  4. Open Settings → Shortcuts and audit the generated aliases.\n'
+  print_launcher_plan "$launcher_mode"
 }
 
 show_status() {
-  local track ai_clients count=0
+  local track ai_clients launcher_mode count=0
   track="$(state_value track)"
   ai_clients="$(state_value ai-clients)"
+  launcher_mode="$(state_value raycast-launcher-mode)"
   ui_title '🚀' 'Raycast command status'
   ui_label 'Track' "${track:-not selected}"
   ui_label 'AI clients' "${ai_clients:-none selected}"
+  if [[ -n "$launcher_mode" ]]; then
+    ui_label 'Saved launcher guidance' "$(launcher_mode_label "$launcher_mode")"
+    print_launcher_plan "$launcher_mode"
+  else
+    ui_label 'Saved launcher guidance' 'not selected; alongside Spotlight is the recommended default'
+  fi
   ui_label 'Managed directory' "$TARGET_DIR"
   if [[ -f "$TARGET_DIR/$MANAGED_MARKER" ]]; then
     count="$(find "$TARGET_DIR" -maxdepth 1 -type f -name '*.sh' -perm -100 ! -name '_*' | wc -l | tr -d ' ')"
@@ -406,6 +482,7 @@ while [[ $# -gt 0 ]]; do
     --preview) MODE=preview ;;
     --apply) MODE=apply ;;
     --groups) shift; [[ $# -gt 0 ]] || die '--groups needs a comma-separated value'; GROUP_CSV="$1" ;;
+    --launcher-mode) shift; [[ $# -gt 0 ]] || die '--launcher-mode needs a value'; set_launcher_mode "$1" ;;
     --status) MODE=status ;;
     --extensions) MODE=extensions ;;
     --remove-generated) MODE=remove ;;
@@ -419,6 +496,11 @@ done
 [[ -r "$CATALOG" ]] || die "Raycast command catalogue is missing: $CATALOG"
 [[ -r "$EXTENSIONS" ]] || die "Raycast extension catalogue is missing: $EXTENSIONS"
 [[ -n "$GROUP_CSV" ]] && set_group_csv
+if [[ -z "$LAUNCHER_MODE" ]]; then
+  LAUNCHER_MODE="$(state_value raycast-launcher-mode)"
+  [[ -n "$LAUNCHER_MODE" ]] || LAUNCHER_MODE=alongside-spotlight
+  set_launcher_mode "$LAUNCHER_MODE"
+fi
 
 TRACK="$(state_value track)"
 AI_CLIENTS="$(state_value ai-clients)"
@@ -427,16 +509,17 @@ case "$MODE" in
   status) show_status ;;
   extensions) print_extensions ;;
   remove) remove_generated ;;
-  preview) print_plan "$TRACK" "$AI_CLIENTS" ;;
+  preview) print_plan "$TRACK" "$AI_CLIENTS" "$LAUNCHER_MODE" ;;
   apply)
-    print_plan "$TRACK" "$AI_CLIENTS"
+    print_plan "$TRACK" "$AI_CLIENTS" "$LAUNCHER_MODE"
     confirm_action 'Write this Raycast command directory?' || { info 'nothing changed'; exit 10; }
-    apply_plan "$TRACK" "$AI_CLIENTS"
+    apply_plan "$TRACK" "$AI_CLIENTS" "$LAUNCHER_MODE"
     ;;
   wizard)
+    interactive_launcher_mode
     interactive_groups
-    print_plan "$TRACK" "$AI_CLIENTS"
+    print_plan "$TRACK" "$AI_CLIENTS" "$LAUNCHER_MODE"
     confirm_action 'Write this Raycast command directory?' || { info 'nothing changed'; exit 10; }
-    apply_plan "$TRACK" "$AI_CLIENTS"
+    apply_plan "$TRACK" "$AI_CLIENTS" "$LAUNCHER_MODE"
     ;;
 esac

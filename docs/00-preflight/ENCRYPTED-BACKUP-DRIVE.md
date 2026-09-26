@@ -30,8 +30,8 @@ drive is the simplest choice for this workflow.
 These steps erase the selected external drive.
 
 1. Connect the drive directly to the Mac.
-2. Open **Disk Utility**. Press Command-Space, type `Disk Utility`, then press
-   Return.
+2. Open **Disk Utility** from **Applications → Utilities**, or search for it
+   with whichever launcher shortcut is currently configured.
 3. In Disk Utility, choose **View → Show All Devices**. This shows both physical
    devices and the volumes stored on them.
 4. In the sidebar, select the **top-level external physical device**. Check its

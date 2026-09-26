@@ -30,12 +30,18 @@ the first combination, release it, then press the second.
 These shortcuts can work while another application is active, so conflicts
 matter more than shortcuts local to one window.
 
-| Shortcut | Day One owner | Purpose |
-|---|---|---|
-| `⌘Space` | Raycast | Open Root Search; the Spotlight launcher shortcut is disabled, but Spotlight indexing stays enabled |
-| `⌘\` | 1Password | Universal Autofill in the focused app or website |
-| `⌥⌘\` | 1Password on macOS 27 | Open Quick Access |
-| `⇧⌘Space` | 1Password on macOS 26 or earlier | Older Quick Access default; do not assign it on macOS 27 merely to match an old guide |
+| Shortcut | Alongside owner | Raycast-only owner | Purpose |
+|---|---|---|---|
+| `⌥Space` | Raycast | Raycast | Open Root Search |
+| `⌘Space` | Spotlight | Unassigned | Open Spotlight Search only in alongside mode |
+| `⌘\` | 1Password | 1Password | Universal Autofill in the focused app or website |
+| `⌥⌘\` | 1Password on macOS 27 | 1Password on macOS 27 | Open Quick Access |
+| `⇧⌘Space` | 1Password on macOS 26 or earlier | 1Password on macOS 26 or earlier | Older Quick Access default; do not assign it on macOS 27 merely to match an old guide |
+
+Raycast always owns `⌥Space`. Spotlight indexing remains enabled in both modes;
+only the Spotlight window shortcut changes. Alongside mode is recommended for
+a new setup because both launchers remain available while their roles are
+evaluated.
 
 Warp also ships with `⌘\` for Warp Drive. That conflicts with 1Password
 Universal Autofill. Keep `⌘\` for 1Password and either open Warp Drive from
@@ -76,7 +82,7 @@ through the clipboard.
 
 | Shortcut | Action |
 |---|---|
-| `⌘Space` | Open or close Raycast Root Search after completing the Day One Spotlight replacement |
+| `⌥Space` | Open or close Raycast Root Search in either launcher mode |
 | `↑` / `↓` | Move through results |
 | `↩` | Run the primary action |
 | `⌘K` | Open or close the Action Panel |
@@ -95,8 +101,11 @@ Recommended optional global assignments:
 | `⌥⌘V` | Clipboard History | After credential and sensitive-work applications are excluded from capture |
 | `⌃⌥⌘←` / `⌃⌥⌘→` | Left Half / Right Half | Only when Raycast Window Management is enabled |
 | `⌃⌥⌘↑` / `⌃⌥⌘↓` | Maximize / Restore | Only when Raycast Window Management is enabled |
-| `⌥Space` | Quick AI | Only when Raycast AI was deliberately selected |
 | `⌃⌥⌘T` | A frequently used generated AI task command | Optional; prefer the `aitc`, `aitl`, or `aitp` alias first |
+
+Do not give Quick AI a default global shortcut. `⌥Space` belongs to Root Search
+in both launcher modes. Open Quick AI from Root Search until a separate,
+conflict-free shortcut proves necessary.
 
 Audit custom Raycast hotkeys under **Raycast Settings → Shortcuts**. Prefer an
 alias typed into Root Search when a command is useful but not frequent enough
@@ -168,7 +177,8 @@ instead of editing `keybindings.json` blindly.
 
 ## Shortcut verification checklist 🚦
 
-- [ ] `⌘Space` opens Raycast once and does not also open Spotlight.
+- [ ] `⌥Space` opens Raycast once.
+- [ ] `⌘Space` opens Spotlight in alongside mode or remains unassigned in Raycast-only mode.
 - [ ] Spotlight indexing remains enabled and Raycast File Search finds a known file.
 - [ ] `⌘\` invokes 1Password Universal Autofill rather than Warp Drive.
 - [ ] 1Password Quick Access opens with the shortcut documented for the installed macOS version.

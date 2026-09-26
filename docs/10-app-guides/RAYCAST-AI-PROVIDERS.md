@@ -43,7 +43,8 @@ This is a complete and supported Day One outcome:
 3. Confirm that the displayed plan and organisation are correct.
 4. Keep tool approval on **Ask** and leave globally allowed tools empty.
 5. Choose a default model whose data handling is approved.
-6. Assign `⌥Space` to Quick AI only if it does not conflict with another app.
+6. Leave Quick AI without a default global shortcut. `⌥Space` belongs to
+   Raycast Root Search in both supported launcher modes.
 7. Send a harmless prompt such as `Summarise the difference between Git and GitHub`.
 8. Check Raycast's usage view and confirm the expected account handled it.
 

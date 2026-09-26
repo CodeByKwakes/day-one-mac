@@ -680,10 +680,15 @@ fi
 if ! grep -Fq 'Export Settings & Data' "$PROJECT_DIR/docs/10-app-guides/RAYCAST.md" \
    || ! grep -Fq '.rayconfig' "$PROJECT_DIR/docs/10-app-guides/RAYCAST.md" \
    || ! grep -Fq 'import is additive' "$PROJECT_DIR/docs/10-app-guides/RAYCAST.md" \
-   || ! grep -Fq 'Replace the Spotlight launcher with Raycast' "$PROJECT_DIR/docs/10-app-guides/RAYCAST.md" \
-   || ! grep -Fq 'Leave Spotlight indexing enabled' "$PROJECT_DIR/docs/10-app-guides/RAYCAST.md" \
+   || ! grep -Fq 'Path A — Use Raycast alongside Spotlight' "$PROJECT_DIR/docs/10-app-guides/RAYCAST.md" \
+   || ! grep -Fq 'Path B — Use Raycast as the only keyboard launcher' "$PROJECT_DIR/docs/10-app-guides/RAYCAST.md" \
+   || ! grep -Fq 'Raycast uses `⌥Space` in both supported paths' "$PROJECT_DIR/docs/10-app-guides/RAYCAST.md" \
+   || ! grep -Fq 'Keep Spotlight indexing enabled in both launcher modes' "$PROJECT_DIR/docs/10-app-guides/RAYCAST.md" \
+   || ! grep -Fq 'Divide search responsibilities' "$PROJECT_DIR/docs/10-app-guides/RAYCAST.md" \
+   || ! grep -Fq 'Fallback commands appear when Root Search has no direct match' "$PROJECT_DIR/docs/10-app-guides/RAYCAST.md" \
+   || ! grep -Fq 'Clipboard Search' "$PROJECT_DIR/docs/10-app-guides/RAYCAST.md" \
    || ! grep -Fq 'Globally Allowed Tools' "$PROJECT_DIR/docs/10-app-guides/RAYCAST.md"; then
-  fail "Raycast app guide is missing shortcut replacement, indexing, export, import, or permission guidance"
+  fail "Raycast app guide is missing dual-mode shortcuts, indexing, export, import, or permission guidance"
   semantic_failed=1
 fi
 if ! grep -Fq 'Install the official download manually' "$PROJECT_DIR/docs/10-app-guides/RAYCAST.md" \
@@ -699,6 +704,7 @@ fi
 if ! grep -Fq 'Recommended global shortcut ownership' "$PROJECT_DIR/docs/10-app-guides/KEYBOARD-SHORTCUTS.md" \
    || ! grep -Fq 'That conflicts with 1Password' "$PROJECT_DIR/docs/10-app-guides/KEYBOARD-SHORTCUTS.md" \
    || ! grep -Fq 'Spotlight indexing remains enabled' "$PROJECT_DIR/docs/10-app-guides/KEYBOARD-SHORTCUTS.md" \
+   || ! grep -Fq 'Raycast always owns `⌥Space`' "$PROJECT_DIR/docs/10-app-guides/KEYBOARD-SHORTCUTS.md" \
    || ! grep -Fq '⌘K ⌘S' "$PROJECT_DIR/docs/10-app-guides/KEYBOARD-SHORTCUTS.md"; then
   fail "application keyboard-shortcut reference is missing ownership, conflict, Spotlight, or editor guidance"
   semantic_failed=1
@@ -880,6 +886,9 @@ fi
 
 if grep -Fq $'core\talways\tstatus\tDay One · Status\td1s\t' "$PROJECT_DIR/config/raycast-commands.tsv" \
    && grep -Fq $'Recommended\tEveryone\tWarp\twarpdotdev\t' "$PROJECT_DIR/config/raycast-extensions.tsv" \
+   && grep -Fq -- '--launcher-mode MODE' "$SCRIPT_DIR/configure-raycast.sh" \
+   && grep -Fq 'alongside-spotlight|raycast-only' "$SCRIPT_DIR/configure-raycast.sh" \
+   && grep -Fq 'Raycast Root Search: ⌥Space (both modes)' "$SCRIPT_DIR/configure-raycast.sh" \
    && grep -Fq -- '--remove-generated' "$SCRIPT_DIR/configure-raycast.sh" \
    && grep -Fq 'refusing to replace an unmanaged directory' "$SCRIPT_DIR/configure-raycast.sh" \
    && grep -Fq 'No generated command contains --execute' "$SCRIPT_DIR/configure-raycast.sh" \

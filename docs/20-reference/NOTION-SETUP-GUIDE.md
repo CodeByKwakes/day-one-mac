@@ -755,9 +755,11 @@ uv --version
 
 - [ ] Open Warp, choose zsh, and select JetBrainsMono Nerd Font.
 - [ ] Confirm the Starship prompt renders in a new Warp tab.
-- [ ] In macOS Keyboard Shortcuts, disable only **Show Spotlight search**—do
-      not disable Spotlight indexing.
-- [ ] Set Raycast's main hotkey to `⌘Space` and confirm only Raycast opens.
+- [ ] Set Raycast's main hotkey to `⌥Space`.
+- [ ] Choose a launcher mode: keep Spotlight Search on `⌘Space` for the
+      recommended alongside path, or disable only **Show Spotlight search**
+      for the Raycast-only launcher path.
+- [ ] Keep Spotlight indexing enabled in both modes.
 - [ ] Grant Accessibility or other macOS permissions only when a selected
       feature explains why it needs them.
 - [ ] Do not enable cloud sync or import an old backup by default.
@@ -774,8 +776,8 @@ code "$HOME/Developer/_sandbox/editor-check"
 
 - [ ] VS Code opens from Terminal and its integrated terminal uses zsh.
 - [ ] Starship symbols render in VS Code and Warp.
-- [ ] Raycast opens from `⌘Space`, while Spotlight indexing remains available
-      for file-content search.
+- [ ] Raycast opens from `⌥Space`; `⌘Space` matches the chosen Spotlight mode;
+      and Spotlight indexing remains available for file-content search.
 - [ ] No app received broader permissions than its selected features need.
 
 ### Manual 8 — record and verify the finished environment

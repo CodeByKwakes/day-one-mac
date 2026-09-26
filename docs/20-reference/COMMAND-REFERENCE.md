@@ -74,7 +74,7 @@ updates and rollback.
 | `day-one-mac ssh-pin [github\|azure\|both]` | `./bootstrap-day-one-mac.sh --ssh-pin …` | Export reviewed 1Password SSH public keys to stable `~/.ssh` public-key files. |
 | `day-one-mac macos-settings [options]` | `./configure-macos-settings.sh [options]` | Configure, inspect, preview, or restore optional Finder, Dock, keyboard, and trackpad preferences. |
 | `day-one-mac workspace [command]` | `./workspace-manager.sh [command]` | Create, inspect, complete, or open a bounded projectless task. |
-| `day-one-mac raycast [options]` | `./configure-raycast.sh [options]` | Preview, generate, inspect, or archive the optional track-aware Raycast Script Commands. |
+| `day-one-mac raycast [options]` | `./configure-raycast.sh [options]` | Choose `alongside-spotlight` or `raycast-only` launcher guidance, then preview, generate, inspect, or archive the optional track-aware Raycast Script Commands. Raycast uses `⌥Space` in both modes. |
 | `day-one-mac optional --guided` | `./bootstrap-day-one-mac.sh --optional --guided` | Choose optional modules after required Phase 8 passes and continue to available installers. |
 | `day-one-mac optional --status [options]` | `./optional-status.sh [options]` | Show one read-only status dashboard for Modules 09–22 or write the combined module, environment, and repository audit. Compatibility aliases: `day-one-mac optional-status` and `day-one-mac modules`. |
 | `day-one-mac databases [options]` | `./configure-databases.sh [options]` | Install, resume, inspect, or verify the selected PostgreSQL, Redis, and MongoDB containers. |
@@ -189,15 +189,20 @@ change; it does not guess an Apple default.
 ```bash
 day-one-mac raycast --wizard
 day-one-mac raycast --preview
+day-one-mac raycast --launcher-mode alongside-spotlight --preview
+day-one-mac raycast --launcher-mode raycast-only --preview
 day-one-mac raycast --status
 day-one-mac raycast --extensions
 day-one-mac raycast --remove-generated
 ```
 
 Use this after installing the portable `day-one-mac` command. The
-wizard reads the saved hosting track and AI-client selection, then writes a
-separate Script Command directory under `~/.local/share/day-one-mac/raycast`.
-It does not install Store extensions or edit Raycast's private settings. See
+wizard asks for launcher guidance, reads the saved hosting track and AI-client
+selection, then writes a separate Script Command directory under
+`~/.local/share/day-one-mac/raycast`. Both launcher modes assign `⌥Space` to
+Raycast; the choice controls whether Spotlight keeps `⌘Space`. The script saves
+the intended mode but does not install Store extensions, edit macOS shortcuts,
+or edit Raycast's private settings. See
 [Use Day One Mac from Raycast](../10-app-guides/RAYCAST-COMMANDS.md).
 
 ## Projectless workspace commands

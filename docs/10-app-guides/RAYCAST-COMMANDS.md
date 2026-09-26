@@ -62,8 +62,15 @@ Useful alternatives:
 day-one-mac raycast --preview
 day-one-mac raycast --status
 day-one-mac raycast --extensions
+day-one-mac raycast --launcher-mode alongside-spotlight --preview
+day-one-mac raycast --launcher-mode raycast-only --preview
 day-one-mac raycast --groups core,documentation,ai,hosting --apply
 ```
+
+The wizard asks for launcher behaviour before command groups. Both choices keep
+Raycast Root Search on `⌥Space`. The recommended alongside choice keeps
+Spotlight Search on `⌘Space`; the Raycast-only choice leaves `⌘Space`
+unassigned. Shortcut changes are manual and Spotlight indexing stays enabled.
 
 The direct script form is available only for contributor troubleshooting:
 
@@ -396,15 +403,17 @@ base OrbStack workflow; use the reviewed database and Warp commands instead.
 
 | Shortcut | Owner |
 |---|---|
-| `⌘Space` | Raycast Root Search |
+| `⌥Space` | Raycast Root Search in both launcher modes |
+| `⌘Space` | Spotlight Search in alongside mode; unassigned in Raycast-only mode |
 | `⌥⌘V` | Clipboard History |
 | `⌃⌥⌘←` / `⌃⌥⌘→` | Left/Right Half, when Window Management is enabled |
 | `⌃⌥⌘↑` / `⌃⌥⌘↓` | Maximize/Restore, when Window Management is enabled |
-| `⌥Space` | Quick AI, only when Raycast AI was selected |
 | `⌃⌥⌘T` | AI task creation, only if used frequently |
 
 Prefer an alias over a hotkey for every Day One health command. Keep `⌘\` for
-1Password Universal Autofill and do not reuse it for Raycast or Warp.
+1Password Universal Autofill and do not reuse it for Raycast or Warp. Open
+Quick AI through Root Search unless a separate conflict-free shortcut is
+deliberately chosen.
 
 ## Refresh or remove the generated commands
 
@@ -414,6 +423,16 @@ Refresh after changing the hosting track or AI clients:
 day-one-mac raycast --wizard
 day-one-mac raycast --status
 ```
+
+Preview either launcher path without changing files or settings:
+
+```bash
+day-one-mac raycast --launcher-mode alongside-spotlight --preview
+day-one-mac raycast --launcher-mode raycast-only --preview
+```
+
+The wizard saves the selected guidance with the generated command manifest,
+but shortcut changes remain manual in macOS and Raycast settings.
 
 Remove only the generated directory:
 

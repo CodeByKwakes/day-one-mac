@@ -181,7 +181,7 @@ include:
 ```text
 1Password       credential and SSH agent availability
 OrbStack        only when local containers are used daily
-Raycast         only when it replaces Spotlight workflows
+Raycast         when either supported launcher mode is used
 Thaw            only when menu-bar management is wanted
 ```
 
@@ -196,11 +196,12 @@ not public Git.
 
 Recommended order:
 
-1. Choose whether Raycast replaces Spotlight.
-2. Add one global activation shortcut.
-3. Add only reviewed extensions.
-4. Configure aliases/Quicklinks without embedded tokens.
-5. Export the working configuration to encrypted backup.
+1. Choose Raycast alongside Spotlight or the Raycast-only launcher path.
+2. Keep Raycast on `⌥Space`; keep Spotlight on `⌘Space` only in alongside mode.
+3. Keep Spotlight indexing enabled in both modes.
+4. Add only reviewed extensions.
+5. Configure aliases/Quicklinks without embedded tokens.
+6. Export the working configuration to encrypted backup.
 
 Use Thaw as the menu-bar manager when selected. Do not install a second tool
 that solves the same menu-bar hiding problem.

@@ -162,8 +162,9 @@ known-good local configuration.
 ## Required app completion checklist 🚦
 
 - [ ] 1Password and its SSH agent pass Phase 3.
-- [ ] Raycast opens from `⌘Space`, the Spotlight launcher shortcut is disabled,
-      Spotlight indexing remains enabled, and Raycast has only necessary permissions.
+- [ ] Raycast opens from `⌥Space`; `⌘Space` either opens Spotlight or remains
+      unassigned according to the chosen mode; Spotlight indexing remains
+      enabled; and Raycast has only necessary permissions.
 - [ ] Warp starts zsh and renders the Starship prompt with the Nerd Font.
 - [ ] `code --version` succeeds and VS Code opens a zsh terminal.
 - [ ] Cloud sync is either deliberately configured or deliberately left off.
