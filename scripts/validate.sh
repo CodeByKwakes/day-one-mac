@@ -509,6 +509,7 @@ else
 fi
 if grep -Fq '"prepare": "husky"' "$PROJECT_DIR/package.json" \
    && grep -Fq '"*.{md,mdx}": "markdownlint-cli2"' "$PROJECT_DIR/package.json" \
+   && grep -Fq '"CHANGELOG.md"' "$PROJECT_DIR/.markdownlint-cli2.jsonc" \
    && grep -Fq 'node_modules/.bin/commitlint --edit "$1"' "$PROJECT_DIR/.husky/commit-msg" \
    && grep -Fq 'node_modules/.bin/lint-staged' "$PROJECT_DIR/.husky/pre-commit" \
    && grep -Fq 'scripts/validate.sh' "$PROJECT_DIR/.husky/pre-push" \

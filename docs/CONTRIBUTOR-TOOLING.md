@@ -315,6 +315,12 @@ exception. If the syntax is generated or semantically significant, add the
 narrowest possible exclusion to `.markdownlint-cli2.jsonc` and explain it in
 the pull request. Do not disable a rule repository-wide for one avoidable line.
 
+The root `CHANGELOG.md` is the existing exception. Release Please owns and
+regenerates that file, and its section layout contains consecutive blank lines
+that conflict with `MD012`. The linter therefore excludes only that generated
+file. Do not edit the changelog by hand or disable `MD012` for authored
+documentation.
+
 ### A valid-looking commit is rejected
 
 Check for a missing colon, an unsupported type, an empty subject, or a header
