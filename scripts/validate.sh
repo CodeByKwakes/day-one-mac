@@ -7,6 +7,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
 FAILURES=0
+STANDALONE_RUNTIME=0
+if [[ -f "$PROJECT_DIR/SHA256SUMS" && ! -d "$PROJECT_DIR/.git" ]]; then
+  STANDALONE_RUNTIME=1
+fi
 
 pass() { ui_success "$@"; }
 fail() { ui_error "$@"; FAILURES=$((FAILURES + 1)); }
@@ -505,31 +509,48 @@ package_version="$(sed -n 's/^[[:space:]]*"version":[[:space:]]*"\([^"]*\)".*/\1
   "$PROJECT_DIR/package.json" | head -1)"
 if [[ "$release_manifest_version" != "$project_version" ]] \
    || [[ "$package_version" != "$project_version" ]] \
-   || ! grep -Fq 'workflows: [Validate]' "$PROJECT_DIR/.github/workflows/release.yml" \
-   || ! grep -Fq "github.event.workflow_run.conclusion == 'success'" "$PROJECT_DIR/.github/workflows/release.yml" \
-   || ! grep -Fq 'googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7' "$PROJECT_DIR/.github/workflows/release.yml" \
-   || ! grep -Fq 'token: ${{ secrets.RELEASE_PLEASE_TOKEN }}' "$PROJECT_DIR/.github/workflows/release.yml" \
-   || ! grep -Fq 'steps.release.outputs.release_created' "$PROJECT_DIR/.github/workflows/release.yml" \
-   || ! grep -Fq 'gh release upload "$RELEASE_TAG"' "$PROJECT_DIR/.github/workflows/release.yml" \
    || ! grep -Fq '"version-file": "VERSION"' "$PROJECT_DIR/release-please-config.json" \
    || ! grep -Fq '"path": "package.json"' "$PROJECT_DIR/release-please-config.json" \
    || ! grep -Fq '"jsonpath": "$.version"' "$PROJECT_DIR/release-please-config.json"; then
-  fail "Release Please version synchronization, validation gate, action pin, or asset publication is incomplete"
+  fail "Release Please version records are incomplete or disagree"
   semantic_failed=1
 else
-  pass "Release Please synchronizes every version record after main validation and owns release publication"
+  pass "Release Please version records agree"
 fi
+
+if [[ "$STANDALONE_RUNTIME" == 1 ]]; then
+  pass "standalone runtime correctly omits repository-only Release Please workflow metadata"
+elif grep -Fq 'workflows: [Validate]' "$PROJECT_DIR/.github/workflows/release.yml" \
+   && grep -Fq "github.event.workflow_run.conclusion == 'success'" "$PROJECT_DIR/.github/workflows/release.yml" \
+   && grep -Fq 'googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7' "$PROJECT_DIR/.github/workflows/release.yml" \
+   && grep -Fq 'token: ${{ secrets.RELEASE_PLEASE_TOKEN }}' "$PROJECT_DIR/.github/workflows/release.yml" \
+   && grep -Fq 'steps.release.outputs.release_created' "$PROJECT_DIR/.github/workflows/release.yml" \
+   && grep -Fq 'gh release upload "$RELEASE_TAG"' "$PROJECT_DIR/.github/workflows/release.yml"; then
+  pass "Release Please runs after main validation and owns release publication"
+else
+  fail "Release Please validation gate, action pin, or asset publication has drifted"
+  semantic_failed=1
+fi
+
 if grep -Fq '"prepare": "husky"' "$PROJECT_DIR/package.json" \
    && grep -Fq '"*.{md,mdx}": "markdownlint-cli2"' "$PROJECT_DIR/package.json" \
    && grep -Fq '"CHANGELOG.md"' "$PROJECT_DIR/.markdownlint-cli2.jsonc" \
    && grep -Fq 'node_modules/.bin/commitlint --edit "$1"' "$PROJECT_DIR/.husky/commit-msg" \
    && grep -Fq 'node_modules/.bin/lint-staged' "$PROJECT_DIR/.husky/pre-commit" \
-   && grep -Fq 'scripts/validate.sh' "$PROJECT_DIR/.husky/pre-push" \
-   && grep -Fq 'pnpm exec commitlint' "$PROJECT_DIR/.github/workflows/validate.yml" \
-   && grep -Fq 'run: pnpm run lint' "$PROJECT_DIR/.github/workflows/validate.yml"; then
-  pass "contributor hooks and CI enforce conventional commits and delegated linting"
+   && grep -Fq 'scripts/validate.sh' "$PROJECT_DIR/.husky/pre-push"; then
+  pass "contributor hooks enforce conventional commits and delegated linting"
 else
-  fail "contributor hook or CI lint integration has drifted"
+  fail "contributor hook or lint integration has drifted"
+  semantic_failed=1
+fi
+
+if [[ "$STANDALONE_RUNTIME" == 1 ]]; then
+  pass "standalone runtime correctly omits repository-only CI workflow metadata"
+elif grep -Fq 'pnpm exec commitlint' "$PROJECT_DIR/.github/workflows/validate.yml" \
+   && grep -Fq 'run: pnpm run lint' "$PROJECT_DIR/.github/workflows/validate.yml"; then
+  pass "CI enforces conventional commits and delegated linting"
+else
+  fail "CI conventional-commit or lint integration has drifted"
   semantic_failed=1
 fi
 if rg -n 'raw\.githubusercontent\.com/CodeByKwakes/day-one-mac/main/install-day-one-mac|CodeByKwakes/MacOS|└── MacOS/' \

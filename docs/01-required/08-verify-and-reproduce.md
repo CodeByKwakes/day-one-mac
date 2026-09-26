@@ -50,6 +50,14 @@ Installation Centre already installed; it stops rather than skipping checks if
 `rg` is missing. Fix a project validation failure before trusting the setup
 report.
 
+The checks adapt to where they run. A source checkout includes `.github`, so
+validation also checks the Release Please and CI workflow wiring. The
+checksummed standalone runtime intentionally omits that repository-only
+metadata; validation confirms the omission and continues to check synchronized
+version records, contributor configuration, runtime files, and regression
+fixtures. Missing workflows are therefore an error in a source checkout but
+not in an installed runtime.
+
 Contributors changing the scripts can also run the ShellCheck linter. It is a
 separate, optional tool and is not needed to complete any phase:
 
@@ -62,7 +70,7 @@ cd "$(day-one-mac root)"
 Expected result:
 
 ```text
-✓ ShellCheck reported no findings in 59 scripts.
+✓ ShellCheck reported no findings in 75 scripts.
 ```
 
 The reviewed list of disabled checks, and the reason each one is disabled,

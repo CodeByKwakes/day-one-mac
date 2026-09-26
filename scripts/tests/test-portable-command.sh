@@ -28,9 +28,10 @@ HOME="$test_home" "$portable" runtime-status | grep -Fq 'Version:   test-1.0.0' 
   || fail_test 'first runtime version was not activated'
 [[ "$(HOME="$test_home" "$portable" docs)" == *'/docs/START-HERE.md' ]] \
   || fail_test 'installed runtime did not resolve its documentation'
-HOME="$test_home" "$portable" docs --list | grep -Fq 'manual' \
+docs_list="$(HOME="$test_home" "$portable" docs --list)"
+grep -Fq 'manual' <<<"$docs_list" \
   || fail_test 'installed runtime did not list documentation topics'
-HOME="$test_home" "$portable" docs --list | grep -Fq 'chezmoi' \
+grep -Fq 'chezmoi' <<<"$docs_list" \
   || fail_test 'installed runtime did not list the chezmoi documentation topic'
 [[ "$(HOME="$test_home" "$portable" docs manual)" == *'/docs/20-reference/NOTION-SETUP-GUIDE.md' ]] \
   || fail_test 'installed runtime did not resolve the manual setup guide'
