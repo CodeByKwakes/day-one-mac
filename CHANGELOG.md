@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/CodeByKwakes/day-one-mac/compare/v1.1.0...v1.2.0) (2026-09-26)
+
+
+### Features
+
+* support Raycast and Spotlight coexistence ([4b7075e](https://github.com/CodeByKwakes/day-one-mac/commit/4b7075e0035cbb40d66a68c6d2999488c955290b))
+
+
+### Bug Fixes
+
+* modernize release and catalogue validation ([e8d48ac](https://github.com/CodeByKwakes/day-one-mac/commit/e8d48aca4c5325cace36ccbaacc66a8f37cb360a))
+* validate standalone runtime correctly ([97e545f](https://github.com/CodeByKwakes/day-one-mac/commit/97e545f5e21b7e26438b8881c2c262b4fa07605e))
+
 ## [1.1.0](https://github.com/CodeByKwakes/day-one-mac/compare/v1.0.7...v1.1.0) (2026-09-26)
 
 
