@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/CodeByKwakes/day-one-mac/compare/v1.2.0...v1.2.1) (2026-09-26)
+
+
+### Bug Fixes
+
+* **databases:** initialize OrbStack before Docker checks ([#4](https://github.com/CodeByKwakes/day-one-mac/issues/4)) ([7ca218e](https://github.com/CodeByKwakes/day-one-mac/commit/7ca218e594c094d2b55354a23456af5d51f9c3a4))
+
 ## [1.2.0](https://github.com/CodeByKwakes/day-one-mac/compare/v1.1.0...v1.2.0) (2026-09-26)
 
 
