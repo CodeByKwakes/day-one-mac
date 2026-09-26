@@ -20,7 +20,7 @@ into the source directory.
 ## How to use this phase
 
 - **Manual route:** complete
-  [Manual 5](../20-reference/NOTION-SETUP-GUIDE.md#manual-5--configure-chezmoi-zsh-and-starship)
+  [Manual 5](../20-reference/MANUAL-SETUP-GUIDE.md#manual-5--configure-chezmoi-zsh-and-starship)
   and use the file explanations below as reference. Do not install or manage
   the portable `day-one-mac` launcher.
 - **Script-assisted route:** run `day-one-mac setup --phase 05`. For a new source, the runner creates

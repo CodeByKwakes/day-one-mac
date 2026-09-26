@@ -16,12 +16,6 @@ that neither route can automate. Required work is a phase, an inserted gate is
 a checkpoint, and optional or advanced work is a module. Do not mix routes
 inside one procedure unless the transition is an explicit recovery step.
 
-Documentation must distinguish the **manual route** (no Day One Mac scripts),
-the **script-assisted route** (`day-one-mac`), and **shared manual actions**
-that neither route can automate. Required work is a phase, an inserted gate is
-a checkpoint, and optional or advanced work is a module. Do not mix routes
-inside one procedure unless the transition is an explicit recovery step.
-
 Never add credentials, private keys, recovery codes, real personal inventories,
 company identifiers, private repository names, 1Password vault names or
 machine-specific absolute paths. Keep destructive actions preview-first,
@@ -37,6 +31,7 @@ Validate with:
 
 ```bash
 cd scripts
-bash -n ./*.sh ./lib/*.sh ./tests/*.sh
+../scripts/lint.sh
+# validate.sh checks Bash syntax for each runtime and test script.
 ./validate.sh
 ```

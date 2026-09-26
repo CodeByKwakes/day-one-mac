@@ -22,7 +22,7 @@ phases that must all be completed before running the setup.
 | How do I clone a private GitHub repository on a new Mac? | [Private GitHub repository access](GITHUB-PRIVATE-REPOSITORY.md) |
 | Where should Codex, Claude, VS Code, and standalone tasks work? | [AI workspaces](AI-WORKSPACES.md) |
 | What does an unfamiliar term mean? | [Plain-English glossary](GLOSSARY.md) |
-| I need the complete manual and script-assisted setup in one page | [Complete setup routes](NOTION-SETUP-GUIDE.md) |
+| I need the complete manual and script-assisted setup in one page | [Complete setup routes](MANUAL-SETUP-GUIDE.md) |
 
 For the setup order, use the [process overview](../PROCESS-OVERVIEW.md) or the
 [required setup index](../01-required/README.md).

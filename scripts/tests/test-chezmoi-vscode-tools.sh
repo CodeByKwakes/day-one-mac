@@ -52,7 +52,7 @@ harness="$TEST_ROOT/harness.sh"
     'ok(){ :; }' \
     'confirm(){ return 0; }' \
     'write_text_file(){ printf "%s" "$2" > "$1"; }'
-  awk '/^chezmoi_text_diff\(\)/ { copy=1 } /^phase_05\(\)/ { copy=0 } copy' "$SCRIPT_DIR/setup.sh"
+  printf 'source "%s/phases/05-dotfiles.sh"\n' "$SCRIPT_DIR"
 } > "$harness"
 
 fake_bin="$TEST_ROOT/bin"

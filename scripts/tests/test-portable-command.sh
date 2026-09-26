@@ -33,7 +33,7 @@ grep -Fq 'manual' <<<"$docs_list" \
   || fail_test 'installed runtime did not list documentation topics'
 grep -Fq 'chezmoi' <<<"$docs_list" \
   || fail_test 'installed runtime did not list the chezmoi documentation topic'
-[[ "$(HOME="$test_home" "$portable" docs manual)" == *'/docs/20-reference/NOTION-SETUP-GUIDE.md' ]] \
+[[ "$(HOME="$test_home" "$portable" docs manual)" == *'/docs/20-reference/MANUAL-SETUP-GUIDE.md' ]] \
   || fail_test 'installed runtime did not resolve the manual setup guide'
 [[ "$(HOME="$test_home" "$portable" docs chezmoi)" == *'/docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md' ]] \
   || fail_test 'installed runtime did not resolve the chezmoi setup tutorial'
@@ -72,6 +72,19 @@ HOME="$test_home" "$portable" rollback-runtime \
 HOME="$test_home" "$portable" runtime-status | grep -Fq 'Version:   test-1.0.0' \
   || fail_test 'rolled-back runtime version was not activated'
 
+# Default rollback follows activation history, including a forward toggle.
+HOME="$test_home" "$portable" rollback-runtime --execute >/dev/null
+[[ "$(readlink "$runtime")" == 'releases/test-2.0.0' ]] || fail_test 'rollback guessed version order instead of previous activation'
+if HOME="$test_home" "$portable" uninstall-runtime --execute --unexpected >/dev/null 2>&1; then
+  fail_test 'uninstall accepted unknown trailing argument'
+fi
+[[ -x "$portable" ]] || fail_test 'invalid uninstall removed launcher'
+if HOME="$test_home" "$portable" rollback-runtime --version ../escape --execute >/dev/null 2>&1; then
+  fail_test 'rollback accepted a path traversal version'
+fi
+HOME="$TEST_ROOT/linked-home" "$SCRIPT_DIR/install-portable-command.sh" --source "$PROJECT_ROOT" --linked >/dev/null
+[[ "$(HOME="$TEST_ROOT/linked-home" "$TEST_ROOT/linked-home/.local/bin/day-one-mac" root)" == "$PROJECT_ROOT" ]] || fail_test 'linked development installation failed'
+
 # A downloaded dispatcher must explain installation without prior state.
 downloaded="$TEST_ROOT/downloaded-day-one-mac"
 cp "$SCRIPT_DIR/day-one-mac" "$downloaded"
@@ -90,7 +103,16 @@ grep -Fq './day-one-mac bootstrap' <<<"$missing_output" \
 fixture_repo="$TEST_ROOT/bootstrap-source"
 fixture_checkout="$TEST_ROOT/bootstrap-checkout"
 bootstrap_home="$TEST_ROOT/bootstrap-home"
-mkdir -p "$fixture_repo/scripts" "$fixture_repo/docs" "$bootstrap_home"
+mkdir -p "$fixture_repo/scripts/lib" "$fixture_repo/docs" "$fixture_repo/config" "$bootstrap_home"
+for helper in state runtime-package runtime-activation operation-lock; do
+  cp "$SCRIPT_DIR/lib/$helper.sh" "$fixture_repo/scripts/lib/"
+done
+cp "$SCRIPT_DIR/with-operation-lock.sh" "$fixture_repo/scripts/"
+printf '%s\n' VERSION docs/START-HERE.md config/runtime-files.txt \
+  scripts/day-one-mac scripts/install-portable-command.sh scripts/runtime-manager.sh \
+  scripts/bootstrap-day-one-mac.sh scripts/with-operation-lock.sh \
+  scripts/lib/state.sh scripts/lib/runtime-package.sh scripts/lib/runtime-activation.sh \
+  scripts/lib/operation-lock.sh > "$fixture_repo/config/runtime-files.txt"
 cp "$SCRIPT_DIR/day-one-mac" "$fixture_repo/scripts/day-one-mac"
 cp "$SCRIPT_DIR/install-portable-command.sh" "$fixture_repo/scripts/install-portable-command.sh"
 cp "$SCRIPT_DIR/runtime-manager.sh" "$fixture_repo/scripts/runtime-manager.sh"

@@ -5,6 +5,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/project-paths.sh"
+source "$SCRIPT_DIR/lib/operation-lock.sh"
+ORIGINAL_ARGS=("$@")
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
 
 STATE_ROOT="$(day_one_state_root)"
@@ -178,6 +180,8 @@ fi
   printf '\nPreview only. Rerun with --execute after reviewing this plan.\n'
   exit 0
 }
+
+[[ "$EXECUTE" != 1 ]] || day_one_serialize operation "$0" "${ORIGINAL_ARGS[@]}"
 
 if [[ "$DETACH" == 1 && "$WARP_HANDLED" != 1 ]]; then
   err 'Detach requires --warp-handled after removing the Day One Mac collection from Warp Drive, or confirming it was never imported.'

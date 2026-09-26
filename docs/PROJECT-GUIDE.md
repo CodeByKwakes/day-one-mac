@@ -4,7 +4,7 @@
 
 **A self-contained, clean-machine setup for Apple-silicon macOS**
 
-[Start here — beginner route](START-HERE.md) · [Install the portable command](20-reference/PORTABLE-COMMAND.md) · [Add and edit Zsh aliases](20-reference/ZSH-ALIASES.md) · [Complete command reference](20-reference/COMMAND-REFERENCE.md) · [Private GitHub repository access](20-reference/GITHUB-PRIVATE-REPOSITORY.md) · [Complete manual and script-assisted setup](20-reference/NOTION-SETUP-GUIDE.md) · [Whole process overview](PROCESS-OVERVIEW.md) · [Application keyboard shortcuts](10-app-guides/KEYBOARD-SHORTCUTS.md) · [AI workspaces and projectless tasks](20-reference/AI-WORKSPACES.md) · [Git worktrees and AI clients](03-advanced/GIT-WORKTREES-VSCODE-AND-AI.md) · [Existing Mac Stage 0](00-preflight/README.md) · [Remove or reset](04-operations/REMOVE-DAY-ONE-MAC.md) · [Post-setup finalisation](04-operations/FINALIZE.md) · [Plain-English glossary](20-reference/GLOSSARY.md) · [Begin with Phase 1 →](01-required/01-first-boot-and-decisions.md)
+[Start here — beginner route](START-HERE.md) · [Install the portable command](20-reference/PORTABLE-COMMAND.md) · [Add and edit Zsh aliases](20-reference/ZSH-ALIASES.md) · [Complete command reference](20-reference/COMMAND-REFERENCE.md) · [Private GitHub repository access](20-reference/GITHUB-PRIVATE-REPOSITORY.md) · [Complete manual and script-assisted setup](20-reference/MANUAL-SETUP-GUIDE.md) · [Whole process overview](PROCESS-OVERVIEW.md) · [Application keyboard shortcuts](10-app-guides/KEYBOARD-SHORTCUTS.md) · [AI workspaces and projectless tasks](20-reference/AI-WORKSPACES.md) · [Git worktrees and AI clients](03-advanced/GIT-WORKTREES-VSCODE-AND-AI.md) · [Existing Mac Stage 0](00-preflight/README.md) · [Remove or reset](04-operations/REMOVE-DAY-ONE-MAC.md) · [Post-setup finalisation](04-operations/FINALIZE.md) · [Plain-English glossary](20-reference/GLOSSARY.md) · [Begin with Phase 1 →](01-required/01-first-boot-and-decisions.md)
 
 This project starts with a new or factory-reset Mac and produces a secure,
 usable development environment without importing an old laptop's accumulated
@@ -17,6 +17,9 @@ Node users, Raycast, Warp, VS Code, and a reproducibility report.
 The guide is suitable for an individual developer, a mixed-experience team, or
 public onboarding. Commands explain what they change and every phase ends with
 a visible gate. No other playbook is required.
+
+For the implementation boundaries, presets, state migration and release trust,
+see [Architecture and state](20-reference/ARCHITECTURE-AND-STATE.md).
 
 ## What belongs to this project
 
@@ -61,7 +64,7 @@ day-one-mac/
     ├── configure-cli-tools.sh       Optional grouped formula selector
     ├── rollback-recorded-setup.sh   Precise manifest rollback
     ├── validate-warp-drive.sh       Warp bundle safety/drift checks
-    ├── validate.sh                  Standalone validation
+    ├── validate.sh                  Contributor validation
     ├── lib/platform.sh              Apple-silicon and native-terminal gate
     ├── lib/rebuildable-paths.sh     Shared cache/runtime backup boundaries
     ├── lib/terminal-ui.sh           Shared colour, symbol, and plain-output rules
@@ -275,7 +278,7 @@ or status is communicated by colour alone.
 
 On a later run, the first screen offers to resume the saved plan, change it,
 show phase status, or exit. Current completed phases are skipped; changed phase
-inputs or guides are revalidated. Phase progress, wizard selections, logs,
+inputs or implementation are revalidated; editorial guide changes do not invalidate required phases. Phase progress, wizard selections, logs,
 captured original files, and exact package ownership are stored in:
 
 ```text
@@ -325,7 +328,7 @@ day-one-mac setup --phase 05 --dotfiles-repo <private-repository-url>
 day-one-mac setup --phase 05 --local-dotfiles
 day-one-mac macos-settings --wizard
 day-one-mac --reset-progress
-day-one-mac validate
+day-one-mac verify
 ```
 
 `--reset-progress` only archives completion markers. It does not uninstall

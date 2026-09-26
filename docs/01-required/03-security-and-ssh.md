@@ -28,7 +28,7 @@ redundant copy.
 Choose the authentication mode in Step 3.0 before following a branch.
 
 - **Manual route:** use the matching branch in
-  [Manual 3](../20-reference/NOTION-SETUP-GUIDE.md#manual-3--configure-git-authentication-and-filevault)
+  [Manual 3](../20-reference/MANUAL-SETUP-GUIDE.md#manual-3--configure-git-authentication-and-filevault)
   and the relevant provider steps below. Do not run Step 3.9.
 - **Script-assisted route:** complete the applicable shared manual actions in
   the app, browser, and System Settings, then run Step 3.9 once. The script

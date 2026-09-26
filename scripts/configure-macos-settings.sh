@@ -9,6 +9,8 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/lib/project-paths.sh"
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
 source "$SCRIPT_DIR/lib/platform.sh"
+source "$SCRIPT_DIR/lib/operation-lock.sh"
+ORIGINAL_ARGS=("$@")
 
 STATE_ROOT="$(day_one_state_root)"
 STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
@@ -463,6 +465,10 @@ done
 
 day_one_require_apple_silicon || exit 2
 validate_option_catalog || exit $?
+
+case "$MODE" in
+  wizard|apply|restore) day_one_serialize operation "$0" "${ORIGINAL_ARGS[@]}" ;;
+esac
 
 case "$MODE" in
   wizard) choose_settings; apply_selection ;;

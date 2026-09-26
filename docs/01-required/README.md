@@ -12,7 +12,7 @@ one execution route before starting:
 day-one-mac --wizard
 ```
 
-- **Manual:** follow [Manual 1 through Manual 8](../20-reference/NOTION-SETUP-GUIDE.md#manual-setup-flow)
+- **Manual:** follow [Manual 1 through Manual 8](../20-reference/MANUAL-SETUP-GUIDE.md#manual-setup-flow)
   without installing or invoking `day-one-mac`.
 
 The runner prints the relevant guide whenever the script-assisted route needs a

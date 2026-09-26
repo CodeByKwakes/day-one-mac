@@ -10,7 +10,7 @@ folder before starting.
 | Your situation | Open this |
 |---|---|
 | New or factory-reset Mac; use the guided scripts | [Start Here](START-HERE.md) |
-| New or factory-reset Mac; do not use Day One Mac scripts | [Complete manual route](20-reference/NOTION-SETUP-GUIDE.md#manual-setup-flow) |
+| New or factory-reset Mac; do not use Day One Mac scripts | [Complete manual route](20-reference/MANUAL-SETUP-GUIDE.md#manual-setup-flow) |
 | Existing Mac that still contains data or settings | [Stage 0 preflight](00-preflight/README.md) |
 | Want a one-page map of the complete process | [Process overview](PROCESS-OVERVIEW.md) |
 | Configuring a new developer Mac and want an audit-backed blueprint | [New-device development environment blueprint](NEW-DEVICE-SETUP-BLUEPRINT.md) |
@@ -47,7 +47,7 @@ The documentation uses these terms consistently:
 
 When a phase guide discusses what the runner does, manual-route readers should
 use the corresponding numbered section in the
-[complete manual and script-assisted setup guide](20-reference/NOTION-SETUP-GUIDE.md).
+[complete manual and script-assisted setup guide](20-reference/MANUAL-SETUP-GUIDE.md).
 Do not alternate between routes unless a troubleshooting instruction explicitly
 requires it.
 

@@ -1,0 +1,295 @@
+# Explicit runtime files, one repository-relative regular file per line.
+# Regenerate deliberately when adding a runtime module; never include local files.
+CHANGELOG.md
+LICENSE
+README.md
+SECURITY.md
+VERSION
+config/applications.tsv
+config/optional-formulae.tsv
+config/raycast-commands.tsv
+config/raycast-extensions.tsv
+config/runtime-files.txt
+docs/00-preflight/00-existing-mac-decision.md
+docs/00-preflight/01-private-inventory.md
+docs/00-preflight/02-backup-readiness.md
+docs/00-preflight/03-account-preserving-cleanup.md
+docs/00-preflight/04-handoff-to-day-one.md
+docs/00-preflight/ENCRYPTED-BACKUP-DRIVE.md
+docs/00-preflight/README.md
+docs/01-required/01-first-boot-and-decisions.md
+docs/01-required/02-command-line-foundation.md
+docs/01-required/03-security-and-ssh.md
+docs/01-required/04-core-tools-and-hosting.md
+docs/01-required/05-dotfiles-and-shell.md
+docs/01-required/06-language-toolchains.md
+docs/01-required/07-vscode-base.md
+docs/01-required/08-verify-and-reproduce.md
+docs/01-required/INSTALLATION-CENTRE.md
+docs/01-required/MACOS-SETTINGS.md
+docs/01-required/README.md
+docs/02-optional/09-databases.md
+docs/02-optional/10-ai-agents.md
+docs/02-optional/10a-omniroute.md
+docs/02-optional/11-mcp-servers.md
+docs/02-optional/12-vscode-profiles.md
+docs/02-optional/13-enhanced-cli-tools.md
+docs/02-optional/14-warp-drive.md
+docs/02-optional/README.md
+docs/03-advanced/15-full-dotfiles-and-bootstrap.md
+docs/03-advanced/16-brewfile-apps-and-editor.md
+docs/03-advanced/17-shell-and-package-automation.md
+docs/03-advanced/18-hosting-identities-azure-and-worktrees.md
+docs/03-advanced/19-macos-gui-and-local-https.md
+docs/03-advanced/20-restore-and-migrate.md
+docs/03-advanced/21-audit-maintenance-and-rebuild.md
+docs/03-advanced/22-ai-skills-and-mcp-operations.md
+docs/03-advanced/GIT-WORKTREES-VSCODE-AND-AI.md
+docs/03-advanced/README.md
+docs/04-operations/FINALIZE.md
+docs/04-operations/README.md
+docs/04-operations/REMOVE-DAY-ONE-MAC.md
+docs/04-operations/ROLLBACK.md
+docs/10-app-guides/1PASSWORD-SSH-APPROVAL.md
+docs/10-app-guides/KEYBOARD-SHORTCUTS.md
+docs/10-app-guides/RAYCAST-AI-PROVIDERS.md
+docs/10-app-guides/RAYCAST-COMMANDS.md
+docs/10-app-guides/RAYCAST.md
+docs/10-app-guides/README.md
+docs/10-app-guides/VSCODE.md
+docs/10-app-guides/WARP.md
+docs/20-reference/AI-WORKSPACES.md
+docs/20-reference/APPLICATION-OWNERSHIP.md
+docs/20-reference/CHEZMOI-COMMAND-REFERENCE.md
+docs/20-reference/CHEZMOI-CONCEPTS-AND-BOUNDARIES.md
+docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md
+docs/20-reference/COMMAND-REFERENCE.md
+docs/20-reference/EXPECTED-LAYOUT.md
+docs/20-reference/GITHUB-PRIVATE-REPOSITORY.md
+docs/20-reference/GLOSSARY.md
+docs/20-reference/MANAGING-DOTFILES-WITH-CHEZMOI.md
+docs/20-reference/NOTION-SETUP-GUIDE.md
+docs/20-reference/OPTIONAL-STATUS.md
+docs/20-reference/PORTABLE-COMMAND.md
+docs/20-reference/README.md
+docs/20-reference/UPGRADE-NOTES.md
+docs/20-reference/ZSH-ALIASES.md
+docs/20-reference/phase-05-shell-files/README.md
+docs/20-reference/phase-05-shell-files/home/.config/starship.toml
+docs/20-reference/phase-05-shell-files/home/.config/zsh/aliases.zsh
+docs/20-reference/phase-05-shell-files/home/.config/zsh/path.zsh
+docs/20-reference/phase-05-shell-files/home/.gitignore_global
+docs/20-reference/phase-05-shell-files/home/.zprofile
+docs/20-reference/phase-05-shell-files/home/.zshrc
+docs/99-maintenance/DOCUMENTATION-AUDIT.md
+docs/99-maintenance/README.md
+docs/CONTRIBUTOR-TOOLING.md
+docs/GIT-WORKFLOW.md
+docs/MAIN-PROTECTION-CHECKLIST.md
+docs/NEW-DEVICE-SETUP-BLUEPRINT.md
+docs/PROCESS-OVERVIEW.md
+docs/PROJECT-GUIDE.md
+docs/README.md
+docs/RELEASE-TOKEN-SETUP.md
+docs/START-HERE.md
+install-day-one-mac
+scripts/advanced-audit.sh
+scripts/advanced-setup.sh
+scripts/application-inventory.sh
+scripts/application-status.sh
+scripts/bootstrap-day-one-mac.sh
+scripts/clean-development-state.sh
+scripts/configure-cli-tools.sh
+scripts/configure-databases.sh
+scripts/configure-macos-settings.sh
+scripts/configure-raycast.sh
+scripts/day-one-mac
+scripts/finalize-setup.sh
+scripts/install-portable-command.sh
+scripts/lib/apfs-volume.sh
+scripts/lib/application-ownership.sh
+scripts/lib/container-data-paths.sh
+scripts/lib/deadline.sh
+scripts/lib/operation-lock.sh
+scripts/lib/platform.sh
+scripts/lib/project-paths.sh
+scripts/lib/rebuildable-paths.sh
+scripts/lib/runtime-activation.sh
+scripts/lib/runtime-package.sh
+scripts/lib/state.sh
+scripts/lib/terminal-ui.sh
+scripts/optional-status.sh
+scripts/phases/01-decisions.sh
+scripts/phases/02-foundation.sh
+scripts/phases/03-security.sh
+scripts/phases/04-hosting.sh
+scripts/phases/05-dotfiles.sh
+scripts/phases/06-toolchains.sh
+scripts/phases/07-editor.sh
+scripts/phases/08-verification.sh
+scripts/preflight-audit.sh
+scripts/prepare-existing-mac.sh
+scripts/remove-day-one-mac.sh
+scripts/rollback-recorded-setup.sh
+scripts/runtime-manager.sh
+scripts/setup.sh
+scripts/shell-status.sh
+scripts/verify.sh
+scripts/with-operation-lock.sh
+scripts/workspace-manager.sh
+second-brain/README.md
+second-brain/notion/01-PREREQUISITES.md
+second-brain/notion/02-WORKSPACE-AND-DOMAINS.md
+second-brain/notion/03-DATABASES-AND-PROPERTIES.md
+second-brain/notion/04-TEMPLATES.md
+second-brain/notion/05-DASHBOARD.md
+second-brain/notion/06-RAYCAST-INTEGRATION.md
+second-brain/notion/07-AI-INTEGRATION.md
+second-brain/notion/08-OPERATING-WORKFLOW.md
+second-brain/notion/09-BACKUP-AND-EXPORT.md
+second-brain/notion/CHECKLIST.md
+second-brain/notion/README.md
+second-brain/notion/assets/raycast/capture-to-notion-second-brain.sh
+second-brain/notion/assets/raycast/open-notion-second-brain.sh
+second-brain/notion/scripts/notion-second-brain-manager.sh
+second-brain/notion/seeds/domains.csv
+second-brain/notion/seeds/starter-knowledge.csv
+second-brain/obsidian/ALTERNATIVE-STACKS.md
+second-brain/obsidian/CHECKLIST.md
+second-brain/obsidian/DASHBOARD.md
+second-brain/obsidian/DYNAMIC-LAYOUT-MANAGER.md
+second-brain/obsidian/GUIDE-1-OBSIDIAN-RAYCAST.md
+second-brain/obsidian/GUIDE-2-OBSIDIAN-CLAUDE-CODE.md
+second-brain/obsidian/GUIDE-3-OBSIDIAN-CODEX.md
+second-brain/obsidian/OPERATING-SYSTEM.md
+second-brain/obsidian/README.md
+second-brain/obsidian/THREE-VAULT-ARCHITECTURE.md
+second-brain/obsidian/assets/claude/second-brain-claude.sh
+second-brain/obsidian/assets/codex/second-brain-codex.sh
+second-brain/obsidian/assets/manager/claude/second-brain-claude.sh
+second-brain/obsidian/assets/manager/codex/second-brain-codex.sh
+second-brain/obsidian/assets/manager/raycast/capture-knowledge-vault.sh
+second-brain/obsidian/assets/manager/raycast/open-knowledge-vault.sh
+second-brain/obsidian/assets/manager/raycast/search-knowledge-vault.sh
+second-brain/obsidian/assets/manager/report/second-brain-report.sh
+second-brain/obsidian/assets/raycast/capture-second-brain.sh
+second-brain/obsidian/assets/raycast/open-second-brain-dashboard.sh
+second-brain/obsidian/assets/raycast/search-second-brain.sh
+second-brain/obsidian/assets/raycast/second-brain.env.example
+second-brain/obsidian/assets/three-vaults/claude/second-brain-claude-three.sh
+second-brain/obsidian/assets/three-vaults/codex/second-brain-codex-three.sh
+second-brain/obsidian/assets/three-vaults/common/.gitignore
+second-brain/obsidian/assets/three-vaults/common/AGENTS.md
+second-brain/obsidian/assets/three-vaults/common/CLAUDE.md
+second-brain/obsidian/assets/three-vaults/common/Inbox.md
+second-brain/obsidian/assets/three-vaults/common/Knowledge System.md
+second-brain/obsidian/assets/three-vaults/common/Quick capture.md
+second-brain/obsidian/assets/three-vaults/common/Weekly Review.md
+second-brain/obsidian/assets/three-vaults/development/01 Dashboard/Development Dashboard.md
+second-brain/obsidian/assets/three-vaults/development/01 Dashboard/Knowledge.base
+second-brain/obsidian/assets/three-vaults/development/Software Development.md
+second-brain/obsidian/assets/three-vaults/raycast/capture-knowledge-vault.sh
+second-brain/obsidian/assets/three-vaults/raycast/open-knowledge-vault.sh
+second-brain/obsidian/assets/three-vaults/raycast/search-knowledge-vault.sh
+second-brain/obsidian/assets/three-vaults/software-content/01 Dashboard/Knowledge.base
+second-brain/obsidian/assets/three-vaults/software-content/01 Dashboard/Software Content Dashboard.md
+second-brain/obsidian/assets/three-vaults/software-content/Software Content.md
+second-brain/obsidian/assets/three-vaults/tech-content/01 Dashboard/Knowledge.base
+second-brain/obsidian/assets/three-vaults/tech-content/01 Dashboard/Tech Content Dashboard.md
+second-brain/obsidian/assets/three-vaults/tech-content/Tech Content.md
+second-brain/obsidian/assets/vault/.gitignore
+second-brain/obsidian/assets/vault/00 Inbox/Inbox.md
+second-brain/obsidian/assets/vault/00 Inbox/Quick capture.md
+second-brain/obsidian/assets/vault/01 Dashboards/All Knowledge.base
+second-brain/obsidian/assets/vault/01 Dashboards/Development.base
+second-brain/obsidian/assets/vault/01 Dashboards/Second Brain HQ.md
+second-brain/obsidian/assets/vault/01 Dashboards/Software Content.base
+second-brain/obsidian/assets/vault/01 Dashboards/Tech Content.base
+second-brain/obsidian/assets/vault/10 Software Development/Software Development.md
+second-brain/obsidian/assets/vault/20 Software Content/Software Content.md
+second-brain/obsidian/assets/vault/30 Tech Content/Tech Content.md
+second-brain/obsidian/assets/vault/90 System/Knowledge System.md
+second-brain/obsidian/assets/vault/99 Templates/Capture.md
+second-brain/obsidian/assets/vault/99 Templates/Development Note.md
+second-brain/obsidian/assets/vault/99 Templates/Person.md
+second-brain/obsidian/assets/vault/99 Templates/Project.md
+second-brain/obsidian/assets/vault/99 Templates/Software Content.md
+second-brain/obsidian/assets/vault/99 Templates/Source.md
+second-brain/obsidian/assets/vault/99 Templates/Tech Content.md
+second-brain/obsidian/assets/vault/99 Templates/Weekly Review.md
+second-brain/obsidian/assets/vault/AGENTS.md
+second-brain/obsidian/assets/vault/CLAUDE.md
+second-brain/obsidian/scripts/second-brain-manager.sh
+second-brain/obsidian/scripts/setup-multi-vaults.sh
+second-brain/obsidian/scripts/setup-second-brain.sh
+second-brain/obsidian/scripts/setup-three-vaults.sh
+second-brain/obsidian/scripts/three-vault-health-report.sh
+second-brain/obsidian/scripts/vault-health-report.sh
+warp-drive/Day One Mac/00 Day One Mac Command Catalogue.md
+warp-drive/Day One Mac/01 Setup and Audit/01-status.yaml
+warp-drive/Day One Mac/01 Setup and Audit/02-validate.yaml
+warp-drive/Day One Mac/01 Setup and Audit/03-guided-preview.yaml
+warp-drive/Day One Mac/01 Setup and Audit/04-phase-preview.yaml
+warp-drive/Day One Mac/01 Setup and Audit/05-phase-run.yaml
+warp-drive/Day One Mac/01 Setup and Audit/06-application-inventory.yaml
+warp-drive/Day One Mac/01 Setup and Audit/07-cli-catalogue.yaml
+warp-drive/Day One Mac/01 Setup and Audit/08-cli-select.yaml
+warp-drive/Day One Mac/01 Setup and Audit/09-project-root.yaml
+warp-drive/Day One Mac/01 Setup and Audit/10-advanced-status.yaml
+warp-drive/Day One Mac/01 Setup and Audit/11-advanced-guided.yaml
+warp-drive/Day One Mac/01 Setup and Audit/12-advanced-module.yaml
+warp-drive/Day One Mac/01 Setup and Audit/13-advanced-audit.yaml
+warp-drive/Day One Mac/01 Setup and Audit/14-advanced-audit-check.yaml
+warp-drive/Day One Mac/01 Setup and Audit/15-finalize-status.yaml
+warp-drive/Day One Mac/01 Setup and Audit/16-finalize-preview.yaml
+warp-drive/Day One Mac/01 Setup and Audit/17-optional-setup.yaml
+warp-drive/Day One Mac/02 Safety and Cleanup/01-clean-preview.yaml
+warp-drive/Day One Mac/02 Safety and Cleanup/02-clean-comprehensive-preview.yaml
+warp-drive/Day One Mac/02 Safety and Cleanup/03-rollback-preview.yaml
+warp-drive/Day One Mac/02 Safety and Cleanup/04-rollback-all-preview.yaml
+warp-drive/Day One Mac/02 Safety and Cleanup/05-reset-progress-preview.yaml
+warp-drive/Day One Mac/02 Safety and Cleanup/07-removal-inventory.yaml
+warp-drive/Day One Mac/02 Safety and Cleanup/08-removal-preview.yaml
+warp-drive/Day One Mac/03 Repositories and Hosting/01-ghq-root.yaml
+warp-drive/Day One Mac/03 Repositories and Hosting/02-ghq-list.yaml
+warp-drive/Day One Mac/03 Repositories and Hosting/03-ghq-clone.yaml
+warp-drive/Day One Mac/03 Repositories and Hosting/04-git-status.yaml
+warp-drive/Day One Mac/03 Repositories and Hosting/05-git-remotes.yaml
+warp-drive/Day One Mac/03 Repositories and Hosting/06-github-auth.yaml
+warp-drive/Day One Mac/03 Repositories and Hosting/07-azure-account.yaml
+warp-drive/Day One Mac/03 Repositories and Hosting/08-azure-repositories.yaml
+warp-drive/Day One Mac/04 Dotfiles/01-chezmoi-status.yaml
+warp-drive/Day One Mac/04 Dotfiles/02-chezmoi-diff.yaml
+warp-drive/Day One Mac/04 Dotfiles/03-chezmoi-doctor.yaml
+warp-drive/Day One Mac/04 Dotfiles/04-chezmoi-managed.yaml
+warp-drive/Day One Mac/04 Dotfiles/05-chezmoi-edit.yaml
+warp-drive/Day One Mac/04 Dotfiles/06-chezmoi-apply.yaml
+warp-drive/Day One Mac/04 Dotfiles/07-chezmoi-verify.yaml
+warp-drive/Day One Mac/05 Toolchains/01-tool-versions.yaml
+warp-drive/Day One Mac/05 Toolchains/02-fnm-current.yaml
+warp-drive/Day One Mac/05 Toolchains/03-fnm-install-lts.yaml
+warp-drive/Day One Mac/05 Toolchains/04-npm-scripts.yaml
+warp-drive/Day One Mac/05 Toolchains/05-npm-audit.yaml
+warp-drive/Day One Mac/05 Toolchains/06-pnpm-install-frozen.yaml
+warp-drive/Day One Mac/05 Toolchains/07-pnpm-audit.yaml
+warp-drive/Day One Mac/05 Toolchains/08-pnpm-store-status.yaml
+warp-drive/Day One Mac/05 Toolchains/09-uv-python-list.yaml
+warp-drive/Day One Mac/05 Toolchains/10-uv-sync-locked.yaml
+warp-drive/Day One Mac/06 Homebrew/01-brewfile-check.yaml
+warp-drive/Day One Mac/06 Homebrew/02-outdated.yaml
+warp-drive/Day One Mac/06 Homebrew/03-update-metadata.yaml
+warp-drive/Day One Mac/06 Homebrew/04-doctor.yaml
+warp-drive/Day One Mac/06 Homebrew/05-cleanup-preview.yaml
+warp-drive/Day One Mac/06 Homebrew/06-autoremove-preview.yaml
+warp-drive/Day One Mac/07 AI Workspaces/01-create-untitled-task.yaml
+warp-drive/Day One Mac/07 AI Workspaces/02-create-named-task.yaml
+warp-drive/Day One Mac/07 AI Workspaces/03-list-tasks.yaml
+warp-drive/Day One Mac/07 AI Workspaces/04-open-vscode-here.yaml
+warp-drive/Day One Mac/07 AI Workspaces/05-start-codex-here.yaml
+warp-drive/Day One Mac/07 AI Workspaces/06-start-claude-here.yaml
+warp-drive/Day One Mac/07 AI Workspaces/07-start-copilot-cli-here.yaml
+warp-drive/Day One Mac/07 AI Workspaces/08-open-copilot-app-here.yaml
+docs/20-reference/TERMINAL-BASICS.md
+docs/20-reference/ARCHITECTURE-AND-STATE.md
+docs/20-reference/MANUAL-SETUP-GUIDE.md
+scripts/validate-warp-drive.sh

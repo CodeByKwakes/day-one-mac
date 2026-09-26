@@ -26,7 +26,7 @@ fail_test() { printf 'FAIL: %s\n' "$1" >&2; exit 1; }
 harness="$TEST_ROOT/scanner.sh"
 {
   printf 'set -euo pipefail\n'
-  sed -n '/^SECRET_SCAN_MATCHES=""/,/^}/p' "$SCRIPT_DIR/setup.sh"
+  printf 'source "%s/phases/08-verification.sh"\n' "$SCRIPT_DIR"
   cat <<'EOS'
 if ! scan_source_for_secrets "$1"; then
   printf 'SCAN_FAILED\n'
@@ -36,8 +36,6 @@ if [[ -n "$SECRET_SCAN_MATCHES" ]]; then printf 'REVIEW\n'; else printf 'CLEAN\n
 EOS
 } > "$harness"
 
-grep -Fq 'scan_source_for_secrets' "$harness" \
-  || fail_test 'scan_source_for_secrets was not found in setup.sh'
 
 dirty="$TEST_ROOT/dirty"
 mkdir -p "$dirty"
@@ -94,13 +92,10 @@ ssh_block_harness="$TEST_ROOT/sshblock.sh"
   printf 'uses_github() { [[ "${TRACK_GITHUB:-0}" == 1 ]]; }\n'
   printf 'uses_azure() { [[ "${TRACK_AZURE:-0}" == 1 ]]; }\n'
   printf 'AUTH_MODE="${AUTH_MODE:-1password}"\n'
-  sed -n '/^ssh_config_block() {/,/^}/p' "$SCRIPT_DIR/setup.sh"
-  sed -n '/^ssh_config_identity_lines() {/,/^}/p' "$SCRIPT_DIR/setup.sh"
+  printf 'source "%s/phases/03-security.sh"\n' "$SCRIPT_DIR"
   printf 'ssh_config_block\n'
 } > "$ssh_block_harness"
 
-grep -Fq 'ssh_config_block' "$ssh_block_harness" \
-  || fail_test 'ssh_config_block was not found in setup.sh'
 
 assert_pairing() {
   local label="$1" block="$2"

@@ -81,9 +81,9 @@ fi
 "$SCRIPT_DIR/bootstrap-day-one-mac.sh" --help | grep -Fq -- '--optional [--guided]'
 grep -Fq 'post_required_menu' "$SCRIPT_DIR/bootstrap-day-one-mac.sh"
 grep -Fq 'Checking for native Apple-silicon Homebrew before running an installer.' \
-  "$SCRIPT_DIR/setup.sh"
-grep -Fq 'Existing Homebrew found at' "$SCRIPT_DIR/setup.sh"
-grep -Fq 'Do not install a second copy over it.' "$SCRIPT_DIR/setup.sh"
+  "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh
+grep -Fq 'Existing Homebrew found at' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh
+grep -Fq 'Do not install a second copy over it.' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh
 grep -Fq "MACOS_SETTINGS_PLAN=ask" "$SCRIPT_DIR/bootstrap-day-one-mac.sh"
 grep -Fq 'Optional setup remains locked until required Phase 8 is complete.' \
   "$SCRIPT_DIR/bootstrap-day-one-mac.sh"
@@ -285,7 +285,7 @@ grep -Fq 'Day One Mac guided setup — 8 required phases' "$dry_output"
 grep -Fq 'Optional databases, AI, MCP and VS Code profiles are not run here.' "$dry_output"
 grep -Fq 'Phase 08 — Verify and reproduce' "$dry_output"
 grep -Fq 'preview record compaction with: day-one-mac finalize' "$dry_output"
-grep -Fq '$ '"$SCRIPT_DIR"'/validate.sh' "$dry_output"
+grep -Fq '$ '"$SCRIPT_DIR"'/verify.sh' "$dry_output"
 grep -Fq 'would require a clean, pushed, private GitHub or Azure DevOps dotfiles origin' "$dry_output"
 grep -Fq 'would run the optional macOS Settings Wizard before Phase 2' "$dry_output"
 grep -Fq '$ '"$SCRIPT_DIR"'/configure-macos-settings.sh --wizard' "$dry_output"
@@ -307,14 +307,14 @@ phase4_cask_line="$(grep -n -m1 '\$ brew install --cask font-jetbrains-mono-nerd
 [[ -n "$warp_scan_line" && -n "$phase4_cask_line" && "$warp_scan_line" -lt "$phase4_cask_line" ]]
 grep -Fq "would write $TEST_HOME/.config/chezmoi/chezmoi.toml" "$dry_output"
 grep -Fq 'would add the official VS Code chezmoi diff and merge configuration' "$dry_output"
-grep -Fq 'chezmoi --use-builtin-diff diff --no-pager' "$SCRIPT_DIR/setup.sh"
-grep -Fq 'command = "code"' "$SCRIPT_DIR/setup.sh"
-grep -Fq 'args = ["--wait", "--diff"]' "$SCRIPT_DIR/setup.sh"
-grep -Fq 'code --new-window --wait --merge' "$SCRIPT_DIR/setup.sh"
+grep -Fq 'chezmoi --use-builtin-diff diff --no-pager' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh
+grep -Fq 'command = "code"' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh
+grep -Fq 'args = ["--wait", "--diff"]' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh
+grep -Fq 'code --new-window --wait --merge' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh
 grep -Fq "would write $TEST_HOME/.config/starship.toml" "$dry_output"
 grep -Fq "would require the standalone Day One Mac command at $TEST_HOME/.local/bin/day-one-mac" "$dry_output"
-grep -Fq 'run chezmoi forget "$target"' "$SCRIPT_DIR/setup.sh"
-! grep -Fq 'chezmoi add "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" "$global_ignore" "$HOME/.ssh/config" "$starship_config" "$zsh_path_file" "$zsh_aliases_file" "$runner_wrapper"' "$SCRIPT_DIR/setup.sh"
+grep -Fq 'run chezmoi forget "$target"' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh
+! grep -Fq 'chezmoi add "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" "$global_ignore" "$HOME/.ssh/config" "$starship_config" "$zsh_path_file" "$zsh_aliases_file" "$runner_wrapper"' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh
 grep -Fq '$ pnpm --version' "$dry_output"
 grep -Fq "$ mkdir -p $TEST_HOME/Library/pnpm" "$dry_output"
 ! grep -Fq '$ corepack enable' "$dry_output"

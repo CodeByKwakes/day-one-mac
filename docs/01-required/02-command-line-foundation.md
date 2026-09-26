@@ -4,6 +4,12 @@
 
 **Time:** 20–40 minutes · **Required:** everyone
 
+The script-assisted installer downloads Homebrew to a private state file,
+checks its shell syntax, prints its SHA-256 and review path, and asks before
+execution. The hash is an audit record, not independent publisher verification.
+A failed download is never executed; the downloaded script remains available
+for review under your setup state directory.
+
 ## Outcome
 
 Apple's Command Line Tools and Homebrew are installed, Homebrew is available in

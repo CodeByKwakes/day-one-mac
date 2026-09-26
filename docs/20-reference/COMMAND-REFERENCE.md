@@ -88,7 +88,8 @@ updates and rollback.
 | `day-one-mac remove [options]` | `./remove-day-one-mac.sh [options]` | Choose a recorded, sectional, or full removal plan with an ownership-aware preview. |
 | `day-one-mac rollback [options]` | `./rollback-recorded-setup.sh [options]` | Preview or reverse only changes recorded as belonging to Day One Mac. |
 | `day-one-mac clean [options]` | `./clean-development-state.sh [options]` | Preview a broad development cleanup or create/resume its recovery archive. This is wider than recorded rollback. |
-| `day-one-mac validate` | `./validate.sh` | Run the complete read-only structural and regression validation suite. |
+| `day-one-mac verify` | `./verify.sh` | Verify installed runtime integrity and syntax without running setup. |
+| `day-one-mac validate` | `./validate.sh` (checkout only) | Run contributor regression checks from a checkout; alias for `verify` in an installed runtime. |
 
 Use the current names in this reference for new notes and Warp workflows.
 Machines upgraded from a pre-standalone installation can consult
@@ -127,6 +128,7 @@ Important setup selectors include:
 --stack node|python|both
 --name "Full Name"
 --email ADDRESS
+--preset core|recommended-productivity
 --primary-ide vscode|other
 --dotfiles-repo URL
 --new-dotfiles
@@ -330,8 +332,8 @@ rather than a configured Mac:
 | `./lint.sh` | Run ShellCheck over every project shell script. Requires `shellcheck`. |
 | `./lint.sh --severity warning --format gcc` | Run a narrower machine-readable lint report. |
 
-`./validate.sh` also remains available directly and is equivalent to
-`day-one-mac validate` once the portable command is installed.
+`./validate.sh` is contributor-only and is excluded from the standalone runtime.
+Use `day-one-mac verify` on an installed Mac.
 
 Do not execute files under `scripts/lib/`; they are sourced by other scripts.
 Do not use files under `scripts/tests/` as setup entry points; the validator

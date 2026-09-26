@@ -29,6 +29,11 @@ jobs:
       - name: Lint shell and Markdown files
         run: pnpm run lint
       - name: Check shell syntax
-        run: bash -n scripts/*.sh scripts/lib/*.sh scripts/tests/*.sh install-day-one-mac
+        run: |
+          while IFS= read -r -d '' script; do
+            bash -n "$script"
+          done < <(find scripts -type f -name '*.sh' -print0)
+          bash -n install-day-one-mac
+          bash -n scripts/day-one-mac
       - name: Run complete validation
         run: scripts/validate.sh

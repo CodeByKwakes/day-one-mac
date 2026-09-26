@@ -9,6 +9,9 @@ source "$HERE/lib/project-paths.sh"
 source "$HERE/lib/terminal-ui.sh"
 source "$HERE/lib/application-ownership.sh"
 source "$HERE/lib/platform.sh"
+source "$HERE/lib/state.sh"
+source "$HERE/lib/operation-lock.sh"
+ORIGINAL_ARGS=("$@")
 
 STATE_ROOT="$(day_one_state_root)"
 STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
@@ -50,6 +53,7 @@ Direct setup:
   --stack node|python|both    language toolchain selection
   --name "Full Name"          Git author name
   --email ADDRESS             primary Git author email
+  --preset PRESET            core or recommended-productivity (default)
   --primary-ide IDE           vscode or other; controls Git editor integration
   --dotfiles-repo URL         apply an existing private chezmoi source
   --new-dotfiles              create or keep a new chezmoi source
@@ -97,13 +101,9 @@ state_value() {
 }
 
 save_state_value() {
-  local name="$1" value="$2" tmp
   mkdir -p "$STATE_DIR"
   chmod 700 "$STATE_DIR"
-  tmp="$(mktemp "$STATE_DIR/.wizard.XXXXXX")"
-  printf '%s\n' "$value" > "$tmp"
-  chmod 600 "$tmp"
-  mv "$tmp" "$STATE_DIR/$name"
+  day_one_write_state "$STATE_DIR/$1" "$2"
 }
 
 contains_csv() {
@@ -341,10 +341,10 @@ show_required_base() {
   printf '  🔒 Phase 2  Xcode Command Line Tools and Homebrew\n'
   printf '  📦 Installation Centre  Install every required app and command-line tool\n'
   printf '  🔒 Phase 3  Git authentication (%s) and FileVault\n' "${AUTH_MODE:-1password}"
-  printf '  🔒 Phase 4  Core tools, Raycast, Warp and selected hosting services\n'
+  printf '  🔒 Phase 4  Core tools, preset applications and selected hosting services\n'
   printf '  🔒 Phase 5  chezmoi-managed dotfiles and Starship\n'
   printf '  🔒 Phase 6  Selected language toolchains\n'
-  printf '  🔒 Phase 7  Minimal VS Code base\n'
+  printf '  🔒 Phase 7  Minimal VS Code base (skipped for core preset)\n'
   printf '  🔒 Phase 8  Verification, Brewfile and dotfiles protection\n'
   printf '  🧩 Then       Finish, view the report, or choose optional modules\n\n'
   printf '  🔒 means required. A ✓ appears only after a phase passes.\n\n'
@@ -352,7 +352,7 @@ show_required_base() {
 
 print_review_body() {
   ui_banner '🧭' 'Review your setup'
-  printf 'Required setup\n'
+  printf 'Required setup — preset: %s\n' "$PRESET"
   printf '  Hosting:   Track %s — %s\n' "$TRACK" "$(track_label "$TRACK")"
   printf '  Stack:     %s\n' "$(stack_label "$STACK")"
   printf '  Git name:  %s\n' "$GIT_NAME"
@@ -415,7 +415,7 @@ build_application_review_cache() {
     line="$(application_review_line "$app_id" 'the Installation Centre')"
     cache="${cache}${cache:+$'\n'}$line"
     seen="${seen}${app_id},"
-  done < <(day_one_app_catalog_ids required)
+  done < <(day_one_required_application_ids "$PRESET" "$AUTH_MODE")
 
   if [[ "$include_optional" == 1 ]] \
      && { contains_csv "$OPTIONAL_MODULES" databases || contains_csv "$OPTIONAL_MODULES" omniroute; }; then
@@ -496,6 +496,7 @@ save_wizard_choices() {
   save_state_value stack "$STACK"
   save_state_value git-name "$GIT_NAME"
   save_state_value git-email "$GIT_EMAIL"
+  save_state_value preset "$PRESET"
   save_state_value primary-ide "$PRIMARY_IDE"
   save_state_value dotfiles-repo "$DOTFILES_REPO"
   save_state_value dotfiles-versioning "$DOTFILES_VERSIONING"
@@ -537,6 +538,18 @@ choose_stack() {
   done
 }
 
+choose_preset() {
+  local default_index=0
+  [[ "$PRESET" == core ]] && default_index=1
+  SINGLE_VALUES=(recommended-productivity core)
+  SINGLE_LABELS=(
+    'Recommended productivity — includes VS Code, Raycast, Warp and the Nerd Font'
+    'Core — command-line tools only; 1Password only if selected for authentication'
+  )
+  select_one 'Choose the software preset' "$default_index"
+  PRESET="$SINGLE_RESULT"
+}
+
 choose_primary_ide() {
   local default_index=0
   [[ "$PRIMARY_IDE" == other ]] && default_index=1
@@ -545,7 +558,7 @@ choose_primary_ide() {
     'Yes — use VS Code for Git commit messages, diffs and merge conflicts'
     'No — keep Git editor, diff and merge-tool settings unchanged'
   )
-  select_one 'Use Visual Studio Code as the primary IDE on this Mac?' "$default_index"
+  select_one 'Use VS Code for Git and chezmoi editing? (VS Code remains installed with this preset)' "$default_index"
   PRIMARY_IDE="$SINGLE_RESULT"
 }
 
@@ -808,7 +821,8 @@ configure_wizard() {
   default_email="${GIT_EMAIL:-$(git config --global user.email 2>/dev/null || true)}"
   prompt_name "$default_name"
   prompt_email "$default_email"
-  choose_primary_ide
+  choose_preset
+  if [[ "$PRESET" == core ]]; then PRIMARY_IDE=other; else choose_primary_ide; fi
   choose_auth_mode
   choose_dotfiles
   # Keep the initial wizard focused on the required base. The runner asks
@@ -830,7 +844,10 @@ load_saved_choices() {
   STACK="$(state_value stack)"
   GIT_NAME="$(state_value git-name)"
   GIT_EMAIL="$(state_value git-email)"
+  PRESET="$(state_value preset)"
+  PRESET="${PRESET:-recommended-productivity}"
   PRIMARY_IDE="$(state_value primary-ide)"
+  [[ "$PRESET" != core ]] || PRIMARY_IDE=other
   DOTFILES_REPO="$(state_value dotfiles-repo)"
   DOTFILES_VERSIONING="$(state_value dotfiles-versioning)"
   [[ -n "$DOTFILES_VERSIONING" ]] || DOTFILES_VERSIONING=git
@@ -870,6 +887,7 @@ run_wizard() {
   local review_action setup_rc
   day_one_require_apple_silicon || exit 2
   [[ -t 0 && -t 1 ]] || die 'The setup wizard requires an interactive terminal. Use --track, --stack, --name and --email for a non-interactive run.'
+  [[ "$DRY_RUN" == 1 ]] || day_one_serialize setup "$0" "${ORIGINAL_ARGS[@]}"
   load_saved_choices
   if has_saved_core_choices; then
     SINGLE_VALUES=(resume change status exit)
@@ -920,6 +938,7 @@ run_wizard() {
   if [[ -n "$DOTFILES_REPO" ]]; then setup_args+=(--dotfiles-repo "$DOTFILES_REPO")
   else setup_args+=(--new-dotfiles)
   fi
+  setup_args+=(--preset "$PRESET" --auth-mode "$AUTH_MODE")
   setup_args+=(--dotfiles-versioning "$DOTFILES_VERSIONING")
   setup_args+=(--macos-settings "$MACOS_SETTINGS_PLAN")
   [[ "$DRY_RUN" == 1 ]] && setup_args+=(--dry-run)
@@ -937,6 +956,7 @@ case "${1:-}" in
     shift
     [[ "$#" -eq 0 || ( "$#" -eq 1 && "$1" == --guided ) ]] \
       || die '--optional accepts only an optional --guided flag.'
+    day_one_serialize setup "$0" "${ORIGINAL_ARGS[@]}"
     run_optional_center
     exit 0
     ;;

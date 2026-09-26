@@ -342,3 +342,11 @@ breaking-change syntax, branch names, and the release process.
 - [ ] `pnpm run lint` passes.
 - [ ] `pnpm run validate` passes.
 - [ ] The contributor understands that CI remains authoritative.
+
+## Runtime changes and packaging
+
+Read [Architecture and state](20-reference/ARCHITECTURE-AND-STATE.md) before
+changing phases, saved state, or release packaging. Add runtime files explicitly
+to `config/runtime-files.txt`; tests and contributor tooling must remain excluded.
+Phase 8 uses `verify.sh`, not the contributor validation suite. Run the full
+suite from the checkout even when installed-runtime verification passes.
