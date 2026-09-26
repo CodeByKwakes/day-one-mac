@@ -51,6 +51,7 @@ until the project has a documented reason to enable them.
 | Allow merge commits | **Unchecked** | Prevents merge commits from breaking the linear history requirement. |
 | Allow squash merging | **Checked** | Produces one Conventional Commit on `main` for each pull request. |
 | Allow rebase merging | **Unchecked** | Keeps the project workflow on one predictable merge method. |
+| Allow auto-merge | **Unchecked** | Keeps release publication deliberate; enable it later only if maintainers want approved pull requests to merge automatically after all requirements pass. |
 | Always suggest updating pull request branches | **Checked** | Makes it easier to satisfy the strict up-to-date status-check rule. |
 | Automatically delete head branches | **Checked** | Removes merged topic branches without affecting `main` or release tags. |
 
@@ -61,6 +62,7 @@ until the project has a documented reason to enable them.
 
 - [ ] The only enabled merge method is **squash merging**.
 - [ ] The default squash commit message starts with the pull request title.
+- [ ] Auto-merge remains disabled.
 
 ## 3. Create the branch ruleset
 
@@ -195,7 +197,12 @@ commit solely to test the ruleset.
 - [ ] Confirm the resulting commit appears on `main` without a merge commit.
 - [ ] Confirm **Prepare and publish runtime release** runs after the successful
       **Validate** workflow on `main`.
-- [ ] Confirm Release Please creates or updates its release pull request.
+- [ ] If the merged pull request contains a releasable `feat:` or `fix:`
+      change, confirm Release Please creates or updates its release pull
+      request.
+- [ ] If the merged pull request contains only `docs:`, `test:`, `chore:`, or
+      another non-releasable change, confirm the release workflow completes
+      cleanly. A new or updated release pull request is not required.
 
 ## 8. Follow the protected workflow from now on
 
@@ -215,6 +222,25 @@ Open a pull request, wait for `validate`, resolve conversations, and squash
 merge. The Release Please pull request follows the same protected path.
 
 ## Recovery and maintenance
+
+### Run release automation manually
+
+Use the manual trigger only when **Validate** has passed on `main` but the
+automatic release workflow did not start or needs to be retried.
+
+1. Open the repository on GitHub and select **Actions**.
+2. Select **Prepare and publish runtime release**.
+3. Select **Run workflow**.
+4. Choose the `main` branch.
+5. Select **Run workflow** again.
+6. Confirm the workflow updates the existing Release Please pull request,
+   creates one when releasable changes exist, or completes without a release
+   change when there is nothing releasable.
+
+The manual trigger reruns release coordination. It does not bypass the
+protected pull-request workflow or the required `validate` check.
+
+### Resolve common protection problems
 
 - If `validate` is not offered when adding a required check, run the
   **Validate** workflow successfully and reload the ruleset editor.

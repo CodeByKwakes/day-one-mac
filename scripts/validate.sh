@@ -93,6 +93,7 @@ required_docs=(
   docs/GIT-WORKFLOW.md
   docs/CONTRIBUTOR-TOOLING.md
   docs/RELEASE-TOKEN-SETUP.md
+  docs/MAIN-PROTECTION-CHECKLIST.md
   docs/01-required/README.md
   docs/01-required/MACOS-SETTINGS.md
   docs/01-required/01-first-boot-and-decisions.md
