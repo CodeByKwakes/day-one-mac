@@ -250,6 +250,18 @@ else
   catalog_failed=1
 fi
 
+if [[ "$(sed -n '1p' "$PROJECT_DIR/config/optional-formulae.tsv")" != $'# group\tformula\tpurpose' ]] \
+   || ! awk -F '\t' '
+      NR == 1 {next}
+      NF != 3 {exit 1}
+      $1 == "" || $2 !~ /^[a-z0-9@+._-]+$/ || $3 == "" {exit 1}
+      seen[$2]++ {exit 1}
+      END {if (NR < 2) exit 1}
+    ' "$PROJECT_DIR/config/optional-formulae.tsv"; then
+  fail "optional formula catalogue must have its canonical tab-separated header and three complete columns"
+  catalog_failed=1
+fi
+
 for formula in actionlint mas; do
   if ! awk -F '\t' -v wanted="$formula" \
       '$0 !~ /^#/ && $2 == wanted {found=1} END {exit !found}' \
@@ -495,7 +507,7 @@ if [[ "$release_manifest_version" != "$project_version" ]] \
    || [[ "$package_version" != "$project_version" ]] \
    || ! grep -Fq 'workflows: [Validate]' "$PROJECT_DIR/.github/workflows/release.yml" \
    || ! grep -Fq "github.event.workflow_run.conclusion == 'success'" "$PROJECT_DIR/.github/workflows/release.yml" \
-   || ! grep -Fq 'googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071' "$PROJECT_DIR/.github/workflows/release.yml" \
+   || ! grep -Fq 'googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7' "$PROJECT_DIR/.github/workflows/release.yml" \
    || ! grep -Fq 'token: ${{ secrets.RELEASE_PLEASE_TOKEN }}' "$PROJECT_DIR/.github/workflows/release.yml" \
    || ! grep -Fq 'steps.release.outputs.release_created' "$PROJECT_DIR/.github/workflows/release.yml" \
    || ! grep -Fq 'gh release upload "$RELEASE_TAG"' "$PROJECT_DIR/.github/workflows/release.yml" \

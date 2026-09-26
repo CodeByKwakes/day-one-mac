@@ -1,4 +1,4 @@
-# group<TAB>formula<TAB>purpose
+# group	formula	purpose
 Containers	dive	Inspect Docker image layers and wasted space
 Containers	lazydocker	Terminal interface for Docker and Compose
 Content	ffmpeg	Convert and inspect audio and video
