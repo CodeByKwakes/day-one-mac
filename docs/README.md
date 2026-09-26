@@ -26,6 +26,7 @@ folder before starting.
 | Contributing code or documentation | [Git workflow](GIT-WORKFLOW.md) |
 | Installing contributor linting and Git hooks | [Contributor tooling](CONTRIBUTOR-TOOLING.md) |
 | Configuring a release automation credential | [Release-token setup](RELEASE-TOKEN-SETUP.md) |
+| Protecting `main` with the recommended GitHub ruleset | [`main` protection checklist](MAIN-PROTECTION-CHECKLIST.md) |
 | Maintaining the project documentation | [Maintenance](99-maintenance/README.md) |
 
 For the long-form project explanation, assumptions, tracks, stacks, and
@@ -80,6 +81,8 @@ docs/
 ├── GIT-WORKFLOW.md        Branch, pull-request, and release workflow
 ├── CONTRIBUTOR-TOOLING.md Local linting and shared Git hooks
 ├── RELEASE-TOKEN-SETUP.md Release automation credential setup
+├── MAIN-PROTECTION-CHECKLIST.md
+│                           GitHub `main` ruleset checklist
 ├── 00-preflight/          Existing-Mac safety before the setup flow
 ├── 01-required/           Phases 1–8 and required checkpoints
 ├── 02-optional/           Modules 9–14, only after Phase 8
