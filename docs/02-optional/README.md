@@ -33,6 +33,54 @@ day-one-mac optional --status
 day-one-mac optional --status --audit
 ```
 
+## Plan, apply and check an executable module
+
+Start with a preview. This example selects two CLI tools; it does not select
+every optional package:
+
+```bash
+day-one-mac optional --list
+day-one-mac optional --module 13 --plan --packages eza,fzf
+```
+
+Read the proposed installations. After required Phase 8 is complete, apply the
+same selection and confirm the prompt:
+
+```bash
+day-one-mac optional --module 13 --apply --packages eza,fzf
+day-one-mac optional --module 13 --check
+```
+
+Check succeeds only when the selected formulae are installed. Review Module
+13 separately for shell integration and Brewfile declarations; this command
+does not edit either.
+
+For databases, select only the services your projects need:
+
+```bash
+day-one-mac optional --module 09 --plan --services postgres,redis
+day-one-mac optional --module 09 --apply --services postgres,redis
+day-one-mac optional --module 09 --check
+```
+
+Preview never starts OrbStack. Apply may start it and require first-run prompts.
+If either installer fails, fix the reported prerequisite and resume its saved
+selection:
+
+```bash
+day-one-mac optional --module 09 --resume
+day-one-mac optional --module 13 --resume
+```
+
+Run only the resume command for the module you selected. Existing resources
+are preserved; no automatic rollback is attempted after a partial failure.
+Plans and checks save nothing. Only apply/resume saves choices and run records.
+
+Only 09 and 13 currently support this interface. Other modules remain guided,
+even when their guides contain runnable commands. See the
+[execution reference](../20-reference/MODULE-EXECUTION.md) for flags, state,
+backups, verification limits and the contributor extension contract.
+
 See the [status and audit reference](../20-reference/OPTIONAL-STATUS.md) for
 status meanings, strict checks, report locations, and recovery commands.
 

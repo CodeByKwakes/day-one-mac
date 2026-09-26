@@ -24,7 +24,10 @@ cat > "$MOCK_BIN/docker" <<'EOF'
 set -euo pipefail
 case "${1:-}" in
   info) exit 0 ;;
-  inspect) printf 'healthy\n' ;;
+  inspect)
+    if [[ "$2" == *Config.Image* ]]; then
+      printf 'postgres:17-alpine|127.0.0.1:5432|dev-pgdata:/var/lib/postgresql/data;|dev-net\n'
+    else printf 'healthy\n'; fi ;;
   ps) printf 'dev-postgres\n' ;;
   *) exit 2 ;;
 esac

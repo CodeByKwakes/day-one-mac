@@ -36,7 +36,8 @@ day-one-mac databases --services postgres,redis
 ```
 
 The installer preserves existing containers and volumes, starts a stopped
-selected container, waits for its health check, and writes
+selected container only when its image, localhost binding, named volume and
+network match the expected configuration, waits for its health check, and writes
 `~/.day-one-mac/database-status.md`. Check it later with:
 
 ```bash
@@ -49,6 +50,17 @@ needed, starts it, adds its bundled `~/.orbstack/bin` tools to the current
 process when available, and waits up to 60 seconds for `docker info` to report
 a server. OrbStack includes the Docker CLI, Compose, and Buildx; do not install
 a second Docker engine or a separate Docker formula for this module.
+
+That startup/install behaviour is apply-only. Preview works before Phase 8,
+does not start OrbStack, and labels proposed creates as conditional when the
+engine cannot be inspected. Apply still requires Phase 8. A running container
+without a passing health check is not considered verified.
+
+The equivalent shared interface is
+`day-one-mac optional --module 09 --plan --services postgres,redis`, followed
+by `--apply`, `--check`, or `--resume`. See the
+[module execution reference](../20-reference/MODULE-EXECUTION.md) for
+saved selections, private run journals and recovery.
 
 OrbStack can display first-run permission or licence prompts that automation
 must not approve for you. Complete any visible prompt. If the readiness wait

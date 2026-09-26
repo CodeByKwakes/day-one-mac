@@ -120,6 +120,8 @@ module_is_selected() {
   local id="$1" token marker
   token="$(optional_token "$id")"
   contains_csv "$OPTIONAL_MODULES" "$token" && return 0
+  [[ "$id" != 09 || ! -s "$STATE_DIR/database-services" ]] || return 0
+  [[ "$id" != 13 || ! -s "$STATE_DIR/optional-cli-packages" ]] || return 0
   if [[ "$id" =~ ^(15|16|17|18|19|20|21|22)$ ]]; then
     marker="$STATE_ROOT/advanced/completed/$id"
     [[ -f "$marker" ]] && return 0
@@ -149,10 +151,14 @@ check_09() {
       mongodb) container=dev-mongo ;;
     esac
     state="$(container_state "$container")"
-    case "$state" in healthy|running) ready=$((ready + 1)) ;; *) missing=$((missing + 1)) ;; esac
+    case "$state" in healthy) ready=$((ready + 1)) ;; *) missing=$((missing + 1)) ;; esac
   done
   if [[ "$total" -gt 0 && "$ready" -eq "$total" ]]; then
-    set_result ready "$ready/$total selected database containers are running" 'No action required.'
+    if "$SCRIPT_DIR/configure-databases.sh" --saved --check >/dev/null 2>&1; then
+      set_result ready "$ready/$total selected database containers are healthy and match configuration" 'No action required.'
+    else
+      set_result review 'database health or configuration verification failed' 'Run day-one-mac databases --saved --check; no existing container will be replaced automatically.'
+    fi
   elif [[ "$ready" -gt 0 ]]; then
     set_result partial "$ready/$total selected database containers are running" 'Run `day-one-mac databases --saved` to resume the missing service.'
   else
@@ -248,6 +254,14 @@ check_12() {
 
 check_13() {
   local formula installed installed_count=0 missing_count=0 selected_count=0
+  if [[ -s "$STATE_DIR/optional-cli-packages" ]]; then
+    if "$SCRIPT_DIR/configure-cli-tools.sh" --saved --check >/dev/null 2>&1; then
+      set_result ready 'saved optional formula selection is installed; shell/Brewfile integration is separately reviewed' 'Review the Optional 13 integration steps if needed.'
+    else
+      set_result partial 'saved CLI selection is missing, invalid, or cannot be inspected' 'Run day-one-mac optional --module 13 --check, then --resume.'
+    fi
+    return
+  fi
   [[ -r "$STATE_ROOT/install-manifest.tsv" ]] || { set_result pending 'no optional formula installation is recorded' 'Run `day-one-mac cli-tools`.'; return; }
   installed="$(brew list --formula 2>/dev/null || true)"
   while IFS=$'\t' read -r kind formula; do

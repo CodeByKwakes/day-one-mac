@@ -926,6 +926,10 @@ run_fixture "optional database installer is idempotent and diagnostic" \
   "optional database installer regression fixture failed" \
   "$SCRIPT_DIR/tests/test-configure-databases.sh" || true
 
+run_fixture "optional module execution is preview-safe, resumable and locked" \
+  "optional module execution fixture failed" \
+  "$SCRIPT_DIR/tests/test-optional-module.sh" || true
+
 run_fixture "unified optional and advanced dashboard reports evidence safely" \
   "unified optional and advanced dashboard fixture failed" \
   "$SCRIPT_DIR/tests/test-optional-status.sh" || true

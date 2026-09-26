@@ -36,6 +36,11 @@ They are guided procedures, not unattended installers. Commands inside a guide
 may automate a bounded operation, but `day-one-mac advanced` itself never
 claims that it performed that operation.
 
+`day-one-mac optional --list` now lists these modules alongside executable
+Optional 09 and 13. Advanced entries remain labelled guided: the new runner
+does not execute them or reinterpret their completion fingerprints as
+machine-verified installations.
+
 ## Recommended order
 
 | Module | Capability | Execution model | Add it when |

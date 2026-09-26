@@ -6,6 +6,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/project-paths.sh"
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
+source "$SCRIPT_DIR/lib/module-execution.sh"
+ORIGINAL_ARGS=("$@")
 
 STATE_ROOT="$(day_one_state_root)"
 STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
@@ -15,6 +17,8 @@ SERVICES=""
 ACTION=install
 DRY_RUN=0
 ASSUME_YES=0
+USE_SAVED=0
+DOCKER_INSPECTABLE=0
 ORBSTACK_CLI_DIR="${DAY_ONE_MAC_ORBSTACK_CLI_DIR:-$HOME/.orbstack/bin}"
 DOCKER_WAIT_SECONDS="${DAY_ONE_MAC_DOCKER_WAIT_SECONDS:-60}"
 
@@ -160,13 +164,16 @@ ensure_docker() {
     return 2
   }
   refresh_orbstack_cli_path
-  if ! command -v docker >/dev/null 2>&1; then
-    if [[ "$DRY_RUN" == 1 ]]; then
-      info 'Docker is missing; the installer would offer OrbStack through the application ownership flow.'
-      printf '  $ %q %q %q %q %q\n' "$SCRIPT_DIR/application-status.sh" --id orbstack --install-missing --app-install-policy
-      printf '    %q\n' homebrew
-      return 0
+  if [[ "$DRY_RUN" == 1 ]]; then
+    if command -v docker >/dev/null 2>&1 && docker_server_ready; then
+      DOCKER_INSPECTABLE=1
+    else
+      info 'Docker is unavailable or stopped. Apply may install/start OrbStack after approval.'
+      info 'Resource state is unknown; the following creates are conditional on absence.'
     fi
+    return 0
+  fi
+  if ! command -v docker >/dev/null 2>&1; then
     if orbstack_available; then
       orbstack_attempted=1
       start_orbstack_and_wait || true
@@ -188,7 +195,6 @@ ensure_docker() {
     warn "OrbStack bundles Docker and normally exposes it through $ORBSTACK_CLI_DIR; do not install a second Docker engine."
     return 1
   }
-  [[ "$DRY_RUN" == 1 ]] && return 0
   if ! docker_server_ready; then
     context="$(docker context show 2>/dev/null || printf unknown)"
     err "Docker is installed, but its server is not reachable (context: $context)."
@@ -200,6 +206,7 @@ ensure_docker() {
     warn 'Use `docker info` to confirm the Server section is available. Do not run Docker with sudo.'
     return 1
   fi
+  DOCKER_INSPECTABLE=1
 }
 
 container_exists() {
@@ -214,27 +221,58 @@ container_health() {
   docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}{{if .State.Running}}running{{else}}stopped{{end}}{{end}}' "$1" 2>/dev/null || printf 'missing\n'
 }
 
+container_matches() {
+  local service="$1" container expected actual image destination
+  container="$(service_container "$service")"
+  case "$service" in
+    postgres) image=postgres:17-alpine; destination=/var/lib/postgresql/data ;;
+    redis) image=redis:7-alpine; destination=/data ;;
+    mongodb) image=mongo:8; destination=/data/db ;;
+  esac
+  expected="$image|127.0.0.1:$(service_port "$service")|$(service_volume "$service"):$destination;|dev-net"
+  actual="$(docker inspect --format="{{.Config.Image}}|{{range (index .HostConfig.PortBindings \"$(service_port "$service")/tcp\")}}{{.HostIp}}:{{.HostPort}}{{end}}|{{range .Mounts}}{{if eq .Type \"volume\"}}{{.Name}}:{{.Destination}};{{end}}{{end}}|{{if index .NetworkSettings.Networks \"dev-net\"}}dev-net{{end}}" "$container")" || return 1
+  if [[ "$actual" != "$expected" ]]; then
+    err "$container conflicts with the expected image, localhost port, volume, or network."
+    warn 'Nothing will replace this container. Review its configuration and data before retrying.'
+    return 1
+  fi
+}
+
+preflight_containers() {
+  local service container
+  [[ "$DOCKER_INSPECTABLE" == 1 ]] || return 0
+  for service in postgres redis mongodb; do
+    contains_csv "$SERVICES" "$service" || continue
+    container="$(service_container "$service")"
+    if container_exists "$container"; then container_matches "$service" || return 1; fi
+  done
+}
+
 ensure_network() {
-  if [[ "$DRY_RUN" == 1 ]]; then
+  if [[ "$DOCKER_INSPECTABLE" == 1 ]] && docker network inspect dev-net >/dev/null 2>&1; then
+    ok 'Docker network dev-net already exists'
+  elif [[ "$DRY_RUN" == 1 ]]; then
     info 'ensure Docker network: dev-net'
     run_or_preview docker network create dev-net
-  elif docker network inspect dev-net >/dev/null 2>&1; then
-    ok 'Docker network dev-net already exists'
   else
+    day_one_module_event creating-network dev-net
     docker network create dev-net >/dev/null
+    day_one_module_event created-network dev-net
     ok 'created Docker network dev-net'
   fi
 }
 
 ensure_volume() {
   local volume="$1"
-  if [[ "$DRY_RUN" == 1 ]]; then
+  if [[ "$DOCKER_INSPECTABLE" == 1 ]] && docker volume inspect "$volume" >/dev/null 2>&1; then
+    ok "named volume $volume already exists"
+  elif [[ "$DRY_RUN" == 1 ]]; then
     info "ensure named volume: $volume"
     run_or_preview docker volume create "$volume"
-  elif docker volume inspect "$volume" >/dev/null 2>&1; then
-    ok "named volume $volume already exists"
   else
+    day_one_module_event creating-volume "$volume"
     docker volume create "$volume" >/dev/null
+    day_one_module_event created-volume "$volume"
     ok "created named volume $volume"
   fi
 }
@@ -276,7 +314,8 @@ wait_for_service() {
   while (( attempts < 15 )); do
     status="$(container_health "$container")"
     case "$status" in
-      healthy|running) ok "$service is ready ($status)"; return 0 ;;
+      healthy) ok "$service is ready ($status)"; return 0 ;;
+      running) err "$service has no passing health check; refusing to claim readiness"; return 1 ;;
       unhealthy) err "$service container is unhealthy"; docker logs --tail 40 "$container" >&2 || true; return 1 ;;
     esac
     attempts=$((attempts + 1))
@@ -291,23 +330,26 @@ install_service() {
   local service="$1" container volume
   container="$(service_container "$service")"
   volume="$(service_volume "$service")"
-  ensure_volume "$volume"
-  if [[ "$DRY_RUN" == 1 ]]; then
-    create_container "$service"
-    return 0
-  fi
-  if container_exists "$container"; then
+  if [[ "$DOCKER_INSPECTABLE" == 1 ]] && container_exists "$container"; then
     if container_running "$container"; then
       ok "$container already exists and is running"
     else
       info "starting existing container $container"
-      docker start "$container" >/dev/null
+      day_one_module_event starting-container "$container"
+      run_or_preview docker start "$container" >/dev/null
+      if [[ "$DRY_RUN" == 1 ]]; then info "would start $container"; fi
     fi
   else
-    info "creating $container"
+    if [[ "$DRY_RUN" == 1 ]]; then info "would create $container if absent"; else info "creating $container"; fi
+    ensure_volume "$volume"
+    if [[ "$DRY_RUN" == 1 ]]; then create_container "$service"; return 0; fi
+    day_one_module_event creating-container "$container"
     create_container "$service" >/dev/null
+    day_one_module_event created-container "$container"
   fi
+  [[ "$DRY_RUN" == 0 ]] || return 0
   wait_for_service "$service"
+  day_one_module_event healthy "$container"
 }
 
 write_report() {
@@ -333,6 +375,7 @@ write_report() {
 
 show_status() {
   local service container health failures=0
+  refresh_orbstack_cli_path
   ui_title '🗄️' 'Optional databases'
   if ! command -v docker >/dev/null 2>&1; then
     err 'Docker command is missing'
@@ -347,7 +390,13 @@ show_status() {
     container="$(service_container "$service")"
     health="$(container_health "$container")"
     case "$health" in
-      healthy|running) ui_status success "✓ $service — $health ($container)" ;;
+      healthy)
+        if container_matches "$service"; then
+          ui_status success "✓ $service — $health ($container)"
+        else
+          failures=$((failures + 1))
+        fi
+        ;;
       *) ui_status pending "○ $service — $health ($container)"; failures=$((failures + 1)) ;;
     esac
   done
@@ -357,7 +406,7 @@ show_status() {
 while (( $# )); do
   case "$1" in
     --services) [[ "$#" -ge 2 ]] || { err '--services needs a comma-separated value'; exit 2; }; SERVICES="$2"; shift 2 ;;
-    --saved) SERVICES="$(saved_services)"; shift ;;
+    --saved) USE_SAVED=1; shift ;;
     --status) ACTION=status; shift ;;
     --check) ACTION=check; shift ;;
     --dry-run) DRY_RUN=1; shift ;;
@@ -367,6 +416,11 @@ while (( $# )); do
   esac
 done
 
+if [[ "$ACTION" == install && "$DRY_RUN" == 0 ]]; then
+  day_one_serialize databases "$0" "${ORIGINAL_ARGS[@]}"
+fi
+[[ "$USE_SAVED" == 0 ]] || SERVICES="$(saved_services)"
+
 [[ -n "$SERVICES" ]] || SERVICES="$(saved_services)"
 normalize_services "$SERVICES"
 
@@ -374,10 +428,11 @@ if [[ "$ACTION" == status || "$ACTION" == check ]]; then
   if show_status; then exit 0; else exit 1; fi
 fi
 
-[[ -s "$STATE_DIR/completed/08" ]] || {
+if [[ ! -s "$STATE_DIR/completed/08" && "$DRY_RUN" == 0 ]]; then
   err 'Required Phase 8 is not recorded complete. Finish the base before adding databases.'
   exit 10
-}
+fi
+[[ -s "$STATE_DIR/completed/08" ]] || warn 'Plan only: apply requires completion of Phase 8.'
 
 ui_title '🗄️' 'Install optional local databases'
 info "selected services: $SERVICES"
@@ -389,7 +444,12 @@ if [[ "$DRY_RUN" != 1 && "$ASSUME_YES" != 1 ]]; then
   [[ "$answer" == y || "$answer" == Y || "$answer" == yes || "$answer" == YES ]] || exit 10
 fi
 
+if [[ "$DRY_RUN" == 0 ]]; then
+  day_one_module_begin 09 "$SERVICES" "$STATE_DIR/database-services" "$REPORT" "$COMPLETED_DIR/databases"
+  day_one_write_state "$STATE_DIR/database-services" "$SERVICES"
+fi
 ensure_docker
+preflight_containers
 ensure_network
 for service in postgres redis mongodb; do
   contains_csv "$SERVICES" "$service" || continue
@@ -401,12 +461,10 @@ if [[ "$DRY_RUN" == 1 ]]; then
   exit 0
 fi
 
-printf '%s\n' "$SERVICES" > "$STATE_DIR/database-services"
-chmod 600 "$STATE_DIR/database-services"
 write_report
 if show_status; then
-  printf '%s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" > "$COMPLETED_DIR/databases"
-  chmod 600 "$COMPLETED_DIR/databases"
+  day_one_write_state "$COMPLETED_DIR/databases" "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+  MODULE_VERIFIED=1
   ok "database setup completed; report: $REPORT"
 else
   err 'database setup is incomplete; review the status above and rerun this command'

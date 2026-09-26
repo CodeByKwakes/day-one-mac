@@ -18,6 +18,8 @@ portable="$test_home/.local/bin/day-one-mac"
 runtime="$test_home/.local/share/day-one-mac/current"
 [[ -x "$portable" ]] || fail_test 'portable dispatcher was not installed executable'
 [[ -L "$runtime" ]] || fail_test 'standalone current runtime link was not installed'
+HOME="$test_home" "$portable" optional --list | grep -Fq $'13\toptional\texecutable' \
+  || fail_test 'standalone runtime omitted the executable module registry'
 [[ ! -e "$runtime/node_modules" ]] \
   || fail_test 'standalone runtime included contributor-only node_modules'
 [[ "$(HOME="$test_home" "$portable" root)" == "$runtime" ]] \

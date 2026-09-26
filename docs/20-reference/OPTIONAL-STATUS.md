@@ -13,6 +13,12 @@ Day One Mac ownership records, and Advanced completion fingerprints. It never
 installs software, starts a container, edits configuration, or marks a manual
 checklist complete.
 
+Saved database and CLI selections made through the executable module interface
+also count as selected, without requiring the interactive selector. CLI checks
+include selected pre-existing formulae without treating them as Day One-owned.
+Database readiness requires passing health and configuration checks, not merely
+a running container. See [Module execution](MODULE-EXECUTION.md).
+
 ## Status meanings
 
 | Status | Meaning | What to do |

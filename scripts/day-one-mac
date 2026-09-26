@@ -127,6 +127,16 @@ case "${1:-}" in
   macos-settings) shift; exec "$PROJECT_ROOT/scripts/configure-macos-settings.sh" "$@" ;;
   optional)
     shift
+    for module_arg in "$@"; do
+      case "$module_arg" in
+        --module|--list|--plan|--apply|--check|--resume)
+          # --status --check retains the existing dashboard contract.
+          if [[ "${1:-}" != --status ]]; then
+            exec /bin/bash "$PROJECT_ROOT/scripts/optional-module.sh" "$@"
+          fi
+          ;;
+      esac
+    done
     if [[ "${1:-}" == --status ]]; then
       shift
       exec "$PROJECT_ROOT/scripts/optional-status.sh" "$@"
@@ -163,6 +173,7 @@ case "${1:-}" in
       '  workspace         create and open bounded projectless tasks' \
       '  macos-settings    configure or restore optional macOS preferences' \
       '  optional          choose modules; --status shows or audits Modules 09–22' \
+      '                    --list lists capabilities; --module ID --plan|--apply|--check|--resume' \
       '  databases         install, resume, or verify optional databases' \
       '  finalize          compact records or detach after Phase 8' \
       '  advanced          read and track optional advanced modules' \

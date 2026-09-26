@@ -19,6 +19,17 @@ manifest.
 It never uninstalls a formula merely because it is unselected. This avoids
 removing a dependency that another tool or project still needs.
 
+Apply saves selected formulae separately from installation ownership. This
+includes selected tools that were already installed, without claiming them as
+Day One-owned. Failed installs retain the selection and a private run journal;
+`day-one-mac cli-tools --saved` resumes it.
+
+For the shared Phase-8-gated interface, use
+`day-one-mac optional --module 13 --plan --packages eza,fzf`, then the same
+selection with `--apply`. Use `--check` or `--resume` without a selection to
+inspect or finish the saved work. Plans and checks never save state.
+See the [execution reference](../20-reference/MODULE-EXECUTION.md).
+
 ## Record the selection in the Brewfile
 
 When a Phase 8 Brewfile exists, the script prints the exact `brew "token"`
