@@ -255,10 +255,12 @@ be a minor release. Do not bypass Release Please merely to force a patch number.
 
 ## Recommended protection for `main`
 
-Configure a GitHub branch ruleset for `main` that:
+Follow the [recommended `main` protection checklist](MAIN-PROTECTION-CHECKLIST.md)
+to configure the GitHub ruleset in the correct order and verify it end to end.
+The resulting ruleset:
 
 - requires a pull request before merging;
-- requires the `Validate` status check;
+- requires the `validate` GitHub Actions status check;
 - requires review conversations to be resolved;
 - blocks force pushes;
 - blocks deletion; and
