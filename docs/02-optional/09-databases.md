@@ -43,8 +43,16 @@ selected container, waits for its health check, and writes
 day-one-mac databases --saved --status
 ```
 
-If it reports that the Docker server is unreachable, open the application that
-owns the active Docker context, wait for its engine to start, confirm that
+When the Docker command or server is unavailable, the installer checks
+OrbStack ownership, installs it through the selected approved route when
+needed, starts it, adds its bundled `~/.orbstack/bin` tools to the current
+process when available, and waits up to 60 seconds for `docker info` to report
+a server. OrbStack includes the Docker CLI, Compose, and Buildx; do not install
+a second Docker engine or a separate Docker formula for this module.
+
+OrbStack can display first-run permission or licence prompts that automation
+must not approve for you. Complete any visible prompt. If the readiness wait
+expires, confirm that OrbStack reports Docker as running, verify that
 `docker info` shows a **Server** section, and rerun the same command. Do not run
 Docker with `sudo`.
 

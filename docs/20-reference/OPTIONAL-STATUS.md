@@ -83,6 +83,11 @@ day-one-mac optional --status --audit --check
 
 ### Database is blocked
 
+The database installer starts an installed OrbStack instance and waits for its
+bundled Docker CLI and server. If OrbStack displays a first-run prompt,
+complete it and wait until Docker is running. Do not install a separate Docker
+engine merely because the first readiness check timed out.
+
 Confirm `docker info` displays a Server section, then run:
 
 ```bash

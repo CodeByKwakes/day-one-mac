@@ -15,6 +15,8 @@ SERVICES=""
 ACTION=install
 DRY_RUN=0
 ASSUME_YES=0
+ORBSTACK_CLI_DIR="${DAY_ONE_MAC_ORBSTACK_CLI_DIR:-$HOME/.orbstack/bin}"
+DOCKER_WAIT_SECONDS="${DAY_ONE_MAC_DOCKER_WAIT_SECONDS:-60}"
 
 usage() {
   cat <<'EOF'
@@ -104,8 +106,60 @@ docker_server_ready() {
   docker info >/dev/null 2>&1
 }
 
+refresh_orbstack_cli_path() {
+  if [[ -d "$ORBSTACK_CLI_DIR" && ":$PATH:" != *":$ORBSTACK_CLI_DIR:"* ]]; then
+    PATH="$ORBSTACK_CLI_DIR:$PATH"
+    export PATH
+  fi
+  hash -r 2>/dev/null || true
+}
+
+orbstack_available() {
+  command -v orb >/dev/null 2>&1 \
+    || [[ -d "${DAY_ONE_MAC_APPLICATIONS_ROOT:-/Applications}/OrbStack.app" ]] \
+    || [[ -d "$HOME/Applications/OrbStack.app" ]]
+}
+
+start_orbstack() {
+  if command -v orb >/dev/null 2>&1 && orb start; then
+    return 0
+  fi
+  command -v open >/dev/null 2>&1 && open -a OrbStack
+}
+
+wait_for_docker_ready() {
+  local deadline
+  deadline=$((SECONDS + DOCKER_WAIT_SECONDS))
+  while (( SECONDS < deadline )); do
+    refresh_orbstack_cli_path
+    if command -v docker >/dev/null 2>&1 && docker_server_ready; then return 0; fi
+    sleep 2
+  done
+  refresh_orbstack_cli_path
+  command -v docker >/dev/null 2>&1 && docker_server_ready
+}
+
+start_orbstack_and_wait() {
+  info 'Starting OrbStack to provide its bundled Docker CLI and engine.'
+  warn 'Complete any first-run prompts shown by OrbStack; the installer will wait for Docker readiness.'
+  start_orbstack || {
+    warn 'OrbStack could not be started automatically.'
+    return 1
+  }
+  if wait_for_docker_ready; then
+    ok 'OrbStack Docker CLI and server are ready'
+    return 0
+  fi
+  return 1
+}
+
 ensure_docker() {
-  local context
+  local context orbstack_attempted=0
+  [[ "$DOCKER_WAIT_SECONDS" =~ ^[0-9]+$ && "$DOCKER_WAIT_SECONDS" -gt 0 ]] || {
+    err 'DAY_ONE_MAC_DOCKER_WAIT_SECONDS must be a positive integer.'
+    return 2
+  }
+  refresh_orbstack_cli_path
   if ! command -v docker >/dev/null 2>&1; then
     if [[ "$DRY_RUN" == 1 ]]; then
       info 'Docker is missing; the installer would offer OrbStack through the application ownership flow.'
@@ -113,18 +167,36 @@ ensure_docker() {
       printf '    %q\n' homebrew
       return 0
     fi
+    if orbstack_available; then
+      orbstack_attempted=1
+      start_orbstack_and_wait || true
+    fi
+  fi
+  if ! command -v docker >/dev/null 2>&1; then
     "$SCRIPT_DIR/application-status.sh" --id orbstack --install-missing
-    hash -r 2>/dev/null || true
+    refresh_orbstack_cli_path
+  fi
+  if orbstack_available \
+     && { ! command -v docker >/dev/null 2>&1 || ! docker_server_ready; } \
+     && [[ "$orbstack_attempted" == 0 ]]; then
+    orbstack_attempted=1
+    start_orbstack_and_wait || true
   fi
   command -v docker >/dev/null 2>&1 || {
-    err 'Docker is unavailable after the application check.'
+    err 'Docker is unavailable after installing or checking OrbStack.'
+    warn 'Open OrbStack, finish its first-run setup, and wait until Docker is running.'
+    warn "OrbStack bundles Docker and normally exposes it through $ORBSTACK_CLI_DIR; do not install a second Docker engine."
     return 1
   }
   [[ "$DRY_RUN" == 1 ]] && return 0
   if ! docker_server_ready; then
     context="$(docker context show 2>/dev/null || printf unknown)"
     err "Docker is installed, but its server is not reachable (context: $context)."
-    warn 'Open the application that owns this Docker context, wait until its engine is running, then rerun the same command.'
+    if [[ "$orbstack_attempted" == 1 ]]; then
+      warn "OrbStack did not become ready within $DOCKER_WAIT_SECONDS seconds. Complete any visible first-run prompt, then rerun the same command."
+    else
+      warn 'Open the application that owns this Docker context, wait until its engine is running, then rerun the same command.'
+    fi
     warn 'Use `docker info` to confirm the Server section is available. Do not run Docker with sudo.'
     return 1
   fi
