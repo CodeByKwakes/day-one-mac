@@ -371,17 +371,21 @@ installation_centre_fingerprint() {
 }
 
 installation_centre_components_ready() {
-  local app_id formula
+  local app_id formula application_list formula_list
   load_brew || return 1
+  # Finish bounded catalogue reads before a check can return early. Process
+  # substitution leaves a background writer on a pipe the caller may close.
+  application_list="$(required_application_ids)" || return 1
+  formula_list="$(required_formulae)" || return 1
   while IFS= read -r app_id; do
     [[ -n "$app_id" ]] || continue
     day_one_app_detect "$app_id" || return 1
     day_one_app_is_satisfied || return 1
-  done < <(required_application_ids)
+  done <<<"$application_list"
   while IFS= read -r formula; do
     [[ -n "$formula" ]] || continue
     brew list --formula "$formula" >/dev/null 2>&1 || return 1
-  done < <(required_formulae)
+  done <<<"$formula_list"
 }
 
 installation_centre_done() {
@@ -644,7 +648,7 @@ choose_installation_centre_policy() {
 
 run_installation_centre() {
   local app_id formula rc missing_count=0 previous_policy="$APP_INSTALL_POLICY"
-  local app_ids="" formulae=""
+  local app_ids="" formulae="" application_list
   ui_title '📦' 'Required Installation Centre'
   info 'Applications are installed and ownership-checked here before configuration begins.'
   info "Guide: $DOC_DIR/01-required/INSTALLATION-CENTRE.md"
@@ -656,6 +660,7 @@ run_installation_centre() {
   fi
 
   ui_section '🔎' 'Application ownership — no changes yet'
+  application_list="$(required_application_ids)" || return "$EX_GATE"
   while IFS= read -r app_id; do
     [[ -n "$app_id" ]] || continue
     app_ids="${app_ids}${app_ids:+ }$app_id"
@@ -669,7 +674,7 @@ run_installation_centre() {
         return "$EX_GATE"
         ;;
     esac
-  done < <(required_application_ids)
+  done <<<"$application_list"
 
   choose_installation_centre_policy "$missing_count" || {
     warn 'No application was removed. Rerun the Installation Centre when ready.'

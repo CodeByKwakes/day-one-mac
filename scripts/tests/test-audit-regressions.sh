@@ -91,4 +91,44 @@ day_one_write_state "$TEST_ROOT/preview-home/.day-one-mac/preset" core
 day_one_write_state "$TEST_ROOT/preview-home/.day-one-mac/auth-mode" https
 ownership="$(HOME="$TEST_ROOT/preview-home" "$TEST_SCRIPT_DIR/application-status.sh" --required)"
 grep -Fq 'No applications are required' <<<"$ownership" || fail 'required-app status ignored saved preset'
-printf 'PASS: allowlisted packaging, runtime verification, atomic state, operation locks, phase fingerprints and presets\n'
+# Fresh-user decisions must not launch Apple's Git shim before Phase 2.
+# Overrides below are called by the imported production functions.
+# shellcheck disable=SC2329
+(
+  phase_next() { :; }; phase_step_done() { :; }; ui_title() { :; }
+  info() { :; }; ok() { :; }; confirm() { return 0; }
+  day_one_require_apple_silicon() { return 0; }; save_state_value() { :; }
+  git() { printf '%s\n' "$*" >> "$TEST_ROOT/git-default-queries"; printf 'saved-value\n'; }
+  xcode-select() { return 1; }
+  ask() { printf '%s\n' "${2:-fixture@example.invalid}"; }
+  GIT_NAME='Provided Name' GIT_EMAIL=provided@example.invalid DRY_RUN=0
+  phase_01
+  [[ ! -e "$TEST_ROOT/git-default-queries" ]] || fail 'explicit identity queried Git'
+  GIT_NAME='' GIT_EMAIL=''
+  phase_01
+  [[ ! -e "$TEST_ROOT/git-default-queries" ]] || fail 'fresh user queried Git before developer tools'
+  xcode-select() { printf '%s\n' "$TEST_ROOT"; }
+  GIT_NAME='Provided Name' GIT_EMAIL=''
+  phase_01
+  [[ "$GIT_NAME" == 'Provided Name' && "$GIT_EMAIL" == saved-value ]] || fail 'identity default selection failed'
+  [[ "$(cat "$TEST_ROOT/git-default-queries")" == 'config --global user.email' ]] || fail 'queried an already supplied identity field'
+)
+
+# Early validation failure must not leave a producer writing to a closed pipe.
+# Overrides below are called by the imported production functions.
+# shellcheck disable=SC2329
+(
+  load_brew() { return 0; }
+  day_one_app_detect() { return 1; }
+  required_application_ids() {
+    printf 'raycast\n'
+    sleep 0.05
+    printf 'warp\n'
+    printf 'complete\n' > "$TEST_ROOT/application-list-completed"
+  }
+  if installation_centre_components_ready; then fail 'missing app accepted'; fi
+  [[ -f "$TEST_ROOT/application-list-completed" ]] || fail 'status returned before its application producer finished'
+  required_application_ids() { return 23; }
+  if installation_centre_components_ready; then fail 'failed application enumeration accepted'; fi
+)
+printf 'PASS: packaging, state, fingerprints, presets, fresh-user identity and complete status enumeration\n'
