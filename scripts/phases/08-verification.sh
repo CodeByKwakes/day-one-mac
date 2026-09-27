@@ -219,9 +219,21 @@ verify_local_dotfiles_source() {
   phase_step_done "local-only chezmoi source is readable and secret-scanned"
 }
 
+report_keychain_key_protection() {
+  local report="$1" disk_key="$2" protection
+  protection="$(keychain_key_protection "$disk_key")"
+  if [[ "$protection" == encrypted ]]; then
+    printf '| Passphrase protection: `%s` | PASS — encrypted key detected |\n' "${disk_key/#"$HOME"/~}" >> "$report"
+  else
+    printf '| Passphrase protection: `%s` | FAIL — %s |\n' "${disk_key/#"$HOME"/~}" "$protection" >> "$report"
+    VERIFY_FAILURES=$((VERIFY_FAILURES + 1))
+    phase_gate_failed "Keychain private-key passphrase protection"
+  fi
+}
+
 phase_08() {
   local brewfile="$HOME/Brewfile" brewfile_created=0 report="$STATE_DIR/verification.md" app_id
-  local plaintext_keys plaintext_key
+  local disk_keys disk_key
   ui_title '8️⃣' 'Phase 08 — Verify and reproduce'
   info "Guide: $(phase_doc 08)"
   if [[ "$DRY_RUN" == 1 ]]; then
@@ -306,28 +318,35 @@ phase_08() {
       printf '| SSH agent identity | NOT REQUIRED — https selected |\n' >> "$report"
       ;;
   esac
-  # The no-plaintext-key guarantee holds for every mode except keychain, which
-  # creates one on purpose; asserting it there would contradict the design.
+  # Storage location is not encryption state. Keychain mode deliberately keeps
+  # encrypted private files; all other modes retain the no-local-key policy.
   if [[ "$AUTH_MODE" == keychain ]]; then
-    printf '| Plaintext private key in ~/.ssh | EXPECTED — keychain mode |\n' >> "$report"
+    printf '| Private key files in ~/.ssh | EXPECTED — keychain mode |\n' >> "$report"
+    disk_keys=""
+    uses_github && disk_keys="$HOME/.ssh/id_ed25519"
+    uses_azure && disk_keys="$disk_keys${disk_keys:+$'\n'}$HOME/.ssh/id_rsa_azure"
+    while IFS= read -r disk_key; do
+      [[ -n "$disk_key" ]] || continue
+      report_keychain_key_protection "$report" "$disk_key"
+    done <<<"$disk_keys"
   else
     # Name the offending files: "FAIL" alone leaves no way to tell which key
     # appeared, or whether it is one `gh auth login` created before the
     # --skip-ssh-key flag was added.
-    plaintext_keys="$(find "$HOME/.ssh" -maxdepth 1 -type f -name 'id_*' ! -name '*.pub' 2>/dev/null | LC_ALL=C sort || true)"
-    if [[ -z "$plaintext_keys" ]]; then
-      printf '| No plaintext private key in ~/.ssh | PASS |\n' >> "$report"
+    disk_keys="$(find "$HOME/.ssh" -maxdepth 1 -type f -name 'id_*' ! -name '*.pub' 2>/dev/null | LC_ALL=C sort || true)"
+    if [[ -z "$disk_keys" ]]; then
+      printf '| No on-disk id_* private-key files in ~/.ssh | PASS |\n' >> "$report"
     else
-      printf '| No plaintext private key in ~/.ssh | FAIL |\n' >> "$report"
-      while IFS= read -r plaintext_key; do
-        [[ -n "$plaintext_key" ]] || continue
-        printf '| — unexpected private key | `%s` |\n' "${plaintext_key/#"$HOME"/~}" >> "$report"
-        warn "Unexpected private key on disk: ${plaintext_key/#"$HOME"/~}"
-      done <<<"$plaintext_keys"
+      printf '| No on-disk id_* private-key files in ~/.ssh | FAIL |\n' >> "$report"
+      while IFS= read -r disk_key; do
+        [[ -n "$disk_key" ]] || continue
+        printf '| — unexpected private key | `%s` |\n' "${disk_key/#"$HOME"/~}" >> "$report"
+        warn "Unexpected private key on disk: ${disk_key/#"$HOME"/~}"
+      done <<<"$disk_keys"
       warn "Auth mode '$AUTH_MODE' keeps no private key in ~/.ssh."
       warn "If 'gh auth login' created it before --skip-ssh-key was added, remove it from GitHub, then delete it once 1Password's key is confirmed working."
       VERIFY_FAILURES=$((VERIFY_FAILURES + 1))
-      phase_gate_failed "No plaintext private key in ~/.ssh"
+      phase_gate_failed "No on-disk id_* private-key files in ~/.ssh"
     fi
   fi
   chmod 600 "$report"

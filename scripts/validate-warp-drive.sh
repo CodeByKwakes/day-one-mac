@@ -137,8 +137,10 @@ else
 fi
 
 if grep -Fq '**63 validated' "$IMPORT_GUIDE" \
-   && grep -Fq '**Command-Backslash**' "$IMPORT_GUIDE" \
-   && grep -Fq 'open "$(day-one-mac root)/warp-drive/Day One Mac"' "$IMPORT_GUIDE" \
+   && grep -Fq '**Drive → Open Left Panel**' "$IMPORT_GUIDE" \
+   && grep -Fq '**Day One Mac** directory inside the versioned' "$IMPORT_GUIDE" \
+   && grep -Fq 'In an installed release, `validate` checks runtime integrity.' "$IMPORT_GUIDE" \
+   && grep -Fq 'without a separate preview' "$IMPORT_GUIDE" \
    && grep -Fq 'Do not create a one-click Warp workflow that includes `--execute`' "$IMPORT_GUIDE" \
    && grep -Fq 'No workflow stores a secret or personal absolute path.' "$IMPORT_GUIDE"; then
   pass "import guide explains prerequisites, import target, secrets, and destructive boundaries"

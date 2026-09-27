@@ -10,7 +10,7 @@ ssh_config_block() {
   local github_public="$HOME/.ssh/github-auth.pub"
   local azure_public="$HOME/.ssh/azure-devops-auth.pub"
   local agent_line='    IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"'
-  printf '%s\n' '# >>> Day One Mac: 1Password SSH agent >>>'
+  printf '%s\n' '# >>> Day One Mac: SSH authentication >>>'
   printf '%s\n' "# Generated for auth mode '$AUTH_MODE' from the saved hosting track."
   if uses_github; then
     printf '%s\n' 'Host github.com'
@@ -29,7 +29,7 @@ ssh_config_block() {
     printf '%s\n' '    ServerAliveInterval 60'
     printf '%s\n' '    ServerAliveCountMax 3'
   fi
-  printf '%s\n' '# <<< Day One Mac: 1Password SSH agent <<<'
+  printf '%s\n' '# <<< Day One Mac: SSH authentication <<<'
 }
 
 # The identity half of one Host block, which is all that varies by mode.
@@ -213,9 +213,11 @@ configure_onepassword_ssh() {
     info "Auth mode 'https': no SSH config block is written."
     return 0
   fi
-  local start_marker='# >>> Day One Mac: 1Password SSH agent >>>'
-  local end_marker='# <<< Day One Mac: 1Password SSH agent <<<'
-  local block remainder content current legacy has_start=0 has_end=0
+  local start_marker='# >>> Day One Mac: SSH authentication >>>'
+  local end_marker='# <<< Day One Mac: SSH authentication <<<'
+  local old_start='# >>> Day One Mac: 1Password SSH agent >>>'
+  local old_end='# <<< Day One Mac: 1Password SSH agent <<<'
+  local block remainder content current legacy has_markers=0
   block="$(ssh_config_block)"
   legacy=$'Host *\n    IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"\n    IdentitiesOnly yes\n    ServerAliveInterval 60\n    ServerAliveCountMax 3'
 
@@ -232,20 +234,30 @@ configure_onepassword_ssh() {
     write_text_file "$ssh_config" "$block"$'\n'
   else
     current="$(cat "$ssh_config")"
-    grep -Fqx "$start_marker" "$ssh_config" && has_start=1
-    grep -Fqx "$end_marker" "$ssh_config" && has_end=1
-    if [[ "$has_start" != "$has_end" ]]; then
-      err "$ssh_config contains only one Day One Mac SSH marker."
-      warn "Repair the incomplete marked block manually before rerunning Phase 3; no change was made."
+    if grep -Fxq -e "$start_marker" -e "$end_marker" -e "$old_start" -e "$old_end" "$ssh_config"; then
+      has_markers=1
+    fi
+    # Accept exactly one complete pair, including the former 1Password label.
+    # Never swallow user settings after malformed, nested or mixed markers.
+    if ! remainder="$(awk -v start="$start_marker" -v end="$end_marker" \
+      -v old_start="$old_start" -v old_end="$old_end" '
+      $0 == start || $0 == old_start {
+        if (seen || skipping) { bad=1; exit }
+        seen=1; skipping=1; closing=($0 == start ? end : old_end); next
+      }
+      $0 == end || $0 == old_end {
+        if (!skipping || $0 != closing) { bad=1; exit }
+        skipping=0; next
+      }
+      !skipping { print }
+      END { if (bad || skipping) exit 1 }
+    ' "$ssh_config")"; then
+      err "$ssh_config contains malformed or multiple Day One Mac SSH blocks."
+      warn "Repair the marked block manually before rerunning Phase 3; no change was made."
       return "$EX_GATE"
-    elif [[ "$has_start" == 1 ]]; then
-      remainder="$(awk -v start="$start_marker" -v end="$end_marker" '
-        $0 == start { skipping=1; next }
-        $0 == end { skipping=0; next }
-        !skipping { print }
-      ' "$ssh_config")"
+    elif [[ "$has_markers" == 1 ]]; then
       content="$block"
-      [[ -z "$remainder" ]] || content="$content"$'\n\n'"$remainder"
+      [[ -z "$remainder" ]] || content="$content"$'\n'"$remainder"
       [[ "$current" == "$content" ]] || write_text_file "$ssh_config" "$content"$'\n'
     elif [[ "$current" == "$legacy" ]]; then
       info "migrating the earlier Day One Mac Host * block to track-specific host blocks"
@@ -354,11 +366,26 @@ offer_provider_key_pins() {
   return 0
 }
 
+# Classify without asking for a secret, changing the key, or printing key bytes.
+# Failure alone is not proof of encryption: invalid/unreadable keys fail too.
+keychain_key_protection() {
+  local target="$1" diagnostic
+  if [[ ! -f "$target" || ! -r "$target" || -L "$target" ]]; then
+    printf 'unverifiable\n'
+  elif diagnostic="$(LC_ALL=C ssh-keygen -y -P '' -f "$target" 2>&1 >/dev/null </dev/null)"; then
+    printf 'unprotected\n'
+  elif [[ "$diagnostic" == *'incorrect passphrase supplied to decrypt private key'* ]]; then
+    printf 'encrypted\n'
+  else
+    printf 'unverifiable\n'
+  fi
+}
+
 # Create a passphrase-protected key and hand it to the macOS Keychain.
 # ssh-keygen prompts for the passphrase itself: the runner never sees or stores it.
 generate_keychain_key() {
   local target="$1" type="$2" bits="$3"
-  if [[ -f "$target" ]]; then
+  if [[ -e "$target" || -L "$target" ]]; then
     info "reusing the existing key at $target"
   else
     warn "ssh-keygen will now ask for a passphrase. Choose one you can recall;"
@@ -372,12 +399,26 @@ generate_keychain_key() {
     fi
     ok "created $target"
   fi
+  case "$(keychain_key_protection "$target")" in
+    encrypted) ;;
+    unprotected)
+      warn "$target has an empty passphrase; Phase 3 cannot accept it."
+      warn "Run ssh-keygen -p -f '$target' yourself, choose a non-empty passphrase, then rerun Phase 3."
+      return 1 ;;
+    *)
+      warn "Cannot verify passphrase protection for $target; no key was replaced."
+      warn "Check the key format, permissions and path manually, then rerun Phase 3."
+      return 1 ;;
+  esac
   chmod 600 "$target"
   [[ ! -f "$target.pub" ]] || chmod 644 "$target.pub"
-  # --apple-use-keychain is Apple's flag; fall back for a non-Apple ssh-add.
-  ssh-add --apple-use-keychain "$target" 2>/dev/null \
-    || ssh-add -K "$target" 2>/dev/null \
-    || warn "Could not add $target to the agent automatically; run 'ssh-add --apple-use-keychain $target'."
+  # A failed load must not mark Phase 3 done. Do not fall back to -K: that flag
+  # means something different in upstream OpenSSH.
+  if ! ssh-add --apple-use-keychain "$target"; then
+    warn "Could not load $target using the Apple Keychain."
+    warn "Use Apple's ssh-add --apple-use-keychain '$target', then rerun Phase 3."
+    return 1
+  fi
   info "Register the matching public key with your provider: $target.pub"
   return 0
 }

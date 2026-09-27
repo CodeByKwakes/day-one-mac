@@ -327,14 +327,14 @@ like this; Azure DevOps uses the same agent path under
 `Host ssh.dev.azure.com`:
 
 ```sshconfig
-# >>> Day One Mac: 1Password SSH agent >>>
+# >>> Day One Mac: SSH authentication >>>
 Host github.com
     HostName github.com
     User git
     IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
     ServerAliveInterval 60
     ServerAliveCountMax 3
-# <<< Day One Mac: 1Password SSH agent <<<
+# <<< Day One Mac: SSH authentication <<<
 ```
 
 If the corresponding public key is saved as `~/.ssh/github-auth.pub` or

@@ -731,7 +731,7 @@ The exact host blocks depend on the saved track and authentication mode. A
 GitHub-only machine using the default 1Password route normally has:
 
 ```sshconfig
-# >>> Day One Mac: 1Password SSH agent >>>
+# >>> Day One Mac: SSH authentication >>>
 # Generated for auth mode '1password' from the saved hosting track.
 Host github.com
     HostName github.com
@@ -741,7 +741,7 @@ Host github.com
     IdentitiesOnly yes
     ServerAliveInterval 60
     ServerAliveCountMax 3
-# <<< Day One Mac: 1Password SSH agent <<<
+# <<< Day One Mac: SSH authentication <<<
 ```
 
 Track 2 or Track 3 also contains an `ssh.dev.azure.com` block. It uses
