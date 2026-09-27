@@ -1,4 +1,4 @@
-[← Day One Mac home](README.md) · [Complete command reference](20-reference/COMMAND-REFERENCE.md) · [Manual and script-assisted routes](20-reference/NOTION-SETUP-GUIDE.md) · [Whole process overview](PROCESS-OVERVIEW.md) · [Glossary](20-reference/GLOSSARY.md) · [Start Phase 1 →](01-required/01-first-boot-and-decisions.md)
+[← Day One Mac home](README.md) · [Complete command reference](20-reference/COMMAND-REFERENCE.md) · [Manual and script-assisted routes](20-reference/MANUAL-SETUP-GUIDE.md) · [Whole process overview](PROCESS-OVERVIEW.md) · [Glossary](20-reference/GLOSSARY.md) · [Start Phase 1 →](01-required/01-first-boot-and-decisions.md)
 
 # Start here
 
@@ -72,7 +72,7 @@ resumable phases, saved verification, and recorded ownership.
 
 Use this route when policy prohibits the project scripts or when you want to
 perform and record every underlying change yourself. Do not install the
-standalone runtime. Follow the [complete manual setup flow](20-reference/NOTION-SETUP-GUIDE.md#manual-setup-flow)
+standalone runtime. Follow the [complete manual setup flow](20-reference/MANUAL-SETUP-GUIDE.md#manual-setup-flow)
 from Manual 1 through Manual 8, including every checkpoint. The manual route
 does not create phase markers, ownership manifests, or precise automated
 rollback evidence, so keep your own completion record.
@@ -84,47 +84,14 @@ the final checklist states exactly what must be true before continuing.
 
 ## Terminal basics used in this guide
 
-**Terminal** is the macOS application in which you enter text commands. Open it
-from **Applications → Utilities → Terminal** or with Spotlight.
-
-- Copy only the text inside a code block, not the surrounding backticks.
-- Paste one command block at a time and press Return.
-- A command that starts with `#` is an explanation; it does not make a change.
-- Text such as `<repository>` is a placeholder. Replace the complete text,
-  including angle brackets, with your real value.
-- When macOS asks for an administrator password in Terminal, no dots or letters
-  appear while you type. This is normal. Type the password and press Return.
-- `Control-C` stops the current command. Rerun the phase afterward; do not
-  manually mark it complete.
-- `~` means your home folder, such as `/Users/alex`.
-
-Definitions for recurring terms such as CLI, cask, gate, manifest, and vault
-are in the [plain-English glossary](20-reference/GLOSSARY.md).
+New to Terminal? Read [Terminal basics](20-reference/TERMINAL-BASICS.md) before
+copying commands. It explains passwords, placeholders, stopping commands, and
+colour-independent status symbols.
 
 ## Terminal colours and symbols
 
-Interactive Day One scripts use colour and symbols to make the next action
-easier to spot. Meaning never depends on colour alone:
-
-| Display | Meaning |
-|---|---|
-| green `✓` | completed successfully |
-| yellow `⚠` | warning or review required |
-| red `✗` or `⛔` | failed or stopped |
-| blue `ℹ` | information only |
-| grey `○` | pending work |
-| cyan title or highlighted row | current screen or selection |
-| `🔒` | required and not toggleable |
-
-Colours are automatically removed when output is saved to a file or used by
-automation. To turn colours off manually, place `NO_COLOR=1` before a command:
-
-```bash
-NO_COLOR=1 day-one-mac --status
-```
-
-The words and symbols remain, so plain output and screen readers retain the
-same meaning.
+A ✓ means a check passed; ⚠ means review is needed. See the
+[full symbol reference](20-reference/TERMINAL-BASICS.md#terminal-colours-and-symbols).
 
 ## Install the standalone command for the script-assisted route
 
@@ -155,7 +122,10 @@ day-one-mac --wizard
 
 Read the file in `less`, then press `q` before running it. The installer
 downloads a release archive and its SHA-256 checksum separately and refuses to
-install them when verification fails. The `export` affects only this Terminal
+install them when verification fails. A checksum detects corruption; it does
+not independently prove who published the download. See
+[release trust and optional provenance checks](20-reference/PORTABLE-COMMAND.md#release-trust-and-provenance).
+The `export` affects only this Terminal
 window; future login shells load the saved path automatically.
 
 The Git clone route remains available for contributors. See
@@ -169,59 +139,40 @@ After installing the portable command above:
 day-one-mac --wizard
 ```
 
-The wizard explains each choice. Use Up/Down or `j`/`k` to move. On a
-single-choice screen, Space or Return accepts the highlighted choice. On a
-multi-choice screen, Space toggles the highlighted item and Return accepts the
-whole list.
+Use Up/Down or `j`/`k` to move, Space to select, and Return to continue.
+The wizard reviews all choices before saving them.
 
-The first wizard asks only for choices needed by the eight required phases. The
-eight items marked 🔒 are required, not completed. A ✓ is used only for a
-phase that has passed.
+Choose a software preset:
 
-The wizard also asks whether VS Code is the primary IDE. Choose **Yes** to make
-Git open commit messages, diffs, and merge conflicts in VS Code. Choose **No**
-to leave Git's existing editor tools unchanged; VS Code remains installed as a
-small compatibility editor either way.
+- **Recommended productivity** (the existing default): includes VS Code,
+  Raycast, Warp, and the Nerd Font alongside the command-line foundation.
+- **Core**: skips those desktop applications and Phase 7 editor configuration.
+  Authentication, shell, language tools, and Phase 8 verification still apply.
+  1Password and its CLI are required only with 1Password authentication.
 
-One optional item deliberately runs early: the
-[macOS Settings Wizard](01-required/MACOS-SETTINGS.md). A checkpoint appears after Phase
-1—once macOS is updated—and before Phase 2 installs development tools. Press
-Enter to configure the preferences or `s` to skip them; either choice can be
-changed later.
+For the productivity preset, the editor question controls **Git and chezmoi
+integration**, not whether VS Code is installed. Core leaves existing editor
+settings alone. To change presets later, review the wizard choices again;
+switching to core does not uninstall previously installed applications.
 
-After Phase 2 installs Homebrew, the required
-[Installation Centre](01-required/INSTALLATION-CENTRE.md) checks all required software in
-one place. Press Enter to install every missing required item with Homebrew, or
-press `r` to review items individually when Company Portal or another approved
-installer must own some apps. Later phases configure and verify that software;
-they do not interrupt the flow with more app installers.
+Choose your hosting account, language stack, Git identity, authentication mode,
+and dotfiles protection. Private Git provides a remote copy; local-only
+chezmoi needs an encrypted backup. Compare authentication modes in
+[Phase 3](01-required/03-security-and-ssh.md).
 
-After Phase 8 passes, the wizard offers **Finish and exit** first. You may
-instead open the optional setup centre for databases, AI clients, MCP servers,
-VS Code profiles, and other extras. Return later with
-`day-one-mac optional --guided`; optional choices never block the required
-setup.
+Follow this sequence:
 
-The Git authentication screen offers four ways to prove your identity to
-GitHub or Azure DevOps: the **1Password SSH agent** (recommended, and the only
-one that keeps no private key on disk), a **macOS Keychain** key file, **your
-own agent** such as Secretive or a YubiKey, or **HTTPS** with no SSH key at
-all. Choose 1Password unless policy or preference rules it out;
-[Phase 3 Step 3.0](01-required/03-security-and-ssh.md) compares them.
+1. Phase 1 confirms your decisions and backup boundary.
+2. Configure or skip the optional macOS preferences checkpoint.
+3. Phase 2 prepares Homebrew; the Installation Centre then checks the selected
+   software and preserves valid company-managed or externally installed apps.
+4. Phases 3–7 configure authentication, hosting, dotfiles, languages, and the
+   selected editor baseline. Complete manual approvals when prompted.
+5. Phase 8 verifies the result. Choose **Finish and exit**; extras remain
+   available through `day-one-mac optional --guided`.
 
-The dotfiles screen offers private Git (recommended) or a local-only chezmoi
-source. Local-only means the setup does not create or require Git history or a
-remote. You must protect that source with an encrypted backup because another
-Mac cannot clone it.
-
-The first screen asks what state the Mac is in. Choose **New or factory-reset**
-to continue to Phase 1. Choose **Existing Mac** or **Not sure** to open Stage 0.
-That wizard clearly asks for Route A or Route B before offering any action.
-Both routes start with a **safety report**, which only lists current state.
-Its progress dashboard stays open after each safe step, marks completed checks
-with `✓`, and saves enough information to resume after an intentional exit.
-For Route B it also creates a copy-only development snapshot before cleanup can
-be previewed or applied.
+Read [the whole process](PROCESS-OVERVIEW.md) only when you need the detailed
+map; you do not need to repeat phase reference commands after the runner passes.
 
 ## Understand preview and apply
 
@@ -254,9 +205,8 @@ need to learn them.
 
 ## One change that needs your password
 
-Phase 5 installs Homebrew's zsh and offers to make it your login shell. That
-is the only step that uses `sudo`, and the only one that changes a macOS
-account setting. It asks twice — once to add the shell to `/etc/shells`, once
+Phase 5 installs Homebrew's zsh and offers to make it your login shell. This
+step asks twice — once to add the shell to `/etc/shells`, once
 to switch. Declining leaves your shell untouched and stops Phase 5 safely as
 incomplete; the phase passes only when Directory Services confirms Homebrew
 zsh.
@@ -309,8 +259,8 @@ use every setup, report, workspace, finalisation, rollback, and removal command.
 
 ## Set up the required applications
 
-The Installation Centre makes sure 1Password, its CLI, Raycast, Warp, VS Code,
-and the shared Nerd Font exist before Phase 3 begins. If Company Portal, the
+The Installation Centre checks software required by your preset and authentication
+mode before Phase 3 begins. If Company Portal, the
 Mac App Store, or another approved installer already supplied a valid copy, the runner
 keeps it and reports that Homebrew does not own it. Only missing applications
 trigger a choice: install with Homebrew, use another approved installer and

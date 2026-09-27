@@ -50,6 +50,33 @@ The installer:
 7. Records `~/.day-one-mac/runtime-root`.
 8. Leaves earlier releases available for reviewed rollback.
 
+## Release trust and provenance
+
+SHA-256 verification detects corruption; downloading a matching checksum from
+the same publisher does not independently authenticate the release. Inspect
+the installer before running it. On a machine with a recent GitHub CLI and
+network access, require repository/workflow build provenance with:
+
+```bash
+"$INSTALLER" --require-attestation
+# Later updates support the same gate:
+day-one-mac update --require-attestation
+```
+
+This stops before extraction if provenance cannot be verified, including for
+older releases without an attestation. It cannot authenticate an installer you
+have already chosen to execute. Verify the installer itself first when your
+policy requires it:
+
+```bash
+gh attestation verify "$INSTALLER" --repo CodeByKwakes/day-one-mac \\
+  --signer-workflow CodeByKwakes/day-one-mac/.github/workflows/release.yml
+```
+
+An offline archive uses its adjacent checksum; provenance verification still
+needs GitHub access. A local source checkout is a separate trust decision and
+cannot be combined with `--require-attestation`.
+
 ## Installed layout
 
 ```text
@@ -111,6 +138,25 @@ opening a guide in a specific editor, for example:
 code "$(day-one-mac docs commands)"
 ```
 
+The standalone runtime omits contributor tests and tooling. Use
+`day-one-mac verify` for runtime checks; Phase 8 owns machine verification.
+`day-one-mac validate` remains an alias for `verify` in a standalone install.
+
+Verification checks more than the bytes in existing files: the runtime must
+contain exactly the files listed in `config/runtime-files.txt`, their parent
+directories, and `SHA256SUMS`. Extra files (even an extra script), unexpected
+directories, symlinks, and missing or duplicate checksum entries fail the check.
+Keep personal scripts and generated output outside the version directory.
+Activation and rollback enforce the same inventory before switching `current`.
+
+If verification fails, do not regenerate checksums or edit the allowlist to make
+the warning disappear. Use a trusted installer to install a clean release, or
+roll back to an intact installed version. If reinstalling the same version is
+refused, preserve the affected version directory for inspection and move only
+that rejected version aside before reinstalling it. Do not remove your
+`~/.day-one-mac` setup state. An integrity failure during activation does not
+change the active version or its rollback history.
+
 ## Move an already-completed Mac to standalone mode
 
 If Phases 1–8 were completed before the standalone runtime was installed, do
@@ -145,7 +191,7 @@ day-one-mac databases --saved    # when Databases was selected
 ```bash
 day-one-mac update
 day-one-mac runtime-status
-day-one-mac validate
+day-one-mac verify
 ```
 
 An update installs a new version beside the existing version. It does not
@@ -156,7 +202,7 @@ switch.
 
 ## Roll back the runtime
 
-Preview the available previous runtime:
+Preview the previously activated runtime (not the lexically highest version):
 
 ```bash
 day-one-mac rollback-runtime

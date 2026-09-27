@@ -30,6 +30,17 @@ Usage: ./advanced-setup.sh [option]
   --yes                confirm --complete or --reset without prompting
   -h, --help           show this help
 
+For bounded executable actions in Modules 15–22 use the dispatcher:
+  day-one-mac advanced --module 16 --inventory
+  day-one-mac advanced --module 16 --plan --manifest /path/to/reviewed.tsv
+  day-one-mac advanced --module 16 --apply --manifest /path/to/reviewed.tsv
+  day-one-mac advanced --module 16 --check
+  day-one-mac advanced --module 16 --resume
+  day-one-mac advanced --module 21 --plan
+  day-one-mac advanced --module 21 --apply
+  day-one-mac advanced --module 21 --check
+  day-one-mac advanced --module 21 --resume
+
 This is a documentation and progress tool. It never installs, removes, or
 configures a feature. Complete the checklist in the selected guide first.
 EOF

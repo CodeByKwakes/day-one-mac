@@ -20,6 +20,32 @@ verification gates work without the imported workflow objects.
 
 ## Step 14.1 — Verify the required Warp application
 
+### Prepare a versioned export first
+
+The executable part of Module 14 validates and copies the bundled collection
+to a new private artifact directory. It does not open Warp or import anything:
+
+```bash
+day-one-mac optional --module 14 --plan
+day-one-mac optional --module 14 --apply
+day-one-mac optional --module 14 --check
+```
+
+Apply requires Phase 8 and confirmation. It prints the versioned output path;
+inside it, import the **Day One Mac** directory using Step 14.3. Inspect
+`manual-steps.txt` first. Check verifies exported file integrity and alignment
+with the currently bundled source. A valid export is not evidence that Warp
+contains the collection, so dashboard status remains partial.
+
+Use `day-one-mac optional --module 14 --resume` after an interrupted export.
+Previous versions are retained, and a failed new export does not replace the
+current artifact. If an updated runtime changes the source bundle, resume
+stops: review a new plan and apply to approve the changed collection.
+Workspace selection, sign-in, import, duplicate handling and cloud sync remain
+manual. No workflow is executed during export.
+
+### Check the application before importing
+
 Phase 4 verifies Warp and records who manages it. Confirm that result before
 attempting the optional import:
 
@@ -67,20 +93,24 @@ day-one-mac root
 A contributor intentionally using linked mode may instead reinstall from that
 source checkout.
 
+In an installed release, `validate` checks runtime integrity. In a linked source
+checkout, it runs the full contributor validator, which needs contributor
+dependencies. Neither substitutes for Phase 8 machine verification.
+
 ## Step 14.3 — Import the directory into Warp Drive
 
-1. Open Warp and sign in to the intended personal or team workspace.
-2. Press **Command-Backslash** (`⌘\`) to open Warp Drive.
+1. Open Warp and sign in to the intended personal or team workspace. The
+   account-free route may open the terminal but still require sign-in for Drive.
+   Imported objects can sync through that account to your other devices.
+2. Open **Drive → Open Left Panel** and select **Warp Drive**, or use the
+   available Warp Drive shortcut for your installed version.
 3. Choose the **plus** menu or right-click the destination, then choose
    **Import**.
-4. Run the following command to reveal the import directory in Finder, then
-   select that directory—not one of its child folders—in Warp:
-
-   ```bash
-   open "$(day-one-mac root)/warp-drive/Day One Mac"
-   ```
-
-5. Keep the imported hierarchy when Warp previews it.
+4. Choose files, then select the **Day One Mac** directory inside the versioned
+   artifact printed by Step 14.1—not a child folder or a different runtime's
+   source bundle. Review `manual-steps.txt` and the destination account first.
+5. Confirm the file selection only when ready to upload: this may immediately
+   import the folder without a separate preview. Preserve the directory hierarchy.
 6. Confirm the result contains:
 
    ```text
@@ -110,6 +140,10 @@ Search Warp Drive for each of these and insert it into a terminal:
 
 Read the inserted command before pressing Enter. The first three should work
 from any directory because they use the portable dispatcher.
+Use the shell terminal, not an AI-agent prompt; these checks need no AI credits.
+Expect the active root path, the saved phase states, a successful validation
+result, and the current Git branch/status respectively. A runtime validation
+pass does not mean the full contributor regression suite ran.
 
 ## Step 14.5 — Understand conditional workflows
 
@@ -171,6 +205,7 @@ Whenever they change:
 day-one-mac validate
 ```
 
+Prepare a new versioned export with Step 14.1 before importing changed files.
 Then either update the corresponding Warp objects or remove the old
 `Day One Mac` collection and import the directory again. Avoid importing a
 second copy into the same location because duplicate names make search results

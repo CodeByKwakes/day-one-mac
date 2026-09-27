@@ -8,7 +8,11 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 CATALOG="$PROJECT_DIR/config/optional-formulae.tsv"
 source "$SCRIPT_DIR/lib/project-paths.sh"
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
+source "$SCRIPT_DIR/lib/module-execution.sh"
+ORIGINAL_ARGS=("$@")
 STATE_ROOT="$(day_one_state_root)"
+STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
+SELECTION_FILE="$STATE_DIR/optional-cli-packages"
 MANIFEST="$STATE_ROOT/install-manifest.tsv"
 LOG_FILE="$STATE_ROOT/setup.log"
 DRY_RUN=0
@@ -17,6 +21,7 @@ LIST_ONLY=0
 CHECK_ONLY=0
 SELECT_ALL=0
 PACKAGE_CSV=""
+USE_SAVED=0
 
 usage() {
   cat <<'EOF'
@@ -28,6 +33,7 @@ Without selection options, an interactive grouped selector is shown.
   --check                report missing selected tools without installing
   --all                  select every optional formula
   --packages A,B,C       select only these formula tokens
+  --saved                use the last applied selection, including failed runs
   --dry-run              print the brew commands without running them
   --yes                  skip the final ordinary confirmation
   -h, --help             show this help
@@ -48,6 +54,7 @@ while [[ $# -gt 0 ]]; do
     --list) LIST_ONLY=1 ;;
     --check) CHECK_ONLY=1 ;;
     --all) SELECT_ALL=1 ;;
+    --saved) USE_SAVED=1 ;;
     --packages) shift; [[ $# -gt 0 ]] || { err "--packages needs a comma-separated list"; exit 2; }; PACKAGE_CSV="$1" ;;
     --dry-run) DRY_RUN=1 ;;
     --yes) ASSUME_YES=1 ;;
@@ -57,10 +64,30 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
+[[ "$USE_SAVED" == 0 || ( -z "$PACKAGE_CSV" && "$SELECT_ALL" == 0 ) ]] || {
+  err '--saved cannot be combined with a new selection'; exit 2;
+}
+if [[ "$DRY_RUN" == 0 && "$CHECK_ONLY" == 0 && "$LIST_ONLY" == 0 ]]; then
+  day_one_serialize cli-tools "$0" "${ORIGINAL_ARGS[@]}"
+fi
+if [[ "$USE_SAVED" == 1 ]]; then
+  PACKAGE_CSV="$(sed -n '1p' "$SELECTION_FILE" 2>/dev/null || true)"
+  [[ -n "$PACKAGE_CSV" ]] || { err 'No saved CLI selection; use --packages first.'; exit 2; }
+fi
+
 [[ -r "$CATALOG" ]] || { err "catalogue is missing: $CATALOG"; exit 1; }
 [[ "$SELECT_ALL" != 1 || -z "$PACKAGE_CSV" ]] || { err "choose --all or --packages, not both"; exit 2; }
-have brew || { err "Homebrew is required; complete day-one-mac Phase 2 first."; exit 1; }
-INSTALLED_FORMULAE="$(brew list --formula 2>/dev/null | LC_ALL=C sort || true)"
+export HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_ANALYTICS=1
+INSTALLED_FORMULAE=""
+if have brew; then
+  INSTALLED_FORMULAE="$(brew list --formula | LC_ALL=C sort)" || {
+    err 'Cannot inspect Homebrew inventory; refusing to guess what is installed.'; exit 1;
+  }
+elif [[ "$DRY_RUN" == 1 ]]; then
+  warn 'Homebrew is missing; this is a conditional plan. Complete Phase 2 before applying.'
+else
+  err "Homebrew is required; complete day-one-mac Phase 2 first."; exit 1
+fi
 
 TOOL_GROUPS=()
 FORMULAE=()
@@ -170,39 +197,75 @@ if [[ "$CHOSEN_COUNT" -gt 0 ]]; then printf '\nSelected: %s\n' "${CHOSEN[*]}"; e
 if [[ "$MISSING_COUNT" -gt 0 ]]; then printf 'Missing:  %s\n' "${MISSING[*]}"; else printf 'Missing:  (none)\n'; fi
 [[ "$CHECK_ONLY" == 1 ]] && { [[ "$MISSING_COUNT" -eq 0 ]]; exit $?; }
 [[ "$CHOSEN_COUNT" -gt 0 ]] || { info "nothing selected; no changes made"; exit 0; }
-[[ "$MISSING_COUNT" -gt 0 ]] || { ok "every selected optional formula is already installed"; exit 0; }
 
 if [[ "$DRY_RUN" == 1 ]]; then
-  for formula in "${MISSING[@]}"; do printf '  $ brew install %q\n' "$formula"; done
+  if [[ "$MISSING_COUNT" -gt 0 ]]; then
+    for formula in "${MISSING[@]}"; do printf '  $ brew install %q\n' "$formula"; done
+  else
+    ok "every selected optional formula is already installed"
+  fi
+  info 'Plan only; selection, shell configuration and Brewfile were not changed.'
   exit 0
 fi
 if [[ "$ASSUME_YES" != 1 ]]; then
   [[ -t 0 ]] || { err "installation confirmation needs a terminal or --yes"; exit 10; }
-  printf 'Install the missing selected formulae? [y/N]: '
+  printf 'Save this selection and install any missing formulae? [y/N]: '
   IFS= read -r answer
   [[ "$answer" == y || "$answer" == Y || "$answer" == yes || "$answer" == YES ]] || exit 10
 fi
 
+selected_csv="$(IFS=,; printf '%s' "${CHOSEN[*]}")"
+day_one_module_begin 13 "$selected_csv" "$SELECTION_FILE" "$MANIFEST" "$LOG_FILE"
+day_one_write_state "$SELECTION_FILE" "$selected_csv"
 mkdir -p "$STATE_ROOT"
 touch "$MANIFEST" "$LOG_FILE"
 chmod 700 "$STATE_ROOT"
 chmod 600 "$MANIFEST" "$LOG_FILE"
+record_install() {
+  local kind="$1" token="$2" content
+  content="$(cat "$MANIFEST")"
+  grep -Fqx "$kind"$'\t'"$token" "$MANIFEST" && return 0
+  day_one_write_state "$MANIFEST" "${content:+$content$'\n'}$kind"$'\t'"$token"
+}
+if [[ "$MISSING_COUNT" -gt 0 ]]; then
 for formula in "${MISSING[@]}"; do
-  before="$(brew list --formula 2>/dev/null | sort || true)"
-  brew install "$formula"
-  grep -Fqx $'brew-formula\t'"$formula" "$MANIFEST" || printf 'brew-formula\t%s\n' "$formula" >> "$MANIFEST"
+  before="$(brew list --formula | LC_ALL=C sort)"
+  if grep -Fqx "$formula" <<< "$before"; then
+    day_one_module_event already-installed "$formula"
+    continue
+  fi
+  install_status=0
+  day_one_module_event installing-formula "$formula"
+  brew install "$formula" || install_status=$?
+  after="$(brew list --formula | LC_ALL=C sort)"
+  if grep -Fqx "$formula" <<< "$after"; then record_install brew-formula "$formula"; fi
   while IFS= read -r dependency; do
     [[ -n "$dependency" && "$dependency" != "$formula" ]] || continue
     if ! grep -Fqx "$dependency" <<<"$before"; then
-      grep -Fqx $'brew-dependency\t'"$dependency" "$MANIFEST" || printf 'brew-dependency\t%s\n' "$dependency" >> "$MANIFEST"
+      record_install brew-dependency "$dependency"
     fi
-  done < <(brew list --formula 2>/dev/null | sort)
+  done <<< "$after"
+  if [[ "$install_status" != 0 ]]; then
+    day_one_module_event failed-formula "$formula"
+    err "Installation failed for $formula; partial additions were recorded. Resume the saved selection."
+    exit "$install_status"
+  fi
+  grep -Fqx "$formula" <<< "$after" || { err "Homebrew did not install $formula"; exit 1; }
   printf '%s\tINSTALL optional formula %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$formula" >> "$LOG_FILE"
   ok "installed $formula"
+  day_one_module_event installed-formula "$formula"
 done
+fi
+
+INSTALLED_FORMULAE="$(brew list --formula | LC_ALL=C sort)"
+for formula in "${CHOSEN[@]}"; do
+  is_installed "$formula" || { err "Verification failed: missing $formula"; exit 1; }
+done
+MODULE_VERIFIED=1
+ok 'Selected optional formulae verified'
 
 printf '\nShell integration is intentionally not edited automatically.\n'
-printf 'Review optional/13-enhanced-cli-tools.md for eza, zoxide and Zsh plugin snippets.\n'
+printf 'Review docs/02-optional/13-enhanced-cli-tools.md for eza, zoxide and Zsh plugin snippets.\n'
 if [[ -e "$HOME/Brewfile" ]]; then
   printf 'Add the selected declarations to the chezmoi-managed Brewfile after review:\n'
   for formula in "${CHOSEN[@]}"; do printf '  brew "%s"\n' "$formula"; done

@@ -9,6 +9,7 @@ phases that must all be completed before running the setup.
 |---|---|
 | Which command or script should I run? | [Complete command reference](COMMAND-REFERENCE.md) |
 | How do I see one status view for Optional and Advanced modules? | [Optional and advanced status dashboard](OPTIONAL-STATUS.md) |
+| How do I plan, apply, check or resume an executable module? | [Module execution reference](MODULE-EXECUTION.md) |
 | How do I install or download `day-one-mac` before Phase 1? | [Portable command](PORTABLE-COMMAND.md) |
 | How do I update a Mac created before the standalone runtime? | [Upgrade notes](UPGRADE-NOTES.md) |
 | How do I add, edit, save, or remove a Zsh alias? | [Zsh aliases](ZSH-ALIASES.md) |
@@ -22,7 +23,7 @@ phases that must all be completed before running the setup.
 | How do I clone a private GitHub repository on a new Mac? | [Private GitHub repository access](GITHUB-PRIVATE-REPOSITORY.md) |
 | Where should Codex, Claude, VS Code, and standalone tasks work? | [AI workspaces](AI-WORKSPACES.md) |
 | What does an unfamiliar term mean? | [Plain-English glossary](GLOSSARY.md) |
-| I need the complete manual and script-assisted setup in one page | [Complete setup routes](NOTION-SETUP-GUIDE.md) |
+| I need the complete manual and script-assisted setup in one page | [Complete setup routes](MANUAL-SETUP-GUIDE.md) |
 
 For the setup order, use the [process overview](../PROCESS-OVERVIEW.md) or the
 [required setup index](../01-required/README.md).

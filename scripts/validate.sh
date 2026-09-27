@@ -114,7 +114,7 @@ required_docs=(
   docs/20-reference/APPLICATION-OWNERSHIP.md
   docs/20-reference/AI-WORKSPACES.md
   docs/20-reference/EXPECTED-LAYOUT.md
-  docs/20-reference/NOTION-SETUP-GUIDE.md
+  docs/20-reference/MANUAL-SETUP-GUIDE.md
   docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md
   docs/20-reference/CHEZMOI-COMMAND-REFERENCE.md
   docs/20-reference/CHEZMOI-CONCEPTS-AND-BOUNDARIES.md
@@ -187,6 +187,18 @@ for relative in "${required_docs[@]}"; do
   fi
 done
 [[ "$missing" == 0 ]] && pass "all required and optional documents are present"
+
+if "$SCRIPT_DIR/tests/test-audit-regressions.sh"; then
+  pass "audit behavioral regressions pass"
+else
+  fail "audit behavioral regressions failed"
+fi
+
+if "$SCRIPT_DIR/tests/test-release-installer.sh"; then
+  pass "release archive and installer regressions pass"
+else
+  fail "release archive and installer regressions failed"
+fi
 
 # Keep the eight required phase guides predictable for readers at every skill
 # level. START-HERE promises this exact structure, so drift is a usability bug.
@@ -360,6 +372,8 @@ fi
 
 required_scripts=(
   setup.sh
+  tests/test-release-installer.sh
+  tests/test-audit-regressions.sh
   bootstrap-day-one-mac.sh
   clean-development-state.sh
   application-status.sh
@@ -402,6 +416,11 @@ required_scripts=(
   tests/test-workspace-manager.sh
 )
 
+for phase_script in "$SCRIPT_DIR"/phases/*.sh; do
+  required_scripts+=("${phase_script#"$SCRIPT_DIR"/}")
+done
+required_scripts+=(verify.sh with-operation-lock.sh lib/state.sh lib/deadline.sh lib/operation-lock.sh lib/runtime-package.sh lib/runtime-activation.sh)
+
 syntax_failed=0
 for relative in "${required_scripts[@]}"; do
   path="$SCRIPT_DIR/$relative"
@@ -435,34 +454,34 @@ if grep -Fq 'exec bash "$HERE/setup.sh" "$@"' "$SCRIPT_DIR/bootstrap-day-one-mac
    && grep -Fq 'post_required_menu' "$SCRIPT_DIR/bootstrap-day-one-mac.sh" \
    && grep -Fq 'Optional setup remains locked until required Phase 8 is complete.' "$SCRIPT_DIR/bootstrap-day-one-mac.sh" \
    && ! sed -n '/^configure_wizard()/,/^}/p' "$SCRIPT_DIR/bootstrap-day-one-mac.sh" | grep -Fq 'choose_optional_plan' \
-   && grep -Fq -- '--new-dotfiles' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq -- '--local-dotfiles' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'day_one_require_apple_silicon' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'verify_apple_developer_tools' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'for phase in 01 02 03 04 05 06 07 08' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'printf '\''%s\n'\'' chezmoi ghq git jq ripgrep starship zsh' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'git config --global ghq.root' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'git config --global push.autoSetupRemote true' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'git config --global core.excludesFile' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'if [[ "$PRIMARY_IDE" == vscode ]]' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'Use Visual Studio Code as the primary IDE on this Mac?' "$SCRIPT_DIR/bootstrap-day-one-mac.sh" \
-   && grep -Fq '"$HOME/.gitignore_global"' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq '2) printf '\''Azure DevOps only' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq '3) printf '\''GitHub + Azure DevOps' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'run_installation_centre()' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'installation_centre_done()' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq -- '--install-centre' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'Required Installation Centre' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'day_one_app_catalog_ids required' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'report_application "$DAY_ONE_APP_NAME" "$app_id"' "$SCRIPT_DIR/setup.sh" \
+   && grep -Fq -- '--new-dotfiles' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq -- '--local-dotfiles' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'day_one_require_apple_silicon' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'verify_apple_developer_tools' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'for phase in 01 02 03 04 05 06 07 08' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'printf '\''%s\n'\'' chezmoi ghq git jq ripgrep starship zsh' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'git config --global ghq.root' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'git config --global push.autoSetupRemote true' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'git config --global core.excludesFile' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'if [[ "$PRIMARY_IDE" == vscode ]]' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'Use VS Code for Git and chezmoi editing?' "$SCRIPT_DIR/bootstrap-day-one-mac.sh" \
+   && grep -Fq '"$HOME/.gitignore_global"' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq '2) printf '\''Azure DevOps only' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq '3) printf '\''GitHub + Azure DevOps' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'run_installation_centre()' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'installation_centre_done()' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq -- '--install-centre' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'Required Installation Centre' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'day_one_required_application_ids' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'report_application "$DAY_ONE_APP_NAME" "$app_id"' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq 'applications) shift; exec' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'install) shift; exec' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'External installation (Company Portal or manual)' "$SCRIPT_DIR/lib/application-ownership.sh" \
-   && grep -Fq 'existing_managed_source=1' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'eval "$(starship init zsh)"' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'runner_wrapper="$HOME/.local/bin/day-one-mac"' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'migrate_legacy_managed_launcher' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'run chezmoi forget "$target"' "$SCRIPT_DIR/setup.sh" \
+   && grep -Fq 'existing_managed_source=1' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'eval "$(starship init zsh)"' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'runner_wrapper="$HOME/.local/bin/day-one-mac"' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'migrate_legacy_managed_launcher' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'run chezmoi forget "$target"' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq 'safety-report|preflight) shift; exec' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'prepare-existing|prepare-reset)' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'macos-settings) shift; exec "$PROJECT_ROOT/scripts/configure-macos-settings.sh"' "$SCRIPT_DIR/day-one-mac" \
@@ -478,25 +497,25 @@ if grep -Fq 'exec bash "$HERE/setup.sh" "$@"' "$SCRIPT_DIR/bootstrap-day-one-mac
    && grep -Fq 'NO_COLOR' "$SCRIPT_DIR/lib/terminal-ui.sh" \
    && grep -Fq 'ui_title()' "$SCRIPT_DIR/lib/terminal-ui.sh" \
    && grep -Fq 'FRESH_START_STATE_ROOT' "$SCRIPT_DIR/lib/project-paths.sh" \
-   && grep -Fq 'legacy_runner="$HOME/.local/bin/fresh-start"' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'save_state_value project-root "$PROJECT_DIR"' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'advanced) shift; exec "$PROJECT_ROOT/scripts/advanced-setup.sh"' "$SCRIPT_DIR/day-one-mac" \
+   && grep -Fq 'legacy_runner="$HOME/.local/bin/fresh-start"' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'save_state_value project-root "$PROJECT_DIR"' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'exec "$PROJECT_ROOT/scripts/advanced-setup.sh" "$@"' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'advanced-audit|audit) shift; exec' "$SCRIPT_DIR/day-one-mac" \
-   && grep -Fq 'PHASE_SCHEMA_05=15' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'PHASE_SCHEMA_08=11' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'PHASE_SCHEMA_01=5' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq '.config/zsh/path.zsh' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq '.config/zsh/aliases.zsh' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'HTTPS Git authentication selected; no SSH identity is configured.' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'Directory Services login shell' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'run_macos_settings_checkpoint' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'verify_dotfiles_remote' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'verify_local_dotfiles_source' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq '"$SCRIPT_DIR/validate.sh" || return "$EX_GATE"' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'Completed in this attempt:' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'Still required:' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'preview record compaction with: day-one-mac finalize' "$SCRIPT_DIR/setup.sh" \
-   && grep -Fq 'Optional databases, AI, MCP and VS Code profiles are not run here.' "$SCRIPT_DIR/setup.sh"; then
+   && grep -Fq 'PHASE_SCHEMA_05=15' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'PHASE_SCHEMA_08=11' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'PHASE_SCHEMA_01=5' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq '.config/zsh/path.zsh' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq '.config/zsh/aliases.zsh' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'HTTPS Git authentication selected; no SSH identity is configured.' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'Directory Services login shell' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'run_macos_settings_checkpoint' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'verify_dotfiles_remote' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'verify_local_dotfiles_source' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq '"$SCRIPT_DIR/verify.sh" || return "$EX_GATE"' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'Completed in this attempt:' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'Still required:' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'preview record compaction with: day-one-mac finalize' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'Optional databases, AI, MCP and VS Code profiles are not run here.' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh; then
   pass "wizard feeds the resumable eight-phase runner and keeps chezmoi, Starship and pnpm in the base"
 else
   fail "wizard, runner phase flow, or required base components are incomplete"
@@ -659,22 +678,22 @@ if ! grep -Fq 'Security controls are reviewed manually' "$SCRIPT_DIR/configure-m
    || ! grep -Fq 'bool:1|bool:true) value=true' "$SCRIPT_DIR/configure-macos-settings.sh" \
    || grep -Eq '^[[:space:]]*spctl[[:space:]]+--master-disable' "$SCRIPT_DIR/configure-macos-settings.sh" \
    || ! grep -Fq -- '--restore' "$SCRIPT_DIR/configure-macos-settings.sh" \
-   || ! grep -Fq 'macos-settings-status' "$SCRIPT_DIR/setup.sh"; then
+   || ! grep -Fq 'macos-settings-status' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh; then
   fail "early macOS settings wizard, security boundary, or restore path is incomplete"
   semantic_failed=1
 fi
-if ! grep -Fq 'Create a new GitHub Ed25519 key' "$SCRIPT_DIR/setup.sh" \
-   || ! grep -Fq 'Azure DevOps RSA 3072-bit key' "$SCRIPT_DIR/setup.sh" \
-   || ! grep -Fq '# >>> Day One Mac: 1Password SSH agent >>>' "$SCRIPT_DIR/setup.sh" \
-   || ! grep -Fq 'Host github.com' "$SCRIPT_DIR/setup.sh" \
-   || ! grep -Fq 'Host ssh.dev.azure.com' "$SCRIPT_DIR/setup.sh" \
-   || ! grep -Fq 'configure_onepassword_ssh' "$SCRIPT_DIR/setup.sh" \
-   || ! grep -Fq 'update_homebrew_1password_if_needed' "$SCRIPT_DIR/setup.sh" \
+if ! grep -Fq 'Create a new GitHub Ed25519 key' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   || ! grep -Fq 'Azure DevOps RSA 3072-bit key' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   || ! grep -Fq '# >>> Day One Mac: 1Password SSH agent >>>' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   || ! grep -Fq 'Host github.com' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   || ! grep -Fq 'Host ssh.dev.azure.com' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   || ! grep -Fq 'configure_onepassword_ssh' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   || ! grep -Fq 'update_homebrew_1password_if_needed' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    || ! grep -Fq 'Step 3.4c — Import an existing GitHub or Azure key' "$PROJECT_DIR/docs/01-required/03-security-and-ssh.md" \
    || ! grep -Fq 'Step 3.7 — Pin provider keys when needed' "$PROJECT_DIR/docs/01-required/03-security-and-ssh.md" \
-   || ! grep -Fq 'Azure DevOps does not accept Ed25519' "$PROJECT_DIR/docs/20-reference/NOTION-SETUP-GUIDE.md" \
-   || ! grep -Fq -- '--web --skip-ssh-key' "$SCRIPT_DIR/setup.sh" \
-   || grep -Eq 'gh auth login .*--web[[:space:]]*$' "$SCRIPT_DIR/setup.sh"; then
+   || ! grep -Fq 'Azure DevOps does not accept Ed25519' "$PROJECT_DIR/docs/20-reference/MANUAL-SETUP-GUIDE.md" \
+   || ! grep -Fq -- '--web --skip-ssh-key' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   || grep -Eq 'gh auth login .*--web[[:space:]]*$' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh; then
   fail "Phase 3 does not cover provider-compatible new keys, existing-key import, and Track 3 routing"
   semantic_failed=1
 fi
@@ -743,11 +762,11 @@ fi
 if ! grep -Fq 'For the script-assisted route, start the Day One Mac wizard' "$PROJECT_DIR/docs/01-required/01-first-boot-and-decisions.md" \
    || ! grep -Fq '[Continue to early macOS settings →](MACOS-SETTINGS.md)' "$PROJECT_DIR/docs/01-required/01-first-boot-and-decisions.md" \
    || ! grep -Fq '[← Early macOS settings](MACOS-SETTINGS.md)' "$PROJECT_DIR/docs/01-required/02-command-line-foundation.md" \
-   || ! grep -Fq 'Existing Homebrew found at' "$SCRIPT_DIR/setup.sh" \
+   || ! grep -Fq 'Existing Homebrew found at' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    || ! grep -Fq 'Choose one setup route' "$PROJECT_DIR/docs/START-HERE.md" \
    || ! grep -Fq 'day-one-mac finalize' "$PROJECT_DIR/docs/01-required/05-dotfiles-and-shell.md" \
    || ! grep -Fq 'Read **Outcome** and **How to use this phase**' "$PROJECT_DIR/docs/START-HERE.md" \
-   || ! grep -Fq 'report_check "post-setup finalisation command" day-one-mac finalize --help' "$SCRIPT_DIR/setup.sh"; then
+   || ! grep -Fq 'report_check "post-setup finalisation command" day-one-mac finalize --help' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh; then
   fail "required-phase navigation, finalisation, or onboarding wording has drifted"
   semantic_failed=1
 fi
@@ -906,6 +925,42 @@ run_fixture "Day One Mac regression fixture passes" \
 run_fixture "optional database installer is idempotent and diagnostic" \
   "optional database installer regression fixture failed" \
   "$SCRIPT_DIR/tests/test-configure-databases.sh" || true
+
+run_fixture "optional module execution is preview-safe, resumable and locked" \
+  "optional module execution fixture failed" \
+  "$SCRIPT_DIR/tests/test-optional-module.sh" || true
+
+run_fixture "AI clients and software selections preserve ownership and manual boundaries" \
+  "AI client and software module fixture failed" \
+  "$SCRIPT_DIR/tests/test-software-modules.sh" || true
+
+run_fixture "profile/Warp artifacts and audit snapshots preserve manual boundaries" \
+  "artifact module regression fixture failed" \
+  "$SCRIPT_DIR/tests/test-artifact-modules.sh" || true
+
+run_fixture "MCP snippets and AI governance preserve manual trust boundaries" \
+  "AI artifact and governance fixture failed" \
+  "$SCRIPT_DIR/tests/test-ai-artifacts.sh" || true
+
+run_fixture "owned OmniRoute lifecycle refuses conflicts and resumes safely" \
+  "OmniRoute module regression fixture failed" \
+  "$SCRIPT_DIR/tests/test-omniroute-module.sh" || true
+
+run_fixture "dotfile proposals and helper bundles preserve manual activation boundaries" \
+  "configuration artifact fixture failed" \
+  "$SCRIPT_DIR/tests/test-configuration-artifacts.sh" || true
+
+run_fixture "scalar preferences preserve typed originals and refuse external drift" \
+  "preference module fixture failed" \
+  "$SCRIPT_DIR/tests/test-preference-module.sh" || true
+
+run_fixture "identity reviews and checksum staging preserve manual and recovery boundaries" \
+  "identity and restore module fixture failed" \
+  "$SCRIPT_DIR/tests/test-review-and-restore.sh" || true
+
+run_fixture "acceptance tooling preserves read-only plans and truthful release gates" \
+  "acceptance tooling contract fixture failed" \
+  "$SCRIPT_DIR/tests/test-acceptance-tooling.sh" || true
 
 run_fixture "unified optional and advanced dashboard reports evidence safely" \
   "unified optional and advanced dashboard fixture failed" \

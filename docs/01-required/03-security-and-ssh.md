@@ -11,7 +11,7 @@ protects the disk.
 
 How Git authenticates is your choice — see [Step 3.0](#step-30--choose-how-git-authenticates).
 In the default **1Password** mode, its CLI and SSH agent are enabled, the
-providers know the public key, and **no new plaintext private SSH key is
+providers know the public key, and **no new private SSH key file is
 written to `~/.ssh`**. That last guarantee holds in every mode except
 `keychain`, which creates a passphrase-protected key file on purpose.
 
@@ -28,7 +28,7 @@ redundant copy.
 Choose the authentication mode in Step 3.0 before following a branch.
 
 - **Manual route:** use the matching branch in
-  [Manual 3](../20-reference/NOTION-SETUP-GUIDE.md#manual-3--configure-git-authentication-and-filevault)
+  [Manual 3](../20-reference/MANUAL-SETUP-GUIDE.md#manual-3--configure-git-authentication-and-filevault)
   and the relevant provider steps below. Do not run Step 3.9.
 - **Script-assisted route:** complete the applicable shared manual actions in
   the app, browser, and System Settings, then run Step 3.9 once. The script
@@ -109,7 +109,7 @@ Changing the mode later reopens Phases 3 and 4, because both depend on it.
 
 - **`1password`** — Steps 3.1 to 3.7 as written below.
 - **`keychain`** — skip Steps 3.1–3.3. Phase 3 runs `ssh-keygen` for you, which
-  prompts for a passphrase; the runner never sees it. It then adds the key to
+  prompts for a non-empty passphrase; the runner never sees it. It then adds the key to
   the macOS Keychain and writes `UseKeychain yes` into `~/.ssh/config`. You
   still register the public key with your provider (Step 3.6), using
   `~/.ssh/id_ed25519.pub` or `~/.ssh/id_rsa_azure.pub`.
@@ -120,6 +120,36 @@ Changing the mode later reopens Phases 3 and 4, because both depend on it.
   then Phase 4 configures the credential helper.
 
 **FileVault (Step 3.8) is required in every mode.**
+
+### Keychain mode: an empty passphrase stops setup
+
+Do not press Return at both passphrase prompts without entering a value.
+Phase 3 checks new and existing keys before adding them to the agent. An
+unprotected, unreadable or unrecognised key stops the phase; a failed Keychain
+load also stops it. No rejected key is deleted or replaced automatically.
+
+If you accidentally created a GitHub key without a passphrase, run:
+
+```bash
+ssh-keygen -p -f "$HOME/.ssh/id_ed25519"
+```
+
+Enter the old passphrase (Return if it was empty), then enter and confirm a
+non-empty new passphrase privately. For Azure, use `~/.ssh/id_rsa_azure`
+instead. This changes protection of the same key, not the public key registered
+with your provider. Rerun Phase 3 afterward. Do not put your passphrase in a
+command, screenshot or chat message.
+
+The protection check tries an empty passphrase without interactive input. A
+successful read means the key is unprotected; OpenSSH's explicit incorrect-
+passphrase response identifies encryption. Other errors are **unverifiable**,
+not a pass. Phase 8 repeats this check for each selected provider key. This
+does not measure passphrase strength or prove provider access.
+
+Managed SSH configuration now uses the mode-neutral `Day One Mac: SSH
+authentication` markers. Phase 3 recognises and migrates the former
+`Day One Mac: 1Password SSH agent` pair while keeping unrelated settings.
+Incomplete, nested, mixed or multiple managed blocks require manual review.
 
 ## Step 3.1 — Confirm 1Password is installed
 
@@ -783,17 +813,17 @@ installed for your track.
 ### Reference — what the runner writes to `~/.ssh/config`
 
 You do not edit this by hand. The runner maintains a marked, **track-specific**
-block at the top of the file. Track 1 receives:
+block at the top of the file. Track 1 in 1Password mode receives:
 
 ```sshconfig
-# >>> Day One Mac: 1Password SSH agent >>>
+# >>> Day One Mac: SSH authentication >>>
 Host github.com
     HostName github.com
     User git
     IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
     ServerAliveInterval 60
     ServerAliveCountMax 3
-# <<< Day One Mac: 1Password SSH agent <<<
+# <<< Day One Mac: SSH authentication <<<
 ```
 
 If you completed Step 3.7, each host also gets its pin:
@@ -805,7 +835,7 @@ If you completed Step 3.7, each host also gets its pin:
 
 `IdentitiesOnly yes` appears **only** next to an `IdentityFile`. On its own it
 would restrict OpenSSH to the default `~/.ssh/id_rsa`, `~/.ssh/id_ecdsa`, and
-`~/.ssh/id_ed25519` files — which this project deliberately never creates — so
+`~/.ssh/id_ed25519` files — which 1Password mode deliberately never creates — so
 the 1Password agent's keys would never be offered and every push would fail with
 `Permission denied (publickey)`. Never add that line by hand to a block with no
 `IdentityFile`.
@@ -879,8 +909,9 @@ use `sudo` on files your own account owns.
 - [ ] `~/.ssh/config` contains the marked Day One Mac block for every selected provider.
 - [ ] Track 3 keys — and Azure whenever several keys are visible — are pinned
       with public `IdentityFile` entries.
-- [ ] **Except in keychain mode:** no plaintext `~/.ssh/id_*` private key
-      exists. In keychain mode one is expected, and is passphrase-protected.
+- [ ] **Except in keychain mode:** no on-disk `~/.ssh/id_*` private-key file
+      exists. In keychain mode provider keys are expected; Phase 8 reports
+      their passphrase protection separately from their storage location.
 - [ ] Any imported old disk copy remains quarantined until provider
       verification succeeds.
 - [ ] `fdesetup status` reports FileVault is on.

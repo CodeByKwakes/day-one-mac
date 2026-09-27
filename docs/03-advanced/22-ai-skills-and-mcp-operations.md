@@ -11,6 +11,52 @@ discovery models permit it. Client-specific agents remain separate, MCP servers
 have an inventory and owner, trust is explicit, secrets stay out of Git, and
 unused capabilities can be disabled or removed cleanly.
 
+## Executable inventory and drift route
+
+Module 22 can record an owner and content hash for each explicitly selected
+skill or MCP metadata manifest. A hash detects content changes; it does not
+prove that the content is safe or that the owner reviewed it. The runner never
+executes skill instructions/helpers, creates client links, changes trust
+settings or reads a live client credential file.
+
+Create `governance.tsv` in your editor, with four tab-separated fields:
+`skill` or `mcp`, a short name, owner label and absolute path. Replace these
+example paths with your own:
+
+```text
+skill	code-review	platform-team	/Users/your-name/.agents/skills/code-review
+mcp	project-tools	platform-team	/Users/your-name/Developer/project/mcp.tsv
+```
+
+A skill path must be one folder containing `SKILL.md`, not your home directory
+or the whole skills library. The entire selected folder is hashed, including
+its helpers and references. MCP paths must point to the five-column metadata
+manifest from [Module 11](../02-optional/11-mcp-servers.md#executable-workspace-snippet-route),
+not `.mcp.json` or a live client configuration. Symlinks are rejected; select
+the canonical source instead of a compatibility link.
+
+```bash
+day-one-mac advanced --module 22 --plan --manifest ./governance.tsv
+day-one-mac advanced --module 22 --apply --manifest ./governance.tsv
+day-one-mac advanced --module 22 --check
+```
+
+Apply requires Phase 8 and confirmation. Read `evidence.tsv` and `report.md`
+at the printed artifact path. Check fails for changed, missing, unreadable or
+unsafe inputs. It does not modify the baseline. The snapshot stores hashes
+and ownership labels, not copies of skill contents.
+
+After a change, run `--plan` and review the diff before accepting a new
+baseline with `--apply`. To retry a failed snapshot using the saved paths, use
+`--resume`. Resume captures **current contents**, so its confirmation also
+accepts a new baseline; it is not a security approval. Previous snapshots
+remain available. A failed apply saves a diagnostic snapshot and returns a
+failure status, never a false success.
+
+Finish the manual ownership, compatibility, trust and decommissioning
+checklists below. The dashboard remains `partial` for a passing executable
+snapshot; it cannot certify those decisions.
+
 ## Step 22.1 — Record the selected clients and purpose
 
 Create a private decision record under `~/.day-one-mac`:

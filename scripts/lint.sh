@@ -37,7 +37,7 @@ fi
 # Collect scripts deterministically, skipping Git metadata and third-party
 # dependencies. Dependencies are verified through the package lockfile; they
 # are not project source and must not be linted as if they were.
-scripts=()
+scripts=("$PROJECT_DIR/install-day-one-mac" "$PROJECT_DIR/scripts/day-one-mac")
 while IFS= read -r -d '' script; do
   scripts+=("$script")
 done < <(find "$PROJECT_DIR" \

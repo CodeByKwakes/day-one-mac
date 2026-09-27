@@ -28,15 +28,11 @@ cli_harness="$TEST_ROOT/cli.sh"
 {
   printf 'set -euo pipefail\n'
   printf 'warn() { printf "warn: %%s\\n" "$*"; }\n'
-  sed -n '/^run_with_deadline() {/,/^}/p' "$SCRIPT_DIR/setup.sh"
-  sed -n '/^verify_onepassword_cli_integration() {/,/^}/p' "$SCRIPT_DIR/setup.sh"
+  printf 'source "%s/lib/deadline.sh"\n' "$SCRIPT_DIR"
+  printf 'source "%s/phases/03-security.sh"\n' "$SCRIPT_DIR"
   printf 'if verify_onepassword_cli_integration; then printf "OK\\n"; else printf "MANUAL\\n"; fi\n'
 } > "$cli_harness"
 
-grep -Fq 'verify_onepassword_cli_integration' "$cli_harness" \
-  || fail_test 'verify_onepassword_cli_integration was not found in setup.sh'
-grep -Fq 'run_with_deadline' "$cli_harness" \
-  || fail_test 'run_with_deadline was not found in setup.sh'
 
 fake_op 'echo "URL EMAIL USER ID"; echo "my.1password.com you@example.com ABC"; exit 0'
 result="$(PATH="$TEST_ROOT/bin:$PATH" bash "$cli_harness" | tail -1)"
@@ -87,11 +83,11 @@ printf 'PASS\n'
 EOS
 
 # The harness must mirror setup.sh, or it proves nothing.
-grep -Fq 'require_rsa_for_azure' "$SCRIPT_DIR/setup.sh" \
+grep -Fq 'require_rsa_for_azure' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh "$SCRIPT_DIR/lib/deadline.sh" \
   || fail_test 'the RSA-vs-track check is gone from setup.sh'
-grep -Fq "grep -q '(RSA)'" "$SCRIPT_DIR/setup.sh" \
+grep -Fq "grep -q '(RSA)'" "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh "$SCRIPT_DIR/lib/deadline.sh" \
   || fail_test 'the RSA track check no longer matches this test harness'
-grep -Fq 'The SSH agent currently offers:' "$SCRIPT_DIR/setup.sh" \
+grep -Fq 'The SSH agent currently offers:' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh "$SCRIPT_DIR/lib/deadline.sh" \
   || fail_test 'setup.sh no longer prints the agent identities'
 
 ed='256 SHA256:AAAA GitHub — Personal (ED25519)'
@@ -136,15 +132,13 @@ pin_harness="$pin_root/h.sh"
   printf 'have() { command -v "$1" >/dev/null 2>&1; }\n'
   printf 'create_directory() { mkdir -p "$1"; }\n'
   printf 'write_text_file() { mkdir -p "$(dirname "$1")"; printf "%%s" "$2" > "$1"; }\n'
-  sed -n '/^run_with_deadline() {/,/^}/p' "$SCRIPT_DIR/setup.sh"
-  sed -n '/^public_key_is_valid() {/,/^}/p' "$SCRIPT_DIR/setup.sh"
-  sed -n '/^onepassword_ssh_item_titles() {/,/^}/p' "$SCRIPT_DIR/setup.sh"
-  sed -n '/^export_provider_public_key() {/,/^}/p' "$SCRIPT_DIR/setup.sh"
+  printf 'source "%s/lib/deadline.sh"\n' "$SCRIPT_DIR"
+  printf 'source "%s/phases/03-security.sh"\n' "$SCRIPT_DIR"
   printf 'export_provider_public_key github && printf "WROTE\\n" || printf "REFUSED\\n"\n'
 } > "$pin_harness"
 
 grep -Fq 'export_provider_public_key' "$pin_harness" \
-  || fail_test 'export_provider_public_key was not found in setup.sh'
+  || fail_test 'export_provider_public_key module failed to load'
 
 fake_op_pin() {
   cat > "$pin_root/bin/op" <<EOS
@@ -223,7 +217,7 @@ grep -Fq 'Several 1Password SSH Key items match' <<<"$output" \
 # The validator itself, directly.
 val_harness="$pin_root/v.sh"
 { printf 'set -euo pipefail\n'
-  sed -n '/^public_key_is_valid() {/,/^}/p' "$SCRIPT_DIR/setup.sh"
+  printf 'source "%s/phases/03-security.sh"\n' "$SCRIPT_DIR"
   printf 'public_key_is_valid "$1" && printf "VALID\\n" || printf "INVALID\\n"\n'
 } > "$val_harness"
 check_key() { bash "$val_harness" "$1"; }

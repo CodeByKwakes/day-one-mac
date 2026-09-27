@@ -27,7 +27,7 @@ Existing Mac safety preparation, when needed
 Choose one route before starting:
 
 - **Manual route:** follow the
-  [complete manual flow](20-reference/NOTION-SETUP-GUIDE.md#manual-setup-flow).
+  [complete manual flow](20-reference/MANUAL-SETUP-GUIDE.md#manual-setup-flow).
   It does not install or invoke Day One Mac scripts and requires you to record
   progress yourself.
 - **Script-assisted route:** install the standalone runtime, then start the
@@ -83,7 +83,7 @@ the full [existing-Mac route](00-preflight/README.md) before applying cleanup.
 Both routes make the same decisions. The script-assisted route records them in
 the main wizard before the required phases install software. The manual route
 records them in your own setup notes while following
-[Manual 1](20-reference/NOTION-SETUP-GUIDE.md#manual-1--finish-macos-and-security-prerequisites).
+[Manual 1](20-reference/MANUAL-SETUP-GUIDE.md#manual-1--finish-macos-and-security-prerequisites).
 
 Both routes also record whether VS Code is the primary IDE. That answer
 controls Git's editor, diff, and merge-tool integration only; it does not
@@ -164,8 +164,8 @@ the required setup. Security gates remain in their required phases.
 | [**8 — Verify and reproduce**](01-required/08-verify-and-reproduce.md) | Complete the track-aware verification, record the Brewfile, scan for secrets, and verify private-Git or local-only dotfiles protection. The script-assisted route writes the machine report. |
 
 On the script-assisted route, a phase receives a `✓` only after its current
-checks pass. If inputs, scripts, or phase documents change later, the saved
-fingerprint requires revalidation. The manual route has no runner fingerprint;
+checks pass. Changed inputs or implementation require revalidation; editorial
+changes to phase documents do not. See the [state contract](20-reference/ARCHITECTURE-AND-STATE.md). The manual route has no runner fingerprint;
 record each completed verification in your own setup notes.
 
 After Phase 8, choose **Finish and exit** or open the optional setup centre.
@@ -410,7 +410,7 @@ day-one-mac runtime-status
 day-one-mac shell-status
 
 # Validate the installed Day One Mac project and its regression fixtures.
-day-one-mac validate
+day-one-mac verify
 ```
 
 It is safe to exit between phases. Rerunning the wizard resumes the first

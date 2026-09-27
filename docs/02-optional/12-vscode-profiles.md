@@ -17,6 +17,49 @@ need meaningfully different extensions, accounts, trust boundaries, or UI.
 
 ## Step 12.1 — Decide whether profiles solve a real problem
 
+### Prepare a reviewed profile bundle
+
+After Phase 8, Module 12 can generate an import file without opening VS Code,
+reading its private user database, installing extensions or changing profiles.
+Create a small `profile-selection.tsv` in your editor. Separate each pair of
+fields with one **tab**, not spaces:
+
+```text
+profile	Work Review
+extension	esbenp.prettier-vscode
+extension	davidanson.vscode-markdownlint
+```
+
+Choose your own non-Default name and only organisation-approved extensions.
+The name permits 1–64 ASCII letters, digits, spaces, dots, underscores and
+hyphens, starting with a letter or digit. Extension IDs must be lowercase
+`publisher.name`; omit all extension rows if you want an empty selection.
+
+```bash
+day-one-mac optional --module 12 --plan --manifest profile-selection.tsv
+day-one-mac optional --module 12 --apply --manifest profile-selection.tsv
+day-one-mac optional --module 12 --check
+```
+
+Apply asks for confirmation and prints a private artifact directory containing
+`profile.code-profile`, `extensions.txt` and `manual-steps.txt`. Existing
+versions are retained. Check validates the generated artifact and saved
+selection; it does **not** inspect or verify an imported profile.
+
+Export your existing profile as described below, inspect the generated file,
+then use VS Code's Profiles import UI to create a **new** profile. Importing
+extensions can download and run third-party code: review publishers, trust and
+work policy before confirming. The bundle includes only a name and extension
+selection, not settings, credentials, snippets, MCP servers or Sync state.
+Review any inherited/default settings in the import preview.
+
+If generation is interrupted, `day-one-mac optional --module 12 --resume`
+uses the saved selection, not a changed original TSV. To change the desired
+profile, run a new plan/apply. Never use this artifact as a backup of an
+existing profile; it deliberately does not contain that profile's data.
+
+### Decide which profiles you need
+
 Use one profile when all projects share roughly the same editor. Consider
 separate profiles when:
 
@@ -136,12 +179,12 @@ Suggested extension choices:
 Install only the entries you need:
 
 ```bash
-code --install-extension streetsidesoftware.code-spell-checker
-code --install-extension davidanson.vscode-markdownlint
-code --install-extension yzhang.markdown-all-in-one
-code --install-extension esbenp.prettier-vscode
-code --install-extension usernamehw.errorlens
-code --install-extension pkief.material-icon-theme
+code --profile "Tech Content Creator" --install-extension streetsidesoftware.code-spell-checker
+code --profile "Tech Content Creator" --install-extension davidanson.vscode-markdownlint
+code --profile "Tech Content Creator" --install-extension yzhang.markdown-all-in-one
+code --profile "Tech Content Creator" --install-extension esbenp.prettier-vscode
+code --profile "Tech Content Creator" --install-extension usernamehw.errorlens
+code --profile "Tech Content Creator" --install-extension pkief.material-icon-theme
 ```
 
 Use this compact profile settings baseline:

@@ -1,0 +1,481 @@
+# Module execution reference
+
+Modules **09 (databases)**, **10 (AI client payloads)**, **13 (CLI formulae)**
+and **16 (selected software)** support a shared execution interface.
+**10A** adds an owned digest-pinned OmniRoute container lifecycle.
+**19** applies explicitly selected scalar macOS preferences.
+**11 (MCP snippets)**, **12 (profile artifacts)**, **14 (Warp exports)**,
+**15 (dotfile proposals)**, **17 (shell helper bundles)**,
+**18 (identity/worktree review)**,
+**21 (audit snapshots)** and **22 (AI governance evidence)**
+use that interface for generated artifacts, not software installation.
+**20** stages explicitly checksummed regular files, or records no-restore.
+An executable module automates its stated scope, not every action in its guide:
+Module 13 does not edit shell configuration or a Brewfile.
+
+For a first run, follow the [optional setup walkthrough](../02-optional/README.md#plan-apply-and-check-an-executable-module).
+
+## Commands and prerequisites
+
+| Operation | Behaviour |
+|---|---|
+| `day-one-mac optional --list` | Read the capability registry; this is not installation status. |
+| `--module ID --plan` | Inspect available evidence and print proposed operations. No state, locks, installations, service starts or configuration writes. |
+| `--module ID --apply` | Confirm, save the selection and apply missing work. Requires recorded Phase 8 completion. |
+| `--module ID --check` | Inspect actual installation/configuration/health. Return nonzero when verification fails; never save completion. |
+| `--module ID --resume` | Reconcile the last saved selection with current reality. Requires Phase 8 and confirmation; does not accept a replacement selection. |
+| `advanced --module 16 --inventory` | Print candidate two-column TSV to stdout. Does not save a selection or evaluate the Brewfile. |
+
+Supply `--services postgres,redis,mongodb` for 09 or `--packages eza,fzf` for 13.
+Omitting the selection uses the saved one; absence of saved choices is an error.
+`--yes` skips the ordinary apply/resume confirmation only. It does not approve
+macOS permissions or another application's onboarding.
+
+Use `optional` for 09/10/10A/11/12/13/14 and `advanced` for 15–22:
+
+| Module | Selection | Verification scope |
+|---|---|---|
+| 10 | `--clients claude,codex` (also `copilot-app`, `copilot-cli`, `copilot-vscode`, `raycast-ai`) | Catalogue payload presence/ownership; never authentication, billing or permissions |
+| 16 | `--manifest PATH` with two tab-separated fields per row | Selected applications, formulae and Default-profile extensions; never Brewfile, licences or Settings Sync |
+
+Module 16 row kinds are `app` (catalogue ID), `formula` (Homebrew token),
+and `extension` (lowercase `publisher.name`). Comments start with `#`.
+Raw casks, App Store IDs, Ruby, shell commands, VSIX files and version-pinned
+extensions are not accepted. The runner never evaluates a Brewfile.
+Use [the beginner walkthrough](../03-advanced/16-brewfile-apps-and-editor.md#executable-selected-payload-route)
+to generate and review your first selection.
+
+For 10/16, `--app-install-policy check-only` is the safe default. Missing
+catalogue apps stop until you choose `prompt` interactively or explicitly
+approve `homebrew`. Existing external apps are preserved under every policy.
+`--yes` does not choose Homebrew. Formula and extension rows explicitly select
+their respective installers. Enable the `code` command before applying
+extension rows; the runner targets only the Default profile through the
+[VS Code CLI](https://code.visualstudio.com/docs/configure/command-line).
+
+Planning is allowed before Phase 8. If Docker cannot be inspected, the database
+plan labels resource operations as conditional: it is not claiming that every
+resource is absent. If Homebrew is missing, the CLI plan is also conditional.
+An installed but failing Homebrew inventory check is an error, not an empty
+inventory.
+
+Apply always rechecks live state; a printed plan is not a frozen transaction.
+Resolve conflicting existing containers yourself after reviewing their data.
+The runner never replaces them automatically. Database verification checks
+health plus the configured image, localhost port binding, named volume and
+network. It does not prove credentials, application queries or backup quality.
+
+## Compatibility
+
+Existing `databases`, `cli-tools`, `optional --guided`, `optional --status`,
+and guide-only `advanced` commands retain their roles. Explicit actions for
+`advanced --module 16` now route to the software runner; without an action,
+that command still opens the guide. The module interface adds
+strict action validation and a Phase 8 gate for apply/resume.
+
+The direct CLI installer keeps its existing Homebrew prerequisite for
+compatibility; it does not gain a Phase 8 gate. Both direct installers share the
+new locking, saved selections and run records. CLI users can resume directly
+with `day-one-mac cli-tools --saved`.
+
+Database preview now works before Phase 8 and cannot start OrbStack.
+Database checks are deliberately stricter: running without a passing health
+check, or using conflicting container configuration, no longer counts as ready.
+
+## Saved choices, ownership and verification
+
+These records mean different things:
+
+- `database-services` and `optional-cli-packages`: the last apply selection,
+  saved before installation so interrupted work can resume.
+- `software-10-clients` and `software-10.tsv`: original AI choices and resolved
+  application rows. The compatibility `ai-clients` selection is also saved.
+  Resume uses `software-10-clients`, not a subsequently edited wizard choice.
+- `software-16.tsv`: canonical selection snapshot. Resume does not reread the
+  original manifest. A new selection requires plan/apply, not resume.
+- `software-10-report.tsv` and `software-16-report.tsv`: last apply payload
+  evidence. Cask/bundle and extension versions are recorded when available;
+  external CLI clients are not launched just to probe a version.
+- `install-manifest.tsv`: newly installed Homebrew formulae/dependencies owned
+  by Day One Mac. Pre-existing packages are never claimed merely because they
+  were selected.
+- `software-extension-installs.tsv`: Default-profile extension IDs added during
+  installation, including detected dependencies. Pre-existing extensions stay
+  unclaimed. This is evidence, not an automatic removal instruction.
+- `module-runs/ID/RUN/result`: `running`, `incomplete`, or `verified` for that
+  particular apply attempt. This is historical evidence, not a live check.
+- `advanced/completed/NN`: existing user-confirmed guide fingerprints. These
+  are not converted into machine-verified execution records.
+
+The dashboard recognises saved 09/10/13/16 selections even when the interactive
+optional selector was not used. It checks current evidence rather than trusting
+the latest run result. Shell integration remains a separate reviewed step.
+For 10/16 a passing payload check still yields `partial` in the dashboard:
+manual account/configuration work is outside the runner's verification scope.
+Module 16 becomes dashboard-ready only when its live payload check passes
+and a separately user-confirmed guide fingerprint is current. A stale
+fingerprint or failed payload check requires review.
+
+## State, backups and recovery
+
+Apply shares the existing operation lock with core setup and runtime management.
+Other cooperating mutating operations fail with exit 75 while that lock is held.
+Plans and checks do not acquire it. External Homebrew/Docker commands are not
+controlled by this lock.
+
+Each run writes private records under the configured state directory:
+
+```text
+module-runs/13/<unique-run>/
+├── selection
+├── result
+├── journal.tsv
+├── backups.tsv              when existing records were backed up
+├── previously-absent.txt    when records did not previously exist
+└── before/                  numbered copies mapped by backups.tsv
+```
+
+The run backs up the Day One-owned records it will modify, not database data,
+the Homebrew installation or application credentials. Selection/result writes
+and the software runner's formula/extension ledger updates use same-directory
+atomic replacement. The delegated application installer retains its existing
+append-based installation ledger; its records are backed up before the run.
+Non-regular backup targets, including symlinks, are rejected.
+
+If installation fails, successful earlier operations stay in place. Read the
+printed journal path, resolve the error, then use `--resume` and `--check`.
+Dependencies installed before a reported Homebrew failure are recorded when
+post-install inventory remains available. An abrupt kill or unreadable inventory
+can leave uncertain ownership; inspect it before using removal tooling.
+
+There is no automatic rollback. Restoring a metadata backup does not undo
+installed software or container changes, and can discard newer ownership
+information. Keep application-data backups separately. An uncatchable process
+termination may leave a `running` record and operation lock; check the recorded
+process before manually recovering that specific lock.
+
+Software runs additionally save `verification-scope` and `manual-steps.txt`.
+Their snapshots cover owned selection, provenance, report and ledger records,
+not application settings or credentials. The installer records newly visible
+Homebrew dependencies and extensions even after a reported installer failure
+when post-install inventory is readable. A resume skips pre-existing selected
+payloads and never requests removal. Installing missing items may still change
+dependencies through the package manager or trigger OS/vendor prompts.
+
+## Generated artifacts: Modules 11, 12, 14, 15, 17, 18, 21 and 22
+
+`scripts/configure-artifacts.sh` uses the same lock, Phase 8 gate, confirmation,
+backup and journal machinery. Its apply action creates files only; it never
+imports them, starts applications or changes accounts. Plan/check create no
+temporary files or reports. Existing `advanced-audit` remains a separate
+broader command that writes reports, including with `--stdout` or `--check`.
+
+| Module | Input | Output and check scope |
+|---|---|---|
+| 11 | `--manifest PATH`: client, server name, workspace scope, HTTPS URL, token variable or `-` | Client-specific review snippets; byte integrity, not connectivity or authentication |
+| 12 | `--manifest PATH`: one `profile<TAB>Name` row plus zero or more `extension<TAB>publisher.name` rows | Minimal `profile.code-profile` and deduplicated `extensions.txt`; verify generated bytes/selection, not imported editor state |
+| 14 | Runtime-allowlisted Warp collection | Versioned `Day One Mac` directory; verify file hashes and current source alignment, not Warp/cloud objects |
+| 15 | `--manifest PATH`: target ID, declared owner, source file or `-` | Hash inventory and import proposal; filesystem-user ownership, not full chezmoi ownership discovery |
+| 17 | `--manifest PATH`: `helper` or `project` rows | Selected zsh bundles, syntax validation on apply, source hashes and project manager classification |
+| 18 | `--manifest PATH`: repository, checkout, name, email, signing policy, layout root | Effective identity/signing settings and worktree metadata; review-only Git configuration fragments |
+| 21 | Fixed `audit-evidence-v1` scope | `evidence.tsv` and `report.md` with previous/current comparison; fail check on drift, failed gates, missing or damaged baseline |
+| 22 | `--manifest PATH`: kind, name, owner, absolute narrow path | Skill-tree and MCP-metadata hashes, owner labels and diff; no code execution or trust approval |
+
+Profile names are restricted to safe ASCII, 1–64 characters, starting with a
+letter/digit; `Default` is rejected. Extensions are lowercase IDs without
+versions, VSIX paths or arbitrary shell arguments. The generated profile has
+only `name` and string-encoded `extensions` resources. No existing settings,
+secrets, keybindings, snippets, tasks, MCP or global state are exported. Import
+review must address inherited/default settings and extension trust.
+
+Each apply/resume creates a new `module-runs/ID/RUN/artifact/`. The canonical
+selection is saved first in `artifact-ID-selection.tsv`. After generation and
+verification, `artifact-ID-current` is atomically replaced with the run ID
+and a SHA-256 digest of its sorted file-hash inventory. `artifact.sha256` beside
+the artifact is a readable file inventory. Checks recompute the complete
+inventory, detecting missing, extra or changed files and rejecting symlinks;
+they do not execute paths from a checksum file. These hashes detect local
+changes, not authenticity against an attacker who can edit the state directory.
+
+A failed generation retains its journal/selection and does not replace the
+published pointer. A previous good artifact is not necessarily valid for a
+newly saved selection, so check still compares both. Resume uses the saved
+profile choice or Warp source hash. Changed Warp source requires a new
+plan/apply; old exports are retained. Paths through symlinks are rejected.
+Artifacts are private review outputs, not backups of application data.
+
+Audit apply saves failed-gate evidence too, publishes the diagnostic snapshot,
+and returns nonzero with an incomplete run. After fixing the issue, resume
+captures fresh evidence; it never performs remediation. Audit check compares
+live evidence with the latest snapshot, not just a historical success marker.
+A new apply accepts the current evidence as the comparison baseline, so review
+the plan first. Damaged prior audit artifacts block comparison; preserve and
+investigate them before recovering that specific pointer.
+
+The audit hashes explicit non-secret state records and runs checks only for
+saved executable selections. Required phase records are checked for presence,
+not recomputed against current phase implementation or machine health.
+Module 21's own guide marker is excluded to avoid self-generated drift. Full
+environment checks, updates, cleanup, account verification and rebuilds remain
+outside this adapter. No completion fingerprints are written by these actions.
+
+## AI artifact schemas and gateway contract
+
+For Module 11, clients are `claude`, `codex` or `vscode`, scope is only
+`workspace`, and names match `[a-z][a-z0-9_-]{0,63}`. HTTPS URLs use a
+restricted ASCII hostname/optional port/path syntax; credentials, queries,
+fragments and escapes are rejected. Review paths for embedded secrets too.
+Token names must match `DAY_ONE_MCP_[A-Z][A-Z0-9_]*`; values are never read.
+Duplicate client/name pairs are rejected. `-` omits the auth field, not the
+need for a separate authentication decision. Generated files are not named
+as live client discovery files. Codex entries are disabled.
+
+Module 22 accepts `skill` or `mcp` rows. Names use the same plain-name rule;
+owners are 1–64 letters/digits/dots/underscores/hyphens, starting with a letter
+or digit. Skill paths must contain `SKILL.md` and every file in that selected
+tree contributes to the digest. MCP paths contain Module 11 metadata, not live
+client settings. Canonical metadata hashes ignore comments/blank lines.
+Symlinks and non-regular files fail the evidence gate; whole-home/root paths
+are rejected. Do not put a whole library under a fake `SKILL.md` to bypass
+the narrow-scope rule. Apply/resume snapshots current contents; review the
+diff before accepting a new baseline. Like Module 21, failed evidence is
+published diagnostically with a nonzero exit. Hashes are not signatures.
+
+Module 10A accepts exactly one each of `context`, `image` and `port` in a
+two-column TSV. Context must be `orbstack` with a local Unix endpoint; image
+must be `diegosouzapw/omniroute@sha256:` plus 64 lowercase hex characters;
+port must be 1024–65535. All engine commands explicitly select this context.
+Plan is conditional and makes no Docker calls; check only inspects.
+
+Apply saves `omniroute-selection.tsv` and journals pull/create/start steps.
+The labels `com.day-one-mac.owner=module-10a-v1` and
+`com.day-one-mac.spec=<selection-hash>` identify owned resources. These are
+cooperative ownership metadata, not protection against a malicious Docker
+administrator. Before starting, the runner verifies bounded image/runtime,
+port, mount, network, security and environment constraints. It requires the
+reviewed image's original healthcheck and does not make provider requests.
+It does not update, adopt, remove or roll back containers/volumes. The run
+stores the newly created container ID; labels and live checks reconcile a
+partial failure. A shared volume, conflicting name or unreadable inventory
+stops the operation. Fixed names deliberately prevent parallel instances.
+Health failure retains resources and returns nonzero after a 60-second
+polling window (Docker command latency can extend wall time).
+
+The dashboard recognises all three saved selections, but passing checks remain
+`partial` because activation, trust and provider readiness are manual.
+Module 21 includes their selected-scope live checks in its audit evidence.
+
+## Configuration artifact contracts: Modules 15 and 17
+
+Module 15 targets are a closed mapping in
+`scripts/lib/configuration-artifacts.sh`: global Git ignores, Starship, shell
+aliases and pnpm defaults. Manifest owners are `chezmoi`, `manual` or
+`unmanaged`. Only chezmoi rows accept an absolute source file, whose suffix must
+match the target mapping (optionally with `.tmpl`). Other rows use `-`.
+Selected targets and sources must be readable regular files owned by the
+current filesystem user, without symlink ancestors. No contents are copied,
+rendered or executed. No claim is made that content is secret-free, that
+templates render identically, or that a declared manager is the sole owner.
+
+The evidence records target/source hashes and the target path. The proposal
+contains target ID, declared owner, target path, source path and review action.
+Only successful evidence produces a proposal. A new snapshot compares against
+the previous one; check fails on live drift. Resume uses saved choices but
+captures current hashes, so preview and review before accepting a new baseline.
+
+Module 17 accepts `helper<TAB>navigation|packages` and optional
+`project<TAB>/absolute/directory` rows. Project rows require `packages`.
+Bundled zsh files are runtime-allowlisted and hashed. Apply syntax-checks copied
+files with startup-file loading disabled; check verifies artifact/source
+integrity without activating the bundle.
+
+Project inspection invokes only the bundled detector, using Node to parse JSON
+and inspect ordinary files. It never loads project code or invokes a package
+manager. npm and pnpm are supported; ambiguous/mixed locks, unsupported managers,
+non-regular metadata and conflicting declarations fail. This is a manager
+classification check, not a dependency-lock checksum or installed-version
+check. Node 22+ must already be on PATH. Inherited Node preloads, coverage and
+compile-cache settings are disabled for inspection. Frozen-install helpers print commands,
+not execute them. Failed evidence publishes diagnostics without helper files.
+
+## Scalar preference contract: Module 19
+
+`scripts/lib/macos-preferences.sh` is the single preference mapping used by
+both the existing wizard and `scripts/configure-preferences.sh`. The new adapter
+accepts `setting<TAB>ID` rows, excluding manual options and screenshot-location.
+It never accepts arbitrary domains, keys, values or executable commands.
+
+Plan/check inspect exported preference dictionaries in memory with `plutil`,
+without temporary reports or preference writes. Unreadable domains, malformed
+plists and non-scalar values fail closed. An absent key is distinguished from
+a failed export. No broad domain contents are written to run records.
+
+Each selected key has a private record at
+`preferences-19/keys/DOMAIN.KEY.tsv` with seven fields:
+
+```text
+domain  key  original-type  original-value-base64  desired-type  desired-value-base64  pending|applied
+```
+
+The actual delimiter is a tab. Types are `missing`, `bool`, `integer`, `float`
+or `string`; `-` represents no encoded bytes. Empty strings retain their
+`string` type. Base64 is not encryption. Original strings retain line breaks;
+numeric values use normalized scalar representations. Records are validated
+against the current catalogue, backed up per run and atomically replaced.
+
+Apply holds the shared operation lock, snapshots the selection and observations,
+then saves all new pending intents **before the first preference write**.
+A later unattempted key therefore retains its original across partial failure.
+A retry may accept either
+the original value (write not completed) or desired value (write completed
+before recording success). Applied records require the desired typed value;
+other values are conflicts, including changes made by the older wizard.
+Before writing, the current value is rechecked. This is cooperative conflict
+detection, not an atomic compare-and-swap with System Settings; avoid concurrent
+external edits.
+
+Successful writes are read back before the record becomes applied. No rollback,
+force reset, process restart or automatic migration is provided. Dropping a
+setting from a new selection does not restore it or erase its original.
+`preferences-19-selection.tsv` drives resume independently of the original
+manifest. Legacy wizard selection/restore files are neither adopted nor changed.
+To intentionally reverse a key, separately review the record's original type
+and decoded value and restore that exact preference; do not treat the legacy
+wizard's restore command as an undo for this adapter.
+
+## Identity/worktree contract: Module 18
+
+`scripts/lib/identity-review.cjs` reads six-column TSV rows:
+`repository`, absolute checkout root, expected name, expected email, expected
+signing policy (`ssh`, `openpgp`, `off`), absolute layout root. Both the primary
+and linked checkout paths must lie beneath the selected layout root. Include
+each checkout whose effective identity should be checked as its own row.
+
+The Node 22+ helper invokes only fixed Git `config`, `rev-parse` and
+`worktree list --porcelain -z` commands. It removes caller `GIT_*` overrides,
+disables optional locks/prompts, and retains Git's effective system/global/local
+configuration and conditional includes. It never runs status, fsmonitor,
+aliases, hooks, credential helpers or signing commands. Therefore this is
+configured-identity evidence, not a prediction of a commit made with explicit
+author/environment overrides. No remote URLs or signing-key values are saved.
+
+SSH signing requires enabled signing, SSH format, a nonempty configured key
+and a readable regular allowed-signers file. An absolute path or `~/` is
+required for that file. Its contents/trust and cryptographic signatures are
+not validated. Detached, missing, prunable or out-of-layout worktrees fail;
+locks are reported without modification. Worktree branch tips and dirty files
+are deliberately not part of this evidence.
+
+The artifact runner stores `artifact-18-selection.tsv` and a hashed versioned
+artifact containing `evidence.tsv`, `report.md`, `identity-proposals.json` and
+numbered configuration fragments. Failed evidence still publishes diagnostic
+proposals with a nonzero exit. Configuration fragments contain only expected
+identity and signing policy, never a guessed key or automatic include rule.
+Check requires artifact integrity, passing current evidence and no drift;
+apply/resume captures a new baseline after confirmation. Review and manually
+merge proposals into the chosen configuration owner's files.
+
+## Restore staging contract: Module 20
+
+`scripts/configure-restore.sh` uses the common Phase 8 gate, lock, confirmation
+and run journal. `scripts/lib/restore-staging.cjs` validates and streams files;
+Node 22+ must already exist. Neither runner installs a dependency.
+
+Accepted TSV schemas (no header):
+
+| Row | Fields | Meaning |
+|---|---|---|
+| `mode` | `no-restore` | Must be the only row; records a deliberate skip. |
+| `source` | absolute backup root | First row for staging, on an actual mounted volume beneath `/Volumes`. |
+| `file` | relative source, relative target, lowercase SHA-256 | One explicit regular file; no recursion, wildcard or auto-discovery. |
+
+Manifests are limited to 1 MiB and 1–1000 nonempty rows. Blank lines and `#`
+comments are ignored. Canonical paths must not contain symlinks, traversal or
+control characters. Hidden components, selected credential extensions and
+known package/cache/system-data components are excluded in source and target
+paths. This is a conservative path filter, not a secret scanner. Case-folded,
+Unicode-normalized duplicates and file/directory target collisions are rejected.
+Restore state/staging and the backup source must not overlap.
+
+The source filesystem/mount is identified using POSIX `df -P`; the source
+device and root inode are pinned alongside hashes and sizes. Plan reads every
+selected file and prints the total bytes without state or temporary files.
+Apply revalidates the preview before creating a fresh `module-runs/20/RUN/`
+session. `staging/intent.json` records the canonical selection, source identity,
+sizes and hashes; `restore-20-current` pins the run ID and intent hash.
+`restore-20-selection.tsv` drives future operations. Intent and pointer are
+saved before copying. Previous sessions are preserved.
+
+Resume verifies the pinned intent, saved selection, mounted source and existing
+targets before transferring missing files. Transfers stream into exclusive
+`staging/incoming/` files, verify bytes, flush the file, then publish via an
+atomic hard link that fails if the target exists. Normal success removes that
+attempt's temporary link. Interrupted incoming files remain for manual review;
+they are never reused or automatically deleted. Existing staged files are
+verified, never overwritten. An unexpected staging file/directory is a conflict.
+
+This requires a local staging filesystem supporting hard links. It preserves
+file bytes only, not executable bits, timestamps, ownership, ACLs or extended
+attributes. Final files use `600`, directories `700`. Avoid concurrent external
+edits: path checks and the cooperative lock do not protect against a malicious
+same-user process changing directories during a transfer. Directory-entry
+durability across abrupt power loss is not guaranteed; check/resume verifies
+what remains instead of assuming completion.
+
+`--check` requires both source and staged bytes to match. Disconnects, mount/root
+identity changes, corrupt intent, changed files and extra targets fail closed.
+A remounted disk may have a different device identity: inspect it and create a
+new reviewed apply session rather than editing the pinned record. A new apply
+never erases the old session. Journals and `restore-report.txt` identify the
+session and verification result; file-level expectations are in `intent.json`.
+There is no live promotion, repository clone, archive extraction, database
+import, application import, credential restore or automatic rollback.
+
+## Contributor extension contract
+
+`config/modules.tsv` has six tab-separated columns:
+`id`, `layer`, `mode`, `prerequisite`, `title`, and repository-relative `guide`.
+Its `mode` describes complete module-runner support, not the existence of
+individual helper commands in a guided module.
+
+`scripts/optional-module.sh` validates the request and dispatches supported
+IDs to explicit adapters; it never executes a command obtained from TSV data.
+`scripts/lib/module-execution.sh` supplies apply-only snapshots and journals.
+The existing operation-lock and atomic-state libraries remain authoritative.
+`scripts/configure-software.sh` shares selection validation, inventory,
+ownership checks and recovery for 10/16. Read-only paths call detection helpers
+directly: `application-status.sh` itself writes provenance even for status.
+Apply delegates missing catalogue apps to that existing ownership-aware
+installer. No account, client launch, arbitrary cask, Brewfile evaluation or
+cleanup action belongs in this adapter.
+
+Before making another registry row executable:
+
+1. Implement plan/apply/check/saved-selection behaviour in its adapter.
+2. Acquire the shared lock before reading mutable apply state.
+3. Back up owned records before writing, then save the approved selection.
+4. Keep preview/check paths outside every mutation and service-start boundary.
+5. Reconcile live state; preserve unmanaged resources; verify actual results.
+6. Record manual requirements separately from machine verification.
+7. Add fixtures for fresh setup, repeat runs, conflicts, failures and recovery.
+8. Add every new runtime script, guide and asset to `config/runtime-files.txt`.
+
+Run the isolated fixtures and project checks:
+
+```bash
+bash scripts/tests/test-optional-module.sh
+bash scripts/tests/test-software-modules.sh
+bash scripts/tests/test-artifact-modules.sh
+bash scripts/tests/test-ai-artifacts.sh
+bash scripts/tests/test-omniroute-module.sh
+bash scripts/tests/test-configuration-artifacts.sh
+bash scripts/tests/test-review-and-restore.sh
+bash scripts/tests/test-preference-module.sh
+bash scripts/tests/test-configure-databases.sh
+bash scripts/tests/test-optional-status.sh
+bash scripts/tests/test-portable-command.sh
+pnpm run validate
+pnpm run lint
+```
+
+Contributor fixtures for project declarations require Node 22+ on PATH.

@@ -7,6 +7,7 @@ RELEASE="${DAY_ONE_MAC_RELEASE:-latest}"
 ARCHIVE=""
 SOURCE=""
 UPDATE=0
+REQUIRE_ATTESTATION=0
 
 usage() {
   cat <<'EOF'
@@ -15,6 +16,7 @@ Usage: ./install-day-one-mac [options]
   --archive PATH    install a previously downloaded runtime archive
   --source PATH     install from an extracted Day One Mac source directory
   --release TAG     download a specific public GitHub release (default: latest)
+  --require-attestation  require GitHub build provenance (needs gh and network)
   --update          update an existing standalone runtime
   -h, --help        show this help
 
@@ -29,6 +31,7 @@ while (( $# )); do
     --archive) ARCHIVE="${2:?--archive requires a path}"; shift 2 ;;
     --source) SOURCE="${2:?--source requires a path}"; shift 2 ;;
     --release) RELEASE="${2:?--release requires a tag}"; shift 2 ;;
+    --require-attestation) REQUIRE_ATTESTATION=1; shift ;;
     --update) UPDATE=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *) printf 'Unknown option: %s\n' "$1" >&2; usage >&2; exit 2 ;;
@@ -36,11 +39,13 @@ while (( $# )); do
 done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [[ "$UPDATE" != 1 && -z "$SOURCE" && -x "$SCRIPT_DIR/scripts/install-portable-command.sh" ]]; then
+[[ -z "$SOURCE" || -z "$ARCHIVE" ]] || { printf "Choose --source or --archive, not both.\n" >&2; exit 2; }
+if [[ "$UPDATE" != 1 && "$REQUIRE_ATTESTATION" != 1 && -z "$ARCHIVE" && -z "$SOURCE" && -x "$SCRIPT_DIR/scripts/install-portable-command.sh" ]]; then
   SOURCE="$SCRIPT_DIR"
 fi
 
 if [[ -n "$SOURCE" ]]; then
+  [[ "$REQUIRE_ATTESTATION" != 1 ]] || { printf "Attestation verification requires an archive, not --source.\n" >&2; exit 2; }
   SOURCE="$(cd "$SOURCE" && pwd)"
   exec "$SOURCE/scripts/install-portable-command.sh" --source "$SOURCE" --standalone
 fi
@@ -49,7 +54,9 @@ command -v curl >/dev/null 2>&1 || { printf 'curl is required.\n' >&2; exit 1; }
 command -v shasum >/dev/null 2>&1 || { printf 'shasum is required.\n' >&2; exit 1; }
 
 temporary="$(mktemp -d "${TMPDIR:-/tmp}/day-one-mac-install.XXXXXX")"
-trap 'rm -rf "$temporary"' EXIT HUP INT TERM
+trap 'rm -rf "$temporary"' EXIT
+trap 'exit 130' INT
+trap 'exit 143' HUP TERM
 
 if [[ -z "$ARCHIVE" ]]; then
   if [[ "$RELEASE" == latest ]]; then
@@ -74,10 +81,17 @@ actual="$(shasum -a 256 "$ARCHIVE" | awk '{print $1}')"
 [[ -n "$expected" && "$actual" == "$expected" ]] || {
   printf 'Runtime archive checksum verification failed.\n' >&2; exit 1; }
 
+if [[ "$REQUIRE_ATTESTATION" == 1 ]]; then
+  command -v gh >/dev/null 2>&1 || { printf 'gh is required for attestation verification.\n' >&2; exit 1; }
+  gh attestation verify "$ARCHIVE" --repo "$REPOSITORY" --signer-workflow "$REPOSITORY/.github/workflows/release.yml"
+else
+  printf 'Checksum verified (integrity only, not publisher identity). Use --require-attestation for build provenance.\n'
+fi
+
 mkdir -p "$temporary/unpacked"
 tar -xzf "$ARCHIVE" -C "$temporary/unpacked"
 SOURCE="$temporary/unpacked/day-one-mac"
 [[ -x "$SOURCE/scripts/install-portable-command.sh" ]] || {
   printf 'The verified archive does not contain the expected runtime.\n' >&2; exit 1; }
 
-exec "$SOURCE/scripts/install-portable-command.sh" --source "$SOURCE" --standalone
+"$SOURCE/scripts/install-portable-command.sh" --source "$SOURCE" --standalone

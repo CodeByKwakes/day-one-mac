@@ -6,6 +6,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOURCE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$SCRIPT_DIR/lib/state.sh"
+source "$SCRIPT_DIR/lib/runtime-package.sh"
+source "$SCRIPT_DIR/lib/runtime-activation.sh"
+source "$SCRIPT_DIR/lib/operation-lock.sh"
+ORIGINAL_ARGS=("$@")
 STATE_ROOT="${DAY_ONE_MAC_STATE_ROOT:-$HOME/.day-one-mac}"
 RUNTIME_HOME="${DAY_ONE_MAC_RUNTIME_HOME:-$HOME/.local/share/day-one-mac}"
 BIN_DIR="$HOME/.local/bin"
@@ -84,39 +89,13 @@ write_shell_bootstrap() {
 }
 
 VERSION="$(detect_version)"
+day_one_valid_version "$VERSION" || { printf 'Invalid runtime version: %s\n' "$VERSION" >&2; exit 2; }
 RELEASE_DIR="$RUNTIME_HOME/releases/$VERSION"
 CURRENT_LINK="$RUNTIME_HOME/current"
 RECORDED_ROOT="$SOURCE_ROOT"
 
 switch_current_runtime() {
-  local next_link expected_root actual_root
-
-  [[ -d "$RELEASE_DIR" ]] || {
-    printf 'Cannot activate missing runtime: %s\n' "$RELEASE_DIR" >&2
-    return 1
-  }
-  if [[ -e "$CURRENT_LINK" && ! -L "$CURRENT_LINK" ]]; then
-    printf 'Refusing to replace a non-symlink runtime path: %s\n' "$CURRENT_LINK" >&2
-    return 1
-  fi
-
-  # Do not use `mv -f next current` while current is a symlink to a directory.
-  # macOS follows that destination and moves `next` inside the old release,
-  # leaving the active version unchanged. Remove only the reviewed symlink,
-  # then rename the prepared link into place.
-  next_link="$RUNTIME_HOME/.current-$$"
-  rm -f "$next_link"
-  ln -s "releases/$VERSION" "$next_link"
-  [[ ! -L "$CURRENT_LINK" ]] || rm -f "$CURRENT_LINK"
-  mv "$next_link" "$CURRENT_LINK"
-
-  expected_root="$(cd -P "$RELEASE_DIR" && pwd)"
-  actual_root="$(cd -P "$CURRENT_LINK" && pwd)"
-  [[ "$actual_root" == "$expected_root" ]] || {
-    printf 'Runtime activation verification failed.\n' >&2
-    printf '  Expected: %s\n  Actual:   %s\n' "$expected_root" "$actual_root" >&2
-    return 1
-  }
+  day_one_activate_runtime "$RUNTIME_HOME" "$VERSION"
 }
 
 if [[ "$MODE" == standalone ]]; then
@@ -132,6 +111,7 @@ if [[ "$DRY_RUN" == 1 ]]; then
   exit 0
 fi
 
+day_one_serialize runtime "$0" "${ORIGINAL_ARGS[@]}"
 mkdir -p "$BIN_DIR" "$STATE_ROOT"
 chmod 700 "$STATE_ROOT"
 
@@ -142,23 +122,9 @@ if [[ "$MODE" == standalone ]]; then
   [[ ! -e "$staging" ]] || { printf 'Staging path already exists: %s\n' "$staging" >&2; exit 1; }
   trap 'rm -rf "$staging"' EXIT HUP INT TERM
 
-  # Copy project-owned runtime files without Git metadata or contributor
-  # dependencies. rsync preserves executable bits, symlinks and guide names
-  # while avoiding an expensive copy-and-delete of node_modules.
-  rsync -a \
-    --exclude '/.git/' \
-    --exclude '/.github/' \
-    --exclude '/dist/' \
-    --exclude '/node_modules/' \
-    "$SOURCE_ROOT/" "$staging/"
+  day_one_copy_runtime "$SOURCE_ROOT" "$staging"
   printf '%s\n' "$VERSION" > "$staging/VERSION"
-  (
-    cd "$staging"
-    find . -type f ! -name SHA256SUMS -print | LC_ALL=C sort \
-      | while IFS= read -r file; do shasum -a 256 "$file"; done \
-      > SHA256SUMS
-  )
-  (cd "$staging" && shasum -a 256 -c SHA256SUMS >/dev/null)
+  day_one_checksum_runtime "$staging"
 
   if [[ -e "$RELEASE_DIR" ]]; then
     if cmp -s "$staging/SHA256SUMS" "$RELEASE_DIR/SHA256SUMS"; then
@@ -173,16 +139,14 @@ if [[ "$MODE" == standalone ]]; then
   trap - EXIT HUP INT TERM
 
   switch_current_runtime
-  install -m 700 "$CURRENT_LINK/scripts/day-one-mac" "$TARGET"
+  day_one_install_launcher "$CURRENT_LINK/scripts/day-one-mac" "$TARGET"
 else
-  install -m 700 "$SOURCE_ROOT/scripts/day-one-mac" "$TARGET"
+  day_one_install_launcher "$SOURCE_ROOT/scripts/day-one-mac" "$TARGET"
 fi
 
-printf '%s\n' "$RECORDED_ROOT" > "$STATE_ROOT/runtime-root"
-chmod 600 "$STATE_ROOT/runtime-root"
+day_one_write_state "$STATE_ROOT/runtime-root" "$RECORDED_ROOT"
 if [[ "$MODE" == linked ]]; then
-  printf '%s\n' "$SOURCE_ROOT" > "$STATE_ROOT/project-root"
-  chmod 600 "$STATE_ROOT/project-root"
+  day_one_write_state "$STATE_ROOT/project-root" "$SOURCE_ROOT"
 fi
 write_shell_bootstrap
 
@@ -191,10 +155,12 @@ printf '%s\n' "$installed_status" | grep -Fq "Version:   $VERSION" || {
   printf 'Installed launcher did not resolve the requested runtime version %s.\n' "$VERSION" >&2
   exit 1
 }
+if [[ "$MODE" == standalone ]]; then
 printf '%s\n' "$installed_status" | grep -Fq 'Integrity: verified' || {
   printf 'Installed runtime did not pass its integrity check.\n' >&2
   exit 1
 }
+fi
 
 printf '%s\n' \
   '' \

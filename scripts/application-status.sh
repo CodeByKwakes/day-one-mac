@@ -5,6 +5,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/project-paths.sh"
+source "$SCRIPT_DIR/lib/operation-lock.sh"
+ORIGINAL_ARGS=("$@")
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
 source "$SCRIPT_DIR/lib/application-ownership.sh"
 
@@ -81,7 +83,7 @@ record_current() {
 }
 
 install_missing_application() {
-  local id="$1" brew_bin before_formulae formula
+  local id="$1" brew_bin before_formulae after_formulae after_casks formula install_status=0
   day_one_app_detect "$id"
   [[ "$DAY_ONE_APP_STATUS" == missing ]] || return 0
   if [[ "$APP_INSTALL_POLICY" == prompt && ! -t 0 ]]; then
@@ -118,15 +120,25 @@ install_missing_application() {
   esac
   [[ "$DAY_ONE_APP_CASK" != - ]] || { err "$DAY_ONE_APP_NAME has no Homebrew cask to install."; return 1; }
   brew_bin="$(day_one_app_brew_bin)" || { err 'Homebrew is required before installing missing applications.'; return 1; }
-  before_formulae="$("$brew_bin" list --formula 2>/dev/null | LC_ALL=C sort || true)"
+  before_formulae="$("$brew_bin" list --formula | LC_ALL=C sort)" || {
+    err 'Cannot inspect existing formula ownership; nothing installed.'; return 1;
+  }
   ui_section '📥' "Installing $DAY_ONE_APP_NAME"
-  "$brew_bin" install --cask "$DAY_ONE_APP_CASK"
+  "$brew_bin" install --cask "$DAY_ONE_APP_CASK" || install_status=$?
+  after_formulae="$("$brew_bin" list --formula | LC_ALL=C sort)" || return 1
+  after_casks="$("$brew_bin" list --cask)" || return 1
   ensure_state
-  append_unique "brew-cask"$'\t'"$DAY_ONE_APP_CASK"
+  if grep -Fxq "$DAY_ONE_APP_CASK" <<< "$after_casks" || grep -Fxq "${DAY_ONE_APP_CASK##*/}" <<< "$after_casks"; then
+    append_unique "brew-cask"$'\t'"$DAY_ONE_APP_CASK"
+  fi
   while IFS= read -r formula; do
     [[ -n "$formula" ]] || continue
     grep -Fqx "$formula" <<<"$before_formulae" || append_unique "brew-dependency"$'\t'"$formula"
-  done < <("$brew_bin" list --formula 2>/dev/null | LC_ALL=C sort)
+  done <<< "$after_formulae"
+  if [[ "$install_status" != 0 ]]; then
+    err "Installation failed; any detected partial additions were recorded. Resolve the error and resume."
+    return "$install_status"
+  fi
   day_one_app_detect "$id"
   record_current
   if day_one_app_is_satisfied; then
@@ -165,9 +177,18 @@ fi
 [[ -r "$DAY_ONE_APP_CATALOG" ]] || { err "application catalogue is missing: $DAY_ONE_APP_CATALOG"; exit 1; }
 if [[ "${#REQUESTED_IDS[@]}" -eq 0 ]]; then
   while IFS= read -r app_id; do [[ -n "$app_id" ]] && REQUESTED_IDS+=("$app_id"); done \
-    < <(day_one_app_catalog_ids "$SCOPE")
+    < <(if [[ "$SCOPE" == required ]]; then
+      saved_preset="$(sed -n '1p' "$STATE_DIR/preset" 2>/dev/null || true)"
+      saved_auth="$(sed -n '1p' "$STATE_DIR/auth-mode" 2>/dev/null || true)"
+      day_one_required_application_ids "${saved_preset:-recommended-productivity}" "${saved_auth:-1password}"
+    else day_one_app_catalog_ids "$SCOPE"; fi)
 fi
 
+if [[ "${#REQUESTED_IDS[@]}" -eq 0 ]]; then
+  info 'No applications are required by the selected scope, preset and authentication mode.'
+  exit 0
+fi
+day_one_serialize operation "$0" "${ORIGINAL_ARGS[@]}"
 ui_title '📦' 'Day One Mac application ownership check'
 for app_id in "${REQUESTED_IDS[@]}"; do
   if ! day_one_app_detect "$app_id"; then

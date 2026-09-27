@@ -13,7 +13,57 @@ Day One Mac ownership records, and Advanced completion fingerprints. It never
 installs software, starts a container, edits configuration, or marks a manual
 checklist complete.
 
+Saved database and CLI selections made through the executable module interface
+also count as selected, without requiring the interactive selector. CLI checks
+include selected pre-existing formulae without treating them as Day One-owned.
+Database readiness requires passing health and configuration checks, not merely
+a running container. See [Module execution](MODULE-EXECUTION.md).
+
+Saved Module 10 client choices and Module 16 software snapshots also count as
+selected. Their payload-only `--check` can pass while the dashboard remains
+`partial`: AI authentication, Brewfile declarations, licences and settings
+are not machine-verified. Missing/conflicting Module 16 payloads require
+`review`. A guide fingerprint alone is not substituted for a saved selection's
+live payload check. The strict dashboard gate therefore remains nonzero for
+these manually unfinished workflows. After a user explicitly records the
+current Module 16 checklist with `advanced --complete 16`, it can be `ready`
+only if the live payload check also passes. A stale guide or failed payload
+check remains `review`; manual completion is user-attested, not inferred.
+
 ## Status meanings
+
+Saved Module 18 identity manifests and Module 20 restore selections count as
+selected. Passing checks remain `partial`: configuration changes, provider
+authentication, actual signing, worktree lifecycle and live migration are not
+performed. A no-restore decision is verified without a mounted disk but still
+does not attest the guide checklist. Drift, missing backup volumes, staging
+conflicts and invalid records produce `review`; a guide marker cannot override
+these executable checks. Module 21 includes both modules in its saved-selection
+audit and drift report.
+
+Saved Module 15/17 artifact selections and Module 19 preference choices also
+count without the wizard. Passing checks stay `partial`: chezmoi import, shell
+activation and GUI/security review remain manual. Dotfile/helper drift,
+conflicting project declarations, changed typed preferences or invalid records
+produce `review`. A guide-completion marker cannot override a failed executable
+check for those saved selections.
+
+Saved Module 10A/11/22 selections also count without the wizard. Module 10A
+checks the owned digest-pinned gateway in its explicit local Docker context.
+Module 11 checks generated MCP artifacts, not live client configuration.
+Module 22 compares selected skill/MCP metadata with its evidence snapshot.
+Passing checks stay `partial` because provider readiness, activation and trust
+remain manual; a failed check or drift is `review`. A guide marker does not
+override these executable-scope checks.
+
+Generated Module 12/14 artifacts count as selected even without the wizard.
+Valid files are `partial` because application import, workspace choice and
+Sync state remain manual. Invalid/missing outputs or changed Warp source are
+`review`. Module 21 additionally checks live bounded evidence against its
+latest snapshot; drift or failed evidence means `review`. With clean evidence
+and a current user-confirmed Module 21 guide marker it can be `ready`; without
+that marker it remains `partial`. None of these states proves full machine
+health or successful application import.
 
 | Status | Meaning | What to do |
 |---|---|---|

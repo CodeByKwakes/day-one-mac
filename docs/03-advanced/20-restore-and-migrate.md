@@ -14,6 +14,82 @@ and an old home directory are not copied wholesale.
 Choose **no restore** when the Mac is intentionally blank. Skipping this module
 is a complete and valid outcome.
 
+## Executable checksummed staging route
+
+This route copies only explicitly listed regular files into a **new private
+staging directory**, never into Documents, a repository or an application's
+live data. Staging means preparing a separate copy for review before deciding
+where it belongs. Node 22+ must be on PATH. Apply/resume requires Phase 8.
+
+For an intentionally blank Mac, record the decision without selecting a disk:
+
+```bash
+umask 077
+printf 'mode\tno-restore\n' > restore.tsv
+day-one-mac advanced --module 20 --plan --manifest "$PWD/restore.tsv"
+day-one-mac advanced --module 20 --apply --manifest "$PWD/restore.tsv"
+day-one-mac advanced --module 20 --check
+```
+
+For selective staging, mount your reviewed backup under `/Volumes`, then use
+one `source` row followed by `file` rows. Each file row contains its relative
+source path, relative staging destination and trusted SHA-256 digest. The
+following is a template; replace the path and digest before running it:
+
+```bash
+umask 077
+printf 'source\t%s\nfile\t%s\t%s\t%s\n' \
+  '/Volumes/Reviewed Backup/exports' \
+  'documents/project-notes.txt' 'documents/project-notes.txt' \
+  '<64-character-lowercase-SHA-256-from-your-reviewed-manifest>' > restore.tsv
+day-one-mac advanced --module 20 --plan --manifest "$PWD/restore.tsv"
+```
+
+Use real tab separators (`printf` above creates them). Select individual files,
+not directories or wildcards. Obtain digests from an independently reviewed
+backup manifest; hashing a damaged file now does not prove it was backed up
+correctly. A checksum detects byte changes, not authenticity or malware.
+Keep the manifest private and outside public repositories.
+
+The plan validates the mounted source, checks all selected hashes, shows byte
+sizes and source/target pairs, and rejects duplicate or colliding targets.
+It writes no state. Review the content for secrets yourself: path exclusions
+are not a content scanner. If the plan is correct:
+
+```bash
+day-one-mac advanced --module 20 --apply --manifest "$PWD/restore.tsv"
+day-one-mac advanced --module 20 --check
+```
+
+The printed staging location is beneath
+`~/.day-one-mac/module-runs/20/RUN/staging/files/`. Open only files you trust;
+the runner never executes, unpacks or imports their contents. Files are mode
+`600` and staging directories `700`; original ownership, extended attributes,
+ACLs and executable bits are intentionally not restored.
+
+If a transfer is interrupted, keep the same backup mounted and run:
+
+```bash
+day-one-mac advanced --module 20 --resume
+day-one-mac advanced --module 20 --check
+```
+
+Resume reuses the saved session, verifies existing staged files and copies
+only missing ones. Changed sources, changed destinations, symlinks or a
+different mounted-source identity stop the operation without overwriting data.
+Partial temporary copies remain under `staging/incoming/`; they are not
+promoted or reused. Insufficient space can therefore require separately
+reviewed cleanup before retrying. A new apply creates a new session, preserving
+the old one; it is not a force-overwrite command.
+
+Hidden files, known credential containers, package/cache trees, directory
+copies and live restores are excluded. Whole repositories, application state,
+database imports, metadata-sensitive files and final placement require the
+manual procedures below. Keep the backup mounted for `--check`; an unavailable
+source is a verification failure, not successful migration. The dashboard
+remains `partial`, including for an explicit no-restore decision, because it
+does not attest completion of this guide.
+
 ## Step 20.1 — Make the restore decision explicit
 
 Before connecting a disk, decide which statement is true:

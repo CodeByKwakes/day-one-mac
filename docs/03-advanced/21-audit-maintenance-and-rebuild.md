@@ -12,6 +12,46 @@ a clean-Mac rebuild is rehearsed without relying on remembered manual steps.
 
 ## Step 21.1 — Revalidate the project and required base
 
+### Snapshot bounded setup evidence
+
+Use the executable Module 21 route for a write-free preview and a versioned
+comparison of recorded setup evidence:
+
+```bash
+day-one-mac advanced --module 21 --plan
+day-one-mac advanced --module 21 --apply
+day-one-mac advanced --module 21 --check
+```
+
+Plan and check write no records, reports or temporary files. Apply requires
+Phase 8 and confirmation, then prints a private artifact path containing
+`report.md`, stable `evidence.tsv` and the remaining manual steps. Subsequent
+applies compare against the previous snapshot and keep every older version.
+Check returns nonzero for changed evidence, a failing gate, a damaged snapshot
+or no saved baseline. Review the differences before applying a new baseline.
+
+The scope is deliberately bounded: runtime verification, presence and hashes
+of required completion records, explicit non-secret selection hashes,
+checks for saved executable-module selections, and recorded Advanced guide
+fingerprints. Module 21 excludes its own guide marker to avoid self-generated
+drift. A development checkout receives entry-point checks, not a packaged
+checksum guarantee. Phase record presence does **not** prove the phase is still
+current or the machine healthy; use the existing required status and Phase 8
+verification below for that.
+
+No account clients, login shells, package upgrades, Brewfile evaluation,
+repository cleanup or rebuild commands are launched by this snapshot route.
+It is not the broader environment audit in Step 21.2 and does not verify
+FileVault, accounts, repository backups or recovery readiness.
+
+A failing audit still saves its diagnostic snapshot and returns nonzero.
+Fix the reported issue, then use `day-one-mac advanced --module 21 --resume`
+to capture fresh evidence. Resume never performs the fix. Generating a healthy
+report does not mark this guide complete; record completion separately only
+after reviewing the applicable checklist.
+
+### Recheck the full required setup
+
 ```bash
 day-one-mac validate
 day-one-mac --status

@@ -106,7 +106,12 @@ case "${1:-}" in
   uninstall-runtime) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" uninstall "$@" ;;
   docs) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" docs "$@" ;;
   shell-status) shift; exec "$PROJECT_ROOT/scripts/shell-status.sh" "$@" ;;
-  validate) shift; exec "$PROJECT_ROOT/scripts/validate.sh" "$@" ;;
+  verify) shift; exec "$PROJECT_ROOT/scripts/verify.sh" "$@" ;;
+  validate)
+    shift
+    if [[ -x "$PROJECT_ROOT/scripts/validate.sh" ]]; then exec "$PROJECT_ROOT/scripts/validate.sh" "$@"; fi
+    exec "$PROJECT_ROOT/scripts/verify.sh" "$@"
+    ;;
   safety-report|preflight) shift; exec "$PROJECT_ROOT/scripts/preflight-audit.sh" "$@" ;;
   prepare-existing|prepare-reset)
     shift
@@ -122,6 +127,16 @@ case "${1:-}" in
   macos-settings) shift; exec "$PROJECT_ROOT/scripts/configure-macos-settings.sh" "$@" ;;
   optional)
     shift
+    for module_arg in "$@"; do
+      case "$module_arg" in
+        --module|--list|--plan|--apply|--check|--resume|--inventory)
+          # --status --check retains the existing dashboard contract.
+          if [[ "${1:-}" != --status ]]; then
+            exec /bin/bash "$PROJECT_ROOT/scripts/optional-module.sh" "$@"
+          fi
+          ;;
+      esac
+    done
     if [[ "${1:-}" == --status ]]; then
       shift
       exec "$PROJECT_ROOT/scripts/optional-status.sh" "$@"
@@ -132,7 +147,17 @@ case "${1:-}" in
   databases) shift; exec "$PROJECT_ROOT/scripts/configure-databases.sh" "$@" ;;
   finalize) shift; exec "$PROJECT_ROOT/scripts/finalize-setup.sh" "$@" ;;
   advanced-audit|audit) shift; exec "$PROJECT_ROOT/scripts/advanced-audit.sh" "$@" ;;
-  advanced) shift; exec "$PROJECT_ROOT/scripts/advanced-setup.sh" "$@" ;;
+  advanced)
+    shift
+    # Guide-only calls retain their existing meaning; actions are explicit.
+    for module_arg in "$@"; do
+      case "$module_arg" in
+        --plan|--apply|--check|--resume|--inventory)
+          exec /bin/bash "$PROJECT_ROOT/scripts/optional-module.sh" "$@" ;;
+      esac
+    done
+    exec "$PROJECT_ROOT/scripts/advanced-setup.sh" "$@"
+    ;;
   cli-tools) shift; exec "$PROJECT_ROOT/scripts/configure-cli-tools.sh" "$@" ;;
   remove) shift; exec "$PROJECT_ROOT/scripts/remove-day-one-mac.sh" "$@" ;;
   clean) shift; exec "$PROJECT_ROOT/scripts/clean-development-state.sh" "$@" ;;
@@ -158,11 +183,13 @@ case "${1:-}" in
       '  workspace         create and open bounded projectless tasks' \
       '  macos-settings    configure or restore optional macOS preferences' \
       '  optional          choose modules; --status shows or audits Modules 09–22' \
+      '                    --list lists capabilities; --module ID --plan|--apply|--check|--resume' \
       '  databases         install, resume, or verify optional databases' \
       '  finalize          compact records or detach after Phase 8' \
-      '  advanced          read and track optional advanced modules' \
+      '  advanced          track guides; all 15–22 support bounded explicit actions' \
       '  advanced-audit    write the private extended audit' \
-      '  validate          validate the self-contained project' \
+      '  verify            check the installed runtime integrity' \
+      '  validate          validate a checkout (runtime: same as verify)' \
       '  inventory         write the complete application inventory' \
       '  cli-tools         select optional Homebrew formulae' \
       '  remove            choose recorded, sectional, or full removal' \

@@ -4,6 +4,12 @@
 
 **Time:** 20–35 minutes · **Required:** everyone
 
+The lists below describe the default **recommended-productivity** preset.
+The **core** preset skips Raycast, Warp, the Nerd Font, and VS Code; Phase 7
+records a no-op. Both presets retain command-line tools and security gates.
+1Password and its CLI are required only for 1Password authentication. Changing
+the preset does not uninstall existing software. See [Start here](../START-HERE.md#run-the-recommended-route).
+
 ## Outcome
 
 VS Code opens from Terminal, uses zsh and the Nerd Font, and starts with a small
@@ -18,7 +24,7 @@ installed.
 ## How to use this phase
 
 - **Manual route:** complete
-  [Manual 7](../20-reference/NOTION-SETUP-GUIDE.md#manual-7--configure-vs-code-warp-and-raycast)
+  [Manual 7](../20-reference/MANUAL-SETUP-GUIDE.md#manual-7--configure-vs-code-warp-and-raycast)
   and the relevant first-launch steps in the application guide.
 - **Script-assisted route:** run `day-one-mac setup --phase 07`. The runner creates the minimal
 settings file only when none exists; it does not overwrite an existing file.

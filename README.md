@@ -8,7 +8,7 @@ base is working.
 ## Start here
 
 - **New or factory-reset Mac, using the guided scripts:** [open the beginner-safe start page](docs/START-HERE.md).
-- **New or factory-reset Mac, without Day One Mac scripts:** [follow the complete manual route](docs/20-reference/NOTION-SETUP-GUIDE.md#manual-setup-flow).
+- **New or factory-reset Mac, without Day One Mac scripts:** [follow the complete manual route](docs/20-reference/MANUAL-SETUP-GUIDE.md#manual-setup-flow).
 - **Existing Mac with files or settings:** [start with the read-only safety process](docs/00-preflight/README.md).
 - **Need the complete map first:** [read the process overview](docs/PROCESS-OVERVIEW.md).
 - **Need one specific command:** [open the command reference](docs/20-reference/COMMAND-REFERENCE.md).

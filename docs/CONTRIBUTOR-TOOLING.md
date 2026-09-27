@@ -22,6 +22,11 @@ The Node dependencies are contributor-only. Day One Mac remains a shell-first
 project, and the public installer does not ship `node_modules` or require these
 packages at runtime.
 
+For release-candidate verification, follow the
+[acceptance walkthrough](99-maintenance/ACCEPTANCE.md). It adds packaged-runtime
+tests, an opt-in disposable mounted-volume rehearsal and private readiness
+reports without running live onboarding or publishing a release.
+
 ## Hook behaviour
 
 The committed hooks run at three different boundaries:
@@ -342,3 +347,11 @@ breaking-change syntax, branch names, and the release process.
 - [ ] `pnpm run lint` passes.
 - [ ] `pnpm run validate` passes.
 - [ ] The contributor understands that CI remains authoritative.
+
+## Runtime changes and packaging
+
+Read [Architecture and state](20-reference/ARCHITECTURE-AND-STATE.md) before
+changing phases, saved state, or release packaging. Add runtime files explicitly
+to `config/runtime-files.txt`; tests and contributor tooling must remain excluded.
+Phase 8 uses `verify.sh`, not the contributor validation suite. Run the full
+suite from the checkout even when installed-runtime verification passes.

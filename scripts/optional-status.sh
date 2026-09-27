@@ -120,6 +120,16 @@ module_is_selected() {
   local id="$1" token marker
   token="$(optional_token "$id")"
   contains_csv "$OPTIONAL_MODULES" "$token" && return 0
+  [[ "$id" != 09 || ! -s "$STATE_DIR/database-services" ]] || return 0
+  [[ "$id" != 13 || ! -s "$STATE_DIR/optional-cli-packages" ]] || return 0
+  [[ "$id" != 10 || ! -s "$STATE_DIR/software-10-clients" ]] || return 0
+  [[ "$id" != 16 || ! -s "$STATE_DIR/software-16.tsv" ]] || return 0
+  [[ "$id" != 10A || ! -s "$STATE_DIR/omniroute-selection.tsv" ]] || return 0
+  [[ "$id" != 19 || ! -s "$STATE_DIR/preferences-19-selection.tsv" ]] || return 0
+  [[ "$id" != 20 || ! -s "$STATE_DIR/restore-20-selection.tsv" ]] || return 0
+  case "$id" in
+    11|12|14|15|17|18|21|22) [[ ! -s "$STATE_DIR/artifact-$id-selection.tsv" ]] || return 0 ;;
+  esac
   if [[ "$id" =~ ^(15|16|17|18|19|20|21|22)$ ]]; then
     marker="$STATE_ROOT/advanced/completed/$id"
     [[ -f "$marker" ]] && return 0
@@ -149,10 +159,14 @@ check_09() {
       mongodb) container=dev-mongo ;;
     esac
     state="$(container_state "$container")"
-    case "$state" in healthy|running) ready=$((ready + 1)) ;; *) missing=$((missing + 1)) ;; esac
+    case "$state" in healthy) ready=$((ready + 1)) ;; *) missing=$((missing + 1)) ;; esac
   done
   if [[ "$total" -gt 0 && "$ready" -eq "$total" ]]; then
-    set_result ready "$ready/$total selected database containers are running" 'No action required.'
+    if "$SCRIPT_DIR/configure-databases.sh" --saved --check >/dev/null 2>&1; then
+      set_result ready "$ready/$total selected database containers are healthy and match configuration" 'No action required.'
+    else
+      set_result review 'database health or configuration verification failed' 'Run day-one-mac databases --saved --check; no existing container will be replaced automatically.'
+    fi
   elif [[ "$ready" -gt 0 ]]; then
     set_result partial "$ready/$total selected database containers are running" 'Run `day-one-mac databases --saved` to resume the missing service.'
   else
@@ -173,6 +187,14 @@ ai_app_id() {
 
 check_10() {
   local clients client app_id total=0 ready=0 review=0 old_ifs="$IFS" extensions=""
+  if [[ -s "$STATE_DIR/software-10-clients" ]]; then
+    if "$SCRIPT_DIR/configure-software.sh" --module 10 --check >/dev/null 2>&1; then
+      set_result partial 'selected AI payloads are installed; authentication, provider access and permissions are NOT verified' 'Complete the Optional 10 account and trust checklist.'
+    else
+      set_result partial 'selected AI payloads are missing or have an ownership conflict' 'Run day-one-mac optional --module 10 --check, review the issue, then --resume.'
+    fi
+    return
+  fi
   clients="$(state_value ai-clients)"
   [[ -n "$clients" ]] || { set_result blocked 'selected, but no AI clients are saved' 'Rerun the Optional Setup Center and choose at least one AI client.'; return; }
   if command -v code >/dev/null 2>&1; then extensions="$(code --list-extensions 2>/dev/null || true)"; fi
@@ -201,6 +223,14 @@ check_10() {
 
 check_10a() {
   local state
+  if [[ -s "$STATE_DIR/omniroute-selection.tsv" ]]; then
+    if "$SCRIPT_DIR/configure-omniroute.sh" --check >/dev/null 2>&1; then
+      set_result partial 'owned gateway is healthy; providers, keys and routing remain manual' 'Complete the Optional 10A checklist.'
+    else
+      set_result review 'gateway ownership, specification or health needs review' 'Run optional --module 10A --check for details.'
+    fi
+    return
+  fi
   docker_ready || { set_result blocked 'Docker server is not reachable' 'Start Docker and follow Optional 10A.'; return; }
   state="$(container_state omniroute)"
   case "$state" in
@@ -211,6 +241,7 @@ check_10a() {
 }
 
 check_11() {
+  if [[ -s "$STATE_DIR/artifact-11-selection.tsv" ]]; then check_artifact 11; return; fi
   local selected count=0 path
   selected="$(state_value mcp-servers)"
   [[ -n "$selected" ]] || { set_result blocked 'selected, but no MCP servers are saved' 'Rerun the Optional Setup Center and choose at least one MCP server.'; return; }
@@ -237,6 +268,7 @@ check_11() {
 
 check_12() {
   local profiles=""
+  if [[ -s "$STATE_DIR/artifact-12-selection.tsv" ]]; then check_artifact 12; return; fi
   command -v code >/dev/null 2>&1 || { set_result blocked 'VS Code command is unavailable' 'Repair required Phase 7 before configuring profiles.'; return; }
   profiles="$(code --list-profiles 2>/dev/null || true)"
   if [[ -n "$profiles" ]]; then
@@ -248,6 +280,14 @@ check_12() {
 
 check_13() {
   local formula installed installed_count=0 missing_count=0 selected_count=0
+  if [[ -s "$STATE_DIR/optional-cli-packages" ]]; then
+    if "$SCRIPT_DIR/configure-cli-tools.sh" --saved --check >/dev/null 2>&1; then
+      set_result ready 'saved optional formula selection is installed; shell/Brewfile integration is separately reviewed' 'Review the Optional 13 integration steps if needed.'
+    else
+      set_result partial 'saved CLI selection is missing, invalid, or cannot be inspected' 'Run day-one-mac optional --module 13 --check, then --resume.'
+    fi
+    return
+  fi
   [[ -r "$STATE_ROOT/install-manifest.tsv" ]] || { set_result pending 'no optional formula installation is recorded' 'Run `day-one-mac cli-tools`.'; return; }
   installed="$(brew list --formula 2>/dev/null || true)"
   while IFS=$'\t' read -r kind formula; do
@@ -266,6 +306,7 @@ check_13() {
 }
 
 check_14() {
+  if [[ -s "$STATE_DIR/artifact-14-selection.tsv" ]]; then check_artifact 14; return; fi
   if "$SCRIPT_DIR/validate-warp-drive.sh" >/dev/null 2>&1; then
     set_result partial 'the bundled Warp Drive collection is valid; Warp import state cannot be read safely' 'Verify the import in Warp and complete the Optional 14 checklist.'
   else
@@ -287,6 +328,43 @@ check_advanced() {
   fi
 }
 
+check_artifact() {
+  local id="$1"
+  if "$SCRIPT_DIR/configure-artifacts.sh" --module "$id" --check >/dev/null 2>&1; then
+    set_result partial 'generated artifact is verified; activation, trust or maintenance checklist remains manual' "Review Module $id and its generated manual-steps.txt."
+    if [[ "$id" == 21 && -f "$STATE_ROOT/advanced/completed/21" ]]; then
+      check_advanced 21
+      if [[ "$RESULT_STATUS" == ready ]]; then
+        set_result ready 'bounded audit passes without drift; current guide checklist is user-attested' 'This is not a full machine-health or rebuild verification.'
+      fi
+    fi
+  else
+    set_result review 'artifact integrity, selection, or audit evidence needs review' "Run --module $id --check for details, then review --plan before applying."
+  fi
+}
+
+check_21() {
+  if [[ -s "$STATE_DIR/artifact-21-selection.tsv" ]]; then check_artifact 21
+  else check_advanced 21
+  fi
+}
+
+check_16() {
+  if [[ ! -s "$STATE_DIR/software-16.tsv" ]]; then check_advanced 16; return; fi
+  if "$SCRIPT_DIR/configure-software.sh" --module 16 --check >/dev/null 2>&1; then
+    if [[ -f "$STATE_ROOT/advanced/completed/16" ]]; then
+      check_advanced 16
+      if [[ "$RESULT_STATUS" == ready ]]; then
+        set_result ready 'selected payloads pass live checks and the user-confirmed guide fingerprint is current' 'Manual checklist completion is user-attested, not machine-verified.'
+      fi
+    else
+      set_result partial 'selected software payloads are verified; Brewfile, licences and guide checklist remain separately reviewed' 'Review Advanced 16; payload installation does not complete the whole guide.'
+    fi
+  else
+    set_result review 'saved software selection is missing or cannot be verified' 'Run day-one-mac advanced --module 16 --check; resolve the reported issue before resuming.'
+  fi
+}
+
 evaluate_module() {
   local id="$1"
   if ! module_is_selected "$id"; then
@@ -301,7 +379,23 @@ evaluate_module() {
     12) check_12 ;;
     13) check_13 ;;
     14) check_14 ;;
-    15|16|17|18|19|20|21|22) check_advanced "$id" ;;
+    16) check_16 ;;
+    21) check_21 ;;
+    20)
+      if [[ ! -s "$STATE_DIR/restore-20-selection.tsv" ]]; then check_advanced 20
+      elif "$SCRIPT_DIR/configure-restore.sh" --check >/dev/null 2>&1; then
+        set_result partial 'restore staging or no-restore decision verified; live migration remains manual' 'Review the Module 20 checklist; no data was promoted or imported.'
+      else set_result review 'restore source, intent or staging needs review' 'Run advanced --module 20 --check; do not overwrite changed files.'
+      fi ;;
+    15|17|18|22)
+      if [[ -s "$STATE_DIR/artifact-$id-selection.tsv" ]]; then check_artifact "$id"
+      else check_advanced "$id"; fi ;;
+    19)
+      if [[ ! -s "$STATE_DIR/preferences-19-selection.tsv" ]]; then check_advanced 19
+      elif "$SCRIPT_DIR/configure-preferences.sh" --check >/dev/null 2>&1; then
+        set_result partial 'selected scalar preferences match; GUI/security review remains manual' 'Complete the Module 19 checklist.'
+      else set_result review 'selected preferences or ownership records need review' 'Run advanced --module 19 --check; do not overwrite external changes.'
+      fi ;;
   esac
 }
 

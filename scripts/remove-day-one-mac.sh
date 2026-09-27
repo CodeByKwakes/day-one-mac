@@ -5,6 +5,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/project-paths.sh"
+source "$SCRIPT_DIR/lib/operation-lock.sh"
+ORIGINAL_ARGS=("$@")
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
 source "$SCRIPT_DIR/lib/container-data-paths.sh"
 
@@ -461,6 +463,8 @@ done
 
 [[ "$(uname -s)" == Darwin ]] || { err 'This removal tool supports macOS only.'; exit 1; }
 [[ "$HOME" == /* && "$HOME" != / && "$HOME" != /Users ]] || { err "Unsafe HOME: $HOME"; exit 1; }
+
+[[ "$EXECUTE" != 1 ]] || day_one_serialize operation "$0" "${ORIGINAL_ARGS[@]}"
 
 if [[ "$INVENTORY_ONLY" == 1 ]]; then print_inventory; exit 0; fi
 if [[ "$GUIDED" == 1 || -z "$MODE" ]]; then guided_choices; fi

@@ -26,7 +26,7 @@ private-Git, and local-only protection gates.
 ## How to use this phase
 
 - **Manual route:** complete
-  [Manual 8](../20-reference/NOTION-SETUP-GUIDE.md#manual-8--record-and-verify-the-finished-environment)
+  [Manual 8](../20-reference/MANUAL-SETUP-GUIDE.md#manual-8--record-and-verify-the-finished-environment)
   and retain your own verification record. The manual route has no runner
   ownership manifest or phase marker.
 - **Script-assisted route:** run `day-one-mac setup --phase 08`. The runner performs Step 8.1,
@@ -36,46 +36,26 @@ secret-scans the source and records that remote recovery is intentionally absent
 
 ## Step 8.1 — Validate the project
 
-The Phase 8 runner performs this validation before auditing the Mac. Run it
-directly only when diagnosing the project or checking a change without running
-the machine audit:
+Phase 8 now verifies the installed runtime, not the contributor test suite.
+Run this read-only check independently when diagnosing an installation:
 
 ```bash
-day-one-mac validate
+day-one-mac verify
 ```
 
-This checks shell syntax, required documents, internal paths, cleanup safety
-markers, and the regression fixtures. It needs `ripgrep`, which the
-Installation Centre already installed; it stops rather than skipping checks if
-`rg` is missing. Fix a project validation failure before trusting the setup
-report.
+It verifies packaged file checksums and shell syntax. Missing or modified
+runtime files stop verification. A linked checkout explicitly reports that it
+has no packaged integrity manifest. Runtime checks do not prove that every
+application or account is configured; the next step audits the machine.
 
-The checks adapt to where they run. A source checkout includes `.github`, so
-validation also checks the Release Please and CI workflow wiring. The
-checksummed standalone runtime intentionally omits that repository-only
-metadata; validation confirms the omission and continues to check synchronized
-version records, contributor configuration, runtime files, and regression
-fixtures. Missing workflows are therefore an error in a source checkout but
-not in an installed runtime.
+The standalone runtime does not ship repository tests or contributor tooling.
+Contributors run `scripts/validate.sh` and `pnpm run lint` from their source
+checkout; see [Contributor tooling](../CONTRIBUTOR-TOOLING.md). The old
+`day-one-mac validate` command is an alias for `verify` in installed runtimes.
 
-Contributors changing the scripts can also run the ShellCheck linter. It is a
-separate, optional tool and is not needed to complete any phase:
-
-```bash
-brew install shellcheck
-cd "$(day-one-mac root)"
-./scripts/lint.sh
-```
-
-Expected result:
-
-```text
-✓ ShellCheck reported no findings in 75 scripts.
-```
-
-The reviewed list of disabled checks, and the reason each one is disabled,
-lives in `.shellcheckrc`. Both `lint.sh` and `validate.sh` also run in CI on
-every pull request.
+With the core preset, VS Code and the omitted desktop applications are not
+verification gates. Authentication, chosen languages, and dotfiles checks
+remain mandatory.
 
 ## Step 8.2 — Run the complete Phase 8 gate
 

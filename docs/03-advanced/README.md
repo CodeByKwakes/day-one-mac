@@ -32,22 +32,34 @@ completed guide later changes, its fingerprint becomes **review required**.
 
 This is intentional: Modules 15–22 combine personal inventory choices,
 credentials, identity routing, restore sources, and application UI changes.
-They are guided procedures, not unattended installers. Commands inside a guide
-may automate a bounded operation, but `day-one-mac advanced` itself never
-claims that it performed that operation.
+Their security-sensitive steps remain manual. Module 16 has an explicit
+selected-payload installer: `advanced --module 16 --plan`, `--apply`,
+`--check` and `--resume`. Its `--inventory` action prints a candidate selection
+for review. Module 21 supports the same four actions for audit snapshots,
+not upgrades or cleanup. Module 22 captures explicit skill/MCP inventory and
+drift evidence without changing clients or trust. Modules 15 and 17 generate
+dotfile proposals and reviewed shell bundles; Module 19 applies selected scalar
+preferences with typed originals and conflict checks. Without an action,
+`advanced --module ID` still opens the guide.
+
+`day-one-mac optional --list` now lists these modules alongside executable
+Optional 09, 10, 10A, 11, 12, 13 and 14. All Advanced 15–22 are labelled
+executable only for their bounded scopes. Module 18 adds identity/worktree
+review artifacts; Module 20 adds checksummed restore staging. No execution result
+is substituted for a user-confirmed guide fingerprint.
 
 ## Recommended order
 
 | Module | Capability | Execution model | Add it when |
 |---|---|---|---|
-| [15 · Full dotfiles and bootstrap](15-full-dotfiles-and-bootstrap.md) | Expanded chezmoi inventory, machine data, templates, hooks, and secret audit | Guided commands and review | More than the minimal five configuration areas must reproduce |
-| [16 · Brewfile, applications, and editor inventory](16-brewfile-apps-and-editor.md) | Curated formula/cask/MAS/VS Code desired state and safe cleanup | Generated inventory plus reviewed install commands | The Mac needs a wider application catalogue |
-| [17 · Shell and package automation](17-shell-and-package-automation.md) | ghq navigation, Git helpers, manager detection, repo/package audits | Guided file edits and verification | Repeated terminal work justifies aliases and helpers |
-| [18 · Hosting identities, Azure, and worktrees](18-hosting-identities-azure-and-worktrees.md) | Personal/work identity routing, Azure defaults, repository layout, and the linked [VS Code/AI worktree guide](GIT-WORKTREES-VSCODE-AND-AI.md) | Guided identity and repository configuration | Multiple identities/providers or concurrent branches are real requirements |
-| [19 · macOS, GUI, and local HTTPS](19-macos-gui-and-local-https.md) | Reviewed defaults, permissions, launch-at-login, Raycast/menu bar, local certificates | Guided system and application configuration | The base tools are stable and personal ergonomics are understood |
-| [20 · Restore and migrate selected data](20-restore-and-migrate.md) | Verified-volume restore, repo re-cloning, project data, database imports | Source-reviewed restore procedure | A clean Mac needs selected content from a previous machine |
-| [21 · Audit, maintenance, and rebuild](21-audit-maintenance-and-rebuild.md) | Drift reports, update routine, private commits, and rebuild rehearsal | Read-only audit plus guided maintenance | The setup must remain reproducible over time |
-| [22 · Shared AI skills and MCP operations](22-ai-skills-and-mcp-operations.md) | One reviewed skill source, client-specific agents, MCP lifecycle, and trust checks | Guided trust, secret, and client configuration | Optional AI clients are installed and repeated workflows need governance |
+| [15 · Full dotfiles and bootstrap](15-full-dotfiles-and-bootstrap.md) | Expanded chezmoi inventory, machine data, templates, hooks, and secret audit | Executable inventory/proposals; manual imports, secrets and hooks | More than the minimal five configuration areas must reproduce |
+| [16 · Brewfile, applications, and editor inventory](16-brewfile-apps-and-editor.md) | Curated formula/cask/MAS/VS Code desired state and safe cleanup | Reviewed TSV payload installer; Brewfile, MAS and removal remain manual | The Mac needs a wider application catalogue |
+| [17 · Shell and package automation](17-shell-and-package-automation.md) | ghq navigation, Git helpers, manager detection, repo/package audits | Executable helper bundles and declaration checks; manual activation | Repeated terminal work justifies aliases and helpers |
+| [18 · Hosting identities, Azure, and worktrees](18-hosting-identities-azure-and-worktrees.md) | Personal/work identity routing, Azure defaults, repository layout, and the linked [VS Code/AI worktree guide](GIT-WORKTREES-VSCODE-AND-AI.md) | Executable identity/signing/layout checks and proposals; manual configuration and lifecycle | Multiple identities/providers or concurrent branches are real requirements |
+| [19 · macOS, GUI, and local HTTPS](19-macos-gui-and-local-https.md) | Reviewed defaults, permissions, launch-at-login, Raycast/menu bar, local certificates | Executable selected scalar preferences; manual security, UI and trust | The base tools are stable and personal ergonomics are understood |
+| [20 · Restore and migrate selected data](20-restore-and-migrate.md) | Verified-volume restore, repo re-cloning, project data, database imports | Executable checksummed file staging; manual live placement and imports | A clean Mac needs selected content from a previous machine |
+| [21 · Audit, maintenance, and rebuild](21-audit-maintenance-and-rebuild.md) | Drift reports, update routine, private commits, and rebuild rehearsal | Executable evidence snapshots/checks; guided maintenance and rebuild | The setup must remain reproducible over time |
+| [22 · Shared AI skills and MCP operations](22-ai-skills-and-mcp-operations.md) | One reviewed skill source, client-specific agents, MCP lifecycle, and trust checks | Executable inventory/drift snapshots; manual trust, secrets and client configuration | Optional AI clients are installed and repeated workflows need governance |
 
 Modules 09–14 remain the first optional layer: databases, AI clients, the 10A
 OmniRoute gateway, MCP, VS Code profiles, enhanced CLI formulae, and Warp

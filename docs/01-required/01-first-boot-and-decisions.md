@@ -238,7 +238,7 @@ day-one-mac --wizard
 ```
 
 For the route that does not use Day One Mac scripts, record the same decisions
-in the worksheet under [Record the setup decisions](../20-reference/NOTION-SETUP-GUIDE.md#record-the-setup-decisions),
+in the worksheet under [Record the setup decisions](../20-reference/MANUAL-SETUP-GUIDE.md#record-the-setup-decisions),
 then continue with Manual 1. Do not create or edit runner state files.
 
 Use Up/Down (or `j`/`k`) to move. Space or Enter accepts one highlighted

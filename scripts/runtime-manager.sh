@@ -3,6 +3,10 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RUNTIME_ROOT="$(cd -P "$SCRIPT_DIR/.." && pwd)"
+source "$SCRIPT_DIR/lib/state.sh"
+source "$SCRIPT_DIR/lib/runtime-activation.sh"
+source "$SCRIPT_DIR/lib/operation-lock.sh"
+ORIGINAL_ARGS=("$@")
 STATE_ROOT="${DAY_ONE_MAC_STATE_ROOT:-$HOME/.day-one-mac}"
 RUNTIME_HOME="${DAY_ONE_MAC_RUNTIME_HOME:-$HOME/.local/share/day-one-mac}"
 CURRENT_LINK="$RUNTIME_HOME/current"
@@ -22,7 +26,7 @@ EOF
 
 verify_runtime() {
   [[ -s "$RUNTIME_ROOT/SHA256SUMS" ]] || return 2
-  (cd "$RUNTIME_ROOT" && shasum -a 256 -c SHA256SUMS >/dev/null)
+  day_one_verify_runtime "$RUNTIME_ROOT"
 }
 
 status() {
@@ -46,7 +50,7 @@ status() {
 }
 
 rollback_runtime() {
-  local execute=0 requested='' candidate='' current='' next='' expected='' actual=''
+  local execute=0 requested='' candidate='' current='' previous=''
   while (( $# )); do
     case "$1" in
       --version) requested="${2:?--version requires a value}"; shift 2 ;;
@@ -57,46 +61,43 @@ rollback_runtime() {
   done
   [[ -L "$CURRENT_LINK" && -d "$RUNTIME_HOME/releases" ]] || {
     printf 'No standalone runtime history is installed.\n' >&2; return 1; }
+  [[ "$execute" != 1 ]] || day_one_serialize runtime "$0" "${ORIGINAL_ARGS[@]}"
   current="$(basename "$(cd -P "$CURRENT_LINK" && pwd)")"
   if [[ -n "$requested" ]]; then
+    day_one_valid_version "$requested" || { printf 'Invalid version: %s\n' "$requested" >&2; return 2; }
     candidate="$RUNTIME_HOME/releases/$requested"
   else
-    for path in "$RUNTIME_HOME"/releases/*; do
-      [[ -d "$path" && "$(basename "$path")" != "$current" ]] || continue
-      candidate="$path"
-    done
+    previous="$(sed -n '1p' "$RUNTIME_HOME/previous" 2>/dev/null || true)"
+    case "$previous" in releases/*) requested="${previous#releases/}" ;; esac
+    day_one_valid_version "$requested" && [[ "$requested" != "$current" ]] || {
+      printf 'No previous activation is recorded; choose --version explicitly.\n' >&2; return 1;
+    }
+    candidate="$RUNTIME_HOME/releases/$requested"
   fi
   [[ -n "$candidate" && -d "$candidate" && -s "$candidate/SHA256SUMS" ]] || {
     printf 'No previous verified runtime was found.\n' >&2; return 1; }
-  (cd "$candidate" && shasum -a 256 -c SHA256SUMS >/dev/null) || {
-    printf 'Candidate runtime failed checksum verification: %s\n' "$candidate" >&2; return 1; }
+  day_one_verify_runtime "$candidate" || {
+    printf 'Candidate runtime failed integrity verification: %s\n' "$candidate" >&2; return 1; }
   printf 'Current:  %s\nCandidate:%s\n' "$current" " $(basename "$candidate")"
   [[ "$execute" == 1 ]] || {
     printf 'Preview only. Rerun with --execute to switch versions.\n'; return 0; }
-  next="$RUNTIME_HOME/.current-$$"
-  ln -s "releases/$(basename "$candidate")" "$next"
-  if [[ -e "$CURRENT_LINK" && ! -L "$CURRENT_LINK" ]]; then
-    rm -f "$next"
-    printf 'Refusing to replace a non-symlink runtime path: %s\n' "$CURRENT_LINK" >&2
-    return 1
-  fi
-  [[ ! -L "$CURRENT_LINK" ]] || rm -f "$CURRENT_LINK"
-  mv "$next" "$CURRENT_LINK"
-  expected="$(cd -P "$candidate" && pwd)"
-  actual="$(cd -P "$CURRENT_LINK" && pwd)"
-  [[ "$actual" == "$expected" ]] || {
-    printf 'Runtime rollback activation verification failed.\n' >&2
-    printf '  Expected: %s\n  Actual:   %s\n' "$expected" "$actual" >&2
-    return 1
-  }
-  install -m 700 "$CURRENT_LINK/scripts/day-one-mac" "$COMMAND"
-  printf '%s\n' "$CURRENT_LINK" > "$STATE_ROOT/runtime-root"
+  day_one_activate_runtime "$RUNTIME_HOME" "$requested" || return $?
+  day_one_install_launcher "$CURRENT_LINK/scripts/day-one-mac" "$COMMAND"
+  day_one_write_state "$STATE_ROOT/runtime-root" "$CURRENT_LINK"
   printf '✓ Runtime switched to %s\n' "$(basename "$candidate")"
 }
 
 uninstall_runtime() {
   local execute=0
-  [[ "${1:-}" == --execute ]] && execute=1
+  while (( $# )); do
+    case "$1" in
+      --execute) execute=1 ;;
+      -h|--help) usage; return 0 ;;
+      *) printf 'Unknown uninstall option: %s\n' "$1" >&2; return 2 ;;
+    esac
+    shift
+  done
+  [[ "$execute" != 1 ]] || day_one_serialize runtime "$0" "${ORIGINAL_ARGS[@]}"
   printf '%s\n' \
     'Day One Mac runtime removal' \
     "  Command: $COMMAND" \
@@ -109,7 +110,14 @@ uninstall_runtime() {
   IFS= read -r answer
   [[ "$answer" == 'REMOVE DAY ONE MAC RUNTIME' ]] || {
     printf 'Confirmation did not match; nothing changed.\n' >&2; return 10; }
-  [[ "$COMMAND" != / && "$RUNTIME_HOME" != / && "$RUNTIME_HOME" != "$HOME" ]] || return 1
+  # Accept only a directory with our releases/current ownership layout.
+  [[ "$RUNTIME_HOME" == /* && "$RUNTIME_HOME" != "$HOME" && "$RUNTIME_HOME" != / &&
+     ! -L "$RUNTIME_HOME" && -L "$CURRENT_LINK" && -d "$RUNTIME_HOME/releases" &&
+     -s "$CURRENT_LINK/SHA256SUMS" ]] || { printf 'Unrecognized runtime directory; refusing removal.\n' >&2; return 1; }
+  local physical
+  physical="$(cd -P "$RUNTIME_HOME" && pwd)"
+  case "$physical" in /|/Users|/tmp|/private/tmp|/var|/private/var) return 1 ;; esac
+  [[ "$physical" != "$(cd -P "$HOME" && pwd)" ]] || return 1
   rm -f "$COMMAND"
   rm -rf "$RUNTIME_HOME"
   rm -f "$STATE_ROOT/runtime-root"
@@ -150,7 +158,7 @@ open_docs() {
       'TOPIC' 'INSTALLED DOCUMENT' \
       'start' "$RUNTIME_ROOT/docs/START-HERE.md" \
       'index' "$RUNTIME_ROOT/docs/README.md" \
-      'manual' "$RUNTIME_ROOT/docs/20-reference/NOTION-SETUP-GUIDE.md" \
+      'manual' "$RUNTIME_ROOT/docs/20-reference/MANUAL-SETUP-GUIDE.md" \
       'process' "$RUNTIME_ROOT/docs/PROCESS-OVERVIEW.md" \
       'project' "$RUNTIME_ROOT/docs/PROJECT-GUIDE.md" \
       'commands' "$RUNTIME_ROOT/docs/20-reference/COMMAND-REFERENCE.md" \
@@ -168,7 +176,7 @@ open_docs() {
     case "$topic" in
       start) target="$RUNTIME_ROOT/docs/START-HERE.md" ;;
       index) target="$RUNTIME_ROOT/docs/README.md" ;;
-      manual) target="$RUNTIME_ROOT/docs/20-reference/NOTION-SETUP-GUIDE.md" ;;
+      manual) target="$RUNTIME_ROOT/docs/20-reference/MANUAL-SETUP-GUIDE.md" ;;
       process) target="$RUNTIME_ROOT/docs/PROCESS-OVERVIEW.md" ;;
       project) target="$RUNTIME_ROOT/docs/PROJECT-GUIDE.md" ;;
       commands) target="$RUNTIME_ROOT/docs/20-reference/COMMAND-REFERENCE.md" ;;

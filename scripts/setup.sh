@@ -10,6 +10,10 @@ source "$SCRIPT_DIR/lib/project-paths.sh"
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
 source "$SCRIPT_DIR/lib/application-ownership.sh"
 source "$SCRIPT_DIR/lib/platform.sh"
+source "$SCRIPT_DIR/lib/state.sh"
+source "$SCRIPT_DIR/lib/operation-lock.sh"
+source "$SCRIPT_DIR/lib/deadline.sh"
+ORIGINAL_ARGS=("$@")
 STATE_ROOT="$(day_one_state_root)"
 STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
 COMPLETED_DIR="$STATE_DIR/completed"
@@ -33,6 +37,7 @@ TRACK=""
 STACK=""
 GIT_NAME=""
 GIT_EMAIL=""
+PRESET=""
 PRIMARY_IDE=""
 DOTFILES_REPO=""
 DOTFILES_VERSIONING=""
@@ -56,8 +61,8 @@ PHASE_FAILED_ITEMS=""
 PHASE_PENDING_ITEM=""
 PHASE_NEXT_ACTION=""
 
-# Bump only the phase whose implementation contract changed. This avoids
-# making all eight completed phases stale after an unrelated runner edit.
+# Contract versions accompany hashes of the runner, shared libraries and phase
+# implementation. Documentation edits do not invalidate required phases.
 PHASE_SCHEMA_01=5
 PHASE_SCHEMA_02=3
 PHASE_SCHEMA_03=6
@@ -78,6 +83,7 @@ Usage: ./setup.sh [options]
   --auth-mode MODE            1password (default), keychain, external, or https
   --name "Full Name"          Git author name
   --email ADDRESS             primary Git author email
+  --preset PRESET            core or recommended-productivity (default)
   --primary-ide IDE           vscode or other; controls Git editor integration
   --dotfiles-repo URL         apply an existing private chezmoi source
   --new-dotfiles              create or keep a new chezmoi source
@@ -107,41 +113,6 @@ ok() { ui_success "$@"; }
 warn() { ui_warning "$@"; }
 err() { ui_error "$@"; }
 have() { command -v "$1" >/dev/null 2>&1; }
-
-# macOS ships no timeout(1). Run a command with a deadline, writing its combined
-# output to the file named first. Returns the command's exit status, or 124 when
-# the deadline was reached and the command was killed. Used for calls that can
-# raise a GUI prompt and would otherwise block the runner indefinitely.
-run_with_deadline() {
-  local output_file="$1" seconds="$2"
-  shift 2
-  local cmd_pid watch_pid status marker="${output_file}.deadline"
-  rm -f "$marker"
-  : > "$output_file"
-  "$@" >"$output_file" 2>&1 &
-  cmd_pid=$!
-  # Record the deadline BEFORE signalling: the main shell's wait returns as soon
-  # as the child dies, so writing the marker after the kill races against the
-  # check below and intermittently reports a timeout as an ordinary failure.
-  ( sleep "$seconds"
-    if kill -0 "$cmd_pid" 2>/dev/null; then
-      : > "$marker"
-      kill -TERM "$cmd_pid" 2>/dev/null
-    fi ) >/dev/null 2>&1 &
-  watch_pid=$!
-  set +e
-  # The shell announces "Terminated" on stderr when it reaps a killed job;
-  # silence that so a deadline reads as our own message, not shell noise.
-  { wait "$cmd_pid"; status=$?; } 2>/dev/null
-  kill -TERM "$watch_pid" >/dev/null 2>&1
-  { wait "$watch_pid"; } >/dev/null 2>&1
-  set -e
-  if [[ -e "$marker" ]]; then
-    rm -f "$marker"
-    return 124
-  fi
-  return "$status"
-}
 
 ensure_state() {
   [[ "$DRY_RUN" == 1 ]] && return 0
@@ -212,8 +183,7 @@ save_state_value() {
   local name="$1" value="$2"
   if [[ "$DRY_RUN" == 1 ]]; then info "would save $name=$value"; return 0; fi
   ensure_state
-  printf '%s\n' "$value" > "$STATE_DIR/$name"
-  chmod 600 "$STATE_DIR/$name"
+  day_one_write_state "$STATE_DIR/$name" "$value"
 }
 
 append_unique() {
@@ -262,7 +232,11 @@ load_or_choose_selections() {
   [[ -n "$STACK" ]] || STACK="$(state_value stack)"
   [[ -n "$GIT_NAME" ]] || GIT_NAME="$(state_value git-name)"
   [[ -n "$GIT_EMAIL" ]] || GIT_EMAIL="$(state_value git-email)"
+  [[ -n "$PRESET" ]] || PRESET="$(state_value preset)"
+  PRESET="${PRESET:-recommended-productivity}"
+  [[ "$PRESET" =~ ^(core|recommended-productivity)$ ]] || { err "preset must be core or recommended-productivity"; exit 2; }
   [[ -n "$PRIMARY_IDE" ]] || PRIMARY_IDE="$(state_value primary-ide)"
+  [[ "$PRESET" != core ]] || PRIMARY_IDE=other
   if [[ "$DOTFILES_EXPLICIT" != 1 && -z "$DOTFILES_REPO" ]]; then
     DOTFILES_REPO="$(state_value dotfiles-repo)"
   fi
@@ -326,23 +300,30 @@ phase_title() {
 }
 
 phase_fingerprint() {
-  local doc doc_hash schema inputs application_catalog_hash
-  doc="$(phase_doc "$1")"
-  doc_hash="$(shasum -a 256 "$doc" | awk '{print $1}')"
-  application_catalog_hash="$(shasum -a 256 "$DAY_ONE_APP_CATALOG" | awk '{print $1}')"
+  local schema inputs application_catalog_hash implementation
+  local dependencies=("$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/lib/*.sh "$SCRIPT_DIR"/phases/"$1"-*.sh)
+  case "$1" in
+    04|05) dependencies+=("$SCRIPT_DIR"/phases/03-*.sh) ;;
+    08) dependencies+=("$SCRIPT_DIR"/phases/*.sh "$SCRIPT_DIR/verify.sh") ;;
+  esac
+  application_catalog_hash="$(awk -F '\t' '$2 == "required"' "$DAY_ONE_APP_CATALOG" | shasum -a 256 | awk '{print $1}')"
   eval "schema=\${PHASE_SCHEMA_$1}"
+  implementation="$(
+    shasum -a 256 "${dependencies[@]}" |
+      awk '{print $1}' | shasum -a 256 | awk '{print $1}'
+  )"
   case "$1" in
     01) inputs="$TRACK|$STACK|$GIT_NAME|$GIT_EMAIL|$PRIMARY_IDE" ;;
     02) inputs='foundation' ;;
-    03) inputs="security|$AUTH_MODE|applications=$application_catalog_hash" ;;
+    03) inputs="security|$TRACK|$AUTH_MODE|applications=$application_catalog_hash" ;;
     04) inputs="$TRACK|$STACK|$GIT_NAME|$GIT_EMAIL|$PRIMARY_IDE|$AUTH_MODE|applications=$application_catalog_hash" ;;
-    05) inputs="$GIT_NAME|$GIT_EMAIL|$PRIMARY_IDE|$DOTFILES_REPO|$DOTFILES_VERSIONING" ;;
+    05) inputs="$TRACK|$AUTH_MODE|$GIT_NAME|$GIT_EMAIL|$PRIMARY_IDE|$DOTFILES_REPO|$DOTFILES_VERSIONING" ;;
     06) inputs="$STACK" ;;
     07) inputs="vscode-base|primary-ide=$PRIMARY_IDE|applications=$application_catalog_hash" ;;
-    08) inputs="$TRACK|$STACK|$DOTFILES_REPO|$DOTFILES_VERSIONING|applications=$application_catalog_hash" ;;
+    08) inputs="$TRACK|$STACK|$GIT_NAME|$GIT_EMAIL|$PRIMARY_IDE|$AUTH_MODE|$DOTFILES_REPO|$DOTFILES_VERSIONING|applications=$application_catalog_hash" ;;
   esac
-  { printf 'phase-schema=%s\n' "$schema"; printf 'document=%s\n' "$doc_hash";
-    printf 'inputs=%s\n' "$inputs"; } \
+  { printf 'phase-schema=%s\n' "$schema"; printf 'implementation=%s\n' "$implementation";
+    printf 'inputs=%s\n' "$inputs|preset=${PRESET:-recommended-productivity}"; } \
     | shasum -a 256 | awk '{print $1}'
 }
 
@@ -382,23 +363,29 @@ installation_centre_fingerprint() {
   {
     printf 'installation-centre-schema=%s\n' "$INSTALLATION_CENTRE_SCHEMA"
     printf 'track=%s\nstack=%s\n' "$TRACK" "$STACK"
+    printf 'preset=%s\nauth=%s\n' "${PRESET:-recommended-productivity}" "$AUTH_MODE"
+    printf 'implementation=%s\n' "$(phase_fingerprint 04)"
     printf 'applications=%s\n' "$application_catalog_hash"
     printf 'formulae=%s\n' "$formulae_hash"
   } | shasum -a 256 | awk '{print $1}'
 }
 
 installation_centre_components_ready() {
-  local app_id formula
+  local app_id formula application_list formula_list
   load_brew || return 1
+  # Finish bounded catalogue reads before a check can return early. Process
+  # substitution leaves a background writer on a pipe the caller may close.
+  application_list="$(required_application_ids)" || return 1
+  formula_list="$(required_formulae)" || return 1
   while IFS= read -r app_id; do
     [[ -n "$app_id" ]] || continue
     day_one_app_detect "$app_id" || return 1
     day_one_app_is_satisfied || return 1
-  done < <(required_application_ids)
+  done <<<"$application_list"
   while IFS= read -r formula; do
     [[ -n "$formula" ]] || continue
     brew list --formula "$formula" >/dev/null 2>&1 || return 1
-  done < <(required_formulae)
+  done <<<"$formula_list"
 }
 
 installation_centre_done() {
@@ -412,16 +399,14 @@ mark_installation_centre_done() {
   local marker="$COMPLETED_DIR/installation-centre"
   [[ "$DRY_RUN" == 1 ]] && { ok 'would mark the Installation Centre complete'; return 0; }
   ensure_state
-  installation_centre_fingerprint > "$marker"
-  chmod 600 "$marker"
+  day_one_write_state "$marker" "$(installation_centre_fingerprint)"
   log_line 'PASS installation-centre'
 }
 
 mark_phase_done() {
   [[ "$DRY_RUN" == 1 ]] && { ok "would mark Phase $1 complete"; return 0; }
   ensure_state
-  phase_fingerprint "$1" > "$COMPLETED_DIR/$1"
-  chmod 600 "$COMPLETED_DIR/$1"
+  day_one_write_state "$COMPLETED_DIR/$1" "$(phase_fingerprint "$1")"
   log_line "PASS phase-$1"
 }
 
@@ -663,7 +648,7 @@ choose_installation_centre_policy() {
 
 run_installation_centre() {
   local app_id formula rc missing_count=0 previous_policy="$APP_INSTALL_POLICY"
-  local app_ids="" formulae=""
+  local app_ids="" formulae="" application_list
   ui_title '📦' 'Required Installation Centre'
   info 'Applications are installed and ownership-checked here before configuration begins.'
   info "Guide: $DOC_DIR/01-required/INSTALLATION-CENTRE.md"
@@ -675,6 +660,7 @@ run_installation_centre() {
   fi
 
   ui_section '🔎' 'Application ownership — no changes yet'
+  application_list="$(required_application_ids)" || return "$EX_GATE"
   while IFS= read -r app_id; do
     [[ -n "$app_id" ]] || continue
     app_ids="${app_ids}${app_ids:+ }$app_id"
@@ -688,7 +674,7 @@ run_installation_centre() {
         return "$EX_GATE"
         ;;
     esac
-  done < <(required_application_ids)
+  done <<<"$application_list"
 
   choose_installation_centre_policy "$missing_count" || {
     warn 'No application was removed. Rerun the Installation Centre when ready.'
@@ -748,6 +734,7 @@ report_application() {
 
 record_path_before_write() {
   local target="$1" key backup
+  [[ "$DRY_RUN" == 1 ]] && return 0
   ensure_state
   if awk -F '\t' -v target="$target" '$2 == target {found=1} END {exit !found}' "$PATH_MANIFEST"; then return 0; fi
   if [[ -e "$target" || -L "$target" ]]; then
@@ -809,1732 +796,14 @@ record_managed_targets_before_apply() {
   done <<<"$managed_output"
 }
 
-phase_01() {
-  local default_name default_email
-  phase_next "macOS update and backup readiness" "Finish Software Update, open several files in the separate backup, then rerun Phase 1."
-  day_one_require_apple_silicon || return "$EX_GATE"
-  ui_title '1️⃣' 'Phase 01 — First boot and decisions'
-  info "Guide: $(phase_doc 01)"
-  info "Track $TRACK — $(track_name)"
-  info "Stack — $STACK"
-  confirm "Is macOS fully updated, and is all prior data already in a verified backup?" \
-    || { warn "Finish the Phase 1 preparation and rerun."; return "$EX_MANUAL"; }
-  phase_step_done "macOS update and readable backup confirmed"
-  phase_next "Git identity and setup choices" "Enter a valid author name and email, then review the saved hosting and stack choices."
-  default_name="$(git config --global user.name 2>/dev/null || id -F 2>/dev/null || id -un)"
-  default_email="$(git config --global user.email 2>/dev/null || true)"
-  [[ "$DRY_RUN" == 1 && -z "$default_email" ]] && default_email=developer@example.com
-  [[ -n "$GIT_NAME" ]] || GIT_NAME="$(ask 'Git author name' "$default_name" '^.+$')"
-  [[ -n "$GIT_EMAIL" ]] || GIT_EMAIL="$(ask 'Primary Git email' "$default_email" '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$')"
-  [[ "$GIT_NAME" != *$'\n'* && "$GIT_NAME" != *$'\r'* ]] || {
-    err "Git author name must be one line."; return "$EX_GATE"; }
-  save_state_value track "$TRACK"
-  save_state_value track-schema-version "$TRACK_SCHEMA_VERSION"
-  save_state_value stack "$STACK"
-  save_state_value git-name "$GIT_NAME"
-  save_state_value git-email "$GIT_EMAIL"
-  save_state_value primary-ide "$PRIMARY_IDE"
-  phase_step_done "hosting, stack and Git identity recorded"
-  ok "decisions recorded"
-}
-
-verify_apple_developer_tools() {
-  local selected os_major clt_version clt_major
-  selected="$(xcode-select -p 2>/dev/null || true)"
-  [[ -n "$selected" && -d "$selected" ]] || return 1
-  os_major="$(sw_vers -productVersion | awk -F. '{print $1}')"
-
-  case "$selected" in
-    /Applications/*.app/Contents/Developer)
-      if ! xcodebuild -checkFirstLaunchStatus >/dev/null 2>&1; then
-        warn "Xcode still needs its licence or first-launch components."
-        warn "Run 'sudo xcodebuild -license', review and accept the licence, then run 'sudo xcodebuild -runFirstLaunch'."
-        return 1
-      fi
-      ;;
-    /Library/Developer/CommandLineTools)
-      clt_version="$(pkgutil --pkg-info=com.apple.pkg.CLTools_Executables 2>/dev/null \
-        | awk -F': ' '$1 == "version" {print $2; exit}')"
-      clt_major="${clt_version%%.*}"
-      if [[ "$os_major" =~ ^[0-9]+$ && "$os_major" -ge 27 ]] \
-         && { [[ ! "$clt_major" =~ ^[0-9]+$ ]] || [[ "$clt_major" -lt "$os_major" ]]; }; then
-        warn "Command Line Tools $clt_version are older than macOS $(sw_vers -productVersion) and are likely stale."
-        warn "The package version tracks Xcode, so a higher number is normal; a lower one is not."
-        warn "Install the current tools from Software Update or rerun 'xcode-select --install'."
-        return 1
-      fi
-      ;;
-  esac
-  xcrun --find clang >/dev/null 2>&1 && clang --version >/dev/null 2>&1
-}
-
-phase_02() {
-  local detected_brew path_brew
-  phase_next "Xcode Command Line Tools" "Complete the Apple installer window, then rerun Phase 2."
-  ui_title '2️⃣' 'Phase 02 — Command-line foundation'
-  info "Guide: $(phase_doc 02)"
-  if ! xcode-select -p >/dev/null 2>&1; then
-    if [[ "$DRY_RUN" == 1 ]]; then print_command xcode-select --install; return 0; fi
-    xcode-select --install || true
-    warn "Finish the Command Line Tools installer, then rerun Phase 2."
-    return "$EX_MANUAL"
-  fi
-  if [[ "$DRY_RUN" == 1 ]]; then
-    print_command xcodebuild -checkFirstLaunchStatus
-    print_command pkgutil --pkg-info=com.apple.pkg.CLTools_Executables
-  else
-    verify_apple_developer_tools || {
-      warn "Finish the matching Xcode or Command Line Tools setup, then rerun Phase 2."
-      return "$EX_MANUAL"
-    }
-  fi
-  phase_step_done "Xcode Command Line Tools available"
-  ok "Xcode Command Line Tools available"
-  phase_next "Homebrew installation and update" "Allow the official installer to finish, then rerun Phase 2 if it stops."
-  info "Checking for native Apple-silicon Homebrew before running an installer."
-  if detected_brew="$(brew_path 2>/dev/null)"; then
-    ok "Existing Homebrew found at $detected_brew; the installer will be skipped."
-  elif have brew; then
-    path_brew="$(command -v brew)"
-    err "Homebrew is on PATH at $path_brew, but Day One Mac requires /opt/homebrew/bin/brew."
-    warn "This normally means an Intel/Rosetta Homebrew or an unsupported wrapper is active."
-    warn "Do not install a second copy over it. Open a native arm64 terminal, review the existing installation, then rerun Phase 2."
-    return "$EX_GATE"
-  else
-    info "Native Homebrew was not found at /opt/homebrew/bin/brew."
-    if [[ "$DRY_RUN" == 1 ]]; then
-      info "would run the official Homebrew installer from brew.sh"
-      return 0
-    fi
-    confirm "Install Homebrew using its official installer?" || return "$EX_MANUAL"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    ensure_state
-    append_unique "$INSTALL_MANIFEST" $'component\thomebrew'
-    ok "Homebrew was installed by Day One Mac and recorded for precise rollback."
-  fi
-  load_brew || { err "Homebrew was installed but is not discoverable."; return "$EX_GATE"; }
-  if [[ "$DRY_RUN" == 1 ]]; then
-    print_command brew update
-    print_command brew --prefix
-    print_command brew config
-    print_command brew doctor
-    phase_step_done "Homebrew installation, native prefix and diagnostics would be checked"
-    return 0
-  fi
-  run brew update
-  [[ "$(brew --prefix)" == /opt/homebrew ]] || {
-    err "Apple-silicon Homebrew must use /opt/homebrew; found: $(brew --prefix)"
-    return "$EX_GATE"
-  }
-  brew config
-  if ! brew doctor; then
-    warn "Homebrew reported diagnostics. Review them before installing packages."
-  fi
-  phase_step_done "Homebrew installed, discoverable and updated"
-  ok "Homebrew ready at $(brew --prefix)"
-}
-
-# Emit the managed ~/.ssh/config body for the selected authentication mode.
-#
-# IdentitiesOnly is written only next to an IdentityFile, in every mode. On its
-# own it confines OpenSSH to the default ~/.ssh/id_* files and the configured
-# agent is never consulted.
-ssh_config_block() {
-  local github_public="$HOME/.ssh/github-auth.pub"
-  local azure_public="$HOME/.ssh/azure-devops-auth.pub"
-  local agent_line='    IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"'
-  printf '%s\n' '# >>> Day One Mac: 1Password SSH agent >>>'
-  printf '%s\n' "# Generated for auth mode '$AUTH_MODE' from the saved hosting track."
-  if uses_github; then
-    printf '%s\n' 'Host github.com'
-    printf '%s\n' '    HostName github.com'
-    printf '%s\n' '    User git'
-    ssh_config_identity_lines "$AUTH_MODE" "$github_public" "$HOME/.ssh/id_ed25519" "$agent_line"
-    printf '%s\n' '    ServerAliveInterval 60'
-    printf '%s\n' '    ServerAliveCountMax 3'
-  fi
-  if uses_azure; then
-    uses_github && printf '\n'
-    printf '%s\n' 'Host ssh.dev.azure.com'
-    printf '%s\n' '    HostName ssh.dev.azure.com'
-    printf '%s\n' '    User git'
-    ssh_config_identity_lines "$AUTH_MODE" "$azure_public" "$HOME/.ssh/id_rsa_azure" "$agent_line"
-    printf '%s\n' '    ServerAliveInterval 60'
-    printf '%s\n' '    ServerAliveCountMax 3'
-  fi
-  printf '%s\n' '# <<< Day One Mac: 1Password SSH agent <<<'
-}
-
-# The identity half of one Host block, which is all that varies by mode.
-ssh_config_identity_lines() {
-  local mode="$1" public_pin="$2" keychain_key="$3" agent_line="$4"
-  case "$mode" in
-    1password)
-      printf '%s\n' "$agent_line"
-      if [[ -f "$public_pin" ]]; then
-        printf '%s\n' "    IdentityFile ~/${public_pin#"$HOME"/}"
-        printf '%s\n' '    IdentitiesOnly yes'
-      fi
-      ;;
-    keychain)
-      # Apple's ssh stores the passphrase in the login keychain, so the key is
-      # usable without retyping it. ssh -G does not echo UseKeychain; that is a
-      # display quirk, not a sign it was rejected.
-      printf '%s\n' '    UseKeychain yes'
-      printf '%s\n' '    AddKeysToAgent yes'
-      printf '%s\n' "    IdentityFile ~/${keychain_key#"$HOME"/}"
-      printf '%s\n' '    IdentitiesOnly yes'
-      ;;
-    external)
-      # Whatever agent the user already runs answers; pin only if they asked.
-      if [[ -f "$public_pin" ]]; then
-        printf '%s\n' "    IdentityFile ~/${public_pin#"$HOME"/}"
-        printf '%s\n' '    IdentitiesOnly yes'
-      fi
-      ;;
-  esac
-}
-
-update_homebrew_1password_if_needed() {
-  local token outdated=""
-  [[ "$DRY_RUN" == 1 ]] && return 0
-  load_brew || return 0
-  for token in 1password 1password-cli; do
-    brew list --cask "$token" >/dev/null 2>&1 || continue
-    if brew outdated --quiet --cask --greedy "$token" 2>/dev/null | grep -Fqx "$token"; then
-      outdated="$outdated${outdated:+ }$token"
-    fi
-  done
-  [[ -n "$outdated" ]] || return 0
-  warn "Homebrew reports an available update for: $outdated"
-  confirm "Upgrade the Homebrew-managed 1Password components now?" || {
-    warn "Update the listed casks through their current owner, then rerun the Installation Centre."
-    return "$EX_MANUAL"
-  }
-  for token in $outdated; do run brew upgrade --cask "$token"; done
-}
-
-# Phase 5 puts ~/.ssh/config under chezmoi. When Phase 3 is rerun afterwards —
-# which Step 3.7 explicitly asks for — it edits the target directly, leaving the
-# chezmoi source stale. A later 'chezmoi apply' would then silently revert the
-# provider blocks. Re-add the file so source and target stay in agreement.
-resync_managed_ssh_config() {
-  local ssh_config="$1"
-  command -v chezmoi >/dev/null 2>&1 || return 0
-  chezmoi source-path "$ssh_config" >/dev/null 2>&1 || return 0
-  if chezmoi add "$ssh_config" >/dev/null 2>&1; then
-    info "refreshed the chezmoi source for $ssh_config"
-  else
-    warn "$ssh_config is managed by chezmoi but its source could not be refreshed."
-    warn "Run 'chezmoi add $ssh_config' and review 'chezmoi diff' so a later apply does not revert these provider blocks."
-  fi
-}
-
-# A pinned public key is what lets the SSH config carry an IdentityFile, which
-# in turn is the only condition under which IdentitiesOnly is safe to write.
-# The value is already reachable from 1Password, so copying it by hand is
-# avoidable. Public keys only: anything that looks private is refused.
-public_key_is_valid() {
-  local value="$1"
-  [[ -n "$value" ]] || return 1
-  # A private key, or any multi-line blob, must never reach ~/.ssh.
-  [[ "$value" != *'PRIVATE KEY'* ]] || return 1
-  [[ "$value" != *$'\n'* ]] || return 1
-  case "$value" in
-    'ssh-ed25519 '*|'ssh-rsa '*) return 0 ;;
-    *) return 1 ;;
-  esac
-}
-
-# Print the 1Password SSH Key item titles that look like they belong to a
-# provider. Matching is on the title, so the Step 3.4 naming convention
-# ("GitHub — Personal — Authentication") is what makes this work.
-onepassword_ssh_item_titles() {
-  local pattern="$1"
-  op item list --categories "SSH Key" --format json 2>/dev/null \
-    | jq -r --arg p "$pattern" \
-        '.[] | select((.title // "") | ascii_downcase | contains($p)) | .title' 2>/dev/null
-}
-
-# Save a provider's 1Password public key as the pinned ~/.ssh/<provider>-auth.pub.
-export_provider_public_key() {
-  local provider="$1" target pattern label titles narrowed narrowed_count title count value tmp status
-  case "$provider" in
-    github) target="$HOME/.ssh/github-auth.pub"; pattern=github; label='GitHub' ;;
-    azure)  target="$HOME/.ssh/azure-devops-auth.pub"; pattern=azure; label='Azure DevOps' ;;
-    *) err "Unknown provider for key export: $provider"; return 1 ;;
-  esac
-
-  have op || { warn "The 1Password CLI ('op') is required to export a public key."; return 1; }
-  have jq || { warn "'jq' is required to export a public key; rerun the Installation Centre."; return 1; }
-
-  titles="$(onepassword_ssh_item_titles "$pattern")"
-  count="$(printf '%s' "$titles" | grep -c . || true)"
-  if [[ "$count" -eq 0 ]]; then
-    warn "No 1Password SSH Key item has '$pattern' in its title."
-    warn "Create the key in Step 3.4 and name it by provider, for example '$label — Personal — Authentication'."
-    return 1
-  fi
-  if [[ "$count" -gt 1 ]]; then
-    # Holding both an authentication key and a signing key is normal and
-    # correct — GitHub treats them as different key types. Only the
-    # authentication key belongs in an IdentityFile, so narrow rather than
-    # asking the user to rename a sensible pair.
-    narrowed="$(printf '%s\n' "$titles" | grep -vi 'signing\|sign key' || true)"
-    narrowed_count="$(printf '%s' "$narrowed" | grep -c . || true)"
-    if [[ "$narrowed_count" -eq 1 ]]; then
-      info "Ignoring the signing key; an IdentityFile pins the authentication key."
-      titles="$narrowed"; count=1
-    elif [[ "$narrowed_count" -gt 1 ]]; then
-      # Still several: prefer an explicitly named authentication key.
-      narrowed="$(printf '%s\n' "$narrowed" | grep -i 'auth' || true)"
-      if [[ "$(printf '%s' "$narrowed" | grep -c . || true)" -eq 1 ]]; then
-        titles="$narrowed"; count=1
-      fi
-    fi
-  fi
-  if [[ "$count" -gt 1 ]]; then
-    warn "Several 1Password SSH Key items match '$pattern' and the authentication key is not obvious:"
-    while IFS= read -r title; do [[ -z "$title" ]] || warn "  $title"; done <<<"$titles"
-    warn "Add 'Authentication' to the title of the one Git should use, or save the public key manually with Step 3.7."
-    return 1
-  fi
-  title="$(printf '%s' "$titles" | sed -n '1p')"
-  info "Using the 1Password item: $title"
-  # An IdentityFile selects the key Git authenticates with. A signing key is a
-  # different role, so pinning one is almost certainly a mistake.
-  case "$title" in
-    *[Ss]igning*|*[Ss]ign\ [Kk]ey*)
-      warn "'$title' looks like a signing key, not an authentication key."
-      warn "If Git cannot authenticate afterwards, pin the authentication key instead."
-      ;;
-  esac
-
-  tmp="$(mktemp -t day-one-mac-pubkey)"
-  run_with_deadline "$tmp" 20 op item get "$title" --format json
-  status=$?
-  if [[ "$status" -ne 0 ]]; then
-    [[ "$status" -eq 124 ]] \
-      && warn "Reading '$title' from 1Password timed out; approve the prompt and retry." \
-      || warn "Could not read '$title' from 1Password."
-    while IFS= read -r line; do [[ -z "$line" ]] || warn "  $line"; done < "$tmp"
-    rm -f "$tmp"
-    return 1
-  fi
-  value="$(jq -r '.fields[]? | select((.label // "") == "public key") | .value' < "$tmp" 2>/dev/null | sed -n '1p')"
-  rm -f "$tmp"
-  value="${value%"${value##*[![:space:]]}"}"
-
-  if ! public_key_is_valid "$value"; then
-    warn "'$title' did not yield a usable public key."
-    warn "Expected one line beginning 'ssh-ed25519 ' or 'ssh-rsa '. Nothing was written to ~/.ssh."
-    warn "Check the item's field labels with: op item get \"$title\""
-    return 1
-  fi
-
-  create_directory "$HOME/.ssh"
-  write_text_file "$target" "$value"$'\n'
-  [[ "$DRY_RUN" == 1 ]] || chmod 644 "$target"
-  [[ "$DRY_RUN" == 1 ]] || chmod 700 "$HOME/.ssh"
-  ok "saved the $label public key to $target"
-  info "Rerun Phase 3 so the SSH config gains its IdentityFile line."
-}
-
-configure_onepassword_ssh() {
-  local ssh_config="$HOME/.ssh/config"
-  if [[ "$AUTH_MODE" == https ]]; then
-    info "Auth mode 'https': no SSH config block is written."
-    return 0
-  fi
-  local start_marker='# >>> Day One Mac: 1Password SSH agent >>>'
-  local end_marker='# <<< Day One Mac: 1Password SSH agent <<<'
-  local block remainder content current legacy has_start=0 has_end=0
-  block="$(ssh_config_block)"
-  legacy=$'Host *\n    IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"\n    IdentitiesOnly yes\n    ServerAliveInterval 60\n    ServerAliveCountMax 3'
-
-  create_directory "$HOME/.ssh"
-  if [[ "$DRY_RUN" != 1 ]]; then chmod 700 "$HOME/.ssh"; fi
-
-  if [[ -L "$ssh_config" ]]; then
-    warn "$ssh_config is a symbolic link, so Phase 3 will not replace its source indirectly."
-    warn "Add the provider blocks from Step 3.9 to the file managed by that link, then rerun Phase 3."
-    return "$EX_MANUAL"
-  fi
-
-  if [[ ! -e "$ssh_config" ]]; then
-    write_text_file "$ssh_config" "$block"$'\n'
-  else
-    current="$(cat "$ssh_config")"
-    grep -Fqx "$start_marker" "$ssh_config" && has_start=1
-    grep -Fqx "$end_marker" "$ssh_config" && has_end=1
-    if [[ "$has_start" != "$has_end" ]]; then
-      err "$ssh_config contains only one Day One Mac SSH marker."
-      warn "Repair the incomplete marked block manually before rerunning Phase 3; no change was made."
-      return "$EX_GATE"
-    elif [[ "$has_start" == 1 ]]; then
-      remainder="$(awk -v start="$start_marker" -v end="$end_marker" '
-        $0 == start { skipping=1; next }
-        $0 == end { skipping=0; next }
-        !skipping { print }
-      ' "$ssh_config")"
-      content="$block"
-      [[ -z "$remainder" ]] || content="$content"$'\n\n'"$remainder"
-      [[ "$current" == "$content" ]] || write_text_file "$ssh_config" "$content"$'\n'
-    elif [[ "$current" == "$legacy" ]]; then
-      info "migrating the earlier Day One Mac Host * block to track-specific host blocks"
-      write_text_file "$ssh_config" "$block"$'\n'
-    else
-      if [[ "$DRY_RUN" == 1 ]]; then
-        info "would ask before adding a backed-up, track-specific $AUTH_MODE block to $ssh_config"
-        return 0
-      fi
-      confirm "Back up $ssh_config and add the selected provider blocks at its beginning?" || {
-        warn "The existing SSH config was not changed. Merge the block from Step 3.9, then rerun Phase 3."
-        return "$EX_MANUAL"
-      }
-      content="$block"$'\n\n'"$current"
-      write_text_file "$ssh_config" "$content"$'\n'
-    fi
-  fi
-
-  [[ "$DRY_RUN" == 1 ]] && return 0
-  chmod 600 "$ssh_config"
-  [[ ! -f "$HOME/.ssh/github-auth.pub" ]] || chmod 644 "$HOME/.ssh/github-auth.pub"
-  [[ ! -f "$HOME/.ssh/azure-devops-auth.pub" ]] || chmod 644 "$HOME/.ssh/azure-devops-auth.pub"
-  resync_managed_ssh_config "$ssh_config"
-  if uses_github; then ssh -G github.com >/dev/null 2>&1 || return "$EX_GATE"; fi
-  if uses_azure; then ssh -G ssh.dev.azure.com >/dev/null 2>&1 || return "$EX_GATE"; fi
-}
-
-# Phase 3's checklist promises that `op account list` succeeds, so verify the
-# desktop CLI integration itself rather than only that the `op` binary exists.
-# The call can raise a biometric prompt, so it runs under a deadline.
-verify_onepassword_cli_integration() {
-  local tmp status line
-  tmp="$(mktemp -t day-one-mac-op)"
-  run_with_deadline "$tmp" 20 op account list
-  status=$?
-  if [[ "$status" -eq 124 ]]; then
-    warn "'op account list' did not finish within 20 seconds."
-    warn "Approve or dismiss the 1Password prompt, keep the app unlocked, then rerun Phase 3."
-    rm -f "$tmp"
-    return 1
-  fi
-  if [[ "$status" -ne 0 ]]; then
-    warn "'op account list' failed, so the 1Password CLI integration is not usable yet:"
-    while IFS= read -r line; do [[ -z "$line" ]] || warn "  $line"; done < "$tmp"
-    warn "In 1Password -> Settings -> Developer, turn on 'Integrate with 1Password CLI',"
-    warn "unlock the app, then rerun Phase 3. See Step 3.2 of the phase guide."
-    rm -f "$tmp"
-    return 1
-  fi
-  rm -f "$tmp"
-  return 0
-}
-
-ONEPASSWORD_AGENT_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-
-# List the agent's identities. With a socket argument the named agent is asked;
-# without one, whatever SSH_AUTH_SOCK already points at. Prints nothing when the
-# agent is unreachable or holds no key, so callers test for an empty result.
-agent_identities() {
-  local sock="$1" out
-  if [[ -n "$sock" ]]; then
-    [[ -S "$sock" ]] || return 0
-    out="$(env SSH_AUTH_SOCK="$sock" ssh-add -l 2>/dev/null || true)"
-  else
-    out="$(ssh-add -l 2>/dev/null || true)"
-  fi
-  case "$out" in *'no identities'*) out="" ;; esac
-  printf '%s' "$out"
-}
-
-# Show what the agent holds, so fingerprints can be matched against the provider.
-show_agent_identities() {
-  local line
-  info "The SSH agent currently offers:"
-  while IFS= read -r line; do [[ -z "$line" ]] || info "  $line"; done <<<"$1"
-}
-
-# Azure DevOps accepts RSA only. Without this a Track 2 or 3 Mac passes Phase 3
-# and fails Phase 4 on a misleading "Permission denied (publickey)".
-require_rsa_for_azure() {
-  uses_azure || return 0
-  printf '%s\n' "$1" | grep -q '(RSA)' && return 0
-  warn "Azure DevOps requires an RSA key, but the agent offers no RSA identity."
-  warn "Create or import an RSA 3072-bit key using Step 3.4 of the phase guide, then rerun Phase 3."
-  return 1
-}
-
-# Offer to write the provider key pins rather than writing them unasked.
-offer_provider_key_pins() {
-  local pinned=0
-  if uses_github && [[ ! -f "$HOME/.ssh/github-auth.pub" ]]; then
-    info "The GitHub public key is not pinned to ~/.ssh/github-auth.pub."
-    info "Pinning adds an IdentityFile line, which is what makes IdentitiesOnly safe."
-    if confirm "Save the GitHub public key from 1Password to ~/.ssh/github-auth.pub now?"; then
-      export_provider_public_key github && pinned=1 || warn "Falling back to the manual route in Step 3.7."
-    fi
-  fi
-  if uses_azure && [[ ! -f "$HOME/.ssh/azure-devops-auth.pub" ]]; then
-    warn "The Azure public key is not pinned. Azure DevOps accepts only the first key offered,"
-    warn "so pinning matters whenever the agent holds more than one identity."
-    if confirm "Save the Azure DevOps public key from 1Password to ~/.ssh/azure-devops-auth.pub now?"; then
-      export_provider_public_key azure && pinned=1 || warn "Falling back to the manual route in Step 3.7."
-    fi
-  fi
-  [[ "$pinned" == 0 ]] || info "A pin was added; the SSH config below will include its IdentityFile."
-  return 0
-}
-
-# Create a passphrase-protected key and hand it to the macOS Keychain.
-# ssh-keygen prompts for the passphrase itself: the runner never sees or stores it.
-generate_keychain_key() {
-  local target="$1" type="$2" bits="$3"
-  if [[ -f "$target" ]]; then
-    info "reusing the existing key at $target"
-  else
-    warn "ssh-keygen will now ask for a passphrase. Choose one you can recall;"
-    warn "the macOS Keychain stores it so you are not asked again on this Mac."
-    record_path_before_write "$target"
-    record_path_before_write "$target.pub"
-    if [[ -n "$bits" ]]; then
-      ssh-keygen -t "$type" -b "$bits" -f "$target" -C "day-one-mac $(id -un)@$(hostname -s)" || return 1
-    else
-      ssh-keygen -t "$type" -f "$target" -C "day-one-mac $(id -un)@$(hostname -s)" || return 1
-    fi
-    ok "created $target"
-  fi
-  chmod 600 "$target"
-  [[ ! -f "$target.pub" ]] || chmod 644 "$target.pub"
-  # --apple-use-keychain is Apple's flag; fall back for a non-Apple ssh-add.
-  ssh-add --apple-use-keychain "$target" 2>/dev/null \
-    || ssh-add -K "$target" 2>/dev/null \
-    || warn "Could not add $target to the agent automatically; run 'ssh-add --apple-use-keychain $target'."
-  info "Register the matching public key with your provider: $target.pub"
-  return 0
-}
-
-# Required applications for this Mac. 1Password is required only when it is
-# the chosen authentication mode; other modes must not be forced to install it.
-required_application_ids() {
-  local app_id
-  while IFS= read -r app_id; do
-    case "$app_id" in
-      1password|1password-cli) [[ "$AUTH_MODE" == 1password ]] || continue ;;
-    esac
-    printf '%s\n' "$app_id"
-  done < <(day_one_app_catalog_ids required)
-}
-
-# Git transport implied by the authentication mode.
-git_protocol_for_mode() {
-  [[ "$AUTH_MODE" == https ]] && printf 'https' || printf 'ssh'
-}
-
-# --- Phase 3 authentication modes -------------------------------------------
-# Every mode ends with the same SSH config write and FileVault gate; they differ
-# only in where the SSH identity comes from.
-
-phase_03_onepassword() {
-  local app_id key_guidance app_version cli_version identities line
-  ui_section '📦' 'Required application ownership'
-  scan_applications 1password 1password-cli || return $?
-  if [[ "$DRY_RUN" != 1 ]]; then
-    for app_id in 1password 1password-cli; do
-      verify_application "$app_id" || {
-        err 'A required 1Password component is missing or has an ownership conflict.'
-        warn 'Rerun the Installation Centre; Phase 3 configures applications but no longer installs them.'
-        return "$EX_GATE"
-      }
-    done
-  fi
-  [[ "$DRY_RUN" == 1 ]] && return 0
-  have op || { err "1Password CLI is not available."; return "$EX_GATE"; }
-  app_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' \
-    /Applications/1Password.app/Contents/Info.plist 2>/dev/null || true)"
-  cli_version="$(op --version 2>/dev/null || true)"
-  [[ -z "$app_version" ]] || info "1Password for Mac $app_version"
-  [[ -z "$cli_version" ]] || info "1Password CLI $cli_version"
-  phase_next "1Password CLI integration" "Turn on 'Integrate with 1Password CLI' in Settings -> Developer, then rerun Phase 3."
-  verify_onepassword_cli_integration || return "$EX_MANUAL"
-  phase_step_done "1Password CLI integration answers 'op account list'"
-  case "$TRACK" in
-    1) key_guidance="Create a new GitHub Ed25519 key or import the trusted existing GitHub key; then allow its vault." ;;
-    2) key_guidance="Create a new Azure DevOps RSA 3072-bit key or import the trusted existing RSA key; then allow its vault." ;;
-    3) key_guidance="Create/import the GitHub and Azure DevOps keys in Step 3.4; use RSA for Azure and pin separate keys to each provider." ;;
-  esac
-  phase_next "1Password SSH identity" "$key_guidance"
-  identities="$(agent_identities "$ONEPASSWORD_AGENT_SOCK")"
-  if [[ -z "$identities" ]]; then
-    warn "$key_guidance"
-    warn "Turn on 'Use the SSH agent' in Settings -> Developer, unlock 1Password, then rerun Phase 3."
-    return "$EX_MANUAL"
-  fi
-  show_agent_identities "$identities"
-  require_rsa_for_azure "$identities" || return "$EX_MANUAL"
-  phase_step_done "1Password SSH agent exposes at least one usable identity"
-  offer_provider_key_pins
-}
-
-phase_03_keychain() {
-  local generated=0
-  phase_next "on-disk SSH key held by the macOS Keychain" "Create the key when prompted and choose a passphrase you can recall."
-  [[ "$DRY_RUN" == 1 ]] && return 0
-  create_directory "$HOME/.ssh"
-  chmod 700 "$HOME/.ssh"
-  uses_github && { generate_keychain_key "$HOME/.ssh/id_ed25519" ed25519 "" || return "$EX_MANUAL"; generated=1; }
-  uses_azure && { generate_keychain_key "$HOME/.ssh/id_rsa_azure" rsa 3072 || return "$EX_MANUAL"; generated=1; }
-  [[ "$generated" == 1 ]] || { err "No provider selected for a keychain key."; return "$EX_GATE"; }
-  phase_step_done "keychain-backed SSH key present and loaded"
-}
-
-phase_03_external() {
-  local identities
-  phase_next "an SSH identity from your own agent" "Load a key into your agent, then rerun Phase 3."
-  [[ "$DRY_RUN" == 1 ]] && return 0
-  # Deliberately no socket override: whatever SSH_AUTH_SOCK already points at
-  # is the agent being verified.
-  identities="$(agent_identities "")"
-  if [[ -z "$identities" ]]; then
-    err "No SSH agent identity is available."
-    warn "Auth mode 'external' means Day One Mac does not create or manage a key."
-    warn "Start your agent and load a key so that 'ssh-add -l' lists it, then rerun Phase 3."
-    return "$EX_MANUAL"
-  fi
-  show_agent_identities "$identities"
-  require_rsa_for_azure "$identities" || return "$EX_MANUAL"
-  phase_step_done "an external agent exposes at least one usable identity"
-}
-
-phase_03_https() {
-  phase_next "HTTPS Git authentication" "Phase 4 configures the credential helper; no SSH key is needed."
-  info "Auth mode 'https': Phase 3 configures no SSH key or agent."
-  info "Git authenticates over HTTPS, set up in Phase 4."
-  phase_step_done "HTTPS mode selected; SSH setup intentionally skipped"
-}
-
-phase_03() {
-  ui_title '3️⃣' 'Phase 03 — Security and SSH'
-  info "Guide: $(phase_doc 03)"
-  info "Git authentication mode: $AUTH_MODE"
-  phase_next "authentication setup and disk encryption" "Complete the steps for your chosen mode, then rerun Phase 3."
-  if ! load_brew; then
-    [[ "$DRY_RUN" == 1 ]] || { err "Complete Phase 2 first."; return "$EX_GATE"; }
-  fi
-  case "$AUTH_MODE" in
-    1password) phase_03_onepassword || return $? ;;
-    keychain)  phase_03_keychain    || return $? ;;
-    external)  phase_03_external    || return $? ;;
-    https)     phase_03_https       || return $? ;;
-    *) err "Unknown authentication mode: $AUTH_MODE"; return "$EX_GATE" ;;
-  esac
-  configure_onepassword_ssh || return $?
-  [[ "$DRY_RUN" == 1 ]] && return 0
-  phase_next "FileVault disk encryption" "Open System Settings → Privacy & Security → FileVault, turn it on, and save the recovery method."
-  fdesetup status 2>/dev/null | grep -q 'FileVault is On' || {
-    warn "Enable FileVault in System Settings, save its recovery key, then rerun."
-    return "$EX_MANUAL"
-  }
-  phase_step_done "FileVault is on"
-  ok "Git authentication ($AUTH_MODE) and FileVault verified"
-}
-
-phase_04() {
-  local global_ignore global_ignore_content vscode_cli vscode_command
-  local app_id formula ssh_output
-  ui_title '4️⃣' 'Phase 04 — Core tools and hosting'
-  info "Guide: $(phase_doc 04)"
-  phase_next "required tools and application ownership checks" "Complete the Installation Centre, then rerun Phase 4."
-  if ! load_brew; then
-    [[ "$DRY_RUN" == 1 ]] || { err "Complete Phase 2 first."; return "$EX_GATE"; }
-  fi
-  phase_next "saved Git identity" "Complete Phase 1 with a valid Git author name and email, then rerun Phase 4."
-  if [[ -z "$GIT_NAME" || ! "$GIT_EMAIL" =~ ^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$ ]]; then
-    err "Git name or email is missing; complete Phase 1 first."
-    return "$EX_GATE"
-  fi
-  phase_next "required application ownership" "Rerun the Installation Centre if an application is missing or has changed owner."
-  ui_section '📦' 'Required application ownership'
-  scan_applications jetbrains-mono-nerd-font raycast visual-studio-code warp || return $?
-  if [[ "$DRY_RUN" != 1 ]]; then
-    for app_id in jetbrains-mono-nerd-font raycast visual-studio-code warp; do
-      verify_application "$app_id" || {
-        err 'A required desktop application or font is unavailable.'
-        warn 'Rerun the Installation Centre; Phase 4 now performs configuration only.'
-        return "$EX_GATE"
-      }
-    done
-  fi
-  phase_step_done "required application ownership verified"
-
-  phase_next "required command-line tools" "Rerun the Installation Centre if a selected formula is missing."
-  if [[ "$DRY_RUN" == 1 ]]; then
-    info 'would verify every formula selected by the saved track and stack'
-  else
-    while IFS= read -r formula; do
-      [[ -n "$formula" ]] || continue
-      brew list --formula "$formula" >/dev/null 2>&1 || {
-        err "required formula is missing: $formula"
-        return "$EX_GATE"
-      }
-    done < <(required_formulae)
-  fi
-  phase_step_done "required command-line tools available"
-
-  phase_next "development folders and Git defaults" "Review Steps 4.2–4.3 and correct the Git identity or ghq root."
-  create_directory "$HOME/Developer"
-  create_directory "$HOME/Developer/_sandbox"
-  create_directory "$HOME/Developer/_archive"
-  uses_github && create_directory "$HOME/Developer/github.com"
-  uses_azure && create_directory "$HOME/Developer/dev.azure.com"
-
-  if [[ "$DRY_RUN" != 1 ]]; then record_path_before_write "$HOME/.gitconfig"; fi
-  run git config --global user.name "$GIT_NAME"
-  run git config --global user.email "$GIT_EMAIL"
-  run git config --global init.defaultBranch main
-  run git config --global pull.ff only
-  run git config --global fetch.prune true
-  run git config --global push.autoSetupRemote true
-  run git config --global ghq.root "$HOME/Developer"
-  run git config --global alias.lg "log --color --graph --decorate --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %C(bold blue)<%an>%Creset' --abbrev-commit"
-  global_ignore="$HOME/.gitignore_global"
-  global_ignore_content=$'# Files created by macOS or temporary terminal editors.\n.DS_Store\n.AppleDouble\n.LSOverride\n._*\n.Trashes\n*.swp\n*.swo\n*~\n'
-  if [[ ! -e "$global_ignore" ]]; then
-    record_path_before_write "$global_ignore"
-    write_text_file "$global_ignore" "$global_ignore_content"
-  fi
-  run git config --global core.excludesFile "$global_ignore"
-  run git config --global merge.conflictStyle zdiff3
-  if [[ "$PRIMARY_IDE" == vscode ]]; then
-    vscode_cli="$(command -v code 2>/dev/null || true)"
-    [[ -x "$vscode_cli" ]] || vscode_cli='/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code'
-    if [[ "$DRY_RUN" != 1 && ! -x "$vscode_cli" ]]; then
-      err "VS Code was selected as the primary IDE, but its command-line program is unavailable."
-      warn "Open VS Code and run 'Shell Command: Install code command in PATH', then rerun Phase 4."
-      return "$EX_MANUAL"
-    fi
-    printf -v vscode_command "'%s'" "$vscode_cli"
-    run git config --global core.editor "$vscode_command --wait"
-    run git config --global merge.tool vscode
-    run git config --global mergetool.vscode.cmd "$vscode_command --wait \"\$MERGED\""
-    run git config --global diff.tool vscode
-    run git config --global difftool.vscode.cmd "$vscode_command --wait --diff \"\$LOCAL\" \"\$REMOTE\""
-    info "VS Code is the selected primary IDE; Git editor, merge and diff integration is configured."
-  else
-    info "VS Code is not the selected primary IDE; existing Git editor and tool settings were left unchanged."
-  fi
-  if [[ "$DRY_RUN" == 1 ]]; then
-    uses_github && print_command gh auth login --git-protocol "$(git_protocol_for_mode)" --web --skip-ssh-key
-    uses_azure && print_command az login
-    print_command ghq root
-    return 0
-  fi
-  [[ "$(ghq root 2>/dev/null | sed -n '1p')" == "$HOME/Developer" ]] || {
-    err "ghq root is not $HOME/Developer"; return "$EX_GATE"; }
-  phase_step_done "development folders, Git defaults and ghq root configured"
-  phase_next "selected hosting account authentication" "Finish the browser sign-in, then confirm the matching SSH public key is registered with the provider."
-  if uses_github; then
-    record_path_before_write "$HOME/.config/gh"
-    if ! gh auth status >/dev/null 2>&1; then
-      warn "GitHub authentication is required for this track."
-      # --skip-ssh-key matters: the key already lives in 1Password and was
-      # registered in Phase 3. Without the flag, gh offers to generate one when
-      # ~/.ssh contains no .pub file and defaults to yes, writing a plaintext
-      # ~/.ssh/id_ed25519 and breaking this project's no-private-keys-on-disk
-      # guarantee. It also avoids requesting the admin:public_key scope.
-      gh auth login --git-protocol "$(git_protocol_for_mode)" --web --skip-ssh-key || return "$EX_MANUAL"
-    fi
-    run gh config set git_protocol "$(git_protocol_for_mode)"
-    # In HTTPS mode gh itself becomes the credential helper, so no token is
-    # ever typed or stored by hand.
-    [[ "$AUTH_MODE" != https ]] || run gh auth setup-git
-  fi
-  if uses_azure; then
-    record_path_before_write "$HOME/.azure"
-    if ! az account show >/dev/null 2>&1; then
-      warn "Azure authentication is required for this track."
-      az login || return "$EX_MANUAL"
-    fi
-  fi
-  if uses_azure && ! az extension show --name azure-devops >/dev/null 2>&1; then
-    run az extension add --name azure-devops
-  fi
-  if [[ "$AUTH_MODE" == https ]]; then
-    # Nothing to reach over SSH; the CLI sign-in above is the authentication.
-    info "Auth mode 'https': skipping the SSH reachability tests."
-    if uses_azure; then
-      have git-credential-manager \
-        || warn "Azure DevOps over HTTPS needs Git Credential Manager: brew install --cask git-credential-manager"
-      warn "Azure DevOps HTTPS uses a Microsoft Entra ID token or a personal access token that you create and Git stores."
-    fi
-  else
-    if uses_github; then
-      ssh_output="$(ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new -T git@github.com 2>&1 || true)"
-      grep -Fq 'successfully authenticated' <<<"$ssh_output" || {
-        err "GitHub did not accept the SSH identity: $ssh_output"; return "$EX_MANUAL"; }
-    fi
-    if uses_azure; then
-      ssh_output="$(ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new -T git@ssh.dev.azure.com 2>&1 || true)"
-      grep -Fq 'Shell access is not supported' <<<"$ssh_output" || {
-        err "Azure DevOps did not accept the SSH identity: $ssh_output"; return "$EX_MANUAL"; }
-    fi
-  fi
-  phase_step_done "selected hosting CLI and Git authentication passed"
-  ok "Git and selected hosting services verified"
-}
-
-# Switch the login shell to the Homebrew zsh.
-#
-# This is the one place Day One Mac changes a macOS account setting, and it is
-# the one change that can lock you out of a working login shell, so it is
-# deliberately cautious: the binary must exist and actually run, /etc/shells is
-# only appended to (never rewritten), and the user confirms before either sudo
-# or chsh. Recovery is always `chsh -s /bin/zsh`.
-switch_login_shell_to_homebrew_zsh() {
-  local target current verified prefix
-  prefix="$(brew --prefix 2>/dev/null || printf '/opt/homebrew')"
-  target="$prefix/bin/zsh"
-
-  if [[ ! -x "$target" ]]; then
-    err "Homebrew zsh is not installed at $target; the required login-shell gate cannot pass."
-    warn "Rerun the Installation Centre to install it, then rerun Phase 5."
-    return "$EX_GATE"
-  fi
-  # Never point a login shell at something that cannot start.
-  if ! "$target" -c 'exit 0' >/dev/null 2>&1; then
-    err "$target did not run; refusing to make it your login shell."
-    return "$EX_GATE"
-  fi
-
-  # Directory Services can be temporarily unavailable on a newly provisioned
-  # or company-managed Mac. An unreadable current value is informational, not
-  # permission to abort the phase; every later message already handles
-  # `unknown`, and chsh remains explicitly confirmed.
-  current="$(dscl . -read "/Users/$(id -un)" UserShell 2>/dev/null | awk '{print $2}' || true)"
-  [[ "$current" == "$target" ]] \
-    && info "login shell is already $target" \
-    || info "Current login shell: ${current:-unknown}"
-  info "Homebrew zsh: $target ($("$target" --version 2>/dev/null))"
-  # State the recovery path before anything changes, not just before chsh:
-  # the /etc/shells step can fail, and the user should already know the way out.
-  warn "Changing your login shell affects every new terminal."
-  warn "If Homebrew zsh is ever removed, recover with: chsh -s /bin/zsh"
-
-  if [[ "$DRY_RUN" == 1 ]]; then
-    grep -Fqx "$target" /etc/shells 2>/dev/null || print_command sudo tee -a /etc/shells
-    print_command chsh -s "$target"
-    return 0
-  fi
-
-  if ! grep -Fqx "$target" /etc/shells 2>/dev/null; then
-    warn "$target must be listed in /etc/shells before it can be a login shell."
-    warn "This is the only step in Day One Mac that needs sudo; it appends one line."
-    confirm "Append $target to /etc/shells with sudo?" || {
-      warn "Left /etc/shells unchanged; the login shell was not switched."
-      return "$EX_MANUAL"
-    }
-    record_path_before_write /etc/shells
-    printf '%s\n' "$target" | sudo tee -a /etc/shells >/dev/null || {
-      err "Could not write /etc/shells; the login shell was not switched."
-      return "$EX_GATE"
-    }
-    ok "registered $target in /etc/shells"
-  fi
-
-  if [[ "$current" == "$target" ]]; then
-    ok "gate: Directory Services login shell is $target"
-    return 0
-  fi
-
-  confirm "Make $target your login shell now?" || {
-    info "Login shell left as ${current:-unknown}."
-    return "$EX_MANUAL"
-  }
-  save_state_value previous-login-shell "${current:-/bin/zsh}"
-  if chsh -s "$target"; then
-    ok "login shell changed to $target"
-    info "Open a new terminal for it to take effect."
-  else
-    err "chsh did not complete; your login shell is unchanged (${current:-unknown})."
-    return "$EX_GATE"
-  fi
-
-  verified="$(dscl . -read "/Users/$(id -un)" UserShell 2>/dev/null | awk '{print $2}' || true)"
-  if [[ "$verified" != "$target" ]]; then
-    err "Directory Services reports ${verified:-unknown}, not the required login shell $target."
-    warn "Open System Settings → Users & Groups → your account → Advanced Options only if chsh repeatedly fails."
-    return "$EX_GATE"
-  fi
-  ok "gate: Directory Services login shell is $target"
-  return 0
-}
-
-migrate_legacy_managed_launcher() {
-  local target="$HOME/.local/bin/day-one-mac"
-  local source_root source_entry relative backup_root backup_entry
-
-  if ! chezmoi managed -p absolute 2>/dev/null | grep -Fqx "$target"; then
-    return 0
-  fi
-
-  info "migrating a launcher managed by an earlier Day One Mac installation"
-  info "the standalone runtime now owns $target; the live command will be preserved"
-  if [[ "$DRY_RUN" == 1 ]]; then
-    print_command chezmoi forget "$target"
-    return 0
-  fi
-
-  source_root="$(chezmoi source-path)"
-  source_entry="$(chezmoi source-path "$target")"
-  [[ -n "$source_root" && -e "$source_entry" ]] || {
-    err "Could not locate the earlier launcher in the chezmoi source."
-    return "$EX_GATE"
-  }
-  relative="${source_entry#"$source_root"/}"
-  backup_root="$STATE_DIR/migrations/phase-05-standalone-launcher"
-  backup_entry="$backup_root/source/$relative"
-  ensure_state
-  if [[ ! -e "$backup_entry" ]]; then
-    mkdir -p "$(dirname "$backup_entry")"
-    ditto "$source_entry" "$backup_entry"
-    printf '%s\n' \
-      "Earlier source: $source_entry" \
-      "Preserved target: $target" \
-      "Migrated: $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
-      > "$backup_root/README.txt"
-    chmod 600 "$backup_entry" "$backup_root/README.txt"
-  fi
-
-  run chezmoi forget "$target"
-  [[ -x "$target" ]] || {
-    err "chezmoi migration unexpectedly removed the live launcher: $target"
-    return "$EX_GATE"
-  }
-  if chezmoi managed -p absolute 2>/dev/null | grep -Fqx "$target"; then
-    err "chezmoi still reports the standalone launcher as managed."
-    return "$EX_GATE"
-  fi
-  ok "earlier launcher removed from chezmoi; standalone runtime remains installed"
-  info "migration backup: $backup_root"
-}
-
-migrate_legacy_gitconfig_source() {
-  local target="$HOME/.gitconfig"
-  local source_root source_entry relative backup_root backup_entry key live_value source_value
-  local keys needs_update=0
-
-  if ! chezmoi managed -p absolute 2>/dev/null | grep -Fqx "$target"; then
-    return 0
-  fi
-  source_root="$(chezmoi source-path)"
-  source_entry="$(chezmoi source-path "$target")"
-  [[ -n "$source_root" && -e "$source_entry" ]] || return 0
-
-  keys=$'user.name\nuser.email\ninit.defaultBranch\npull.ff\nfetch.prune\npush.autoSetupRemote\nghq.root\nalias.lg\ncore.excludesFile\nmerge.conflictStyle'
-  if [[ "$PRIMARY_IDE" == vscode ]]; then
-    keys+=$'\ncore.editor\nmerge.tool\nmergetool.vscode.cmd\ndiff.tool\ndifftool.vscode.cmd'
-  fi
-  while IFS= read -r key; do
-    [[ -n "$key" ]] || continue
-    live_value="$(git config --global --get "$key" 2>/dev/null || true)"
-    [[ -n "$live_value" ]] || continue
-    source_value="$(git config --file "$source_entry" --get "$key" 2>/dev/null || true)"
-    [[ "$source_value" == "$live_value" ]] || needs_update=1
-  done <<<"$keys"
-  [[ "$needs_update" == 1 ]] || return 0
-
-  case "$source_entry" in
-    *.tmpl)
-      err "The existing ~/.gitconfig source is a template and needs a reviewed manual merge."
-      warn "Run 'chezmoi edit ~/.gitconfig', add the Phase 4 Git settings shown in the guide, save, then rerun Phase 5."
-      return "$EX_MANUAL"
-      ;;
-  esac
-
-  info "merging the reviewed Phase 4 Git settings into the earlier chezmoi source"
-  if [[ "$DRY_RUN" == 1 ]]; then
-    info "would preserve unrelated source settings and add only the current Day One Mac Git keys"
-    return 0
-  fi
-
-  relative="${source_entry#"$source_root"/}"
-  backup_root="$STATE_DIR/migrations/phase-05-gitconfig"
-  backup_entry="$backup_root/source/$relative"
-  ensure_state
-  if [[ ! -e "$backup_entry" ]]; then
-    mkdir -p "$(dirname "$backup_entry")"
-    ditto "$source_entry" "$backup_entry"
-    printf '%s\n' \
-      "Earlier source: $source_entry" \
-      "Preserved target: $target" \
-      "Migrated: $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
-      > "$backup_root/README.txt"
-    chmod 600 "$backup_entry" "$backup_root/README.txt"
-  fi
-  while IFS= read -r key; do
-    [[ -n "$key" ]] || continue
-    live_value="$(git config --global --get "$key" 2>/dev/null || true)"
-    [[ -n "$live_value" ]] || continue
-    git config --file "$source_entry" "$key" "$live_value"
-  done <<<"$keys"
-  ok "earlier ~/.gitconfig source updated without applying its stale version"
-  info "migration backup: $backup_root"
-}
-
-# Phase gates must remain terminal-only even when the user has configured a
-# graphical diff program. chezmoi's global --use-builtin-diff switch preserves
-# the active source, template data, destination and persistent state while
-# bypassing only diff.command.
-chezmoi_text_diff() {
-  chezmoi --use-builtin-diff diff --no-pager
-}
-
-chezmoi_config_has_tool() {
-  local config="$1" tool="$2"
-  [[ -f "$config" ]] || return 1
-  grep -Eq "^[[:space:]]*\\[${tool}\\][[:space:]]*(#.*)?$|^[[:space:]]*${tool}([.]command)?[[:space:]]*=" "$config"
-}
-
-chezmoi_vscode_diff_block() {
-  printf '%s\n' \
-    '# Day One Mac: open reviewed dotfile comparisons in VS Code.' \
-    '[diff]' \
-    'command = "code"' \
-    'args = ["--wait", "--diff"]'
-}
-
-chezmoi_vscode_merge_block() {
-  printf '%s\n' \
-    '# Day One Mac: use VS Code'"'"'s three-way merge editor.' \
-    '[merge]' \
-    'command = "bash"' \
-    'args = [' \
-    '  "-c",' \
-    '  "cp {{ .Target | quote }} {{ printf \"%s.base\" .Target | quote }} && code --new-window --wait --merge {{ .Destination | quote }} {{ .Target | quote }} {{ printf \"%s.base\" .Target | quote }} {{ .Source | quote }}",' \
-    ']'
-}
-
-configure_chezmoi_vscode_tools() {
-  local config="$1" content missing="" addition=""
-  [[ "$PRIMARY_IDE" == vscode ]] || return 0
-
-  if chezmoi_config_has_tool "$config" diff; then
-    info "preserving the existing chezmoi diff tool in $config"
-  else
-    missing="diff"
-    addition+=$'\n\n'"$(chezmoi_vscode_diff_block)"$'\n'
-  fi
-  if chezmoi_config_has_tool "$config" merge; then
-    info "preserving the existing chezmoi merge tool in $config"
-  else
-    missing="${missing}${missing:+ and }merge"
-    addition+=$'\n'"$(chezmoi_vscode_merge_block)"$'\n'
-  fi
-  [[ -n "$missing" ]] || return 0
-
-  if [[ "$DRY_RUN" == 1 ]]; then
-    info "would add the official VS Code chezmoi $missing configuration to $config"
-    return 0
-  fi
-  if ! command -v code >/dev/null 2>&1; then
-    warn "VS Code is selected, but its 'code' command is not available yet."
-    warn "Open VS Code, run 'Shell Command: Install code command in PATH', then rerun Phase 5."
-    return "$EX_MANUAL"
-  fi
-  confirm "Configure VS Code as the missing chezmoi $missing tool?" || {
-    warn "VS Code chezmoi integration was left unchanged. You can add it later with 'chezmoi edit-config'."
-    return 0
-  }
-  content="$(cat "$config")"
-  write_text_file "$config" "${content}${addition}"
-  ok "VS Code configured for chezmoi $missing review"
-}
-
-phase_05() {
-  local chezmoi_config chezmoi_content escaped_email escaped_name managed_target
-  local existing_managed_source=0 starship_config starship_content starship_created=0 chezmoi_source_dir
-  local runner_wrapper applications_case optional_case remove_case shell_status_case legacy_runner legacy_runner_content
-  local legacy_runner_updated=0 zprofile zshrc zsh_path zsh_aliases bootstrap_zsh_path global_ignore
-  local zsh_config_dir zsh_path_file zsh_aliases_file ssh_config ssh_config_created=0 homebrew_zsh clean_shell_check compaudit_output
-  ui_title '5️⃣' 'Phase 05 — Dotfiles and Starship'
-  info "Guide: $(phase_doc 05)"
-  phase_next "chezmoi command" "Complete Phase 4 so chezmoi is installed, then rerun Phase 5."
-  if ! have chezmoi; then
-    [[ "$DRY_RUN" == 1 ]] || { err "chezmoi is missing; complete Phase 4."; return "$EX_GATE"; }
-  fi
-  phase_next "chezmoi source review" "Review every path in the existing source and its full chezmoi diff before approving apply."
-  if chezmoi source-path >/dev/null 2>&1 \
-     && [[ -n "$(chezmoi managed 2>/dev/null || true)" ]]; then
-    existing_managed_source=1
-  fi
-  # `chezmoi source-path` with no target only resolves and prints the configured
-  # source directory: it exits 0 even when that directory does not exist. Using
-  # its status as an existence test meant that on any Mac where chezmoi is
-  # installed — which Phase 4 guarantees — `chezmoi init` was never run for a
-  # brand-new source. Test the directory itself.
-  chezmoi_source_dir="$(chezmoi source-path 2>/dev/null || true)"
-  if [[ -z "$chezmoi_source_dir" || ! -d "$chezmoi_source_dir" ]]; then
-    if [[ -z "$DOTFILES_REPO" && "$DOTFILES_EXPLICIT" != 1 && "$DRY_RUN" != 1 && -t 0 ]]; then
-      printf 'Existing private dotfiles repository URL (Enter for a new source protected by private Git): '
-      IFS= read -r DOTFILES_REPO
-      save_state_value dotfiles-repo "$DOTFILES_REPO"
-    fi
-    if [[ -n "$DOTFILES_REPO" ]]; then run chezmoi init "$DOTFILES_REPO"
-    else
-      run chezmoi init
-    fi
-    [[ -n "$DOTFILES_REPO" ]] && existing_managed_source=1
-  fi
-  # Configure the selected editor before reviewing or applying an existing
-  # source. If apply encounters a conflict, its merge option is then already
-  # backed by the reviewed VS Code three-way merge command.
-  chezmoi_config="$HOME/.config/chezmoi/chezmoi.toml"
-  if [[ ! -e "$chezmoi_config" ]]; then
-    create_directory "$HOME/.config"
-    create_directory "$HOME/.config/chezmoi"
-    escaped_name="$(toml_escape "$GIT_NAME")"
-    escaped_email="$(toml_escape "$GIT_EMAIL")"
-    printf -v chezmoi_content \
-      '[data]\ntrack = "%s"\nstack = "%s"\nname = "%s"\nemail = "%s"\n' \
-      "$(track_value)" "$STACK" "$escaped_name" "$escaped_email"
-    if [[ "$PRIMARY_IDE" == vscode ]]; then
-      chezmoi_content=$'[edit]\ncommand = "code"\nargs = ["--wait"]\n\n'"$(chezmoi_vscode_diff_block)"$'\n\n'"$(chezmoi_vscode_merge_block)"$'\n\n'"$chezmoi_content"
-    fi
-    write_text_file "$chezmoi_config" "$chezmoi_content"
-  fi
-  configure_chezmoi_vscode_tools "$chezmoi_config" || return $?
-  runner_wrapper="$HOME/.local/bin/day-one-mac"
-  migrate_legacy_managed_launcher || return $?
-  migrate_legacy_gitconfig_source || return $?
-  if [[ "$existing_managed_source" == 1 ]]; then
-    if [[ "$DRY_RUN" == 1 ]]; then
-      print_command chezmoi --use-builtin-diff diff --no-pager
-      print_command chezmoi apply
-    elif [[ -n "$(chezmoi_text_diff)" ]]; then
-      chezmoi_text_diff
-      confirm "Apply the reviewed existing dotfiles source?" || return "$EX_MANUAL"
-      record_managed_targets_before_apply || return $?
-      run chezmoi apply
-    else
-      ok "existing dotfiles source already matches its targets"
-    fi
-  fi
-  phase_step_done "chezmoi source initialised and any existing-source diff reviewed"
-  phase_next "managed shell, Starship and portable command files" "Complete Steps 5.2–5.7 and merge any existing file instead of overwriting it blindly."
-  starship_config="$HOME/.config/starship.toml"
-  starship_content=$'add_newline = false\ncommand_timeout = 1000\n\n[character]\nsuccess_symbol = "[❯](bold green)"\nerror_symbol = "[❯](bold red)"\n'
-  if [[ ! -e "$starship_config" ]]; then
-    create_directory "$HOME/.config"
-    write_text_file "$starship_config" "$starship_content"
-    starship_created=1
-  fi
-  zsh_config_dir="$HOME/.config/zsh"
-  zsh_path_file="$zsh_config_dir/path.zsh"
-  zsh_aliases_file="$zsh_config_dir/aliases.zsh"
-  ssh_config="$HOME/.ssh/config"
-  global_ignore="$HOME/.gitignore_global"
-  zsh_path=$'# Shared PATH setup for login and non-login interactive zsh.\n# Keep this file idempotent: both ~/.zprofile and ~/.zshrc source it.\ntypeset -U path PATH\nif [[ -x /opt/homebrew/bin/brew ]] && {\n  [[ ${HOMEBREW_PREFIX:-} != /opt/homebrew ]] ||\n  [[ ":$PATH:" != *":/opt/homebrew/bin:"* ]] ||\n  [[ ":$PATH:" != *":/opt/homebrew/sbin:"* ]]\n}; then\n  eval "$(/opt/homebrew/bin/brew shellenv)"\nfi\n\ncase ":$PATH:" in\n  *":$HOME/.local/bin:"*) ;;\n  *) export PATH="$HOME/.local/bin:$PATH" ;;\nesac\n'
-  bootstrap_zsh_path=$'# Day One Mac bootstrap PATH — Phase 5 expands and adopts this file.\ntypeset -U path PATH\ncase ":$PATH:" in\n  *":$HOME/.local/bin:"*) ;;\n  *) export PATH="$HOME/.local/bin:$PATH" ;;\nesac\n'
-  if uses_node; then
-    zsh_path+=$'\nexport PNPM_HOME="$HOME/Library/pnpm"\ncase ":$PATH:" in\n  *":$PNPM_HOME:"*) ;;\n  *) export PATH="$PNPM_HOME:$PATH" ;;\nesac\n'
-  fi
-  zsh_aliases=$'# Safe, readable aliases selected by Day One Mac.\n# Keep destructive, publishing, force-push and prune commands explicit.\nif command -v day-one-mac >/dev/null 2>&1; then\n  alias cdayone=\'cd "$(day-one-mac root)"\'\nfi\n\nif command -v git >/dev/null 2>&1; then\n  alias gs=\'git status --short --branch\'\n  alias gd=\'git diff\'\n  alias gds=\'git diff --staged\'\n  alias gl=\'git log --oneline --graph --decorate -20\'\n  alias gremotes=\'git remote --verbose\'\nfi\n\nif command -v chezmoi >/dev/null 2>&1; then\n  alias cm=\'chezmoi\'\n  alias cmstatus=\'chezmoi status\'\n  alias cmdiff=\'chezmoi diff\'\n  alias cmdifftext=\'chezmoi --use-builtin-diff diff --no-pager\'\n  alias cmmerge=\'chezmoi merge\'\n  alias cmverify=\'chezmoi verify\'\n  alias cmdoctor=\'chezmoi doctor\'\nfi\n\nif command -v brew >/dev/null 2>&1; then\n  alias brewcheck=\'brew bundle check --file="$HOME/Brewfile" --no-upgrade\'\n  alias brewout=\'brew outdated --greedy\'\n  alias brewcleanpreview=\'brew cleanup --dry-run\'\n  alias brewautopreview=\'brew autoremove --dry-run\'\nfi\n'
-  create_directory "$zsh_config_dir"
-  if [[ -f "$zsh_path_file" ]] \
-     && grep -Fq '# Day One Mac bootstrap PATH — Phase 5 expands and adopts this file.' "$zsh_path_file"; then
-    if cmp -s "$zsh_path_file" <(printf '%s' "$bootstrap_zsh_path"); then
-      info "expanding the early portable-command PATH file for the full shell setup"
-      write_text_file "$zsh_path_file" "$zsh_path"
-    else
-      err "$zsh_path_file contains the bootstrap marker plus user changes."
-      warn "Merge those changes into the documented Phase 5 path.zsh, remove the marker, and rerun."
-      return "$EX_MANUAL"
-    fi
-  fi
-  [[ -e "$zsh_path_file" ]] || write_text_file "$zsh_path_file" "$zsh_path"
-  [[ -e "$zsh_aliases_file" ]] || write_text_file "$zsh_aliases_file" "$zsh_aliases"
-  # HTTPS authentication needs no SSH identity, but Phase 5 still keeps one
-  # predictable ~/.ssh/config target in the dotfiles inventory. Create only a
-  # comment when Phase 3 deliberately left the file absent; never replace an
-  # existing personal or company SSH configuration.
-  if [[ "$AUTH_MODE" == https && ! -e "$ssh_config" ]]; then
-    create_directory "$HOME/.ssh"
-    write_text_file "$ssh_config" $'# Day One Mac: HTTPS Git authentication selected; no SSH identity is configured.\n'
-    [[ "$DRY_RUN" == 1 ]] || chmod 600 "$ssh_config"
-    ssh_config_created=1
-  fi
-  # The checksum-verified standalone installer is the sole owner of this
-  # launcher. Keeping it out of chezmoi prevents an old dotfiles source from
-  # downgrading a newly installed runtime during Phase 5.
-  if [[ ! -x "$runner_wrapper" ]]; then
-    if [[ "$DRY_RUN" == 1 ]]; then
-      info "would require the standalone Day One Mac command at $runner_wrapper"
-    else
-      err "The standalone Day One Mac command is missing: $runner_wrapper"
-      warn "Reinstall the latest public runtime, then rerun Phase 5."
-      return "$EX_GATE"
-    fi
-  fi
-  legacy_runner="$HOME/.local/bin/fresh-start"
-  legacy_runner_content=$'#!/usr/bin/env bash\nprintf "Compatibility command: use day-one-mac instead of fresh-start.\\n" >&2\nexec "$HOME/.local/bin/day-one-mac" "$@"\n'
-  if [[ -f "$legacy_runner" ]] \
-     && grep -Eq 'fresh-start commands:|fresh-start project location|day-one-mac commands:' "$legacy_runner"; then
-    if [[ "$DRY_RUN" == 1 ]]; then
-      info "would convert the old fresh-start command into a Day One Mac compatibility shim"
-    else
-      write_text_file "$legacy_runner" "$legacy_runner_content"
-      chmod 700 "$legacy_runner"
-      legacy_runner_updated=1
-    fi
-  fi
-  if [[ "$existing_managed_source" == 0 ]]; then
-    zprofile=$'[[ -r "$HOME/.config/zsh/path.zsh" ]] && source "$HOME/.config/zsh/path.zsh"\n'
-    zshrc=$'[[ -r "$HOME/.config/zsh/path.zsh" ]] && source "$HOME/.config/zsh/path.zsh"\n\nHISTFILE="$HOME/.zsh_history"\nHISTSIZE=50000\nSAVEHIST=10000\nsetopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_REDUCE_BLANKS HIST_VERIFY\n\nfor completion_dir in /opt/homebrew/share/zsh/site-functions /opt/homebrew/share/zsh-completions; do\n  [[ -d "$completion_dir" ]] || continue\n  (( ${fpath[(Ie)$completion_dir]} )) || fpath=("$completion_dir" $fpath)\ndone\nunset completion_dir\nautoload -Uz compinit\ncompinit\n\nif command -v fnm >/dev/null 2>&1; then\n  eval "$(fnm env --use-on-cd --shell zsh)"\nfi\n\n[[ -r "$HOME/.config/zsh/aliases.zsh" ]] && source "$HOME/.config/zsh/aliases.zsh"\n\nif [[ -r /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then\n  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh\nfi\n\nif command -v starship >/dev/null 2>&1; then\n  eval "$(starship init zsh)"\nfi\n\n# Syntax highlighting must be the final shell integration.\nif [[ -r /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then\n  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh\nfi\n'
-    [[ -e "$HOME/.zprofile" ]] || write_text_file "$HOME/.zprofile" "$zprofile"
-    [[ -e "$HOME/.zshrc" ]] || write_text_file "$HOME/.zshrc" "$zshrc"
-    [[ "$DRY_RUN" == 1 ]] || run chezmoi add "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" "$global_ignore" "$HOME/.ssh/config" "$starship_config" "$zsh_path_file" "$zsh_aliases_file"
-  elif [[ "$DRY_RUN" != 1 ]]; then
-    [[ "$starship_created" == 1 ]] && run chezmoi add "$starship_config"
-    [[ "$legacy_runner_updated" == 1 ]] && run chezmoi add "$legacy_runner"
-    [[ "$ssh_config_created" == 1 ]] && run chezmoi add "$ssh_config"
-    chezmoi source-path "$global_ignore" >/dev/null 2>&1 || run chezmoi add "$global_ignore"
-    chezmoi source-path "$zsh_path_file" >/dev/null 2>&1 || run chezmoi add "$zsh_path_file"
-    chezmoi source-path "$zsh_aliases_file" >/dev/null 2>&1 || run chezmoi add "$zsh_aliases_file"
-  fi
-  [[ "$DRY_RUN" == 1 ]] && return 0
-  grep -Fq 'starship init zsh' "$HOME/.zshrc" || {
-    warn "Add 'eval \"\$(starship init zsh)\"' to ~/.zshrc through chezmoi, then rerun Phase 5."
-    return "$EX_MANUAL"
-  }
-  if [[ -e "$HOME/.zshenv" ]] && grep -Eq '(^|[[:space:]])(export[[:space:]]+)?ZDOTDIR=|(^|[[:space:]])unsetopt[[:space:]]+.*RCS' "$HOME/.zshenv"; then
-    err "~/.zshenv changes ZDOTDIR or disables Zsh startup files, so Day One Mac cannot verify the managed shell safely."
-    warn "Review ~/.zshenv, remove the conflicting directive through its owner, and rerun Phase 5."
-    return "$EX_MANUAL"
-  fi
-  grep -Fq '.config/zsh/path.zsh' "$HOME/.zprofile" || {
-    err "~/.zprofile must source ~/.config/zsh/path.zsh; merge the Phase 5 block through chezmoi."
-    return "$EX_MANUAL"
-  }
-  grep -Fq '.config/zsh/path.zsh' "$HOME/.zshrc" || {
-    err "~/.zshrc must source ~/.config/zsh/path.zsh; merge the Phase 5 block through chezmoi."
-    return "$EX_MANUAL"
-  }
-  grep -Fq '.config/zsh/aliases.zsh' "$HOME/.zshrc" || {
-    err "~/.zshrc must source ~/.config/zsh/aliases.zsh; merge the Phase 5 block through chezmoi."
-    return "$EX_MANUAL"
-  }
-  chezmoi doctor >/dev/null
-  for managed_target in "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" "$global_ignore" "$HOME/.ssh/config" "$starship_config" "$zsh_path_file" "$zsh_aliases_file"; do
-    chezmoi source-path "$managed_target" >/dev/null 2>&1 || {
-      err "$managed_target is not managed by chezmoi."; return "$EX_MANUAL"; }
-  done
-  phase_step_done "required dotfiles are under chezmoi management"
-  phase_next "new login-shell verification" "Apply the reviewed source, open a new login shell, and resolve the first missing command it reports."
-  STARSHIP_CONFIG="$starship_config" starship prompt >/dev/null
-  [[ "$("$runner_wrapper" root 2>/dev/null)" == "$PROJECT_DIR" ]] || {
-    err "$runner_wrapper does not resolve the current project root: $PROJECT_DIR"
-    return "$EX_GATE"
-  }
-  homebrew_zsh="/opt/homebrew/bin/zsh"
-  [[ -x "$homebrew_zsh" ]] || { err "Homebrew zsh is missing at $homebrew_zsh."; return "$EX_GATE"; }
-  compaudit_output="$("$homebrew_zsh" -fc 'for dir in /opt/homebrew/share/zsh/site-functions /opt/homebrew/share/zsh-completions; do [[ -d "$dir" ]] && fpath=("$dir" $fpath); done; autoload -Uz compaudit; compaudit' 2>/dev/null || true)"
-  if [[ -n "$compaudit_output" ]]; then
-    err "Zsh completion directories have unsafe permissions:"
-    printf '%s\n' "$compaudit_output" | sed 's/^/    /'
-    warn "Review only the listed paths; do not recursively chmod /opt/homebrew or HOME."
-    return "$EX_MANUAL"
-  fi
-  # Keep the gate compatible with sources created before cmdifftext/cmmerge
-  # were added. Those convenience aliases are in the current baseline, but a
-  # visual-tool upgrade must not force-edit a user's versioned alias file.
-  clean_shell_check='command -v brew git ghq chezmoi starship day-one-mac >/dev/null; [[ "$(command -v zsh)" == /opt/homebrew/bin/zsh ]]; alias cdayone gs gd gds gl gremotes cm cmstatus cmdiff cmverify cmdoctor brewcheck brewout brewcleanpreview brewautopreview >/dev/null; [[ ":$PATH:" == *":$HOME/.local/bin:"* ]]'
-  uses_node && clean_shell_check+='; [[ "$PNPM_HOME" == "$HOME/Library/pnpm" && ":$PATH:" == *":$PNPM_HOME:"* ]]'
-  env -i HOME="$HOME" USER="$(id -un)" LOGNAME="$(id -un)" TERM="${TERM:-xterm-256color}" PATH='/usr/bin:/bin:/usr/sbin:/sbin' SHELL="$homebrew_zsh" \
-    "$homebrew_zsh" -lic "$clean_shell_check" || {
-      err "A clean Homebrew-zsh login shell did not load every required command and PATH entry."
-      return "$EX_GATE"
-    }
-  # The same commands must resolve in a NON-login interactive shell too. That
-  # is the case ~/.zprofile does not cover, and where a missing Starship prompt
-  # or Python shim would otherwise go unnoticed until someone opened a tmux
-  # pane or typed `zsh`.
-  env -i HOME="$HOME" USER="$(id -un)" LOGNAME="$(id -un)" TERM="${TERM:-xterm-256color}" PATH='/usr/bin:/bin:/usr/sbin:/sbin' SHELL="$homebrew_zsh" \
-    "$homebrew_zsh" -ic "$clean_shell_check" || {
-    err "A non-login interactive shell cannot find Homebrew or Starship."
-    warn "~/.zshrc should re-apply the Homebrew environment when it is missing; see Phase 5 Step 5.3."
-    return "$EX_GATE"
-  }
-  phase_step_done "Starship and required commands work in login and non-login shells"
-  phase_next "Homebrew zsh as the login shell" "Confirm the /etc/shells and chsh prompts, then open a new terminal."
-  switch_login_shell_to_homebrew_zsh || return $?
-  ok "chezmoi, managed Starship configuration and login shell verified"
-}
-
-phase_06() {
-  local fnm_dir pnpm_home uv_python_bin uv_python_dir
-  ui_title '6️⃣' 'Phase 06 — Language toolchains and pnpm'
-  info "Guide: $(phase_doc 06)"
-  if uses_node; then
-    phase_next "Node LTS, npm and pnpm" "Review the Node steps, then ensure PNPM_HOME is exported by the chezmoi-managed .zprofile."
-    if ! have fnm; then
-      [[ "$DRY_RUN" == 1 ]] || { err "fnm is missing; complete Phase 4."; return "$EX_GATE"; }
-    fi
-    if [[ "$DRY_RUN" == 1 ]]; then
-      print_command fnm install --lts --use
-      print_command mkdir -p "$HOME/Library/pnpm"
-      print_command pnpm --version
-      print_command pnpm store path
-    else
-      eval "$(fnm env --shell bash)"
-      fnm_dir="${FNM_DIR:-$HOME/.local/share/fnm}"
-      record_path_before_write "$fnm_dir"
-      record_path_before_write "$HOME/.local/state/fnm_multishells"
-      run fnm install --lts --use
-      run fnm default "$(fnm current)"
-      pnpm_home="$(zsh -lc 'printf %s "${PNPM_HOME:-$HOME/Library/pnpm}"')"
-      [[ "$pnpm_home" == "$HOME"/* ]] || {
-        err "PNPM_HOME must be a specific path beneath HOME: $pnpm_home"; return "$EX_GATE"; }
-      create_directory "$pnpm_home"
-      export PNPM_HOME="$pnpm_home"
-      case ":$PATH:" in
-        *":$PNPM_HOME:"*) ;;
-        *) export PATH="$PNPM_HOME:$PATH" ;;
-      esac
-      node --version
-      npm --version
-      pnpm --version
-      (cd "$HOME" && pnpm store path)
-      if ! zsh -lc '[[ -n "$PNPM_HOME" && -d "$PNPM_HOME" && ":$PATH:" == *":$PNPM_HOME:"* ]]'; then
-        warn "Add the PNPM_HOME block from Phase 5 to the chezmoi-managed .zprofile, apply it, then rerun Phase 6."
-        return "$EX_MANUAL"
-      fi
-    fi
-    phase_step_done "Node LTS, npm and Homebrew-owned pnpm verified"
-  fi
-  if uses_python; then
-    phase_next "uv-managed Python" "Complete the Python steps and rerun after uv can find an installed interpreter."
-    if ! have uv; then
-      [[ "$DRY_RUN" == 1 ]] || { err "uv is missing; complete Phase 4."; return "$EX_GATE"; }
-    fi
-    if [[ "$DRY_RUN" != 1 ]]; then
-      uv_python_dir="$(uv python dir)"
-      record_path_before_write "$uv_python_dir"
-    fi
-    run uv python install
-    if [[ "$DRY_RUN" != 1 ]]; then
-      uv_python_bin="$(uv python find)"
-      "$uv_python_bin" --version
-    fi
-    phase_step_done "uv-managed Python verified"
-  fi
-  ok "selected language toolchains verified"
-}
-
-phase_07() {
-  local settings settings_content
-  ui_title '7️⃣' 'Phase 07 — VS Code base'
-  info "Guide: $(phase_doc 07)"
-  phase_next "Visual Studio Code application" "Complete Phase 4 or restore the approved company-managed VS Code application, then rerun Phase 7."
-  if [[ "$DRY_RUN" != 1 ]]; then
-    verify_application visual-studio-code || {
-      day_one_app_detect visual-studio-code || true
-      err "Visual Studio Code is unavailable or conflicts with the expected application identity."
-      warn "$DAY_ONE_APP_REASON"
-      return "$EX_GATE"
-    }
-    ok "Visual Studio Code — $(day_one_app_source_label "$DAY_ONE_APP_SOURCE")"
-  fi
-  phase_next "VS Code settings and command-line launcher" "Open VS Code, install the 'code' command in PATH, and keep both AI tool auto-approval settings false."
-  settings="$HOME/Library/Application Support/Code/User/settings.json"
-  settings_content=$'{\n  "editor.formatOnSave": true,\n  "files.insertFinalNewline": true,\n  "files.trimTrailingWhitespace": true,\n  "git.autofetch": true,\n  "terminal.integrated.defaultProfile.osx": "zsh",\n  "terminal.integrated.fontFamily": "\u0027JetBrainsMono Nerd Font\u0027",\n  "chat.tools.global.autoApprove": false,\n  "chat.tools.terminal.enableAutoApprove": false\n}\n'
-  if [[ ! -e "$settings" ]]; then
-    create_directory "$HOME/Library/Application Support/Code"
-    create_directory "$HOME/Library/Application Support/Code/User"
-    write_text_file "$settings" "$settings_content"
-  fi
-  if [[ "$DRY_RUN" == 1 ]]; then print_command code --version; return 0; fi
-  have code || {
-    warn "Open VS Code and run: Shell Command: Install 'code' command in PATH"
-    return "$EX_MANUAL"
-  }
-  code --version >/dev/null
-  grep -Fq '"chat.tools.global.autoApprove": false' "$settings" || {
-    warn "Keep chat.tools.global.autoApprove false in VS Code settings."; return "$EX_MANUAL"; }
-  grep -Fq '"chat.tools.terminal.enableAutoApprove": false' "$settings" || {
-    warn "Keep chat.tools.terminal.enableAutoApprove false in VS Code settings."; return "$EX_MANUAL"; }
-  phase_step_done "VS Code opens from Terminal with the safe minimal settings"
-  ok "minimal VS Code base verified; profiles and extension catalogues remain optional"
-}
-
-report_check() {
-  local label="$1"; shift
-  if "$@" >/dev/null 2>&1; then
-    printf '| %s | PASS |\n' "$label" >> "$STATE_DIR/verification.md"
-  else
-    printf '| %s | FAIL |\n' "$label" >> "$STATE_DIR/verification.md"
-    VERIFY_FAILURES=$((VERIFY_FAILURES + 1))
-    phase_gate_failed "$label"
-  fi
-}
-
-# Scan a chezmoi source for obvious secret material.
-#
-# Results are returned through globals rather than stdout: a command
-# substitution would run this in a subshell and discard SECRET_SCAN_ERROR.
-#   SECRET_SCAN_MATCHES — newline-separated matching file paths, empty if clean
-#   SECRET_SCAN_ERROR   — why the scan could not run
-# Returns 0 when the scan ran (with or without matches) and 1 when the scan
-# itself failed, so a broken or missing scanner is never read as a clean result.
-#
-# Each pattern is passed with -e because several of them begin with "-", which
-# ripgrep would otherwise parse as a command-line flag.
-SECRET_SCAN_MATCHES=""
-SECRET_SCAN_ERROR=""
-scan_source_for_secrets() {
-  local source="$1" output status
-  SECRET_SCAN_MATCHES=""
-  SECRET_SCAN_ERROR=""
-
-  if ! command -v rg >/dev/null 2>&1; then
-    SECRET_SCAN_ERROR="ripgrep (rg) was not found on PATH. Install it with 'brew install ripgrep', then rerun Phase 8."
-    return 1
-  fi
-
-  set +e
-  output="$(rg -l --hidden -g '!.git/**' \
-    -e '-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----' \
-    -e 'github_pat_[A-Za-z0-9_]{20,}' \
-    -e 'ghp_[A-Za-z0-9]{20,}' \
-    -e 'AKIA[0-9A-Z]{16}' \
-    "$source" 2>&1)"
-  status=$?
-  set -e
-
-  # ripgrep: 0 = matched, 1 = no match, 2 or higher = the scan failed.
-  if [[ "$status" -gt 1 ]]; then
-    SECRET_SCAN_ERROR="the secret scan could not run: $output"
-    return 1
-  fi
-
-  [[ "$status" -eq 0 ]] && SECRET_SCAN_MATCHES="$output"
-  return 0
-}
-
-verify_dotfiles_remote() {
-  local source remote_url provider repo_slug visibility azure_path azure_org azure_project secret_matches behind ahead
-  source="$(chezmoi source-path 2>/dev/null || true)"
-  phase_next "private dotfiles repository" "Commit the reviewed chezmoi source, add a private origin remote for the selected track, push it, then rerun Phase 8."
-
-  [[ -n "$source" && -d "$source" ]] || {
-    err "chezmoi has no readable source directory."
-    return "$EX_GATE"
-  }
-  git -C "$source" rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
-    warn "The chezmoi source is not a Git repository yet: $source"
-    warn "Follow Step 8.5 to initialise it, review it for secrets, commit, and add a private remote."
-    return "$EX_MANUAL"
-  }
-  git -C "$source" rev-parse --verify HEAD >/dev/null 2>&1 || {
-    warn "The chezmoi source has no commit yet. Review it, create the first commit, and rerun Phase 8."
-    return "$EX_MANUAL"
-  }
-
-  if ! scan_source_for_secrets "$source"; then
-    printf '| Dotfiles secret-pattern scan | FAIL — did not run |\n' >> "$STATE_DIR/verification.md"
-    err "The dotfiles source was not scanned for secrets, so it cannot be approved."
-    err "$SECRET_SCAN_ERROR"
-    return "$EX_GATE"
-  fi
-  secret_matches="$SECRET_SCAN_MATCHES"
-  if [[ -n "$secret_matches" ]]; then
-    printf '| Dotfiles secret-pattern review | REVIEW |\n' >> "$STATE_DIR/verification.md"
-    warn "Possible secret material was found in these source files:"
-    while IFS= read -r match; do warn "  ${match#"$source"/}"; done <<<"$secret_matches"
-    warn "Remove false positives or real secrets safely, rotate exposed credentials, then rerun Phase 8."
-    return "$EX_MANUAL"
-  fi
-  printf '| Dotfiles secret-pattern scan | PASS |\n' >> "$STATE_DIR/verification.md"
-
-  if [[ -n "$(git -C "$source" status --porcelain)" ]]; then
-    printf '| Dotfiles repository clean | REVIEW |\n' >> "$STATE_DIR/verification.md"
-    warn "The dotfiles source has uncommitted changes: $source"
-    git -C "$source" status --short >&2
-    warn "Review and commit the intended files before rerunning Phase 8."
-    return "$EX_MANUAL"
-  fi
-  printf '| Dotfiles repository clean | PASS |\n' >> "$STATE_DIR/verification.md"
-
-  remote_url="$(git -C "$source" remote get-url origin 2>/dev/null || true)"
-  [[ -n "$remote_url" ]] || {
-    printf '| Private dotfiles origin | REVIEW |\n' >> "$STATE_DIR/verification.md"
-    warn "The dotfiles source has no origin remote. Create a private repository, add origin, push, and rerun."
-    return "$EX_MANUAL"
-  }
-
-  case "$remote_url" in
-    *github.com:*.git|*github.com/*.git|*github.com:*|*github.com/*)
-      provider=github
-      repo_slug="$(printf '%s\n' "$remote_url" \
-        | sed -E 's#^(ssh://)?git@github\.com[:/]##; s#^https://github\.com/##; s#\.git$##')"
-      [[ "$TRACK" == 1 || "$TRACK" == 3 ]] || {
-        err "A GitHub dotfiles remote does not match Track $TRACK."
-        return "$EX_GATE"
-      }
-      visibility="$(gh repo view "$repo_slug" --json visibility --jq '.visibility' 2>/dev/null || true)"
-      [[ "$visibility" == PRIVATE ]] || {
-        printf '| Dotfiles remote privacy | FAIL |\n' >> "$STATE_DIR/verification.md"
-        err "GitHub did not confirm that $repo_slug is private (reported: ${visibility:-unavailable})."
-        return "$EX_GATE"
-      }
-      ;;
-    *ssh.dev.azure.com*|*dev.azure.com/*/_git/*)
-      provider=azure
-      [[ "$TRACK" == 2 || "$TRACK" == 3 ]] || {
-        err "An Azure DevOps dotfiles remote does not match Track $TRACK."
-        return "$EX_GATE"
-      }
-      case "$remote_url" in
-        *ssh.dev.azure.com*) azure_path="$(printf '%s\n' "$remote_url" | sed -E 's#^.*ssh\.dev\.azure\.com[:/]v3/##; s#\.git$##')" ;;
-        *) azure_path="$(printf '%s\n' "$remote_url" | sed -E 's#^https://dev\.azure\.com/##; s#/_git/#/#; s#\.git$##')" ;;
-      esac
-      azure_org="${azure_path%%/*}"
-      azure_path="${azure_path#*/}"
-      azure_project="${azure_path%%/*}"
-      azure_project="${azure_project//%20/ }"
-      [[ -n "$azure_org" && -n "$azure_project" && "$azure_org" != "$azure_path" ]] || {
-        err "Could not identify the Azure organisation and project from origin: $remote_url"
-        return "$EX_MANUAL"
-      }
-      visibility="$(az devops project show --org "https://dev.azure.com/$azure_org" \
-        --project "$azure_project" --query visibility -o tsv 2>/dev/null || true)"
-      visibility="$(printf '%s' "$visibility" | tr '[:upper:]' '[:lower:]')"
-      [[ "$visibility" == private ]] || {
-        printf '| Dotfiles remote privacy | FAIL |\n' >> "$STATE_DIR/verification.md"
-        err "Azure DevOps did not confirm that project '$azure_project' is private (reported: ${visibility:-unavailable})."
-        return "$EX_GATE"
-      }
-      ;;
-    *)
-      printf '| Private dotfiles origin | REVIEW |\n' >> "$STATE_DIR/verification.md"
-      warn "The origin host is not one this playbook can verify automatically: $remote_url"
-      warn "Use a GitHub or Azure DevOps private remote that matches the selected track."
-      return "$EX_MANUAL"
-      ;;
-  esac
-
-  git -C "$source" ls-remote origin >/dev/null 2>&1 || {
-    printf '| Dotfiles remote reachable | FAIL |\n' >> "$STATE_DIR/verification.md"
-    err "The dotfiles origin is not reachable with the current authentication: $remote_url"
-    return "$EX_GATE"
-  }
-  git -C "$source" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' >/dev/null 2>&1 || {
-    printf '| Dotfiles branch pushed | REVIEW |\n' >> "$STATE_DIR/verification.md"
-    warn "The current dotfiles branch has no upstream. Push it with -u, then rerun Phase 8."
-    return "$EX_MANUAL"
-  }
-  read -r behind ahead <<<"$(git -C "$source" rev-list --left-right --count '@{upstream}...HEAD')"
-  if [[ "$behind" != 0 || "$ahead" != 0 ]]; then
-    printf '| Dotfiles branch pushed | REVIEW — behind %s, ahead %s |\n' "$behind" "$ahead" >> "$STATE_DIR/verification.md"
-    warn "The dotfiles branch and its upstream differ (behind $behind, ahead $ahead)."
-    warn "Review, reconcile and push the branch before rerunning Phase 8."
-    return "$EX_MANUAL"
-  fi
-  printf '| Dotfiles remote provider | PASS — %s |\n' "$provider" >> "$STATE_DIR/verification.md"
-  printf '| Dotfiles remote privacy | PASS |\n' >> "$STATE_DIR/verification.md"
-  printf '| Dotfiles remote reachable | PASS |\n' >> "$STATE_DIR/verification.md"
-  printf '| Dotfiles branch pushed | PASS |\n' >> "$STATE_DIR/verification.md"
-  phase_step_done "dotfiles source is clean, secret-scanned, private, reachable and pushed"
-}
-
-verify_local_dotfiles_source() {
-  local source secret_matches
-  source="$(chezmoi source-path 2>/dev/null || true)"
-  phase_next "local chezmoi source review" "Review the local source and ensure it is included in an encrypted backup."
-  [[ -n "$source" && -d "$source" ]] || {
-    err "chezmoi has no readable source directory."
-    return "$EX_GATE"
-  }
-  if ! scan_source_for_secrets "$source"; then
-    printf '| Dotfiles secret-pattern scan | FAIL — did not run |\n' >> "$STATE_DIR/verification.md"
-    err "The dotfiles source was not scanned for secrets, so it cannot be approved."
-    err "$SECRET_SCAN_ERROR"
-    return "$EX_GATE"
-  fi
-  secret_matches="$SECRET_SCAN_MATCHES"
-  if [[ -n "$secret_matches" ]]; then
-    printf '| Dotfiles secret-pattern review | REVIEW |\n' >> "$STATE_DIR/verification.md"
-    warn "Possible secret material was found in these source files:"
-    while IFS= read -r match; do warn "  ${match#"$source"/}"; done <<<"$secret_matches"
-    warn "Remove real secrets, rotate exposed credentials, then rerun Phase 8."
-    return "$EX_MANUAL"
-  fi
-  printf '| Dotfiles secret-pattern scan | PASS |\n' >> "$STATE_DIR/verification.md"
-  printf '| Dotfiles versioning | PASS — local-only selected |\n' >> "$STATE_DIR/verification.md"
-  printf '| Dotfiles remote | NOT REQUIRED — local-only selected |\n' >> "$STATE_DIR/verification.md"
-  warn "chezmoi is local-only: $source"
-  if [[ -d "$source/.git" ]]; then
-    printf '| Existing dotfiles Git metadata | PRESENT — preserved, not deleted |\n' >> "$STATE_DIR/verification.md"
-    warn "This source already contains Git metadata. Local-only mode skips commit and remote gates but never deletes existing history."
-    warn "If you want a genuinely unversioned source, copy the reviewed files into a new source directory instead of deleting .git automatically."
-  else
-    printf '| Existing dotfiles Git metadata | NONE |\n' >> "$STATE_DIR/verification.md"
-    warn "There is no Git history or remote recovery gate."
-  fi
-  warn "Include the chezmoi source directory in an encrypted backup."
-  phase_step_done "local-only chezmoi source is readable and secret-scanned"
-}
-
-phase_08() {
-  local brewfile="$HOME/Brewfile" brewfile_created=0 report="$STATE_DIR/verification.md" app_id
-  local plaintext_keys plaintext_key
-  ui_title '8️⃣' 'Phase 08 — Verify and reproduce'
-  info "Guide: $(phase_doc 08)"
-  if [[ "$DRY_RUN" == 1 ]]; then
-    print_command "$SCRIPT_DIR/validate.sh"
-    info "would write $report and verify the selected track and stack"
-    info "would preserve an existing $brewfile, or create and manage it if absent"
-    print_command brew bundle dump --file="$brewfile"
-    print_command chezmoi add "$brewfile"
-    if [[ "$DOTFILES_VERSIONING" == git ]]; then
-      info "would require a clean, pushed, private GitHub or Azure DevOps dotfiles origin"
-    else
-      info "would verify the local-only chezmoi source and skip Git remote requirements"
-    fi
-    return 0
-  fi
-  phase_next "Day One Mac project validation" "Run 'day-one-mac validate', fix the named structural or semantic failure, then rerun Phase 8."
-  "$SCRIPT_DIR/validate.sh" || return "$EX_GATE"
-  phase_step_done "Day One Mac project validation passed"
-  ensure_state
-  VERIFY_FAILURES=0
-  phase_next "machine verification gates" "Open ~/.day-one-mac/verification.md and return to the phase that owns each failed row."
-  {
-    printf '# Day One Mac verification\n\n'
-    printf -- '- Generated: `%s`\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-    printf -- '- Track: `%s — %s`\n' "$TRACK" "$(track_name)"
-    printf -- '- Stack: `%s`\n' "$STACK"
-    printf -- '- Dotfiles versioning: `%s`\n\n' "$DOTFILES_VERSIONING"
-    printf '| Gate | Result |\n|---|---|\n'
-  } > "$report"
-  report_check "Apple-silicon native terminal" day_one_require_apple_silicon
-  report_check "Xcode or Command Line Tools readiness" verify_apple_developer_tools
-  report_check "Apple-silicon Homebrew prefix" bash -c '[[ "$(brew --prefix 2>/dev/null)" == /opt/homebrew ]]'
-  report_check "Git identity" git config --global user.email
-  report_check "ghq repository root" bash -c '[[ "$(ghq root 2>/dev/null | sed -n "1p")" == "$HOME/Developer" ]]'
-  report_check "Day One Mac project root" bash -c '[[ "$(day-one-mac root)" == "$1" ]]' _ "$PROJECT_DIR"
-  report_check "post-setup finalisation command" day-one-mac finalize --help
-  report_check "advanced setup command" day-one-mac advanced --list
-  report_check "advanced environment report command" day-one-mac advanced-audit --help
-  report_check "existing-Mac safety report command" day-one-mac safety-report --plan
-  report_check "existing-Mac Route A/Route B command" day-one-mac prepare-existing --help
-  report_check "chezmoi" chezmoi doctor
-  report_check "Starship" starship --version
-  while IFS= read -r app_id; do
-    [[ -n "$app_id" ]] || continue
-    day_one_app_load "$app_id" || continue
-    report_application "$DAY_ONE_APP_NAME" "$app_id"
-  done < <(required_application_ids)
-  report_check "VS Code CLI" code --version
-  report_check "FileVault" bash -c "fdesetup status 2>/dev/null | grep -q 'FileVault is On'"
-  report_check "Gatekeeper" bash -c "spctl --status 2>/dev/null | grep -q 'assessments enabled'"
-  uses_node && report_check "Node, npm and pnpm" zsh -lic 'node --version && npm --version && pnpm --version'
-  uses_python && report_check "Python via uv" uv python find
-  uses_github && report_check "GitHub CLI" gh auth status
-  uses_azure && report_check "Azure CLI" az account show
-  printf '| Git authentication mode | %s |\n' "$AUTH_MODE" >> "$report"
-  # Ask the agent this mode actually uses. In 1password mode the agent is
-  # reached through the IdentityAgent socket in ~/.ssh/config, not through
-  # SSH_AUTH_SOCK, so a bare `ssh-add -l` queries the empty default agent and
-  # reports a failure even when 1Password is serving keys correctly.
-  case "$AUTH_MODE" in
-    1password)
-      if [[ -n "$(agent_identities "$ONEPASSWORD_AGENT_SOCK")" ]]; then
-        printf '| SSH agent identity | PASS |\n' >> "$report"
-      else
-        printf '| SSH agent identity | FAIL |\n' >> "$report"
-        VERIFY_FAILURES=$((VERIFY_FAILURES + 1))
-        phase_gate_failed "SSH agent identity"
-      fi
-      ;;
-    keychain|external)
-      if [[ -n "$(agent_identities "")" ]]; then
-        printf '| SSH agent identity | PASS |\n' >> "$report"
-      else
-        printf '| SSH agent identity | FAIL |\n' >> "$report"
-        VERIFY_FAILURES=$((VERIFY_FAILURES + 1))
-        phase_gate_failed "SSH agent identity"
-      fi
-      ;;
-    https)
-      printf '| SSH agent identity | NOT REQUIRED — https selected |\n' >> "$report"
-      ;;
-  esac
-  # The no-plaintext-key guarantee holds for every mode except keychain, which
-  # creates one on purpose; asserting it there would contradict the design.
-  if [[ "$AUTH_MODE" == keychain ]]; then
-    printf '| Plaintext private key in ~/.ssh | EXPECTED — keychain mode |\n' >> "$report"
-  else
-    # Name the offending files: "FAIL" alone leaves no way to tell which key
-    # appeared, or whether it is one `gh auth login` created before the
-    # --skip-ssh-key flag was added.
-    plaintext_keys="$(find "$HOME/.ssh" -maxdepth 1 -type f -name 'id_*' ! -name '*.pub' 2>/dev/null | LC_ALL=C sort || true)"
-    if [[ -z "$plaintext_keys" ]]; then
-      printf '| No plaintext private key in ~/.ssh | PASS |\n' >> "$report"
-    else
-      printf '| No plaintext private key in ~/.ssh | FAIL |\n' >> "$report"
-      while IFS= read -r plaintext_key; do
-        [[ -n "$plaintext_key" ]] || continue
-        printf '| — unexpected private key | `%s` |\n' "${plaintext_key/#"$HOME"/~}" >> "$report"
-        warn "Unexpected private key on disk: ${plaintext_key/#"$HOME"/~}"
-      done <<<"$plaintext_keys"
-      warn "Auth mode '$AUTH_MODE' keeps no private key in ~/.ssh."
-      warn "If 'gh auth login' created it before --skip-ssh-key was added, remove it from GitHub, then delete it once 1Password's key is confirmed working."
-      VERIFY_FAILURES=$((VERIFY_FAILURES + 1))
-      phase_gate_failed "No plaintext private key in ~/.ssh"
-    fi
-  fi
-  chmod 600 "$report"
-  info "report: $report"
-  if [[ "$VERIFY_FAILURES" -gt 0 ]]; then
-    err "$VERIFY_FAILURES verification gate(s) failed; review the report."
-    return "$EX_GATE"
-  fi
-  phase_step_done "track- and stack-aware machine audit passed"
-  phase_next "reviewed Brewfile under chezmoi management" "Review ~/Brewfile, add it to chezmoi if needed, and rerun Phase 8."
-  if [[ ! -e "$brewfile" ]]; then
-    record_path_before_write "$brewfile"
-    run brew bundle dump --file="$brewfile"
-    brewfile_created=1
-    ok "recorded the installed Homebrew desired state in $brewfile"
-  else
-    info "preserved existing $brewfile"
-  fi
-  if ! chezmoi source-path "$brewfile" >/dev/null 2>&1; then
-    if [[ "$brewfile_created" == 1 ]]; then
-      run chezmoi add "$brewfile"
-    else
-      printf '| Brewfile managed by chezmoi | REVIEW |\n' >> "$report"
-      warn "$brewfile already existed and is not managed by chezmoi."
-      warn "Review it, run 'chezmoi add $brewfile', then rerun Phase 8."
-      return "$EX_MANUAL"
-    fi
-  fi
-  if chezmoi source-path "$brewfile" >/dev/null 2>&1; then
-    printf '| Brewfile managed by chezmoi | PASS |\n' >> "$report"
-  else
-    printf '| Brewfile managed by chezmoi | FAIL |\n' >> "$report"
-    err "Brewfile could not be added to chezmoi."
-    return "$EX_GATE"
-  fi
-  phase_step_done "reviewed Brewfile is managed by chezmoi"
-  if [[ "$DOTFILES_VERSIONING" == git ]]; then
-    verify_dotfiles_remote || return $?
-  else
-    verify_local_dotfiles_source || return $?
-  fi
-  ok "Day One Mac base is complete; optional extras remain optional"
-}
+source "$SCRIPT_DIR/phases/01-decisions.sh"
+source "$SCRIPT_DIR/phases/02-foundation.sh"
+source "$SCRIPT_DIR/phases/03-security.sh"
+source "$SCRIPT_DIR/phases/04-hosting.sh"
+source "$SCRIPT_DIR/phases/05-dotfiles.sh"
+source "$SCRIPT_DIR/phases/06-toolchains.sh"
+source "$SCRIPT_DIR/phases/07-editor.sh"
+source "$SCRIPT_DIR/phases/08-verification.sh"
 
 phase_exit_report() {
   local rc="$1" item
@@ -2588,6 +857,7 @@ show_status() {
   ui_title '📊' 'Day One Mac status'
   printf '  Track: %s\n' "${TRACK:-not selected}"
   printf '  Stack: %s\n' "${STACK:-not selected}"
+  printf '  Preset: %s\n' "${PRESET:-recommended-productivity}"
   printf '  Primary IDE: %s\n' "${PRIMARY_IDE:-not selected}"
   printf '  Git authentication: %s\n' "${AUTH_MODE:-1password}"
   printf '  Dotfiles: %s\n' "${DOTFILES_VERSIONING:-git}"
@@ -2643,7 +913,7 @@ run_macos_settings_checkpoint() {
       fi
       MACOS_SETTINGS_PLAN="$answer"
       save_state_value macos-settings-plan "$MACOS_SETTINGS_PLAN"
-save_state_value auth-mode "$AUTH_MODE"
+      save_state_value auth-mode "$AUTH_MODE"
       run_macos_settings_checkpoint
       ;;
     skip)
@@ -2669,6 +939,9 @@ save_state_value auth-mode "$AUTH_MODE"
   esac
 }
 
+# Sourcing exposes the real runner/modules to tests without executing setup.
+[[ "${BASH_SOURCE[0]}" == "$0" ]] || return 0
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --guided) GUIDED=1 ;;
@@ -2682,6 +955,7 @@ while [[ $# -gt 0 ]]; do
     --stack) shift; [[ $# -gt 0 ]] || { err "--stack needs node, python, or both"; exit 2; }; STACK="$1" ;;
     --name) shift; [[ $# -gt 0 ]] || { err "--name needs a value"; exit 2; }; GIT_NAME="$1" ;;
     --email) shift; [[ $# -gt 0 ]] || { err "--email needs a value"; exit 2; }; GIT_EMAIL="$1" ;;
+    --preset) shift; [[ $# -gt 0 ]] || { err "--preset needs core or recommended-productivity"; exit 2; }; PRESET="$1" ;;
     --primary-ide) shift; [[ $# -gt 0 ]] || { err "--primary-ide needs vscode or other"; exit 2; }; PRIMARY_IDE="$1" ;;
     --dotfiles-repo) shift; [[ $# -gt 0 ]] || { err "--dotfiles-repo needs a URL"; exit 2; }; DOTFILES_REPO="$1"; DOTFILES_VERSIONING=git; DOTFILES_EXPLICIT=1 ;;
     --new-dotfiles) DOTFILES_REPO=""; DOTFILES_EXPLICIT=1 ;;
@@ -2731,6 +1005,10 @@ if day_one_uses_legacy_state; then
   warn "Using pre-rename setup state at $STATE_ROOT; saved progress remains valid."
 fi
 
+if [[ "$DRY_RUN" != 1 && "$SHOW_STATUS" != 1 ]]; then
+  day_one_serialize setup "$0" "${ORIGINAL_ARGS[@]}"
+fi
+
 if [[ "$RESET_PROGRESS" == 1 ]]; then
   if [[ ! -d "$COMPLETED_DIR" ]]; then info "no day-one-mac progress exists"; exit 0; fi
   archive="$STATE_DIR/completed-$(date -u '+%Y%m%dT%H%M%SZ')"
@@ -2769,6 +1047,8 @@ if [[ "$SHOW_STATUS" == 1 ]]; then
   STACK="${STACK:-$(state_value stack)}"
   GIT_NAME="${GIT_NAME:-$(state_value git-name)}"
   GIT_EMAIL="${GIT_EMAIL:-$(state_value git-email)}"
+  PRESET="${PRESET:-$(state_value preset)}"
+  PRESET="${PRESET:-recommended-productivity}"
   PRIMARY_IDE="${PRIMARY_IDE:-$(state_value primary-ide)}"
   [[ -n "$PRIMARY_IDE" ]] || PRIMARY_IDE=vscode
   DOTFILES_REPO="${DOTFILES_REPO:-$(state_value dotfiles-repo)}"
@@ -2792,6 +1072,8 @@ save_state_value track-schema-version "$TRACK_SCHEMA_VERSION"
 save_state_value stack "$STACK"
 [[ -n "$GIT_NAME" ]] && save_state_value git-name "$GIT_NAME"
 [[ -n "$GIT_EMAIL" ]] && save_state_value git-email "$GIT_EMAIL"
+save_state_value preset "$PRESET"
+save_state_value auth-mode "$AUTH_MODE"
 save_state_value primary-ide "$PRIMARY_IDE"
 if [[ "$DOTFILES_EXPLICIT" == 1 || -n "$DOTFILES_REPO" ]]; then
   save_state_value dotfiles-repo "$DOTFILES_REPO"

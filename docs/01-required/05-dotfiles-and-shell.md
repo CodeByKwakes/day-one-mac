@@ -20,7 +20,7 @@ into the source directory.
 ## How to use this phase
 
 - **Manual route:** complete
-  [Manual 5](../20-reference/NOTION-SETUP-GUIDE.md#manual-5--configure-chezmoi-zsh-and-starship)
+  [Manual 5](../20-reference/MANUAL-SETUP-GUIDE.md#manual-5--configure-chezmoi-zsh-and-starship)
   and use the file explanations below as reference. Do not install or manage
   the portable `day-one-mac` launcher.
 - **Script-assisted route:** run `day-one-mac setup --phase 05`. For a new source, the runner creates
@@ -731,7 +731,7 @@ The exact host blocks depend on the saved track and authentication mode. A
 GitHub-only machine using the default 1Password route normally has:
 
 ```sshconfig
-# >>> Day One Mac: 1Password SSH agent >>>
+# >>> Day One Mac: SSH authentication >>>
 # Generated for auth mode '1password' from the saved hosting track.
 Host github.com
     HostName github.com
@@ -741,7 +741,7 @@ Host github.com
     IdentitiesOnly yes
     ServerAliveInterval 60
     ServerAliveCountMax 3
-# <<< Day One Mac: 1Password SSH agent <<<
+# <<< Day One Mac: SSH authentication <<<
 ```
 
 Track 2 or Track 3 also contains an `ssh.dev.azure.com` block. It uses

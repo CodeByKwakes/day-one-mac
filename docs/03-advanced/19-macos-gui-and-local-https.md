@@ -17,6 +17,73 @@ wizard after Phase 1 even if you do not plan to use this advanced module.
 Advanced 19 remains optional and covers broader preference design, application
 permissions, login items, browser roles, and local HTTPS.
 
+## Executable selected-preference route
+
+Module 19 adds explicit plan/apply/check/resume operations for a bounded subset
+of the existing wizard's scalar preferences. A scalar is one Boolean, number
+or string, rather than an entire settings dictionary. Only selected keys are
+written; the runner does not restart Finder, Dock or other applications.
+
+Create `preferences.tsv` in an editor, using two tab-separated fields:
+
+```text
+setting	finder-path
+setting	dock-size
+```
+
+These examples show the Finder path bar and set the Dock size to 44. Preview
+the exact domain, key, type and value before confirming:
+
+```bash
+day-one-mac advanced --module 19 --plan --manifest ./preferences.tsv
+day-one-mac advanced --module 19 --apply --manifest ./preferences.tsv
+day-one-mac advanced --module 19 --check
+```
+
+Apply requires Phase 8. Supported IDs are:
+
+```text
+finder-hidden, finder-extensions, finder-path, finder-status, finder-list
+dock-size, dock-right, dock-magnification-off, dock-autohide, dock-scale-effect
+dock-minimize-into-app, dock-no-launch-animation, dock-show-indicators, dock-no-recents
+keyboard-fast, autocorrect-off
+```
+
+Use one `setting` row per ID, not a comma-separated list. Manual GUI settings
+and `screenshot-location` are excluded; the latter also creates a directory.
+Security controls, permissions, login items and certificate trust remain
+outside this runner.
+
+Before the first write, private records preserve every selected key's original type and value,
+including whether the key was absent. Values are Base64-encoded to preserve
+empty strings and line breaks; Base64 is encoding, **not encryption**. The
+runner prints the record directory. Keep these records with your private setup
+state, not in a public repository.
+
+If a write fails, inspect the run journal, fix the cause and retry:
+
+```bash
+day-one-mac advanced --module 19 --resume
+day-one-mac advanced --module 19 --check
+```
+
+Already-correct values are not rewritten. A pending key can resume only when
+it still has its recorded original or desired value. An applied key changed
+later in System Settings causes a conflict; neither apply nor resume forces it
+back. Do not change these preferences concurrently with a run.
+
+If the preference domain cannot be exported, the runner stops instead of
+assuming its keys are absent. Open the owning application or inspect the domain
+manually before retrying. Check verifies typed stored values, not their visual
+effect; reopen the relevant UI yourself when ready.
+
+This route maintains separate per-key records from the early wizard. The
+legacy `macos-settings --restore` command does **not** restore Module 19's
+records and may change keys that Module 19 subsequently flags as conflicts.
+There is no automatic rollback, force override or record reset in this route.
+Intentional reversals require separately reviewing the exact original keys and
+their typed values; do not delete records simply to silence a conflict.
+
 ## Step 19.1 — Separate preferences from security controls
 
 | Area | Automation policy |

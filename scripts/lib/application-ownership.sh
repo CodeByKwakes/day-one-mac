@@ -14,6 +14,18 @@ day_one_app_catalog_ids() {
   ' "$DAY_ONE_APP_CATALOG"
 }
 
+# Single selection policy for setup, wizard review, and required-app status.
+day_one_required_application_ids() {
+  local preset="${1:-recommended-productivity}" auth="${2:-1password}" app_id
+  while IFS= read -r app_id; do
+    case "$app_id" in
+      1password|1password-cli) [[ "$auth" == 1password ]] || continue ;;
+      *) [[ "$preset" != core ]] || continue ;;
+    esac
+    printf '%s\n' "$app_id"
+  done < <(day_one_app_catalog_ids required)
+}
+
 day_one_app_load() {
   local wanted="$1" row
   row="$(awk -F '\t' -v wanted="$wanted" '$0 !~ /^#/ && $1 == wanted {print; exit}' "$DAY_ONE_APP_CATALOG")"

@@ -18,6 +18,33 @@ portable="$test_home/.local/bin/day-one-mac"
 runtime="$test_home/.local/share/day-one-mac/current"
 [[ -x "$portable" ]] || fail_test 'portable dispatcher was not installed executable'
 [[ -L "$runtime" ]] || fail_test 'standalone current runtime link was not installed'
+HOME="$test_home" "$portable" optional --list | grep -Fq $'13\toptional\texecutable' \
+  || fail_test 'standalone runtime omitted the executable module registry'
+HOME="$test_home" "$portable" optional --list | grep -Fq $'10\toptional\texecutable' \
+  || fail_test 'standalone runtime omitted executable AI payloads'
+HOME="$test_home" "$portable" optional --list | grep -Fq $'16\tadvanced\texecutable' \
+  || fail_test 'standalone runtime omitted executable software selections'
+[[ -x "$runtime/scripts/configure-software.sh" ]] \
+  || fail_test 'standalone runtime omitted the software runner'
+for module in 10A 11 12 14 15 17 18 19 20 21 22; do
+  HOME="$test_home" "$portable" optional --list | grep -Eq "^${module}[[:space:]].*[[:space:]]executable[[:space:]]" \
+    || fail_test "standalone runtime omitted artifact module $module"
+done
+HOME="$test_home" "$runtime/scripts/configure-omniroute.sh" --help | grep -Fq 'never adopts, replaces or deletes' \
+  || fail_test 'standalone gateway runner cannot resolve its dependencies'
+HOME="$test_home" "$runtime/scripts/configure-preferences.sh" --help | grep -Fq 'Typed originals' \
+  || fail_test 'standalone preference runner cannot resolve its dependencies'
+HOME="$test_home" "$runtime/scripts/configure-restore.sh" --help | grep -Fq 'No recursive or live restore' \
+  || fail_test 'standalone restore runner cannot resolve its dependencies'
+for helper in review-io.cjs identity-review.cjs restore-staging.cjs review-node.sh; do
+  [[ -f "$runtime/scripts/lib/$helper" ]] || fail_test "standalone review helper missing: $helper"
+done
+[[ -f "$runtime/config/shell-helpers/packages.zsh" && -f "$runtime/config/shell-helpers/navigation.zsh" ]] \
+  || fail_test 'standalone helper templates are missing'
+HOME="$test_home" "$runtime/scripts/configure-artifacts.sh" --help | grep -Fq 'publishes a new private version' \
+  || fail_test 'standalone artifact runner cannot resolve its dependencies'
+HOME="$test_home" "$runtime/scripts/configure-software.sh" --help | grep -Fq 'Default VS Code profile' \
+  || fail_test 'standalone software runner cannot resolve its dependencies'
 [[ ! -e "$runtime/node_modules" ]] \
   || fail_test 'standalone runtime included contributor-only node_modules'
 [[ "$(HOME="$test_home" "$portable" root)" == "$runtime" ]] \
@@ -33,7 +60,7 @@ grep -Fq 'manual' <<<"$docs_list" \
   || fail_test 'installed runtime did not list documentation topics'
 grep -Fq 'chezmoi' <<<"$docs_list" \
   || fail_test 'installed runtime did not list the chezmoi documentation topic'
-[[ "$(HOME="$test_home" "$portable" docs manual)" == *'/docs/20-reference/NOTION-SETUP-GUIDE.md' ]] \
+[[ "$(HOME="$test_home" "$portable" docs manual)" == *'/docs/20-reference/MANUAL-SETUP-GUIDE.md' ]] \
   || fail_test 'installed runtime did not resolve the manual setup guide'
 [[ "$(HOME="$test_home" "$portable" docs chezmoi)" == *'/docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md' ]] \
   || fail_test 'installed runtime did not resolve the chezmoi setup tutorial'
@@ -72,6 +99,19 @@ HOME="$test_home" "$portable" rollback-runtime \
 HOME="$test_home" "$portable" runtime-status | grep -Fq 'Version:   test-1.0.0' \
   || fail_test 'rolled-back runtime version was not activated'
 
+# Default rollback follows activation history, including a forward toggle.
+HOME="$test_home" "$portable" rollback-runtime --execute >/dev/null
+[[ "$(readlink "$runtime")" == 'releases/test-2.0.0' ]] || fail_test 'rollback guessed version order instead of previous activation'
+if HOME="$test_home" "$portable" uninstall-runtime --execute --unexpected >/dev/null 2>&1; then
+  fail_test 'uninstall accepted unknown trailing argument'
+fi
+[[ -x "$portable" ]] || fail_test 'invalid uninstall removed launcher'
+if HOME="$test_home" "$portable" rollback-runtime --version ../escape --execute >/dev/null 2>&1; then
+  fail_test 'rollback accepted a path traversal version'
+fi
+HOME="$TEST_ROOT/linked-home" "$SCRIPT_DIR/install-portable-command.sh" --source "$PROJECT_ROOT" --linked >/dev/null
+[[ "$(HOME="$TEST_ROOT/linked-home" "$TEST_ROOT/linked-home/.local/bin/day-one-mac" root)" == "$PROJECT_ROOT" ]] || fail_test 'linked development installation failed'
+
 # A downloaded dispatcher must explain installation without prior state.
 downloaded="$TEST_ROOT/downloaded-day-one-mac"
 cp "$SCRIPT_DIR/day-one-mac" "$downloaded"
@@ -90,7 +130,16 @@ grep -Fq './day-one-mac bootstrap' <<<"$missing_output" \
 fixture_repo="$TEST_ROOT/bootstrap-source"
 fixture_checkout="$TEST_ROOT/bootstrap-checkout"
 bootstrap_home="$TEST_ROOT/bootstrap-home"
-mkdir -p "$fixture_repo/scripts" "$fixture_repo/docs" "$bootstrap_home"
+mkdir -p "$fixture_repo/scripts/lib" "$fixture_repo/docs" "$fixture_repo/config" "$bootstrap_home"
+for helper in state runtime-package runtime-activation operation-lock; do
+  cp "$SCRIPT_DIR/lib/$helper.sh" "$fixture_repo/scripts/lib/"
+done
+cp "$SCRIPT_DIR/with-operation-lock.sh" "$fixture_repo/scripts/"
+printf '%s\n' VERSION docs/START-HERE.md config/runtime-files.txt \
+  scripts/day-one-mac scripts/install-portable-command.sh scripts/runtime-manager.sh \
+  scripts/bootstrap-day-one-mac.sh scripts/with-operation-lock.sh \
+  scripts/lib/state.sh scripts/lib/runtime-package.sh scripts/lib/runtime-activation.sh \
+  scripts/lib/operation-lock.sh > "$fixture_repo/config/runtime-files.txt"
 cp "$SCRIPT_DIR/day-one-mac" "$fixture_repo/scripts/day-one-mac"
 cp "$SCRIPT_DIR/install-portable-command.sh" "$fixture_repo/scripts/install-portable-command.sh"
 cp "$SCRIPT_DIR/runtime-manager.sh" "$fixture_repo/scripts/runtime-manager.sh"

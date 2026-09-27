@@ -7,6 +7,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
 source "$SCRIPT_DIR/lib/container-data-paths.sh"
 source "$SCRIPT_DIR/lib/rebuildable-paths.sh"
+source "$SCRIPT_DIR/lib/operation-lock.sh"
+ORIGINAL_ARGS=("$@")
 
 EXECUTE=0
 BACKUP_ONLY=0
@@ -168,6 +170,7 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
+[[ "$EXECUTE" != 1 ]] || day_one_serialize operation "$0" "${ORIGINAL_ARGS[@]}"
 [[ "$(uname -s)" == Darwin ]] || { err "This cleanup supports macOS only."; exit 1; }
 [[ "$HOME" == /* && "$HOME" != / && "$HOME" != /Users && "$HOME" != /tmp && "$HOME" != /private/tmp ]] \
   || { err "Unsafe HOME value: $HOME"; exit 1; }

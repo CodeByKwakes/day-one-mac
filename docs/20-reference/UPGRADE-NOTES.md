@@ -114,3 +114,14 @@ remain user documents and are never removed as compatibility data.
 
 [← Reference index](README.md) · [Portable runtime](PORTABLE-COMMAND.md) ·
 [Phase 5](../01-required/05-dotfiles-and-shell.md)
+
+## Runtime and phase-contract upgrade
+
+Required phases now fingerprint implementation and choices instead of guide
+wording. Existing markers become stale once; saved choices, ownership records,
+and installed software remain. Review `day-one-mac --status` and resume through
+the wizard. Do not reset state or uninstall software for this migration.
+Missing preset state retains `recommended-productivity`; `core` is opt-in.
+Runtime rollback now follows the previously activated version. If no activation
+history exists, specify `--version` explicitly. Runtime verification no longer
+runs contributor tests. See [Architecture and state](ARCHITECTURE-AND-STATE.md).

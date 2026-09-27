@@ -4,6 +4,12 @@
 
 **Time:** 15–45 minutes · **Required:** everyone · **Runs once after Phase 2**
 
+The lists below describe the default **recommended-productivity** preset.
+The **core** preset skips Raycast, Warp, the Nerd Font, and VS Code; Phase 7
+records a no-op. Both presets retain command-line tools and security gates.
+1Password and its CLI are required only for 1Password authentication. Changing
+the preset does not uninstall existing software. See [Start here](../START-HERE.md#run-the-recommended-route).
+
 ## Why this checkpoint exists
 
 The setup is easier when software installation and software configuration are
@@ -77,7 +83,7 @@ continuing to Manual 3. Keep your own record of the selected installer because
 the manual route does not create provenance or rollback manifests.
 
 The complete commands and checks are in
-[Manual 3 and Manual 4](../20-reference/NOTION-SETUP-GUIDE.md#manual-3--configure-git-authentication-and-filevault).
+[Manual 3 and Manual 4](../20-reference/MANUAL-SETUP-GUIDE.md#manual-3--configure-git-authentication-and-filevault).
 
 ## Script-assisted route — recommended automatic flow
 

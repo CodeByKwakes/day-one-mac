@@ -35,6 +35,35 @@ uses a GitHub account.
 
 ## Step 10.2 — Claude Code option
 
+### Install selected payloads together
+
+After Phase 8, you can use one recoverable operation for selected clients:
+
+```bash
+day-one-mac optional --module 10 --plan --clients claude,codex
+day-one-mac optional --module 10 --apply --clients claude,codex --app-install-policy homebrew
+day-one-mac optional --module 10 --check
+```
+
+Supported choices are `claude`, `codex`, `copilot-app`, `copilot-cli`,
+`copilot-vscode` and `raycast-ai`. The latter two install only their host
+applications, VS Code and Raycast; they do not enable a paid service or install
+historical Copilot extensions. Existing official/company-managed installations
+are preserved, not transferred to Homebrew.
+
+Review the plan first. Use `--app-install-policy prompt` for an interactive
+ownership choice, or install through your approved external route. The default
+`check-only` policy stops on missing applications. `--yes` skips selection
+confirmation but does not approve an installer or macOS permissions.
+
+Resume interrupted work with `day-one-mac optional --module 10 --resume`,
+adding your chosen installation policy when needed. Resume uses the saved
+client selection. A passing `--check` means the payloads are present, not that
+accounts, permissions, billing or providers work. Continue the client-specific
+sign-in steps below; no guide completion marker is written automatically.
+
+### Configure Claude Code
+
 Use the common ownership-aware installer. It preserves an existing official or
 company-managed `claude` command. When missing, it asks whether to use Homebrew
 or another approved installer and rechecks before continuing:

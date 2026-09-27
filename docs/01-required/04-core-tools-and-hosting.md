@@ -4,6 +4,12 @@
 
 **Time:** 25–50 minutes · **Required:** everyone; hosting work is track-aware
 
+The lists below describe the default **recommended-productivity** preset.
+The **core** preset skips Raycast, Warp, the Nerd Font, and VS Code; Phase 7
+records a no-op. Both presets retain command-line tools and security gates.
+1Password and its CLI are required only for 1Password authentication. Changing
+the preset does not uninstall existing software. See [Start here](../START-HERE.md#run-the-recommended-route).
+
 ## Outcome
 
 The software prepared by the Installation Centre is verified, the development
@@ -13,7 +19,7 @@ selected in Phase 1 passes both CLI and SSH authentication.
 ## How to use this phase
 
 - **Manual route:** complete
-  [Manual 4](../20-reference/NOTION-SETUP-GUIDE.md#manual-4--install-core-tools-applications-and-hosting-clis),
+  [Manual 4](../20-reference/MANUAL-SETUP-GUIDE.md#manual-4--install-core-tools-applications-and-hosting-clis),
   then use this page to verify the selected track. Do not invoke the runner.
 - **Script-assisted route:** run `day-one-mac setup --phase 04`. The runner rechecks the required
 applications and command-line tools prepared by the

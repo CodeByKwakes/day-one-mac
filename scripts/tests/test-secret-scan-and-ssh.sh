@@ -26,7 +26,7 @@ fail_test() { printf 'FAIL: %s\n' "$1" >&2; exit 1; }
 harness="$TEST_ROOT/scanner.sh"
 {
   printf 'set -euo pipefail\n'
-  sed -n '/^SECRET_SCAN_MATCHES=""/,/^}/p' "$SCRIPT_DIR/setup.sh"
+  printf 'source "%s/phases/08-verification.sh"\n' "$SCRIPT_DIR"
   cat <<'EOS'
 if ! scan_source_for_secrets "$1"; then
   printf 'SCAN_FAILED\n'
@@ -36,8 +36,6 @@ if [[ -n "$SECRET_SCAN_MATCHES" ]]; then printf 'REVIEW\n'; else printf 'CLEAN\n
 EOS
 } > "$harness"
 
-grep -Fq 'scan_source_for_secrets' "$harness" \
-  || fail_test 'scan_source_for_secrets was not found in setup.sh'
 
 dirty="$TEST_ROOT/dirty"
 mkdir -p "$dirty"
@@ -94,13 +92,10 @@ ssh_block_harness="$TEST_ROOT/sshblock.sh"
   printf 'uses_github() { [[ "${TRACK_GITHUB:-0}" == 1 ]]; }\n'
   printf 'uses_azure() { [[ "${TRACK_AZURE:-0}" == 1 ]]; }\n'
   printf 'AUTH_MODE="${AUTH_MODE:-1password}"\n'
-  sed -n '/^ssh_config_block() {/,/^}/p' "$SCRIPT_DIR/setup.sh"
-  sed -n '/^ssh_config_identity_lines() {/,/^}/p' "$SCRIPT_DIR/setup.sh"
+  printf 'source "%s/phases/03-security.sh"\n' "$SCRIPT_DIR"
   printf 'ssh_config_block\n'
 } > "$ssh_block_harness"
 
-grep -Fq 'ssh_config_block' "$ssh_block_harness" \
-  || fail_test 'ssh_config_block was not found in setup.sh'
 
 assert_pairing() {
   local label="$1" block="$2"
@@ -199,3 +194,78 @@ if grep -q '✓' <<<"$validate_output"; then
 fi
 
 printf 'PASS: secret scan, per-mode SSH config, IdentitiesOnly pairing, validator dependency\n'
+
+# VM acceptance regressions: real disposable keys, never the user's SSH keys.
+(
+  export HOME="$TEST_ROOT/keychain-home"
+  mkdir -p "$HOME/.ssh"
+  source "$SCRIPT_DIR/phases/03-security.sh"
+  info() { :; }; warn() { :; }; ok() { :; }; err() { :; }
+  record_path_before_write() { :; }
+  ssh-keygen -q -t ed25519 -N '' -f "$HOME/.ssh/plain"
+  ssh-keygen -q -t ed25519 -N 'fixture-only-passphrase' -f "$HOME/.ssh/protected"
+  ssh-keygen -q -t rsa -b 3072 -N 'fixture-only-passphrase' -f "$HOME/.ssh/rsa-protected"
+  printf 'not a key\n' > "$HOME/.ssh/invalid"
+  [[ "$(keychain_key_protection "$HOME/.ssh/plain")" == unprotected ]] || fail_test 'empty passphrase not detected'
+  [[ "$(keychain_key_protection "$HOME/.ssh/protected")" == encrypted ]] || fail_test 'encrypted key not detected'
+  [[ "$(keychain_key_protection "$HOME/.ssh/rsa-protected")" == encrypted ]] || fail_test 'encrypted RSA key not detected'
+  for target in invalid absent; do
+    [[ "$(keychain_key_protection "$HOME/.ssh/$target")" == unverifiable ]] || fail_test "$target key treated as protected"
+  done
+  ssh-add() { printf 'called\n' >> "$TEST_ROOT/agent-calls"; return "${ADD_STATUS:-0}"; }
+  for target in plain invalid; do
+    if generate_keychain_key "$HOME/.ssh/$target" ed25519 ''; then fail_test "$target key accepted"; fi
+  done
+  [[ ! -e "$TEST_ROOT/agent-calls" ]] || fail_test 'unsafe key reached ssh-add'
+  # Simulate pressing Return at ssh-keygen's new-key passphrase prompts.
+  ssh-keygen() {
+    if [[ "$1" == -t ]]; then
+      cp "$HOME/.ssh/plain" "$HOME/.ssh/new-key"
+      cp "$HOME/.ssh/plain.pub" "$HOME/.ssh/new-key.pub"
+    else
+      command ssh-keygen "$@"
+    fi
+  }
+  if generate_keychain_key "$HOME/.ssh/new-key" ed25519 ''; then fail_test 'new empty-passphrase key accepted'; fi
+  cmp "$HOME/.ssh/plain" "$HOME/.ssh/new-key" || fail_test 'rejected new key was changed'
+  [[ ! -e "$TEST_ROOT/agent-calls" ]] || fail_test 'new unsafe key reached ssh-add'
+  generate_keychain_key "$HOME/.ssh/protected" ed25519 '' || fail_test 'protected key rejected'
+  ADD_STATUS=1
+  if generate_keychain_key "$HOME/.ssh/protected" ed25519 ''; then fail_test 'agent failure accepted'; fi
+
+  source "$SCRIPT_DIR/phases/08-verification.sh"
+  phase_gate_failed() { :; }
+  VERIFY_FAILURES=0
+  for target in protected plain invalid absent; do
+    report_keychain_key_protection "$TEST_ROOT/key-report.md" "$HOME/.ssh/$target"
+  done
+  [[ "$VERIFY_FAILURES" == 3 ]] || fail_test 'key protection failures not counted'
+  [[ "$(grep -c 'PASS' "$TEST_ROOT/key-report.md")" == 1 ]] || fail_test 'report gave unsafe keys a pass'
+  grep -q 'FAIL — unprotected' "$TEST_ROOT/key-report.md" || fail_test 'empty passphrase not reported'
+  grep -q 'FAIL — unverifiable' "$TEST_ROOT/key-report.md" || fail_test 'unverifiable key not reported'
+
+  AUTH_MODE=keychain DRY_RUN=0 EX_GATE=3 EX_MANUAL=4
+  uses_github() { return 0; }; uses_azure() { return 1; }
+  create_directory() { mkdir -p "$1"; }
+  write_text_file() { printf '%s' "$2" > "$1"; }
+  resync_managed_ssh_config() { :; }; ssh() { return 0; }
+  printf '%s\n' '# >>> Day One Mac: 1Password SSH agent >>>' 'Host github.com' '    User git' '# <<< Day One Mac: 1Password SSH agent <<<' 'Host example.test' '    User preserved' > "$HOME/.ssh/config"
+  configure_onepassword_ssh
+  grep -Fq '# >>> Day One Mac: SSH authentication >>>' "$HOME/.ssh/config" || fail_test 'legacy block not migrated'
+  grep -Fq 'User preserved' "$HOME/.ssh/config" || fail_test 'unmanaged config lost'
+  if grep -q '1Password SSH agent' "$HOME/.ssh/config"; then fail_test 'legacy label retained'; fi
+  cp "$HOME/.ssh/config" "$TEST_ROOT/config-once"
+  configure_onepassword_ssh
+  cmp "$HOME/.ssh/config" "$TEST_ROOT/config-once" || fail_test 'config migration not idempotent'
+  for malformed in nested reversed mixed; do
+    case "$malformed" in
+      nested) printf '%s\n' '# >>> Day One Mac: SSH authentication >>>' '# >>> Day One Mac: SSH authentication >>>' '# <<< Day One Mac: SSH authentication <<<' ;;
+      reversed) printf '%s\n' '# <<< Day One Mac: SSH authentication <<<' '# >>> Day One Mac: SSH authentication >>>' ;;
+      mixed) printf '%s\n' '# >>> Day One Mac: 1Password SSH agent >>>' '# <<< Day One Mac: SSH authentication <<<' ;;
+    esac > "$HOME/.ssh/config"
+    cp "$HOME/.ssh/config" "$TEST_ROOT/config-before"
+    if configure_onepassword_ssh; then fail_test "$malformed markers accepted"; fi
+    cmp "$HOME/.ssh/config" "$TEST_ROOT/config-before" || fail_test "$malformed config changed"
+  done
+)
+printf 'PASS: passphrase enforcement, agent failure and SSH marker migration\n'

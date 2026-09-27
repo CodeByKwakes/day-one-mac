@@ -13,6 +13,67 @@ reported.
 
 ## Step 16.1 — Capture reality without changing it
 
+### Executable selected-payload route
+
+For a recoverable installation of selected software, first generate candidates.
+The command writes only to stdout; this shell redirection creates your review
+file. Choose a new filename to avoid replacing an existing selection:
+
+```bash
+day-one-mac advanced --module 16 --inventory > software-selection.tsv
+```
+
+Open the file in your editor. Keep only rows you want on this Mac and add any
+missing selections. Each uncommented row has exactly two fields separated by
+one **tab**, not spaces. For example:
+
+```text
+app	obsidian
+formula	bat
+extension	esbenp.prettier-vscode
+```
+
+`app` accepts IDs from the application catalogue, not arbitrary cask names.
+Inventory lists supported missing apps as commented candidates. Unknown casks
+remain comments for manual review. `formula` accepts Homebrew formula tokens;
+`extension` accepts lowercase `publisher.name` IDs for VS Code's **Default**
+profile. Install and enable the `code` command before applying extension rows.
+The runner does not install from VSIX files or configure other profiles.
+
+Preview your reviewed file, then apply after Phase 8:
+
+```bash
+day-one-mac advanced --module 16 --plan --manifest software-selection.tsv
+day-one-mac advanced --module 16 --apply --manifest software-selection.tsv --app-install-policy homebrew
+day-one-mac advanced --module 16 --check
+```
+
+The application policy explicitly authorises Homebrew for missing catalogue
+apps; existing external installations stay external. Formula rows already
+select Homebrew, and extension rows select VS Code's installer. Already-present
+selected rows are skipped, not explicitly upgraded or claimed as newly owned.
+Installing a missing item can still add or change dependencies through its
+package manager. Only add software whose source and permissions you reviewed.
+
+After an error, resolve the reported blocker and run:
+
+```bash
+day-one-mac advanced --module 16 --resume --app-install-policy homebrew
+```
+
+Resume uses the snapshot saved at apply time, even if you edited or deleted the
+original file. To change the selection, make a new `--plan` and `--apply`.
+Removing a row never uninstalls anything.
+
+This TSV is an installation selection, **not a replacement Brewfile**. The
+runner never evaluates, rewrites or formats your Brewfile, preserving comments
+and custom Ruby declarations. App Store purchases, licences, Settings Sync,
+account setup, cleanup and guide completion remain manual. A passing check
+proves only that selected payloads exist. Continue the guide below for the full
+desired-state and reproducibility work.
+
+### Broader manual inventory
+
 ```bash
 day-one-mac inventory
 brew list --formula | LC_ALL=C sort

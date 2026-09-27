@@ -76,19 +76,29 @@ updates and rollback.
 | `day-one-mac workspace [command]` | `./workspace-manager.sh [command]` | Create, inspect, complete, or open a bounded projectless task. |
 | `day-one-mac raycast [options]` | `./configure-raycast.sh [options]` | Choose `alongside-spotlight` or `raycast-only` launcher guidance, then preview, generate, inspect, or archive the optional track-aware Raycast Script Commands. Raycast uses `⌥Space` in both modes. |
 | `day-one-mac optional --guided` | `./bootstrap-day-one-mac.sh --optional --guided` | Choose optional modules after required Phase 8 passes and continue to available installers. |
+| `day-one-mac optional --list` | `./optional-module.sh --list` | List executable versus guided module capabilities, not completion. |
+| `day-one-mac optional --module ID --plan\|--apply\|--check\|--resume` | `./optional-module.sh [options]` | Modules 09/10/13 install selected payloads; 10A manages an owned gateway; 11/12/14 generate review artifacts only. Apply/resume requires Phase 8; see [Module execution](MODULE-EXECUTION.md). |
 | `day-one-mac optional --status [options]` | `./optional-status.sh [options]` | Show one read-only status dashboard for Modules 09–22 or write the combined module, environment, and repository audit. Compatibility aliases: `day-one-mac optional-status` and `day-one-mac modules`. |
 | `day-one-mac databases [options]` | `./configure-databases.sh [options]` | Install, resume, inspect, or verify the selected PostgreSQL, Redis, and MongoDB containers. |
 | `day-one-mac safety-report [options]` | `./preflight-audit.sh [options]` | Create the read-only Stage 0 report on an existing Mac before choosing a reset or cleanup route. |
 | `day-one-mac prepare-existing [options]` | `./prepare-existing-mac.sh [options]` | Open the resumable Route A/Route B dashboard for a Mac that already contains data or setup. With no arguments, the portable command adds `--guided`. |
 | `day-one-mac inventory [options]` | `./application-inventory.sh [options]` | Write a complete report of Homebrew, Mac App Store, system, and other application bundles. |
-| `day-one-mac advanced [options]` | `./advanced-setup.sh [options]` | Read and track advanced Modules 15–22 after the base setup. It does not perform their configuration. |
+| `day-one-mac advanced [options]` | `./advanced-setup.sh [options]` | Read and track advanced Modules 15–22. No action flag means guide-only behaviour. |
+| `day-one-mac advanced --module 16 --inventory\|--plan\|--apply\|--check\|--resume` | `./optional-module.sh --module 16 [options]` | Inventory or install a reviewed software selection; `--manifest PATH` supplies a two-column TSV for plan/apply/check. Accounts, Brewfile edits and removals remain manual. |
+| `day-one-mac advanced --module 15\|17 --plan\|--apply\|--check\|--resume` | `./optional-module.sh --module ID [options]` | Choose ID 15 for allowlisted dotfile evidence/proposals or 17 for reviewed shell bundles. Use `--manifest PATH`; neither imports dotfiles nor activates shell configuration. |
+| `day-one-mac advanced --module 19 --plan\|--apply\|--check\|--resume` | `./optional-module.sh --module 19 [options]` | Apply explicit scalar preferences with typed originals, pending-write recovery and conflict checks. Never changes security controls or restarts applications. |
+| `day-one-mac advanced --module 18 --plan\|--apply\|--check\|--resume` | `./optional-module.sh --module 18 [options]` | Review selected checkout identities, signing settings and worktree layout; generate configuration proposals only. Node 22+ required. |
+| `day-one-mac advanced --module 20 --plan\|--apply\|--check\|--resume` | `./optional-module.sh --module 20 [options]` | Use `--manifest PATH` to stage explicit checksummed files from a mounted backup, or record no-restore. Never overwrites live data; Node 22+ required. |
+| `day-one-mac advanced --module 21 --plan\|--apply\|--check\|--resume` | `./optional-module.sh --module 21 [options]` | Preview/check bounded setup evidence without writes, or save a versioned snapshot and compare it to the previous one. Never upgrades, cleans or rebuilds. |
+| `day-one-mac advanced --module 22 --plan\|--apply\|--check\|--resume` | `./optional-module.sh --module 22 [options]` | Use `--manifest PATH` for explicit skill/MCP metadata ownership and drift snapshots. Never executes skills or changes client trust. |
 | `day-one-mac advanced-audit [options]` | `./advanced-audit.sh [options]` | Generate the private, extended environment and repository report. |
 | `day-one-mac cli-tools [options]` | `./configure-cli-tools.sh [options]` | Select and install optional Homebrew formulae without removing unselected tools. |
 | `day-one-mac finalize [options]` | `./finalize-setup.sh [options]` | Review or compact setup evidence after Phase 8, or deliberately detach the setup system. |
 | `day-one-mac remove [options]` | `./remove-day-one-mac.sh [options]` | Choose a recorded, sectional, or full removal plan with an ownership-aware preview. |
 | `day-one-mac rollback [options]` | `./rollback-recorded-setup.sh [options]` | Preview or reverse only changes recorded as belonging to Day One Mac. |
 | `day-one-mac clean [options]` | `./clean-development-state.sh [options]` | Preview a broad development cleanup or create/resume its recovery archive. This is wider than recorded rollback. |
-| `day-one-mac validate` | `./validate.sh` | Run the complete read-only structural and regression validation suite. |
+| `day-one-mac verify` | `./verify.sh` | Verify installed runtime integrity and syntax without running setup. |
+| `day-one-mac validate` | `./validate.sh` (checkout only) | Run contributor regression checks from a checkout; alias for `verify` in an installed runtime. |
 
 Use the current names in this reference for new notes and Warp workflows.
 Machines upgraded from a pre-standalone installation can consult
@@ -127,6 +137,7 @@ Important setup selectors include:
 --stack node|python|both
 --name "Full Name"
 --email ADDRESS
+--preset core|recommended-productivity
 --primary-ide vscode|other
 --dotfiles-repo URL
 --new-dotfiles
@@ -330,8 +341,8 @@ rather than a configured Mac:
 | `./lint.sh` | Run ShellCheck over every project shell script. Requires `shellcheck`. |
 | `./lint.sh --severity warning --format gcc` | Run a narrower machine-readable lint report. |
 
-`./validate.sh` also remains available directly and is equivalent to
-`day-one-mac validate` once the portable command is installed.
+`./validate.sh` is contributor-only and is excluded from the standalone runtime.
+Use `day-one-mac verify` on an installed Mac.
 
 Do not execute files under `scripts/lib/`; they are sourced by other scripts.
 Do not use files under `scripts/tests/` as setup entry points; the validator
