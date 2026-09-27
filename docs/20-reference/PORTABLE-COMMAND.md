@@ -142,6 +142,21 @@ The standalone runtime omits contributor tests and tooling. Use
 `day-one-mac verify` for runtime checks; Phase 8 owns machine verification.
 `day-one-mac validate` remains an alias for `verify` in a standalone install.
 
+Verification checks more than the bytes in existing files: the runtime must
+contain exactly the files listed in `config/runtime-files.txt`, their parent
+directories, and `SHA256SUMS`. Extra files (even an extra script), unexpected
+directories, symlinks, and missing or duplicate checksum entries fail the check.
+Keep personal scripts and generated output outside the version directory.
+Activation and rollback enforce the same inventory before switching `current`.
+
+If verification fails, do not regenerate checksums or edit the allowlist to make
+the warning disappear. Use a trusted installer to install a clean release, or
+roll back to an intact installed version. If reinstalling the same version is
+refused, preserve the affected version directory for inspection and move only
+that rejected version aside before reinstalling it. Do not remove your
+`~/.day-one-mac` setup state. An integrity failure during activation does not
+change the active version or its rollback history.
+
 ## Move an already-completed Mac to standalone mode
 
 If Phases 1–8 were completed before the standalone runtime was installed, do

@@ -140,6 +140,8 @@ profile_json() {
     separator=,
   done <<< "$EXTENSIONS"
   extensions="$extensions]"
+  # VS Code IUserDataProfileTemplate.extensions is a string, not an array;
+  # ExtensionsResource parses that embedded JSON when importing the profile.
   # Inputs are restricted ASCII; the only inner JSON escapes needed are quotes.
   printf '{"name":"%s","extensions":"%s"}\n' "$PROFILE" "${extensions//\"/\\\"}"
 }

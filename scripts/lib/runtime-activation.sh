@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # macOS mv -h replaces the symlink itself with one same-filesystem rename.
 # Callers serialize mutations using with-operation-lock.sh.
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/runtime-package.sh"
 day_one_valid_version() {
   [[ "$1" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ && "$1" != *..* ]]
 }
@@ -13,7 +14,8 @@ day_one_activate_runtime() {
   [[ ! -e "$current" || -L "$current" ]] || {
     printf 'Refusing to replace a non-symlink runtime path: %s\n' "$current" >&2; return 1;
   }
-  (cd "$runtime/releases/$version" && shasum -a 256 -c SHA256SUMS >/dev/null) || return 1
+  day_one_safe_state_path "$runtime/releases/$version/.day-one-path-check" || return 1
+  day_one_verify_runtime "$runtime/releases/$version" || return 1
   [[ ! -L "$current" ]] || previous="$(readlink "$current")"
   if [[ "$previous" != "releases/$version" && -n "$previous" ]]; then
     # Write recovery history first. An interruption before rename leaves current

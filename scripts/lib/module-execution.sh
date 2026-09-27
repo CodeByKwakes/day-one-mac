@@ -8,13 +8,19 @@ MODULE_VERIFIED=0
 day_one_module_begin() {
   local id="$1" selection="$2" target index=0
   shift 2
+  [[ "$id" =~ ^[A-Za-z0-9][A-Za-z0-9_-]*$ ]] || { printf 'Invalid module ID: %s\n' "$id" >&2; return 1; }
+  # Validate records before creating any run or copying pre-existing content.
+  for target in "$@"; do
+    day_one_safe_state_path "$target" || return 1
+    [[ ! -e "$target" || -f "$target" ]] || return 1
+  done
   umask 077
-  mkdir -p "$STATE_DIR/module-runs/$id"
-  MODULE_RUN="$(mktemp -d "$STATE_DIR/module-runs/$id/$(date -u '+%Y%m%dT%H%M%SZ').XXXXXX")"
+  day_one_state_directory "$STATE_DIR/module-runs/$id" || return 1
+  MODULE_RUN="$(mktemp -d "$STATE_DIR/module-runs/$id/$(date -u '+%Y%m%dT%H%M%SZ').XXXXXX")" || return 1
   MODULE_VERIFIED=0
-  mkdir "$MODULE_RUN/before"
-  day_one_write_state "$MODULE_RUN/selection" "$selection"
-  day_one_write_state "$MODULE_RUN/result" running
+  mkdir "$MODULE_RUN/before" || return 1
+  day_one_write_state "$MODULE_RUN/selection" "$selection" || return 1
+  day_one_write_state "$MODULE_RUN/result" running || return 1
   trap 'day_one_module_finish "$?"' EXIT
   trap 'exit 130' INT
   trap 'exit 143' TERM HUP

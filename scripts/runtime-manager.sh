@@ -26,7 +26,7 @@ EOF
 
 verify_runtime() {
   [[ -s "$RUNTIME_ROOT/SHA256SUMS" ]] || return 2
-  (cd "$RUNTIME_ROOT" && shasum -a 256 -c SHA256SUMS >/dev/null)
+  day_one_verify_runtime "$RUNTIME_ROOT"
 }
 
 status() {
@@ -76,8 +76,8 @@ rollback_runtime() {
   fi
   [[ -n "$candidate" && -d "$candidate" && -s "$candidate/SHA256SUMS" ]] || {
     printf 'No previous verified runtime was found.\n' >&2; return 1; }
-  (cd "$candidate" && shasum -a 256 -c SHA256SUMS >/dev/null) || {
-    printf 'Candidate runtime failed checksum verification: %s\n' "$candidate" >&2; return 1; }
+  day_one_verify_runtime "$candidate" || {
+    printf 'Candidate runtime failed integrity verification: %s\n' "$candidate" >&2; return 1; }
   printf 'Current:  %s\nCandidate:%s\n' "$current" " $(basename "$candidate")"
   [[ "$execute" == 1 ]] || {
     printf 'Preview only. Rerun with --execute to switch versions.\n'; return 0; }

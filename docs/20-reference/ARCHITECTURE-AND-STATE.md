@@ -59,8 +59,19 @@ markers or use `--reset-progress` merely to update the runtime.
 An atomic write puts complete content into a private temporary file in the same
 directory, then renames it over the destination. Readers see the old or the new
 value, not a half-written value. This is used for scalar choices, completion
-markers, and runtime locator/history records. Symlink and directory destinations
-are rejected.
+markers, and runtime locator/history records. Non-regular destinations and
+symlinks anywhere in the state path are rejected before directories or temporary
+files are created. Module journals use the same parent-path checks before
+creating a run or copying ownership records. The fixed macOS aliases `/tmp`,
+`/var`, and `/etc` are allowed only when they point to their standard `private/`
+targets; custom symlinked paths are not.
+
+If an overridden state path is rejected, inspect the named link and use the
+intended directory's physical path (the path printed by `pwd -P` inside that
+directory). Preserve existing state; do not delete it or reset progress to clear
+this error. These checks and the operation lock protect against pre-existing
+redirects and competing Day One writers, not a hostile process running as the
+same user and replacing directories during a write.
 
 A directory lock outside the state tree serializes the required setup, wizard,
 runtime installation/switch/removal, macOS preferences, application ownership
@@ -91,6 +102,12 @@ Each release lives in its own version directory and includes `SHA256SUMS`.
 Existing versions with different contents are rejected. The activation helper
 verifies the candidate before atomically replacing `current` with macOS
 `mv -h`, which replaces a directory symlink instead of following it.
+Verification requires the exact regular-file inventory in
+`config/runtime-files.txt`, its necessary parent directories, and `SHA256SUMS`.
+Additional files or directories, symlinks, special file types, missing files,
+and incomplete or duplicate checksum entries are rejected. Runtime status,
+explicit verification, activation, and rollback use the same check. An integrity
+failure during activation leaves both `current` and `previous` unchanged.
 
 The `previous` record stores activation history, not lexical version order.
 Default rollback selects that previous activation; explicit `--version` remains

@@ -8,6 +8,7 @@ trap 'rm -rf "$TEST_ROOT"' EXIT
 fail() { printf 'FAIL: %s\n' "$1" >&2; exit 1; }
 source "$TEST_SCRIPT_DIR/lib/runtime-package.sh"
 source "$TEST_SCRIPT_DIR/lib/state.sh"
+source "$TEST_SCRIPT_DIR/lib/runtime-activation.sh"
 
 # Unlisted files, including credentials and contributor instructions, never ship.
 day_one_copy_runtime "$TEST_PROJECT" "$TEST_ROOT/source"
@@ -23,6 +24,66 @@ day_one_checksum_runtime "$TEST_ROOT/package"
 "$TEST_ROOT/package/scripts/verify.sh" >/dev/null
 "$TEST_ROOT/package/scripts/day-one-mac" validate >/dev/null
 "$TEST_ROOT/package/scripts/validate-warp-drive.sh" >/dev/null
+
+# Added files/types and incomplete checksum lists must fail every integrity entry
+# point, without changing activation history. Keep spaces in the real allowlist.
+mkdir -p "$TEST_ROOT/runtime/releases"
+cp -R "$TEST_ROOT/package" "$TEST_ROOT/runtime/releases/candidate"
+ln -s releases/old "$TEST_ROOT/runtime/current"
+printf 'releases/older\n' > "$TEST_ROOT/runtime/previous"
+candidate="$TEST_ROOT/runtime/releases/candidate"
+reject_runtime() {
+  if "$candidate/scripts/verify.sh" >/dev/null 2>&1; then fail 'verify accepted a modified inventory'; fi
+  if DAY_ONE_MAC_RUNTIME_HOME="$TEST_ROOT/runtime" "$candidate/scripts/runtime-manager.sh" status >/dev/null 2>&1; then
+    fail 'runtime-status accepted a modified inventory'
+  fi
+  if day_one_activate_runtime "$TEST_ROOT/runtime" candidate >/dev/null 2>&1; then fail 'activation accepted a modified inventory'; fi
+  [[ "$(readlink "$TEST_ROOT/runtime/current")" == releases/old ]] || fail 'rejection changed current'
+  [[ "$(cat "$TEST_ROOT/runtime/previous")" == releases/older ]] || fail 'rejection changed history'
+}
+printf '#!/bin/bash\nexit 0\n' > "$candidate/scripts/unlisted.sh"
+chmod +x "$candidate/scripts/unlisted.sh"
+reject_runtime
+rm "$candidate/scripts/unlisted.sh"
+ln -s VERSION "$candidate/unlisted-link"
+reject_runtime
+rm "$candidate/unlisted-link"
+mkfifo "$candidate/unlisted-pipe"
+reject_runtime
+rm "$candidate/unlisted-pipe"
+mkdir "$candidate/unlisted-directory"
+reject_runtime
+rmdir "$candidate/unlisted-directory"
+mv "$candidate/README.md" "$TEST_ROOT/readme"
+ln -s "$TEST_ROOT/readme" "$candidate/README.md"
+reject_runtime
+rm "$candidate/README.md"
+mv "$TEST_ROOT/readme" "$candidate/README.md"
+mv "$candidate/README.md" "$TEST_ROOT/readme"
+reject_runtime
+mv "$TEST_ROOT/readme" "$candidate/README.md"
+mv "$candidate/config" "$TEST_ROOT/config"
+ln -s "$TEST_ROOT/config" "$candidate/config"
+reject_runtime
+rm "$candidate/config"
+mv "$TEST_ROOT/config" "$candidate/config"
+cp "$candidate/SHA256SUMS" "$TEST_ROOT/checksums"
+sed '/  \.\/README.md$/d' "$TEST_ROOT/checksums" > "$candidate/SHA256SUMS"
+reject_runtime
+cp "$TEST_ROOT/checksums" "$candidate/SHA256SUMS"
+sed -n '1p' "$TEST_ROOT/checksums" >> "$candidate/SHA256SUMS"
+reject_runtime
+cp "$TEST_ROOT/checksums" "$candidate/SHA256SUMS"
+printf '%064d  ../escape\n' 0 >> "$candidate/SHA256SUMS"
+reject_runtime
+cp "$TEST_ROOT/checksums" "$candidate/SHA256SUMS"
+rm "$candidate/SHA256SUMS"
+ln -s "$TEST_ROOT/checksums" "$candidate/SHA256SUMS"
+reject_runtime
+rm "$candidate/SHA256SUMS"
+cp "$TEST_ROOT/checksums" "$candidate/SHA256SUMS"
+"$candidate/scripts/verify.sh" >/dev/null
+day_one_activate_runtime "$TEST_ROOT/runtime" candidate || fail 'intact candidate rejected'
 printf '\n# corruption\n' >> "$TEST_ROOT/package/scripts/phases/06-toolchains.sh"
 if "$TEST_ROOT/package/scripts/verify.sh" >/dev/null 2>&1; then fail 'corrupt runtime accepted'; fi
 
@@ -37,6 +98,40 @@ day_one_write_state "$TEST_ROOT/state/value" second
 [[ "$(stat -f %Lp "$TEST_ROOT/state/value")" == 600 ]] || fail 'state is not private'
 ln -s "$TEST_ROOT/state/value" "$TEST_ROOT/state/link"
 if day_one_write_state "$TEST_ROOT/state/link" unsafe >/dev/null 2>&1; then fail 'state symlink accepted'; fi
+
+# Reject parent links before mkdir/mktemp, including dangling links, and retain
+# normal nested writes through macOS's system /tmp alias.
+mkdir "$TEST_ROOT/outside"
+ln -s "$TEST_ROOT/outside" "$TEST_ROOT/state/parent-link"
+if day_one_write_state "$TEST_ROOT/state/parent-link/new/value" unsafe >/dev/null 2>&1; then fail 'state parent symlink accepted'; fi
+[[ -z "$(ls -A "$TEST_ROOT/outside")" ]] || fail 'state write escaped through parent'
+ln -s "$TEST_ROOT/missing" "$TEST_ROOT/state/dangling"
+if day_one_write_state "$TEST_ROOT/state/dangling/value" unsafe >/dev/null 2>&1; then fail 'dangling parent accepted'; fi
+mkfifo "$TEST_ROOT/state/fifo"
+if day_one_write_state "$TEST_ROOT/state/fifo" unsafe >/dev/null 2>&1; then fail 'non-regular state accepted'; fi
+day_one_write_state "$TEST_ROOT/state/nested/new/value" safe
+[[ "$(cat "$TEST_ROOT/state/nested/new/value")" == safe ]] || fail 'safe nested write failed'
+
+source "$TEST_SCRIPT_DIR/lib/module-execution.sh"
+reject_module() {
+  if ( STATE_DIR="$1"; day_one_module_begin 10 selection ); then fail 'module accepted symlinked state'; fi
+  [[ -z "$(ls -A "$TEST_ROOT/outside")" ]] || fail 'module created records outside state'
+}
+ln -s "$TEST_ROOT/outside" "$TEST_ROOT/linked-state"
+reject_module "$TEST_ROOT/linked-state"
+mkdir "$TEST_ROOT/module-state"
+ln -s "$TEST_ROOT/outside" "$TEST_ROOT/module-state/module-runs"
+reject_module "$TEST_ROOT/module-state"
+rm "$TEST_ROOT/module-state/module-runs"
+mkdir "$TEST_ROOT/module-state/module-runs"
+ln -s "$TEST_ROOT/outside" "$TEST_ROOT/module-state/module-runs/10"
+reject_module "$TEST_ROOT/module-state"
+if ( STATE_DIR="$TEST_ROOT/safe-module"; day_one_module_begin ../escape selection ); then fail 'module ID traversal accepted'; fi
+[[ ! -e "$TEST_ROOT/safe-module" ]] || fail 'invalid module ID wrote state'
+if ( STATE_DIR="$TEST_ROOT/safe-module"; day_one_module_begin 10 selection "$TEST_ROOT/state/parent-link/record" ); then
+  fail 'module accepted redirected backup record'
+fi
+[[ ! -e "$TEST_ROOT/safe-module" ]] || fail 'invalid backup record created a run'
 
 # Keep the first process blocked on a FIFO while attempting a competing writer.
 mkfifo "$TEST_ROOT/gate"

@@ -3,13 +3,14 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+source "$SCRIPT_DIR/lib/runtime-package.sh"
 case "${1:-}" in
   -h|--help) printf '%s\n' 'Usage: day-one-mac verify' 'Check runtime integrity and executable entry points without changing setup state.'; exit 0 ;;
   '') ;;
   *) printf 'Unknown verification option: %s\n' "$1" >&2; exit 2 ;;
 esac
 if [[ -s "$ROOT/SHA256SUMS" ]]; then
-  (cd "$ROOT" && shasum -a 256 -c SHA256SUMS >/dev/null)
+  day_one_verify_runtime "$ROOT"
 elif [[ -e "$ROOT/.git" ]]; then
   printf 'Development checkout: no packaged integrity manifest.\n'
 else

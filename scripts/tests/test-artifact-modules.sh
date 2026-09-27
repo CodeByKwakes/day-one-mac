@@ -61,7 +61,7 @@ mkdir -p "$TEST_STATE/completed"
 for phase in 01 02 03 04 05 06 07 08; do printf 'fixture\n' > "$TEST_STATE/completed/$phase"; done
 run optional --module 12 --apply --manifest "$TEST_ROOT/profile.tsv" --yes > "$TEST_ROOT/profile-apply"
 first_profile="$(artifact_path 12)"
-python3 -c 'import json,sys; p=json.load(open(sys.argv[1])); assert p["name"]=="Work Review"; assert json.loads(p["extensions"])==[{"identifier":{"id":"esbenp.prettier-vscode"}}]; assert set(p)=={"name","extensions"}' \
+python3 -c 'import json,sys; p=json.load(open(sys.argv[1])); assert p["name"]=="Work Review"; assert isinstance(p["extensions"],str); assert json.loads(p["extensions"])==[{"identifier":{"id":"esbenp.prettier-vscode"}}]; assert set(p)=={"name","extensions"}' \
   "$first_profile/profile.code-profile" || fail 'profile structure or embedded extensions are invalid'
 [[ "$(wc -l < "$first_profile/extensions.txt" | tr -d ' ')" == 1 ]] || fail 'duplicate extension kept'
 printf 'profile\tUnapproved\n' > "$TEST_ROOT/profile.tsv"
