@@ -22,6 +22,11 @@ The Node dependencies are contributor-only. Day One Mac remains a shell-first
 project, and the public installer does not ship `node_modules` or require these
 packages at runtime.
 
+For release-candidate verification, follow the
+[acceptance walkthrough](99-maintenance/ACCEPTANCE.md). It adds packaged-runtime
+tests, an opt-in disposable mounted-volume rehearsal and private readiness
+reports without running live onboarding or publishing a release.
+
 ## Hook behaviour
 
 The committed hooks run at three different boundaries:

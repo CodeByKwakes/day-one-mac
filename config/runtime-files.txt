@@ -312,3 +312,5 @@ scripts/lib/review-node.sh
 scripts/lib/review-io.cjs
 scripts/lib/identity-review.cjs
 scripts/lib/restore-staging.cjs
+docs/99-maintenance/ACCEPTANCE.md
+docs/99-maintenance/RELEASE-CANDIDATE.md

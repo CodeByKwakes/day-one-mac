@@ -37,3 +37,5 @@ jobs:
           bash -n scripts/day-one-mac
       - name: Run complete validation
         run: scripts/validate.sh
+      - name: Rehearse executable modules from the release archive
+        run: scripts/tests/test-packaged-modules.sh

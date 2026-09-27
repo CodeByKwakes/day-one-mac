@@ -958,6 +958,10 @@ run_fixture "identity reviews and checksum staging preserve manual and recovery 
   "identity and restore module fixture failed" \
   "$SCRIPT_DIR/tests/test-review-and-restore.sh" || true
 
+run_fixture "acceptance tooling preserves read-only plans and truthful release gates" \
+  "acceptance tooling contract fixture failed" \
+  "$SCRIPT_DIR/tests/test-acceptance-tooling.sh" || true
+
 run_fixture "unified optional and advanced dashboard reports evidence safely" \
   "unified optional and advanced dashboard fixture failed" \
   "$SCRIPT_DIR/tests/test-optional-status.sh" || true

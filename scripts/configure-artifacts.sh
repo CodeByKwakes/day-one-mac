@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Generate private review artifacts; never import, install, sync, upgrade or clean.
 set -euo pipefail
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+# The installed launcher enters through current -> releases/VERSION. Resolve
+# that trusted code location physically before checking artifact source paths.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd -P)"
 source "$SCRIPT_DIR/lib/project-paths.sh"
 source "$SCRIPT_DIR/lib/module-execution.sh"
 source "$SCRIPT_DIR/lib/audit-evidence.sh"

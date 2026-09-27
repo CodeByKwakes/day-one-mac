@@ -14,6 +14,9 @@
     "lint:shell": "scripts/lint.sh",
     "lint:markdown": "markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.agents\"",
     "validate": "scripts/validate.sh",
+    "acceptance:plan": "scripts/release-readiness.sh --plan",
+    "acceptance:package": "scripts/tests/test-packaged-modules.sh",
+    "acceptance:native:plan": "scripts/rehearse-mounted-restore.sh --plan",
     "commitlint": "commitlint"
   },
   "lint-staged": {
