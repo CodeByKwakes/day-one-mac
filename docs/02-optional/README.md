@@ -100,8 +100,9 @@ Advanced 16 also supports a
 Advanced [21](../03-advanced/21-audit-maintenance-and-rebuild.md) supports bounded
 audit snapshots and drift checks; Advanced
 [22](../03-advanced/22-ai-skills-and-mcp-operations.md#executable-inventory-and-drift-route)
-adds selected AI governance evidence. Other modules remain guided, even when their
-guides contain runnable commands. See the
+adds selected AI governance evidence. Advanced 15/17 generate dotfile proposals
+and shell bundles; 19 applies selected scalar preferences. Advanced 18/20 remain
+guided, even when their guides contain runnable commands. See the
 [execution reference](../20-reference/MODULE-EXECUTION.md) for flags, state,
 backups, verification limits and the contributor extension contract.
 

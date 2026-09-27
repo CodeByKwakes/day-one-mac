@@ -11,6 +11,58 @@ Homebrew, chezmoi, containers, and project package managers. Helpers detect npm
 versus pnpm per repository, never download an undeclared tool silently, and do
 not add destructive one-key aliases.
 
+## Executable helper-bundle route
+
+Module 17 generates a versioned bundle without editing or sourcing your shell
+startup files. Choose helper groups in a two-column, tab-separated
+`helpers.tsv` manifest. A `project` row is optional and requires `packages`:
+
+```text
+helper	navigation
+helper	packages
+project	/Users/your-name/Developer/example-project
+```
+
+Replace the example project path, or omit that row. Project inspection needs
+the required Node runtime on PATH; the runner never installs it.
+
+```bash
+day-one-mac advanced --module 17 --plan --manifest ./helpers.tsv
+day-one-mac advanced --module 17 --apply --manifest ./helpers.tsv
+day-one-mac advanced --module 17 --check
+```
+
+After Phase 8, apply validates zsh syntax and creates the selected files at the
+printed artifact path. Review their contents before activating them:
+
+| Bundle | Functions | Behaviour after you deliberately invoke a function |
+|---|---|---|
+| `navigation.zsh` | `day_one_cdev`, `day_one_gs` | Change to the ghq root, or show Git status |
+| `packages.zsh` | `day_one_pm_for_dir`, `day_one_pm_frozen_plan` | Identify npm/pnpm, or print a frozen-install proposal without executing it |
+
+The package inspector parses `package.json` as JSON; it never loads project
+JavaScript, runs lifecycle scripts, starts a package manager or fetches tools.
+Mixed npm/pnpm locks, a conflicting `packageManager` field, unsupported
+Yarn/Bun declarations, symlinked metadata and ambiguous projects are rejected.
+A declaration-only project can be classified, but a frozen-install proposal
+also requires its matching lockfile. A printed proposal does not verify the
+installed manager version or make dependency installation safe automatically.
+
+Choose one configuration owner before copying or sourcing the reviewed files.
+For chezmoi-owned shell configuration, make the change through chezmoi rather
+than writing a second competing startup block. Existing base aliases are not
+replaced; generated functions use the `day_one_` prefix.
+
+`--check` verifies bundle integrity, current bundled-source hashes and any
+selected project's manager classification. It does not verify shell activation
+or dependency contents. `--resume` creates a new version from the saved
+selection and current sources: preview changes before confirming. Failed
+validation saves diagnostic evidence without publishing helper files.
+
+The `pm` and `pm_frozen` examples later in this guide are a separate, manually
+activated route that actually invokes package managers. They are not generated
+or executed by Module 17.
+
 ## Step 17.1 — Measure before adding plugins
 
 ```bash

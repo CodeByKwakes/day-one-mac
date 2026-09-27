@@ -125,8 +125,9 @@ module_is_selected() {
   [[ "$id" != 10 || ! -s "$STATE_DIR/software-10-clients" ]] || return 0
   [[ "$id" != 16 || ! -s "$STATE_DIR/software-16.tsv" ]] || return 0
   [[ "$id" != 10A || ! -s "$STATE_DIR/omniroute-selection.tsv" ]] || return 0
+  [[ "$id" != 19 || ! -s "$STATE_DIR/preferences-19-selection.tsv" ]] || return 0
   case "$id" in
-    11|12|14|21|22) [[ ! -s "$STATE_DIR/artifact-$id-selection.tsv" ]] || return 0 ;;
+    11|12|14|15|17|21|22) [[ ! -s "$STATE_DIR/artifact-$id-selection.tsv" ]] || return 0 ;;
   esac
   if [[ "$id" =~ ^(15|16|17|18|19|20|21|22)$ ]]; then
     marker="$STATE_ROOT/advanced/completed/$id"
@@ -379,10 +380,16 @@ evaluate_module() {
     14) check_14 ;;
     16) check_16 ;;
     21) check_21 ;;
-    15|17|18|19|20) check_advanced "$id" ;;
-    22)
-      if [[ -s "$STATE_DIR/artifact-22-selection.tsv" ]]; then check_artifact 22
-      else check_advanced 22; fi ;;
+    18|20) check_advanced "$id" ;;
+    15|17|22)
+      if [[ -s "$STATE_DIR/artifact-$id-selection.tsv" ]]; then check_artifact "$id"
+      else check_advanced "$id"; fi ;;
+    19)
+      if [[ ! -s "$STATE_DIR/preferences-19-selection.tsv" ]]; then check_advanced 19
+      elif "$SCRIPT_DIR/configure-preferences.sh" --check >/dev/null 2>&1; then
+        set_result partial 'selected scalar preferences match; GUI/security review remains manual' 'Complete the Module 19 checklist.'
+      else set_result review 'selected preferences or ownership records need review' 'Run advanced --module 19 --check; do not overwrite external changes.'
+      fi ;;
   esac
 }
 

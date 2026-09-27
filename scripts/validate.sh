@@ -946,6 +946,14 @@ run_fixture "owned OmniRoute lifecycle refuses conflicts and resumes safely" \
   "OmniRoute module regression fixture failed" \
   "$SCRIPT_DIR/tests/test-omniroute-module.sh" || true
 
+run_fixture "dotfile proposals and helper bundles preserve manual activation boundaries" \
+  "configuration artifact fixture failed" \
+  "$SCRIPT_DIR/tests/test-configuration-artifacts.sh" || true
+
+run_fixture "scalar preferences preserve typed originals and refuse external drift" \
+  "preference module fixture failed" \
+  "$SCRIPT_DIR/tests/test-preference-module.sh" || true
+
 run_fixture "unified optional and advanced dashboard reports evidence safely" \
   "unified optional and advanced dashboard fixture failed" \
   "$SCRIPT_DIR/tests/test-optional-status.sh" || true

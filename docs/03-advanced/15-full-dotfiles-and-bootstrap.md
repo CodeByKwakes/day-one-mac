@@ -15,6 +15,58 @@ before expanding ownership. Use the
 [command reference](../20-reference/CHEZMOI-COMMAND-REFERENCE.md) when choosing
 between `edit`, `add`, `apply`, `merge`, and `forget`.
 
+## Executable inventory and proposal route
+
+Module 15 creates a private inventory and import proposal. It does not copy
+dotfile contents, run chezmoi, render templates, execute hooks or change
+ownership. Use this route before deciding what to add to your source.
+
+Create `dotfiles.tsv` in an editor, using three tab-separated fields:
+target ID, declared owner and absolute source path (or `-`). For example:
+
+```text
+gitignore	chezmoi	/Users/your-name/.local/share/chezmoi/dot_gitignore_global
+starship	manual	-
+```
+
+Replace the example source path with your actual source file. Only include
+targets that already exist and that you intend to review:
+
+| Target ID | File below your home directory | Expected chezmoi source suffix |
+|---|---|---|
+| `gitignore` | `.gitignore_global` | `dot_gitignore_global` |
+| `starship` | `.config/starship.toml` | `dot_config/starship.toml` |
+| `aliases` | `.config/zsh/aliases.zsh` | `dot_config/zsh/aliases.zsh` |
+| `pnpm-defaults` | `.config/pnpm/rc` | `dot_config/pnpm/rc` |
+
+A source may also end in `.tmpl`, but it is never evaluated. Owners are
+`chezmoi`, `manual` or `unmanaged`. The latter two require `-` instead of a
+source path. Arbitrary targets, credential files and whole directories are
+not accepted. Paths through symlinks are rejected.
+
+```bash
+day-one-mac advanced --module 15 --plan --manifest ./dotfiles.tsv
+day-one-mac advanced --module 15 --apply --manifest ./dotfiles.tsv
+day-one-mac advanced --module 15 --check
+```
+
+Apply requires recorded Phase 8 completion. At the printed artifact path,
+review `evidence.tsv`, `report.md` and `import-proposal.tsv`. The proposal
+recommends reviewing an existing source, retaining a manual owner, or reviewing
+an unmanaged target before adding it. It is data, not an executable script.
+
+Checks verify that selected files are readable regular files owned by your
+current user, and compare their hashes with the snapshot. The manager label is
+your declaration, not a discovery of chezmoi's complete ownership graph.
+Target/source hashes do not prove that a template renders to the target.
+Hashing a file also does not certify that it is secret-free.
+
+Changed, missing or unsafe files make `--check` fail. Review `--plan` before
+accepting a new snapshot. `--resume` uses the saved target choices and captures
+their current contents as hashes; older versions remain available. Failed
+evidence produces a diagnostic snapshot but no import proposal. Complete the
+secret review and actual chezmoi changes manually using the sections below.
+
 ## Step 15.1 — Audit the minimal source first
 
 ```bash

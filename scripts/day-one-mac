@@ -186,7 +186,7 @@ case "${1:-}" in
       '                    --list lists capabilities; --module ID --plan|--apply|--check|--resume' \
       '  databases         install, resume, or verify optional databases' \
       '  finalize          compact records or detach after Phase 8' \
-      '  advanced          track guides; Modules 16/21/22 support explicit actions' \
+      '  advanced          track guides; 15/16/17/19/21/22 support explicit actions' \
       '  advanced-audit    write the private extended audit' \
       '  verify            check the installed runtime integrity' \
       '  validate          validate a checkout (runtime: same as verify)' \

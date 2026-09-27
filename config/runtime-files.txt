@@ -302,3 +302,8 @@ docs/20-reference/MANUAL-SETUP-GUIDE.md
 scripts/validate-warp-drive.sh
 scripts/configure-omniroute.sh
 scripts/lib/ai-artifacts.sh
+scripts/lib/configuration-artifacts.sh
+scripts/lib/macos-preferences.sh
+scripts/configure-preferences.sh
+config/shell-helpers/navigation.zsh
+config/shell-helpers/packages.zsh

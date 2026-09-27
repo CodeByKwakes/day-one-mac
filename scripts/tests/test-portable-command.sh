@@ -26,12 +26,16 @@ HOME="$test_home" "$portable" optional --list | grep -Fq $'16\tadvanced\texecuta
   || fail_test 'standalone runtime omitted executable software selections'
 [[ -x "$runtime/scripts/configure-software.sh" ]] \
   || fail_test 'standalone runtime omitted the software runner'
-for module in 10A 11 12 14 21 22; do
+for module in 10A 11 12 14 15 17 19 21 22; do
   HOME="$test_home" "$portable" optional --list | grep -Eq "^${module}[[:space:]].*[[:space:]]executable[[:space:]]" \
     || fail_test "standalone runtime omitted artifact module $module"
 done
 HOME="$test_home" "$runtime/scripts/configure-omniroute.sh" --help | grep -Fq 'never adopts, replaces or deletes' \
   || fail_test 'standalone gateway runner cannot resolve its dependencies'
+HOME="$test_home" "$runtime/scripts/configure-preferences.sh" --help | grep -Fq 'Typed originals' \
+  || fail_test 'standalone preference runner cannot resolve its dependencies'
+[[ -f "$runtime/config/shell-helpers/packages.zsh" && -f "$runtime/config/shell-helpers/navigation.zsh" ]] \
+  || fail_test 'standalone helper templates are missing'
 HOME="$test_home" "$runtime/scripts/configure-artifacts.sh" --help | grep -Fq 'publishes a new private version' \
   || fail_test 'standalone artifact runner cannot resolve its dependencies'
 HOME="$test_home" "$runtime/scripts/configure-software.sh" --help | grep -Fq 'Default VS Code profile' \
