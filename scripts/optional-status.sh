@@ -124,8 +124,9 @@ module_is_selected() {
   [[ "$id" != 13 || ! -s "$STATE_DIR/optional-cli-packages" ]] || return 0
   [[ "$id" != 10 || ! -s "$STATE_DIR/software-10-clients" ]] || return 0
   [[ "$id" != 16 || ! -s "$STATE_DIR/software-16.tsv" ]] || return 0
+  [[ "$id" != 10A || ! -s "$STATE_DIR/omniroute-selection.tsv" ]] || return 0
   case "$id" in
-    12|14|21) [[ ! -s "$STATE_DIR/artifact-$id-selection.tsv" ]] || return 0 ;;
+    11|12|14|21|22) [[ ! -s "$STATE_DIR/artifact-$id-selection.tsv" ]] || return 0 ;;
   esac
   if [[ "$id" =~ ^(15|16|17|18|19|20|21|22)$ ]]; then
     marker="$STATE_ROOT/advanced/completed/$id"
@@ -220,6 +221,14 @@ check_10() {
 
 check_10a() {
   local state
+  if [[ -s "$STATE_DIR/omniroute-selection.tsv" ]]; then
+    if "$SCRIPT_DIR/configure-omniroute.sh" --check >/dev/null 2>&1; then
+      set_result partial 'owned gateway is healthy; providers, keys and routing remain manual' 'Complete the Optional 10A checklist.'
+    else
+      set_result review 'gateway ownership, specification or health needs review' 'Run optional --module 10A --check for details.'
+    fi
+    return
+  fi
   docker_ready || { set_result blocked 'Docker server is not reachable' 'Start Docker and follow Optional 10A.'; return; }
   state="$(container_state omniroute)"
   case "$state" in
@@ -230,6 +239,7 @@ check_10a() {
 }
 
 check_11() {
+  if [[ -s "$STATE_DIR/artifact-11-selection.tsv" ]]; then check_artifact 11; return; fi
   local selected count=0 path
   selected="$(state_value mcp-servers)"
   [[ -n "$selected" ]] || { set_result blocked 'selected, but no MCP servers are saved' 'Rerun the Optional Setup Center and choose at least one MCP server.'; return; }
@@ -319,7 +329,7 @@ check_advanced() {
 check_artifact() {
   local id="$1"
   if "$SCRIPT_DIR/configure-artifacts.sh" --module "$id" --check >/dev/null 2>&1; then
-    set_result partial 'generated artifact is verified; import or maintenance checklist remains manual' "Review Module $id and its generated manual-steps.txt."
+    set_result partial 'generated artifact is verified; activation, trust or maintenance checklist remains manual' "Review Module $id and its generated manual-steps.txt."
     if [[ "$id" == 21 && -f "$STATE_ROOT/advanced/completed/21" ]]; then
       check_advanced 21
       if [[ "$RESULT_STATUS" == ready ]]; then
@@ -369,7 +379,10 @@ evaluate_module() {
     14) check_14 ;;
     16) check_16 ;;
     21) check_21 ;;
-    15|17|18|19|20|22) check_advanced "$id" ;;
+    15|17|18|19|20) check_advanced "$id" ;;
+    22)
+      if [[ -s "$STATE_DIR/artifact-22-selection.tsv" ]]; then check_artifact 22
+      else check_advanced 22; fi ;;
   esac
 }
 

@@ -30,7 +30,7 @@ Usage: ./advanced-setup.sh [option]
   --yes                confirm --complete or --reset without prompting
   -h, --help           show this help
 
-For executable Module 16 payloads and Module 21 snapshots use the dispatcher:
+For executable Module 16 payloads and Module 21/22 snapshots use the dispatcher:
   day-one-mac advanced --module 16 --inventory
   day-one-mac advanced --module 16 --plan --manifest /path/to/reviewed.tsv
   day-one-mac advanced --module 16 --apply --manifest /path/to/reviewed.tsv

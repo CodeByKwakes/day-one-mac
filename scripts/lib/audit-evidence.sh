@@ -25,7 +25,8 @@ day_one_audit_evidence() {
   # Hash only explicit, non-secret setup records. No directory-wide credential scan.
   for file in track stack preset auth-mode primary-ide optional-modules database-services \
       optional-cli-packages software-10-clients software-16.tsv install-manifest.tsv \
-      artifact-12-selection.tsv artifact-14-selection.tsv; do
+      artifact-11-selection.tsv artifact-12-selection.tsv artifact-14-selection.tsv \
+      artifact-22-selection.tsv omniroute-selection.tsv; do
     if ! safe_path "$STATE_DIR/$file" || [[ -e "$STATE_DIR/$file" && ! -f "$STATE_DIR/$file" ]]; then
       printf 'selection-%s\tFAIL\tunsafe record\n' "$file"
     elif [[ -f "$STATE_DIR/$file" ]]; then
@@ -36,12 +37,13 @@ day_one_audit_evidence() {
     else printf 'selection-%s\tINFO\tnot recorded\n' "$file"
     fi
   done
-  for id in 09 10 12 13 14 16; do
+  for id in 09 10 10A 11 12 13 14 16 22; do
     case "$id" in
       09) selection=database-services ;;
       10) selection=software-10-clients
           [[ -s "$STATE_DIR/$selection" ]] || selection=ai-clients ;;
-      12|14) selection="artifact-$id-selection.tsv" ;;
+      10A) selection=omniroute-selection.tsv ;;
+      11|12|14|22) selection="artifact-$id-selection.tsv" ;;
       13) selection=optional-cli-packages ;;
       16) selection=software-16.tsv ;;
     esac

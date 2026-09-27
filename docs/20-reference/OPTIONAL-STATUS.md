@@ -32,6 +32,14 @@ check remains `review`; manual completion is user-attested, not inferred.
 
 ## Status meanings
 
+Saved Module 10A/11/22 selections also count without the wizard. Module 10A
+checks the owned digest-pinned gateway in its explicit local Docker context.
+Module 11 checks generated MCP artifacts, not live client configuration.
+Module 22 compares selected skill/MCP metadata with its evidence snapshot.
+Passing checks stay `partial` because provider readiness, activation and trust
+remain manual; a failed check or drift is `review`. A guide marker does not
+override these executable-scope checks.
+
 Generated Module 12/14 artifacts count as selected even without the wizard.
 Valid files are `partial` because application import, workspace choice and
 Sync state remain manual. Invalid/missing outputs or changed Warp source are

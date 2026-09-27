@@ -6,6 +6,7 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/lib/project-paths.sh"
 source "$SCRIPT_DIR/lib/module-execution.sh"
 source "$SCRIPT_DIR/lib/audit-evidence.sh"
+source "$SCRIPT_DIR/lib/ai-artifacts.sh"
 ORIGINAL_ARGS=("$@")
 STATE_ROOT="$(day_one_state_root)"
 STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
@@ -16,13 +17,15 @@ export NO_COLOR=1 HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_ANALYTICS=1
 die() { printf '%s\n' "$1" >&2; exit "${2:-2}"; }
 usage() {
   cat <<'EOF'
-Usage: configure-artifacts.sh --module 12|14|21 --plan|--apply|--check|--resume
-  --manifest PATH   Module 12 only: profile<TAB>Name and extension<TAB>publisher.id
+Usage: configure-artifacts.sh --module 11|12|14|21|22 --plan|--apply|--check|--resume
+  --manifest PATH   Module 11 MCP, 12 profile or 22 governance TSV
   --yes             confirm artifact creation, never an import or installation
 
+11 generates workspace MCP snippets, never activates clients or reads tokens.
 12 generates a minimal .code-profile and reviewed extension list.
 14 exports the bundled Warp directory. Both verify files, not application imports.
 21 snapshots recorded setup evidence and selected executable-module checks.
+22 snapshots explicitly selected skill trees and MCP metadata, never executes them.
 Plan/check never save records or create temporary files. Apply/resume requires
 Phase 8 and publishes a new private version; previous versions are preserved.
 EOF
@@ -38,8 +41,8 @@ while (( $# )); do
     *) die "unknown artifact option: $1" ;;
   esac
 done
-[[ "$MODULE" =~ ^(12|14|21)$ && -n "$ACTION" ]] || die 'choose module 12, 14 or 21 and one action'
-[[ "$MODULE" == 12 || -z "$INPUT" ]] || die '--manifest is only for Module 12'
+[[ "$MODULE" =~ ^(11|12|14|21|22)$ && -n "$ACTION" ]] || die 'choose module 11, 12, 14, 21 or 22 and one action'
+[[ "$MODULE" =~ ^(11|12|22)$ || -z "$INPUT" ]] || die '--manifest is only for Module 11, 12 or 22'
 [[ "$ACTION" != resume || -z "$INPUT" ]] || die '--resume uses saved choices'
 [[ "$YES" == 0 || "$ACTION" == apply || "$ACTION" == resume ]] || die '--yes is only for apply/resume'
 SAVED="$STATE_DIR/artifact-$MODULE-selection.tsv"
@@ -135,12 +138,16 @@ profile_json() {
 }
 manual_steps() {
   case "$MODULE" in
+    11) printf '%s\n' 'Manual: review and merge snippets into the intended workspace client configuration. Do not overwrite existing configuration.' \
+      'Codex entries are disabled. Tokens, OAuth, client activation and server trust approval remain manual. Integrity is not connectivity or trust.' ;;
     12) printf '%s\n' 'Manual: export your existing profile, review profile.code-profile, then import into a NEW profile in VS Code.' \
       'Import may download/run extensions. Review publisher trust and policy first. Accounts, settings and Settings Sync are not configured.' ;;
     14) printf '%s\n' 'Manual: open Warp, choose the intended workspace and import the exported Day One Mac directory.' \
       'Verify imported workflows in Warp; export integrity does not prove an import or cloud sync.' ;;
     21) printf '%s\n' 'Scope: recorded phase evidence, runtime entry points/integrity and saved executable selections only.' \
       'Phase record presence is not current machine health. Authentication, FileVault, Brewfile, repositories, upgrades, cleanup and rebuild remain separately reviewed.' ;;
+    22) printf '%s\n' 'Scope: explicitly selected skill folders and Module 11 metadata manifests only; no live credential files.' \
+      'Owner labels and hashes are inventory evidence, not signatures or trust certification. Review changes before accepting a new baseline.' ;;
   esac
 }
 compare_evidence() {
@@ -156,6 +163,10 @@ compare_evidence() {
 
 safe_path "$STATE_DIR" || die 'State directory must not traverse symlinks.' 1
 case "$MODULE" in
+  11) SELECTION="$(day_one_mcp_selection "${INPUT:-$SAVED}")" ;;
+  22)
+    SELECTION="$(day_one_governance_selection "${INPUT:-$SAVED}")"
+    EVIDENCE="$(day_one_governance_evidence)" || die 'Governance evidence collection failed.' 1 ;;
   12) load_profile ;;
   14)
     hashes="$(warp_hashes)" || die 'Warp source inventory is unsafe or differs from the runtime allowlist.' 1
@@ -172,13 +183,18 @@ case "$MODULE" in
     EVIDENCE="$(day_one_audit_evidence)" || die 'Evidence collection failed.' 1 ;;
 esac
 read_current || true
-if [[ "$MODULE" == 21 ]]; then compare_evidence; fi
+if [[ "$MODULE" == 21 || "$MODULE" == 22 ]]; then compare_evidence; fi
 manual_steps
 if [[ "$ACTION" == plan ]]; then
   printf 'Plan only: create a new private Module %s artifact under %s/module-runs/%s/.\n' "$MODULE" "$STATE_DIR" "$MODULE"
   printf 'Selection:\n%s\n' "$SELECTION"
   if [[ "$MODULE" == 12 ]]; then profile_json; fi
-  if [[ "$MODULE" == 21 ]]; then printf '%s\n%s\n' "$EVIDENCE" "$DRIFT"; fi
+  if [[ "$MODULE" == 11 ]]; then
+    for client in claude codex vscode; do
+      if grep -q "^$client"$'\t' <<< "$SELECTION"; then printf '\n%s snippet:\n' "$client"; day_one_mcp_render "$client"; fi
+    done
+  fi
+  if [[ "$MODULE" == 21 || "$MODULE" == 22 ]]; then printf '%s\n%s\n' "$EVIDENCE" "$DRIFT"; fi
   [[ -s "$STATE_DIR/completed/08" ]] || printf 'Blocked on apply: complete required Phase 8.\n'
   exit 0
 fi
@@ -188,7 +204,7 @@ if [[ "$ACTION" == check ]]; then
   [[ -f "$CURRENT/selection.tsv" && "$(cat "$CURRENT/selection.tsv")" == "$SELECTION" ]] || die 'Artifact does not match the current selection/source; review a new plan.' 1
   if [[ "$MODULE" == 12 ]]; then
     [[ "$(cat "$CURRENT/profile.code-profile")" == "$(profile_json)" ]] || die 'Profile content differs from its reviewed selection.' 1
-  elif [[ "$MODULE" == 21 ]]; then
+  elif [[ "$MODULE" == 21 || "$MODULE" == 22 ]]; then
     printf '%s\n%s\n' "$EVIDENCE" "$DRIFT"
     if grep -q $'\tFAIL\t' <<< "$EVIDENCE" || [[ "$DRIFT" != 'No evidence drift.' ]]; then
       die 'Audit gate failure or evidence drift; review before accepting a new snapshot.' 1
@@ -213,6 +229,13 @@ cp "$PROJECT_DIR/VERSION" "$ARTIFACT/runtime-version"
 manual_steps > "$ARTIFACT/manual-steps.txt"
 day_one_module_event generating-artifact "$MODULE"
 case "$MODULE" in
+  11)
+    for client in claude codex vscode; do
+      if grep -q "^$client"$'\t' <<< "$SELECTION"; then
+        suffix=json; [[ "$client" != codex ]] || suffix=toml
+        day_one_mcp_render "$client" > "$ARTIFACT/$client-mcp.$suffix"
+      fi
+    done ;;
   12)
     profile_json > "$ARTIFACT/profile.code-profile"
     printf '%s\n' "$EXTENSIONS" > "$ARTIFACT/extensions.txt"
@@ -223,10 +246,10 @@ case "$MODULE" in
     mkdir "$ARTIFACT/Day One Mac"
     cp -R "$PROJECT_DIR/warp-drive/Day One Mac/." "$ARTIFACT/Day One Mac/"
     [[ "$(tree_hashes "$ARTIFACT/Day One Mac")" == "$hashes" ]] || die 'Warp source changed during export.' 1 ;;
-  21)
+  21|22)
     day_one_write_state "$ARTIFACT/evidence.tsv" "$EVIDENCE"
     {
-      printf '# Bounded setup audit\n\nGenerated: %s\n\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      printf '# Module %s evidence\n\nGenerated: %s\n\n' "$MODULE" "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       printf '## Evidence\n\n```text\n%s\n```\n\n## Comparison with previous snapshot\n\n```diff\n%s\n```\n\n' "$EVIDENCE" "$DRIFT"
       manual_steps
     } > "$ARTIFACT/report.md" ;;
@@ -238,7 +261,7 @@ verify_tree "$ARTIFACT" "$artifact_hash" || die 'Generated artifact failed verif
 day_one_write_state "$POINTER" "${MODULE_RUN##*/}"$'\t'"$artifact_hash"
 day_one_module_event published-artifact "$ARTIFACT"
 printf 'Published artifact: %s\nPrevious versions retained. Imports and maintenance were not performed.\n' "$ARTIFACT"
-if [[ "$MODULE" == 21 ]] && grep -q $'\tFAIL\t' <<< "$EVIDENCE"; then
+if [[ "$MODULE" == 21 || "$MODULE" == 22 ]] && grep -q $'\tFAIL\t' <<< "$EVIDENCE"; then
   die 'Audit snapshot saved, but evidence gates failed. Review report.md; resume after resolving the failures.' 1
 fi
 MODULE_VERIFIED=1

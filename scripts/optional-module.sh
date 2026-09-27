@@ -14,7 +14,8 @@ usage() {
 Usage: day-one-mac optional --module ID --plan|--apply|--check|--resume [selection]
        day-one-mac optional --list
 
-  --module ID        09 databases, 10 AI, 12 profiles, 13 CLI, 14 Warp, 16 software, 21 audit
+  --module ID        09 databases, 10 AI, 10A gateway, 11 MCP, 12 profiles, 13 CLI,
+                     14 Warp, 16 software, 21 audit, 22 governance
   --plan             inspect and print changes; never apply or save state
   --apply            apply selected work after confirmation
   --check            read-only verification; nonzero if missing/unhealthy
@@ -22,7 +23,7 @@ Usage: day-one-mac optional --module ID --plan|--apply|--check|--resume [selecti
   --services CSV     Module 09 services; otherwise use saved database selection
   --packages CSV     Module 13 formulae; otherwise use saved CLI selection
   --clients CSV      Module 10 client IDs; otherwise use saved AI selection
-  --manifest PATH    Module 12 profile TSV or 16 software TSV; otherwise saved selection
+  --manifest PATH    Module 10A, 11, 12, 16 or 22 TSV; otherwise saved selection
   --inventory        Module 16 candidate TSV to stdout; never saves or applies
   --app-install-policy MODE
                      Module 10/16: prompt, homebrew, or check-only (default)
@@ -71,12 +72,19 @@ if [[ "$ACTION" == resume && -n "$SELECTOR" ]]; then die '--resume uses saved ch
 if [[ "$ASSUME_YES" == 1 && "$ACTION" != apply && "$ACTION" != resume ]]; then die '--yes is only valid with --apply or --resume'; fi
 [[ -z "$APP_POLICY" || "$MODULE" == 10 || "$MODULE" == 16 ]] || die 'application policy is only supported for 10 and 16'
 [[ "$ACTION" != inventory || ( "$MODULE" == 16 && -z "$SELECTOR$APP_POLICY" ) ]] || die '--inventory is only supported for Module 16 without other selections'
-if [[ "$MODULE" == 12 || "$MODULE" == 14 || "$MODULE" == 21 ]]; then
-  [[ -z "$SELECTOR" || ( "$MODULE" == 12 && "$SELECTOR" == --manifest ) ]] || die 'Only Module 12 accepts an artifact selection (--manifest)'
+if [[ "$MODULE" =~ ^(11|12|14|21|22)$ ]]; then
+  [[ -z "$SELECTOR" || ( "$MODULE" =~ ^(11|12|22)$ && "$SELECTOR" == --manifest ) ]] || die 'Only Modules 11, 12 and 22 accept an artifact manifest'
   artifact_args=(--module "$MODULE" "--$ACTION")
   [[ -z "$SELECTION" ]] || artifact_args+=(--manifest "$SELECTION")
   [[ "$ASSUME_YES" == 0 ]] || artifact_args+=(--yes)
   exec /bin/bash "$SCRIPT_DIR/configure-artifacts.sh" "${artifact_args[@]}"
+fi
+if [[ "$MODULE" == 10A ]]; then
+  [[ -z "$SELECTOR" || "$SELECTOR" == --manifest ]] || die 'Module 10A accepts --manifest'
+  gateway_args=("--$ACTION")
+  [[ -z "$SELECTION" ]] || gateway_args+=(--manifest "$SELECTION")
+  [[ "$ASSUME_YES" == 0 ]] || gateway_args+=(--yes)
+  exec /bin/bash "$SCRIPT_DIR/configure-omniroute.sh" "${gateway_args[@]}"
 fi
 case "$MODULE" in
   09)

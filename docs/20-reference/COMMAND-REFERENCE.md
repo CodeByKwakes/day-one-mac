@@ -77,7 +77,7 @@ updates and rollback.
 | `day-one-mac raycast [options]` | `./configure-raycast.sh [options]` | Choose `alongside-spotlight` or `raycast-only` launcher guidance, then preview, generate, inspect, or archive the optional track-aware Raycast Script Commands. Raycast uses `⌥Space` in both modes. |
 | `day-one-mac optional --guided` | `./bootstrap-day-one-mac.sh --optional --guided` | Choose optional modules after required Phase 8 passes and continue to available installers. |
 | `day-one-mac optional --list` | `./optional-module.sh --list` | List executable versus guided module capabilities, not completion. |
-| `day-one-mac optional --module ID --plan\|--apply\|--check\|--resume` | `./optional-module.sh [options]` | Modules 09/10/13 install selected payloads; 12/14 generate import artifacts only. Apply/resume requires Phase 8; see [Module execution](MODULE-EXECUTION.md). |
+| `day-one-mac optional --module ID --plan\|--apply\|--check\|--resume` | `./optional-module.sh [options]` | Modules 09/10/13 install selected payloads; 10A manages an owned gateway; 11/12/14 generate review artifacts only. Apply/resume requires Phase 8; see [Module execution](MODULE-EXECUTION.md). |
 | `day-one-mac optional --status [options]` | `./optional-status.sh [options]` | Show one read-only status dashboard for Modules 09–22 or write the combined module, environment, and repository audit. Compatibility aliases: `day-one-mac optional-status` and `day-one-mac modules`. |
 | `day-one-mac databases [options]` | `./configure-databases.sh [options]` | Install, resume, inspect, or verify the selected PostgreSQL, Redis, and MongoDB containers. |
 | `day-one-mac safety-report [options]` | `./preflight-audit.sh [options]` | Create the read-only Stage 0 report on an existing Mac before choosing a reset or cleanup route. |
@@ -86,6 +86,7 @@ updates and rollback.
 | `day-one-mac advanced [options]` | `./advanced-setup.sh [options]` | Read and track advanced Modules 15–22. No action flag means guide-only behaviour. |
 | `day-one-mac advanced --module 16 --inventory\|--plan\|--apply\|--check\|--resume` | `./optional-module.sh --module 16 [options]` | Inventory or install a reviewed software selection; `--manifest PATH` supplies a two-column TSV for plan/apply/check. Accounts, Brewfile edits and removals remain manual. |
 | `day-one-mac advanced --module 21 --plan\|--apply\|--check\|--resume` | `./optional-module.sh --module 21 [options]` | Preview/check bounded setup evidence without writes, or save a versioned snapshot and compare it to the previous one. Never upgrades, cleans or rebuilds. |
+| `day-one-mac advanced --module 22 --plan\|--apply\|--check\|--resume` | `./optional-module.sh --module 22 [options]` | Use `--manifest PATH` for explicit skill/MCP metadata ownership and drift snapshots. Never executes skills or changes client trust. |
 | `day-one-mac advanced-audit [options]` | `./advanced-audit.sh [options]` | Generate the private, extended environment and repository report. |
 | `day-one-mac cli-tools [options]` | `./configure-cli-tools.sh [options]` | Select and install optional Homebrew formulae without removing unselected tools. |
 | `day-one-mac finalize [options]` | `./finalize-setup.sh [options]` | Review or compact setup evidence after Phase 8, or deliberately detach the setup system. |

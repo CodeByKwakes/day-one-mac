@@ -938,6 +938,14 @@ run_fixture "profile/Warp artifacts and audit snapshots preserve manual boundari
   "artifact module regression fixture failed" \
   "$SCRIPT_DIR/tests/test-artifact-modules.sh" || true
 
+run_fixture "MCP snippets and AI governance preserve manual trust boundaries" \
+  "AI artifact and governance fixture failed" \
+  "$SCRIPT_DIR/tests/test-ai-artifacts.sh" || true
+
+run_fixture "owned OmniRoute lifecycle refuses conflicts and resumes safely" \
+  "OmniRoute module regression fixture failed" \
+  "$SCRIPT_DIR/tests/test-omniroute-module.sh" || true
+
 run_fixture "unified optional and advanced dashboard reports evidence safely" \
   "unified optional and advanced dashboard fixture failed" \
   "$SCRIPT_DIR/tests/test-optional-status.sh" || true

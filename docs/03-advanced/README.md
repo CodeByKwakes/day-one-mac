@@ -36,11 +36,12 @@ Most remain guided procedures. Module 16 additionally has an explicit
 selected-payload installer: `advanced --module 16 --plan`, `--apply`,
 `--check` and `--resume`. Its `--inventory` action prints a candidate selection
 for review. Module 21 supports the same four actions for audit snapshots,
-not upgrades or cleanup. Without an action, `advanced --module ID` still opens
-the guide for either module.
+not upgrades or cleanup. Module 22 captures explicit skill/MCP inventory and
+drift evidence without changing clients or trust. Without an action,
+`advanced --module ID` still opens the guide.
 
 `day-one-mac optional --list` now lists these modules alongside executable
-Optional 09, 10, 12, 13 and 14. Advanced 16 and 21 are labelled executable only
+Optional 09, 10, 10A, 11, 12, 13 and 14. Advanced 16, 21 and 22 are labelled executable only
 for their bounded installation and evidence-capture scopes. Other Advanced
 entries remain guided. No execution result
 is substituted for a user-confirmed guide fingerprint.
@@ -56,7 +57,7 @@ is substituted for a user-confirmed guide fingerprint.
 | [19 · macOS, GUI, and local HTTPS](19-macos-gui-and-local-https.md) | Reviewed defaults, permissions, launch-at-login, Raycast/menu bar, local certificates | Guided system and application configuration | The base tools are stable and personal ergonomics are understood |
 | [20 · Restore and migrate selected data](20-restore-and-migrate.md) | Verified-volume restore, repo re-cloning, project data, database imports | Source-reviewed restore procedure | A clean Mac needs selected content from a previous machine |
 | [21 · Audit, maintenance, and rebuild](21-audit-maintenance-and-rebuild.md) | Drift reports, update routine, private commits, and rebuild rehearsal | Executable evidence snapshots/checks; guided maintenance and rebuild | The setup must remain reproducible over time |
-| [22 · Shared AI skills and MCP operations](22-ai-skills-and-mcp-operations.md) | One reviewed skill source, client-specific agents, MCP lifecycle, and trust checks | Guided trust, secret, and client configuration | Optional AI clients are installed and repeated workflows need governance |
+| [22 · Shared AI skills and MCP operations](22-ai-skills-and-mcp-operations.md) | One reviewed skill source, client-specific agents, MCP lifecycle, and trust checks | Executable inventory/drift snapshots; manual trust, secrets and client configuration | Optional AI clients are installed and repeated workflows need governance |
 
 Modules 09–14 remain the first optional layer: databases, AI clients, the 10A
 OmniRoute gateway, MCP, VS Code profiles, enhanced CLI formulae, and Warp

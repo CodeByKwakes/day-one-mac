@@ -300,3 +300,5 @@ docs/20-reference/TERMINAL-BASICS.md
 docs/20-reference/ARCHITECTURE-AND-STATE.md
 docs/20-reference/MANUAL-SETUP-GUIDE.md
 scripts/validate-warp-drive.sh
+scripts/configure-omniroute.sh
+scripts/lib/ai-artifacts.sh

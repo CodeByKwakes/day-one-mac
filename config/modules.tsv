@@ -1,8 +1,8 @@
 # id	layer	mode	prerequisite	title	guide
 09	optional	executable	08	Local databases	docs/02-optional/09-databases.md
 10	optional	executable	08	AI client payloads	docs/02-optional/10-ai-agents.md
-10A	optional	guided	08	OmniRoute	docs/02-optional/10a-omniroute.md
-11	optional	guided	08	MCP servers	docs/02-optional/11-mcp-servers.md
+10A	optional	executable	08	Owned OmniRoute container	docs/02-optional/10a-omniroute.md
+11	optional	executable	08	MCP configuration artifacts	docs/02-optional/11-mcp-servers.md
 12	optional	executable	08	VS Code profile artifacts	docs/02-optional/12-vscode-profiles.md
 13	optional	executable	08	Enhanced CLI tools	docs/02-optional/13-enhanced-cli-tools.md
 14	optional	executable	08	Warp Drive export	docs/02-optional/14-warp-drive.md
@@ -13,4 +13,4 @@
 19	advanced	guided	08	macOS GUI and local HTTPS	docs/03-advanced/19-macos-gui-and-local-https.md
 20	advanced	guided	08	Restore and migrate	docs/03-advanced/20-restore-and-migrate.md
 21	advanced	executable	08	Audit evidence snapshots	docs/03-advanced/21-audit-maintenance-and-rebuild.md
-22	advanced	guided	08	Shared AI skills and MCP	docs/03-advanced/22-ai-skills-and-mcp-operations.md
+22	advanced	executable	08	AI governance evidence	docs/03-advanced/22-ai-skills-and-mcp-operations.md
