@@ -1,13 +1,13 @@
 # id	layer	mode	prerequisite	title	guide
 09	optional	executable	08	Local databases	docs/02-optional/09-databases.md
-10	optional	guided	08	AI clients	docs/02-optional/10-ai-agents.md
+10	optional	executable	08	AI client payloads	docs/02-optional/10-ai-agents.md
 10A	optional	guided	08	OmniRoute	docs/02-optional/10a-omniroute.md
 11	optional	guided	08	MCP servers	docs/02-optional/11-mcp-servers.md
 12	optional	guided	08	VS Code profiles	docs/02-optional/12-vscode-profiles.md
 13	optional	executable	08	Enhanced CLI tools	docs/02-optional/13-enhanced-cli-tools.md
 14	optional	guided	08	Warp Drive	docs/02-optional/14-warp-drive.md
 15	advanced	guided	08	Full dotfiles and bootstrap	docs/03-advanced/15-full-dotfiles-and-bootstrap.md
-16	advanced	guided	08	Applications and editor inventory	docs/03-advanced/16-brewfile-apps-and-editor.md
+16	advanced	executable	08	Applications and editor inventory	docs/03-advanced/16-brewfile-apps-and-editor.md
 17	advanced	guided	08	Shell and package automation	docs/03-advanced/17-shell-and-package-automation.md
 18	advanced	guided	08	Hosting identities Azure and worktrees	docs/03-advanced/18-hosting-identities-azure-and-worktrees.md
 19	advanced	guided	08	macOS GUI and local HTTPS	docs/03-advanced/19-macos-gui-and-local-https.md

@@ -1,7 +1,8 @@
-# Optional module execution reference
+# Module execution reference
 
-Modules **09 (databases)** and **13 (CLI formulae)** support a shared execution
-interface. Other optional modules and Advanced 15–22 remain guided procedures.
+Modules **09 (databases)**, **10 (AI client payloads)**, **13 (CLI formulae)**
+and **16 (selected software)** support a shared execution interface.
+Other optional and Advanced modules remain guided procedures.
 An executable module automates its stated scope, not every action in its guide:
 Module 13 does not edit shell configuration or a Brewfile.
 
@@ -16,11 +17,34 @@ For a first run, follow the [optional setup walkthrough](../02-optional/README.m
 | `--module ID --apply` | Confirm, save the selection and apply missing work. Requires recorded Phase 8 completion. |
 | `--module ID --check` | Inspect actual installation/configuration/health. Return nonzero when verification fails; never save completion. |
 | `--module ID --resume` | Reconcile the last saved selection with current reality. Requires Phase 8 and confirmation; does not accept a replacement selection. |
+| `advanced --module 16 --inventory` | Print candidate two-column TSV to stdout. Does not save a selection or evaluate the Brewfile. |
 
 Supply `--services postgres,redis,mongodb` for 09 or `--packages eza,fzf` for 13.
 Omitting the selection uses the saved one; absence of saved choices is an error.
 `--yes` skips the ordinary apply/resume confirmation only. It does not approve
 macOS permissions or another application's onboarding.
+
+Use `optional` for 09/10/13 and `advanced` for 16:
+
+| Module | Selection | Verification scope |
+|---|---|---|
+| 10 | `--clients claude,codex` (also `copilot-app`, `copilot-cli`, `copilot-vscode`, `raycast-ai`) | Catalogue payload presence/ownership; never authentication, billing or permissions |
+| 16 | `--manifest PATH` with two tab-separated fields per row | Selected applications, formulae and Default-profile extensions; never Brewfile, licences or Settings Sync |
+
+Module 16 row kinds are `app` (catalogue ID), `formula` (Homebrew token),
+and `extension` (lowercase `publisher.name`). Comments start with `#`.
+Raw casks, App Store IDs, Ruby, shell commands, VSIX files and version-pinned
+extensions are not accepted. The runner never evaluates a Brewfile.
+Use [the beginner walkthrough](../03-advanced/16-brewfile-apps-and-editor.md#executable-selected-payload-route)
+to generate and review your first selection.
+
+For 10/16, `--app-install-policy check-only` is the safe default. Missing
+catalogue apps stop until you choose `prompt` interactively or explicitly
+approve `homebrew`. Existing external apps are preserved under every policy.
+`--yes` does not choose Homebrew. Formula and extension rows explicitly select
+their respective installers. Enable the `code` command before applying
+extension rows; the runner targets only the Default profile through the
+[VS Code CLI](https://code.visualstudio.com/docs/configure/command-line).
 
 Planning is allowed before Phase 8. If Docker cannot be inspected, the database
 plan labels resource operations as conditional: it is not claiming that every
@@ -37,7 +61,9 @@ network. It does not prove credentials, application queries or backup quality.
 ## Compatibility
 
 Existing `databases`, `cli-tools`, `optional --guided`, `optional --status`,
-and `advanced` commands retain their roles. The new module interface adds
+and guide-only `advanced` commands retain their roles. Explicit actions for
+`advanced --module 16` now route to the software runner; without an action,
+that command still opens the guide. The module interface adds
 strict action validation and a Phase 8 gate for apply/resume.
 
 The direct CLI installer keeps its existing Homebrew prerequisite for
@@ -55,17 +81,33 @@ These records mean different things:
 
 - `database-services` and `optional-cli-packages`: the last apply selection,
   saved before installation so interrupted work can resume.
+- `software-10-clients` and `software-10.tsv`: original AI choices and resolved
+  application rows. The compatibility `ai-clients` selection is also saved.
+  Resume uses `software-10-clients`, not a subsequently edited wizard choice.
+- `software-16.tsv`: canonical selection snapshot. Resume does not reread the
+  original manifest. A new selection requires plan/apply, not resume.
+- `software-10-report.tsv` and `software-16-report.tsv`: last apply payload
+  evidence. Cask/bundle and extension versions are recorded when available;
+  external CLI clients are not launched just to probe a version.
 - `install-manifest.tsv`: newly installed Homebrew formulae/dependencies owned
   by Day One Mac. Pre-existing packages are never claimed merely because they
   were selected.
+- `software-extension-installs.tsv`: Default-profile extension IDs added during
+  installation, including detected dependencies. Pre-existing extensions stay
+  unclaimed. This is evidence, not an automatic removal instruction.
 - `module-runs/ID/RUN/result`: `running`, `incomplete`, or `verified` for that
   particular apply attempt. This is historical evidence, not a live check.
 - `advanced/completed/NN`: existing user-confirmed guide fingerprints. These
   are not converted into machine-verified execution records.
 
-The dashboard recognises saved 09/13 selections even when the interactive
+The dashboard recognises saved 09/10/13/16 selections even when the interactive
 optional selector was not used. It checks current evidence rather than trusting
 the latest run result. Shell integration remains a separate reviewed step.
+For 10/16 a passing payload check still yields `partial` in the dashboard:
+manual account/configuration work is outside the runner's verification scope.
+Module 16 becomes dashboard-ready only when its live payload check passes
+and a separately user-confirmed guide fingerprint is current. A stale
+fingerprint or failed payload check requires review.
 
 ## State, backups and recovery
 
@@ -88,8 +130,10 @@ module-runs/13/<unique-run>/
 
 The run backs up the Day One-owned records it will modify, not database data,
 the Homebrew installation or application credentials. Selection/result writes
-and manifest updates use same-directory atomic replacement. Non-regular record
-targets, including symlinks, are rejected.
+and the software runner's formula/extension ledger updates use same-directory
+atomic replacement. The delegated application installer retains its existing
+append-based installation ledger; its records are backed up before the run.
+Non-regular backup targets, including symlinks, are rejected.
 
 If installation fails, successful earlier operations stay in place. Read the
 printed journal path, resolve the error, then use `--resume` and `--check`.
@@ -103,6 +147,14 @@ information. Keep application-data backups separately. An uncatchable process
 termination may leave a `running` record and operation lock; check the recorded
 process before manually recovering that specific lock.
 
+Software runs additionally save `verification-scope` and `manual-steps.txt`.
+Their snapshots cover owned selection, provenance, report and ledger records,
+not application settings or credentials. The installer records newly visible
+Homebrew dependencies and extensions even after a reported installer failure
+when post-install inventory is readable. A resume skips pre-existing selected
+payloads and never requests removal. Installing missing items may still change
+dependencies through the package manager or trigger OS/vendor prompts.
+
 ## Contributor extension contract
 
 `config/modules.tsv` has six tab-separated columns:
@@ -114,6 +166,12 @@ individual helper commands in a guided module.
 IDs to explicit adapters; it never executes a command obtained from TSV data.
 `scripts/lib/module-execution.sh` supplies apply-only snapshots and journals.
 The existing operation-lock and atomic-state libraries remain authoritative.
+`scripts/configure-software.sh` shares selection validation, inventory,
+ownership checks and recovery for 10/16. Read-only paths call detection helpers
+directly: `application-status.sh` itself writes provenance even for status.
+Apply delegates missing catalogue apps to that existing ownership-aware
+installer. No account, client launch, arbitrary cask, Brewfile evaluation or
+cleanup action belongs in this adapter.
 
 Before making another registry row executable:
 
@@ -130,6 +188,7 @@ Run the isolated fixtures and project checks:
 
 ```bash
 bash scripts/tests/test-optional-module.sh
+bash scripts/tests/test-software-modules.sh
 bash scripts/tests/test-configure-databases.sh
 bash scripts/tests/test-optional-status.sh
 bash scripts/tests/test-portable-command.sh

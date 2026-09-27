@@ -19,6 +19,17 @@ include selected pre-existing formulae without treating them as Day One-owned.
 Database readiness requires passing health and configuration checks, not merely
 a running container. See [Module execution](MODULE-EXECUTION.md).
 
+Saved Module 10 client choices and Module 16 software snapshots also count as
+selected. Their payload-only `--check` can pass while the dashboard remains
+`partial`: AI authentication, Brewfile declarations, licences and settings
+are not machine-verified. Missing/conflicting Module 16 payloads require
+`review`. A guide fingerprint alone is not substituted for a saved selection's
+live payload check. The strict dashboard gate therefore remains nonzero for
+these manually unfinished workflows. After a user explicitly records the
+current Module 16 checklist with `advanced --complete 16`, it can be `ready`
+only if the live payload check also passes. A stale guide or failed payload
+check remains `review`; manual completion is user-attested, not inferred.
+
 ## Status meanings
 
 | Status | Meaning | What to do |

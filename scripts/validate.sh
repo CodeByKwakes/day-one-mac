@@ -499,7 +499,7 @@ if grep -Fq 'exec bash "$HERE/setup.sh" "$@"' "$SCRIPT_DIR/bootstrap-day-one-mac
    && grep -Fq 'FRESH_START_STATE_ROOT' "$SCRIPT_DIR/lib/project-paths.sh" \
    && grep -Fq 'legacy_runner="$HOME/.local/bin/fresh-start"' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq 'save_state_value project-root "$PROJECT_DIR"' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
-   && grep -Fq 'advanced) shift; exec "$PROJECT_ROOT/scripts/advanced-setup.sh"' "$SCRIPT_DIR/day-one-mac" \
+   && grep -Fq 'exec "$PROJECT_ROOT/scripts/advanced-setup.sh" "$@"' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'advanced-audit|audit) shift; exec' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'PHASE_SCHEMA_05=15' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq 'PHASE_SCHEMA_08=11' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
@@ -929,6 +929,10 @@ run_fixture "optional database installer is idempotent and diagnostic" \
 run_fixture "optional module execution is preview-safe, resumable and locked" \
   "optional module execution fixture failed" \
   "$SCRIPT_DIR/tests/test-optional-module.sh" || true
+
+run_fixture "AI clients and software selections preserve ownership and manual boundaries" \
+  "AI client and software module fixture failed" \
+  "$SCRIPT_DIR/tests/test-software-modules.sh" || true
 
 run_fixture "unified optional and advanced dashboard reports evidence safely" \
   "unified optional and advanced dashboard fixture failed" \

@@ -62,7 +62,7 @@ expect_failure 2 run_module --module 13 --plan --apply --packages eza
 expect_failure 2 run_module --module 13 --resume --packages eza
 expect_failure 2 run_module --module 13 --plan --services postgres
 expect_failure 2 run_module --module 13 --check
-expect_failure 2 run_module --module 10 --apply
+expect_failure 2 run_module --module 11 --apply
 expect_failure 2 run_module --module 20 --apply
 expect_failure 2 run_module --module ../09 --plan
 [[ ! -e "$TEST_STATE" ]] || fail 'invalid request saved state'

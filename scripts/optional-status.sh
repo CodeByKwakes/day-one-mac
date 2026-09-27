@@ -122,6 +122,8 @@ module_is_selected() {
   contains_csv "$OPTIONAL_MODULES" "$token" && return 0
   [[ "$id" != 09 || ! -s "$STATE_DIR/database-services" ]] || return 0
   [[ "$id" != 13 || ! -s "$STATE_DIR/optional-cli-packages" ]] || return 0
+  [[ "$id" != 10 || ! -s "$STATE_DIR/software-10-clients" ]] || return 0
+  [[ "$id" != 16 || ! -s "$STATE_DIR/software-16.tsv" ]] || return 0
   if [[ "$id" =~ ^(15|16|17|18|19|20|21|22)$ ]]; then
     marker="$STATE_ROOT/advanced/completed/$id"
     [[ -f "$marker" ]] && return 0
@@ -179,6 +181,14 @@ ai_app_id() {
 
 check_10() {
   local clients client app_id total=0 ready=0 review=0 old_ifs="$IFS" extensions=""
+  if [[ -s "$STATE_DIR/software-10-clients" ]]; then
+    if "$SCRIPT_DIR/configure-software.sh" --module 10 --check >/dev/null 2>&1; then
+      set_result partial 'selected AI payloads are installed; authentication, provider access and permissions are NOT verified' 'Complete the Optional 10 account and trust checklist.'
+    else
+      set_result partial 'selected AI payloads are missing or have an ownership conflict' 'Run day-one-mac optional --module 10 --check, review the issue, then --resume.'
+    fi
+    return
+  fi
   clients="$(state_value ai-clients)"
   [[ -n "$clients" ]] || { set_result blocked 'selected, but no AI clients are saved' 'Rerun the Optional Setup Center and choose at least one AI client.'; return; }
   if command -v code >/dev/null 2>&1; then extensions="$(code --list-extensions 2>/dev/null || true)"; fi
@@ -301,6 +311,22 @@ check_advanced() {
   fi
 }
 
+check_16() {
+  if [[ ! -s "$STATE_DIR/software-16.tsv" ]]; then check_advanced 16; return; fi
+  if "$SCRIPT_DIR/configure-software.sh" --module 16 --check >/dev/null 2>&1; then
+    if [[ -f "$STATE_ROOT/advanced/completed/16" ]]; then
+      check_advanced 16
+      if [[ "$RESULT_STATUS" == ready ]]; then
+        set_result ready 'selected payloads pass live checks and the user-confirmed guide fingerprint is current' 'Manual checklist completion is user-attested, not machine-verified.'
+      fi
+    else
+      set_result partial 'selected software payloads are verified; Brewfile, licences and guide checklist remain separately reviewed' 'Review Advanced 16; payload installation does not complete the whole guide.'
+    fi
+  else
+    set_result review 'saved software selection is missing or cannot be verified' 'Run day-one-mac advanced --module 16 --check; resolve the reported issue before resuming.'
+  fi
+}
+
 evaluate_module() {
   local id="$1"
   if ! module_is_selected "$id"; then
@@ -315,7 +341,8 @@ evaluate_module() {
     12) check_12 ;;
     13) check_13 ;;
     14) check_14 ;;
-    15|16|17|18|19|20|21|22) check_advanced "$id" ;;
+    16) check_16 ;;
+    15|17|18|19|20|21|22) check_advanced "$id" ;;
   esac
 }
 

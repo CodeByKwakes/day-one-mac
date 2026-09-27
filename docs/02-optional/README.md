@@ -9,7 +9,7 @@ complete development foundation.
 | Module | Guide | Automation level | Use it when |
 |---:|---|---|---|
 | 09 | [Databases](09-databases.md) | Installer: creates/resumes containers and verifies health | A project needs selected containerised databases. |
-| 10 | [AI clients](10-ai-agents.md) | App installer plus guided sign-in/configuration | You deliberately want one or more supported AI clients. |
+| 10 | [AI clients](10-ai-agents.md) | Selected payload installer; guided sign-in/configuration | You deliberately want one or more supported AI clients. |
 | 10A | [OmniRoute](10a-omniroute.md) | Guided Docker configuration | Selected clients should use an optional local Docker AI gateway. |
 | 11 | [MCP servers](11-mcp-servers.md) | Guided client and secret configuration | A selected AI client needs a reviewed external tool connection. |
 | 12 | [VS Code profiles](12-vscode-profiles.md) | Guided application UI setup | Work, personal, or content creation needs isolated editor profiles. |
@@ -76,8 +76,23 @@ Run only the resume command for the module you selected. Existing resources
 are preserved; no automatic rollback is attempted after a partial failure.
 Plans and checks save nothing. Only apply/resume saves choices and run records.
 
-Only 09 and 13 currently support this interface. Other modules remain guided,
-even when their guides contain runnable commands. See the
+For AI client payloads, preview your selection, then explicitly choose Homebrew
+for any missing applications you want it to manage:
+
+```bash
+day-one-mac optional --module 10 --plan --clients claude,codex
+day-one-mac optional --module 10 --apply --clients claude,codex --app-install-policy homebrew
+day-one-mac optional --module 10 --check
+```
+
+Existing external installations are preserved. Check verifies installation,
+not sign-in or subscription access; finish the [AI client guide](10-ai-agents.md).
+After an interruption, use `--module 10 --resume` with your intended application
+policy. The default policy is `check-only`; `--yes` never chooses Homebrew.
+
+Modules 09, 10 and 13 support this interface. Advanced 16 also supports a
+[reviewed software selection](../03-advanced/16-brewfile-apps-and-editor.md#executable-selected-payload-route).
+Other modules remain guided, even when their guides contain runnable commands. See the
 [execution reference](../20-reference/MODULE-EXECUTION.md) for flags, state,
 backups, verification limits and the contributor extension contract.
 

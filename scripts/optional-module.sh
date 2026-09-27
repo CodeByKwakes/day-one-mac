@@ -7,19 +7,25 @@ source "$SCRIPT_DIR/lib/project-paths.sh"
 STATE_ROOT="$(day_one_state_root)"
 STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
 MODULE="" ACTION="" SELECTION="" SELECTOR="" ASSUME_YES=0 LIST=0
+APP_POLICY=""
 
 usage() {
   cat <<'EOF'
 Usage: day-one-mac optional --module ID --plan|--apply|--check|--resume [selection]
        day-one-mac optional --list
 
-  --module ID        09 (databases) or 13 (CLI tools); other modules are guided
+  --module ID        09 databases, 10 AI payloads, 13 CLI, 16 software selection
   --plan             inspect and print changes; never apply or save state
   --apply            apply selected work after confirmation
   --check            read-only verification; nonzero if missing/unhealthy
   --resume           apply the last saved selection; cannot change selection
   --services CSV     Module 09 services; otherwise use saved database selection
   --packages CSV     Module 13 formulae; otherwise use saved CLI selection
+  --clients CSV      Module 10 client IDs; otherwise use saved AI selection
+  --manifest PATH    Module 16 reviewed TSV; otherwise use saved snapshot
+  --inventory        Module 16 candidate TSV to stdout; never saves or applies
+  --app-install-policy MODE
+                     Module 10/16: prompt, homebrew, or check-only (default)
   --yes              accept apply/resume confirmation, not platform permissions
   --list             list optional and advanced capabilities, not completion
   -h, --help         show help
@@ -32,12 +38,15 @@ die() { printf '%s\n' "$1" >&2; exit 2; }
 while (( $# )); do
   case "$1" in
     --module) [[ $# -ge 2 && -z "$MODULE" ]] || die '--module needs one ID'; MODULE="$2"; shift 2 ;;
-    --plan|--apply|--check|--resume)
+    --plan|--apply|--check|--resume|--inventory)
       [[ -z "$ACTION" ]] || die 'choose exactly one action'
       ACTION="${1#--}"; shift ;;
-    --services|--packages)
+    --services|--packages|--clients|--manifest)
       [[ $# -ge 2 && -z "$SELECTOR" && -n "$2" ]] || die 'choose one nonempty selection'
       SELECTOR="$1"; SELECTION="$2"; shift 2 ;;
+    --app-install-policy)
+      [[ $# -ge 2 && -z "$APP_POLICY" ]] || die '--app-install-policy needs one value'
+      APP_POLICY="$2"; shift 2 ;;
     --yes) ASSUME_YES=1; shift ;;
     --list) LIST=1; shift ;;
     -h|--help) usage; exit 0 ;;
@@ -45,7 +54,7 @@ while (( $# )); do
   esac
 done
 if [[ "$LIST" == 1 ]]; then
-  [[ -z "$MODULE$ACTION$SELECTOR" && "$ASSUME_YES" == 0 ]] || die '--list cannot be combined with a module action'
+  [[ -z "$MODULE$ACTION$SELECTOR$APP_POLICY" && "$ASSUME_YES" == 0 ]] || die '--list cannot be combined with a module action'
   printf 'ID\tLayer\tExecution\tPrerequisite\tModule\n'
   awk -F '\t' 'BEGIN {OFS="\t"} !/^#/ {print $1,$2,$3,$4,$5}' "$PROJECT_DIR/config/modules.tsv"
   exit 0
@@ -60,14 +69,29 @@ if [[ "$mode" != executable ]]; then
 fi
 if [[ "$ACTION" == resume && -n "$SELECTOR" ]]; then die '--resume uses saved choices; use --apply to change them'; fi
 if [[ "$ASSUME_YES" == 1 && "$ACTION" != apply && "$ACTION" != resume ]]; then die '--yes is only valid with --apply or --resume'; fi
+[[ -z "$APP_POLICY" || "$MODULE" == 10 || "$MODULE" == 16 ]] || die 'application policy is only supported for 10 and 16'
+[[ "$ACTION" != inventory || ( "$MODULE" == 16 && -z "$SELECTOR$APP_POLICY" ) ]] || die '--inventory is only supported for Module 16 without other selections'
 case "$MODULE" in
   09)
     [[ -z "$SELECTOR" || "$SELECTOR" == --services ]] || die 'Module 09 accepts --services, not --packages'
     script="$SCRIPT_DIR/configure-databases.sh"; SELECTOR=--services ;;
+  10)
+    [[ -z "$SELECTOR" || "$SELECTOR" == --clients ]] || die 'Module 10 accepts --clients'
+    script="$SCRIPT_DIR/configure-software.sh"; SELECTOR=--clients ;;
   13)
     [[ -z "$SELECTOR" || "$SELECTOR" == --packages ]] || die 'Module 13 accepts --packages, not --services'
     script="$SCRIPT_DIR/configure-cli-tools.sh"; SELECTOR=--packages ;;
+  16)
+    [[ -z "$SELECTOR" || "$SELECTOR" == --manifest ]] || die 'Module 16 accepts --manifest'
+    script="$SCRIPT_DIR/configure-software.sh"; SELECTOR=--manifest ;;
 esac
+if [[ "$MODULE" == 10 || "$MODULE" == 16 ]]; then
+  software_args=(--module "$MODULE" "--$ACTION")
+  [[ -z "$SELECTION" ]] || software_args+=("$SELECTOR" "$SELECTION")
+  [[ -z "$APP_POLICY" ]] || software_args+=(--app-install-policy "$APP_POLICY")
+  [[ "$ASSUME_YES" == 0 ]] || software_args+=(--yes)
+  exec /bin/bash "$script" "${software_args[@]}"
+fi
 if [[ "$ACTION" == apply || "$ACTION" == resume ]]; then
   [[ -s "$STATE_DIR/completed/$prerequisite" ]] || {
     printf 'Required Phase %s is not recorded complete; apply is blocked. Use --plan to preview.\n' "$prerequisite" >&2

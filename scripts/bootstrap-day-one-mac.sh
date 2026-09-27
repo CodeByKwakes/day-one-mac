@@ -775,6 +775,8 @@ run_optional_center() {
     fi
     contains_csv "$OPTIONAL_MODULES" enhanced-cli \
       && info 'Enhanced CLI installer: day-one-mac cli-tools'
+    contains_csv "$OPTIONAL_MODULES" ai-clients \
+      && info 'AI payload preview: day-one-mac optional --module 10 --plan (sign-in remains manual)'
     contains_csv "$OPTIONAL_MODULES" advanced \
       && info 'Advanced guided tracker: day-one-mac advanced --guided'
     if contains_csv "$OPTIONAL_MODULES" ai-clients \

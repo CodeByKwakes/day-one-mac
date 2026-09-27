@@ -103,6 +103,7 @@ scripts/bootstrap-day-one-mac.sh
 scripts/clean-development-state.sh
 scripts/configure-cli-tools.sh
 scripts/configure-databases.sh
+scripts/configure-software.sh
 scripts/optional-module.sh
 scripts/lib/module-execution.sh
 scripts/configure-macos-settings.sh

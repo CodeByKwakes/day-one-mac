@@ -32,21 +32,22 @@ completed guide later changes, its fingerprint becomes **review required**.
 
 This is intentional: Modules 15–22 combine personal inventory choices,
 credentials, identity routing, restore sources, and application UI changes.
-They are guided procedures, not unattended installers. Commands inside a guide
-may automate a bounded operation, but `day-one-mac advanced` itself never
-claims that it performed that operation.
+Most remain guided procedures. Module 16 additionally has an explicit
+selected-payload installer: `advanced --module 16 --plan`, `--apply`,
+`--check` and `--resume`. Its `--inventory` action prints a candidate selection
+for review. Without an action, `advanced --module 16` still opens the guide.
 
 `day-one-mac optional --list` now lists these modules alongside executable
-Optional 09 and 13. Advanced entries remain labelled guided: the new runner
-does not execute them or reinterpret their completion fingerprints as
-machine-verified installations.
+Optional 09, 10 and 13. Advanced 16 is labelled executable only for its bounded
+installation scope. Other Advanced entries remain guided. No execution result
+is substituted for a user-confirmed guide fingerprint.
 
 ## Recommended order
 
 | Module | Capability | Execution model | Add it when |
 |---|---|---|---|
 | [15 · Full dotfiles and bootstrap](15-full-dotfiles-and-bootstrap.md) | Expanded chezmoi inventory, machine data, templates, hooks, and secret audit | Guided commands and review | More than the minimal five configuration areas must reproduce |
-| [16 · Brewfile, applications, and editor inventory](16-brewfile-apps-and-editor.md) | Curated formula/cask/MAS/VS Code desired state and safe cleanup | Generated inventory plus reviewed install commands | The Mac needs a wider application catalogue |
+| [16 · Brewfile, applications, and editor inventory](16-brewfile-apps-and-editor.md) | Curated formula/cask/MAS/VS Code desired state and safe cleanup | Reviewed TSV payload installer; Brewfile, MAS and removal remain manual | The Mac needs a wider application catalogue |
 | [17 · Shell and package automation](17-shell-and-package-automation.md) | ghq navigation, Git helpers, manager detection, repo/package audits | Guided file edits and verification | Repeated terminal work justifies aliases and helpers |
 | [18 · Hosting identities, Azure, and worktrees](18-hosting-identities-azure-and-worktrees.md) | Personal/work identity routing, Azure defaults, repository layout, and the linked [VS Code/AI worktree guide](GIT-WORKTREES-VSCODE-AND-AI.md) | Guided identity and repository configuration | Multiple identities/providers or concurrent branches are real requirements |
 | [19 · macOS, GUI, and local HTTPS](19-macos-gui-and-local-https.md) | Reviewed defaults, permissions, launch-at-login, Raycast/menu bar, local certificates | Guided system and application configuration | The base tools are stable and personal ergonomics are understood |

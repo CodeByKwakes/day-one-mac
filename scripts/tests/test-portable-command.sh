@@ -20,6 +20,14 @@ runtime="$test_home/.local/share/day-one-mac/current"
 [[ -L "$runtime" ]] || fail_test 'standalone current runtime link was not installed'
 HOME="$test_home" "$portable" optional --list | grep -Fq $'13\toptional\texecutable' \
   || fail_test 'standalone runtime omitted the executable module registry'
+HOME="$test_home" "$portable" optional --list | grep -Fq $'10\toptional\texecutable' \
+  || fail_test 'standalone runtime omitted executable AI payloads'
+HOME="$test_home" "$portable" optional --list | grep -Fq $'16\tadvanced\texecutable' \
+  || fail_test 'standalone runtime omitted executable software selections'
+[[ -x "$runtime/scripts/configure-software.sh" ]] \
+  || fail_test 'standalone runtime omitted the software runner'
+HOME="$test_home" "$runtime/scripts/configure-software.sh" --help | grep -Fq 'Default VS Code profile' \
+  || fail_test 'standalone software runner cannot resolve its dependencies'
 [[ ! -e "$runtime/node_modules" ]] \
   || fail_test 'standalone runtime included contributor-only node_modules'
 [[ "$(HOME="$test_home" "$portable" root)" == "$runtime" ]] \
