@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/CodeByKwakes/day-one-mac/compare/v1.2.1...v1.3.0) (2026-09-27)
+
+
+### Features
+
+* harden setup and make optional and advanced modules executable ([#6](https://github.com/CodeByKwakes/day-one-mac/issues/6)) ([f597521](https://github.com/CodeByKwakes/day-one-mac/commit/f59752128e8e038dc120d145317ea595c15f1dd2))
+
 ## [1.2.1](https://github.com/CodeByKwakes/day-one-mac/compare/v1.2.0...v1.2.1) (2026-09-26)
 
 
