@@ -954,6 +954,10 @@ run_fixture "scalar preferences preserve typed originals and refuse external dri
   "preference module fixture failed" \
   "$SCRIPT_DIR/tests/test-preference-module.sh" || true
 
+run_fixture "identity reviews and checksum staging preserve manual and recovery boundaries" \
+  "identity and restore module fixture failed" \
+  "$SCRIPT_DIR/tests/test-review-and-restore.sh" || true
+
 run_fixture "unified optional and advanced dashboard reports evidence safely" \
   "unified optional and advanced dashboard fixture failed" \
   "$SCRIPT_DIR/tests/test-optional-status.sh" || true

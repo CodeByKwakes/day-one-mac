@@ -6,9 +6,10 @@ and **16 (selected software)** support a shared execution interface.
 **19** applies explicitly selected scalar macOS preferences.
 **11 (MCP snippets)**, **12 (profile artifacts)**, **14 (Warp exports)**,
 **15 (dotfile proposals)**, **17 (shell helper bundles)**,
+**18 (identity/worktree review)**,
 **21 (audit snapshots)** and **22 (AI governance evidence)**
 use that interface for generated artifacts, not software installation.
-Advanced 18 and 20 remain guided procedures.
+**20** stages explicitly checksummed regular files, or records no-restore.
 An executable module automates its stated scope, not every action in its guide:
 Module 13 does not edit shell configuration or a Brewfile.
 
@@ -30,7 +31,7 @@ Omitting the selection uses the saved one; absence of saved choices is an error.
 `--yes` skips the ordinary apply/resume confirmation only. It does not approve
 macOS permissions or another application's onboarding.
 
-Use `optional` for 09/10/10A/11/12/13/14 and `advanced` for 15/16/17/19/21/22:
+Use `optional` for 09/10/10A/11/12/13/14 and `advanced` for 15–22:
 
 | Module | Selection | Verification scope |
 |---|---|---|
@@ -161,7 +162,7 @@ when post-install inventory is readable. A resume skips pre-existing selected
 payloads and never requests removal. Installing missing items may still change
 dependencies through the package manager or trigger OS/vendor prompts.
 
-## Generated artifacts: Modules 11, 12, 14, 15, 17, 21 and 22
+## Generated artifacts: Modules 11, 12, 14, 15, 17, 18, 21 and 22
 
 `scripts/configure-artifacts.sh` uses the same lock, Phase 8 gate, confirmation,
 backup and journal machinery. Its apply action creates files only; it never
@@ -176,6 +177,7 @@ broader command that writes reports, including with `--stdout` or `--check`.
 | 14 | Runtime-allowlisted Warp collection | Versioned `Day One Mac` directory; verify file hashes and current source alignment, not Warp/cloud objects |
 | 15 | `--manifest PATH`: target ID, declared owner, source file or `-` | Hash inventory and import proposal; filesystem-user ownership, not full chezmoi ownership discovery |
 | 17 | `--manifest PATH`: `helper` or `project` rows | Selected zsh bundles, syntax validation on apply, source hashes and project manager classification |
+| 18 | `--manifest PATH`: repository, checkout, name, email, signing policy, layout root | Effective identity/signing settings and worktree metadata; review-only Git configuration fragments |
 | 21 | Fixed `audit-evidence-v1` scope | `evidence.tsv` and `report.md` with previous/current comparison; fail check on drift, failed gates, missing or damaged baseline |
 | 22 | `--manifest PATH`: kind, name, owner, absolute narrow path | Skill-tree and MCP-metadata hashes, owner labels and diff; no code execution or trust approval |
 
@@ -341,6 +343,94 @@ To intentionally reverse a key, separately review the record's original type
 and decoded value and restore that exact preference; do not treat the legacy
 wizard's restore command as an undo for this adapter.
 
+## Identity/worktree contract: Module 18
+
+`scripts/lib/identity-review.cjs` reads six-column TSV rows:
+`repository`, absolute checkout root, expected name, expected email, expected
+signing policy (`ssh`, `openpgp`, `off`), absolute layout root. Both the primary
+and linked checkout paths must lie beneath the selected layout root. Include
+each checkout whose effective identity should be checked as its own row.
+
+The Node 22+ helper invokes only fixed Git `config`, `rev-parse` and
+`worktree list --porcelain -z` commands. It removes caller `GIT_*` overrides,
+disables optional locks/prompts, and retains Git's effective system/global/local
+configuration and conditional includes. It never runs status, fsmonitor,
+aliases, hooks, credential helpers or signing commands. Therefore this is
+configured-identity evidence, not a prediction of a commit made with explicit
+author/environment overrides. No remote URLs or signing-key values are saved.
+
+SSH signing requires enabled signing, SSH format, a nonempty configured key
+and a readable regular allowed-signers file. An absolute path or `~/` is
+required for that file. Its contents/trust and cryptographic signatures are
+not validated. Detached, missing, prunable or out-of-layout worktrees fail;
+locks are reported without modification. Worktree branch tips and dirty files
+are deliberately not part of this evidence.
+
+The artifact runner stores `artifact-18-selection.tsv` and a hashed versioned
+artifact containing `evidence.tsv`, `report.md`, `identity-proposals.json` and
+numbered configuration fragments. Failed evidence still publishes diagnostic
+proposals with a nonzero exit. Configuration fragments contain only expected
+identity and signing policy, never a guessed key or automatic include rule.
+Check requires artifact integrity, passing current evidence and no drift;
+apply/resume captures a new baseline after confirmation. Review and manually
+merge proposals into the chosen configuration owner's files.
+
+## Restore staging contract: Module 20
+
+`scripts/configure-restore.sh` uses the common Phase 8 gate, lock, confirmation
+and run journal. `scripts/lib/restore-staging.cjs` validates and streams files;
+Node 22+ must already exist. Neither runner installs a dependency.
+
+Accepted TSV schemas (no header):
+
+| Row | Fields | Meaning |
+|---|---|---|
+| `mode` | `no-restore` | Must be the only row; records a deliberate skip. |
+| `source` | absolute backup root | First row for staging, on an actual mounted volume beneath `/Volumes`. |
+| `file` | relative source, relative target, lowercase SHA-256 | One explicit regular file; no recursion, wildcard or auto-discovery. |
+
+Manifests are limited to 1 MiB and 1–1000 nonempty rows. Blank lines and `#`
+comments are ignored. Canonical paths must not contain symlinks, traversal or
+control characters. Hidden components, selected credential extensions and
+known package/cache/system-data components are excluded in source and target
+paths. This is a conservative path filter, not a secret scanner. Case-folded,
+Unicode-normalized duplicates and file/directory target collisions are rejected.
+Restore state/staging and the backup source must not overlap.
+
+The source filesystem/mount is identified using POSIX `df -P`; the source
+device and root inode are pinned alongside hashes and sizes. Plan reads every
+selected file and prints the total bytes without state or temporary files.
+Apply revalidates the preview before creating a fresh `module-runs/20/RUN/`
+session. `staging/intent.json` records the canonical selection, source identity,
+sizes and hashes; `restore-20-current` pins the run ID and intent hash.
+`restore-20-selection.tsv` drives future operations. Intent and pointer are
+saved before copying. Previous sessions are preserved.
+
+Resume verifies the pinned intent, saved selection, mounted source and existing
+targets before transferring missing files. Transfers stream into exclusive
+`staging/incoming/` files, verify bytes, flush the file, then publish via an
+atomic hard link that fails if the target exists. Normal success removes that
+attempt's temporary link. Interrupted incoming files remain for manual review;
+they are never reused or automatically deleted. Existing staged files are
+verified, never overwritten. An unexpected staging file/directory is a conflict.
+
+This requires a local staging filesystem supporting hard links. It preserves
+file bytes only, not executable bits, timestamps, ownership, ACLs or extended
+attributes. Final files use `600`, directories `700`. Avoid concurrent external
+edits: path checks and the cooperative lock do not protect against a malicious
+same-user process changing directories during a transfer. Directory-entry
+durability across abrupt power loss is not guaranteed; check/resume verifies
+what remains instead of assuming completion.
+
+`--check` requires both source and staged bytes to match. Disconnects, mount/root
+identity changes, corrupt intent, changed files and extra targets fail closed.
+A remounted disk may have a different device identity: inspect it and create a
+new reviewed apply session rather than editing the pinned record. A new apply
+never erases the old session. Journals and `restore-report.txt` identify the
+session and verification result; file-level expectations are in `intent.json`.
+There is no live promotion, repository clone, archive extraction, database
+import, application import, credential restore or automatic rollback.
+
 ## Contributor extension contract
 
 `config/modules.tsv` has six tab-separated columns:
@@ -379,6 +469,7 @@ bash scripts/tests/test-artifact-modules.sh
 bash scripts/tests/test-ai-artifacts.sh
 bash scripts/tests/test-omniroute-module.sh
 bash scripts/tests/test-configuration-artifacts.sh
+bash scripts/tests/test-review-and-restore.sh
 bash scripts/tests/test-preference-module.sh
 bash scripts/tests/test-configure-databases.sh
 bash scripts/tests/test-optional-status.sh

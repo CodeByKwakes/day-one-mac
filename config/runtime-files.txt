@@ -307,3 +307,8 @@ scripts/lib/macos-preferences.sh
 scripts/configure-preferences.sh
 config/shell-helpers/navigation.zsh
 config/shell-helpers/packages.zsh
+scripts/configure-restore.sh
+scripts/lib/review-node.sh
+scripts/lib/review-io.cjs
+scripts/lib/identity-review.cjs
+scripts/lib/restore-staging.cjs

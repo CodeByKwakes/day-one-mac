@@ -8,6 +8,7 @@ source "$SCRIPT_DIR/lib/module-execution.sh"
 source "$SCRIPT_DIR/lib/audit-evidence.sh"
 source "$SCRIPT_DIR/lib/ai-artifacts.sh"
 source "$SCRIPT_DIR/lib/configuration-artifacts.sh"
+source "$SCRIPT_DIR/lib/review-node.sh"
 ORIGINAL_ARGS=("$@")
 STATE_ROOT="$(day_one_state_root)"
 STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
@@ -18,8 +19,8 @@ export NO_COLOR=1 HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_ANALYTICS=1
 die() { printf '%s\n' "$1" >&2; exit "${2:-2}"; }
 usage() {
   cat <<'EOF'
-Usage: configure-artifacts.sh --module 11|12|14|15|17|21|22 --plan|--apply|--check|--resume
-  --manifest PATH   Module 11 MCP, 12 profile, 15 dotfiles, 17 helpers or 22 governance TSV
+Usage: configure-artifacts.sh --module 11|12|14|15|17|18|21|22 --plan|--apply|--check|--resume
+  --manifest PATH   Module 11 MCP, 12 profile, 15 dotfiles, 17 helpers, 18 identities or 22 governance TSV
   --yes             confirm artifact creation, never an import or installation
 
 11 generates workspace MCP snippets, never activates clients or reads tokens.
@@ -27,6 +28,7 @@ Usage: configure-artifacts.sh --module 11|12|14|15|17|21|22 --plan|--apply|--che
 14 exports the bundled Warp directory. Both verify files, not application imports.
 15 inventories explicit dotfiles and proposed ownership; never imports content.
 17 generates validated helper bundles and inspects explicit project declarations.
+18 checks explicit repository identities/signing/layout and proposes configuration.
 21 snapshots recorded setup evidence and selected executable-module checks.
 22 snapshots explicitly selected skill trees and MCP metadata, never executes them.
 Plan/check never save records or create temporary files. Apply/resume requires
@@ -44,8 +46,8 @@ while (( $# )); do
     *) die "unknown artifact option: $1" ;;
   esac
 done
-[[ "$MODULE" =~ ^(11|12|14|15|17|21|22)$ && -n "$ACTION" ]] || die 'choose an artifact module and one action'
-[[ "$MODULE" =~ ^(11|12|15|17|22)$ || -z "$INPUT" ]] || die '--manifest is only for Module 11, 12, 15, 17 or 22'
+[[ "$MODULE" =~ ^(11|12|14|15|17|18|21|22)$ && -n "$ACTION" ]] || die 'choose an artifact module and one action'
+[[ "$MODULE" =~ ^(11|12|15|17|18|22)$ || -z "$INPUT" ]] || die '--manifest is only for Module 11, 12, 15, 17, 18 or 22'
 [[ "$ACTION" != resume || -z "$INPUT" ]] || die '--resume uses saved choices'
 [[ "$YES" == 0 || "$ACTION" == apply || "$ACTION" == resume ]] || die '--yes is only for apply/resume'
 SAVED="$STATE_DIR/artifact-$MODULE-selection.tsv"
@@ -151,6 +153,8 @@ manual_steps() {
       'Manual: review import-proposal.tsv, reconcile chezmoi ownership and scan for secrets before any add/apply. No hooks or templates are evaluated.' ;;
     17) printf '%s\n' 'Manual: review helper files, choose a single configuration owner and activate deliberately; no startup file is edited.' \
       'Project checks inspect declarations only. Frozen-install helpers print proposals; no dependencies, upgrades or package scripts run.' ;;
+    18) printf '%s\n' 'Scope: expected effective Git identity, signing settings and metadata layout for explicit checkouts; Node 22+ required.' \
+      'Manual: review identity-proposals.json and fragments before any configuration edits. Authentication, actual signatures, signing trust and worktree lifecycle are not verified or changed.' ;;
     21) printf '%s\n' 'Scope: recorded phase evidence, runtime entry points/integrity and saved executable selections only.' \
       'Phase record presence is not current machine health. Authentication, FileVault, Brewfile, repositories, upgrades, cleanup and rebuild remain separately reviewed.' ;;
     22) printf '%s\n' 'Scope: explicitly selected skill folders and Module 11 metadata manifests only; no live credential files.' \
@@ -170,6 +174,9 @@ compare_evidence() {
 
 safe_path "$STATE_DIR" || die 'State directory must not traverse symlinks.' 1
 case "$MODULE" in
+  18)
+    SELECTION="$(day_one_review_node "$SCRIPT_DIR/lib/identity-review.cjs" selection "${INPUT:-$SAVED}")" || exit 2
+    EVIDENCE="$(printf '%s\n' "$SELECTION" | day_one_review_node "$SCRIPT_DIR/lib/identity-review.cjs" evidence)" || exit 1 ;;
   15|17)
     SELECTION="$(day_one_configuration_selection "${INPUT:-$SAVED}")"
     EVIDENCE="$(day_one_configuration_evidence)" || die 'Configuration evidence collection failed.' 1 ;;
@@ -193,7 +200,7 @@ case "$MODULE" in
     EVIDENCE="$(day_one_audit_evidence)" || die 'Evidence collection failed.' 1 ;;
 esac
 read_current || true
-if [[ "$MODULE" =~ ^(15|17|21|22)$ ]]; then compare_evidence; fi
+if [[ "$MODULE" =~ ^(15|17|18|21|22)$ ]]; then compare_evidence; fi
 manual_steps
 if [[ "$ACTION" == plan ]]; then
   printf 'Plan only: create a new private Module %s artifact under %s/module-runs/%s/.\n' "$MODULE" "$STATE_DIR" "$MODULE"
@@ -204,7 +211,7 @@ if [[ "$ACTION" == plan ]]; then
       if grep -q "^$client"$'\t' <<< "$SELECTION"; then printf '\n%s snippet:\n' "$client"; day_one_mcp_render "$client"; fi
     done
   fi
-  if [[ "$MODULE" =~ ^(15|17|21|22)$ ]]; then printf '%s\n%s\n' "$EVIDENCE" "$DRIFT"; fi
+  if [[ "$MODULE" =~ ^(15|17|18|21|22)$ ]]; then printf '%s\n%s\n' "$EVIDENCE" "$DRIFT"; fi
   [[ -s "$STATE_DIR/completed/08" ]] || printf 'Blocked on apply: complete required Phase 8.\n'
   exit 0
 fi
@@ -214,7 +221,7 @@ if [[ "$ACTION" == check ]]; then
   [[ -f "$CURRENT/selection.tsv" && "$(cat "$CURRENT/selection.tsv")" == "$SELECTION" ]] || die 'Artifact does not match the current selection/source; review a new plan.' 1
   if [[ "$MODULE" == 12 ]]; then
     [[ "$(cat "$CURRENT/profile.code-profile")" == "$(profile_json)" ]] || die 'Profile content differs from its reviewed selection.' 1
-  elif [[ "$MODULE" =~ ^(15|17|21|22)$ ]]; then
+  elif [[ "$MODULE" =~ ^(15|17|18|21|22)$ ]]; then
     printf '%s\n%s\n' "$EVIDENCE" "$DRIFT"
     if grep -q $'\tFAIL\t' <<< "$EVIDENCE" || [[ "$DRIFT" != 'No evidence drift.' ]]; then
       die 'Audit gate failure or evidence drift; review before accepting a new snapshot.' 1
@@ -256,7 +263,11 @@ case "$MODULE" in
     mkdir "$ARTIFACT/Day One Mac"
     cp -R "$PROJECT_DIR/warp-drive/Day One Mac/." "$ARTIFACT/Day One Mac/"
     [[ "$(tree_hashes "$ARTIFACT/Day One Mac")" == "$hashes" ]] || die 'Warp source changed during export.' 1 ;;
-  15|17|21|22)
+  15|17|18|21|22)
+    if [[ "$MODULE" == 18 ]]; then
+      printf '%s\n' "$SELECTION" | day_one_review_node "$SCRIPT_DIR/lib/identity-review.cjs" outputs "$ARTIFACT"
+      [[ "$(printf '%s\n' "$SELECTION" | day_one_review_node "$SCRIPT_DIR/lib/identity-review.cjs" evidence)" == "$EVIDENCE" ]] || die 'Repository evidence changed while generating proposals.' 1
+    fi
     if [[ "$MODULE" == 15 || "$MODULE" == 17 ]] && ! grep -q $'\tFAIL\t' <<< "$EVIDENCE"; then
       day_one_configuration_outputs
     fi
@@ -274,7 +285,7 @@ verify_tree "$ARTIFACT" "$artifact_hash" || die 'Generated artifact failed verif
 day_one_write_state "$POINTER" "${MODULE_RUN##*/}"$'\t'"$artifact_hash"
 day_one_module_event published-artifact "$ARTIFACT"
 printf 'Published artifact: %s\nPrevious versions retained. Imports and maintenance were not performed.\n' "$ARTIFACT"
-if [[ "$MODULE" =~ ^(15|17|21|22)$ ]] && grep -q $'\tFAIL\t' <<< "$EVIDENCE"; then
+if [[ "$MODULE" =~ ^(15|17|18|21|22)$ ]] && grep -q $'\tFAIL\t' <<< "$EVIDENCE"; then
   die 'Audit snapshot saved, but evidence gates failed. Review report.md; resume after resolving the failures.' 1
 fi
 MODULE_VERIFIED=1

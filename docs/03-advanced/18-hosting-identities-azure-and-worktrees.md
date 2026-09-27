@@ -13,6 +13,68 @@ history or secrets.
 
 ## Choose only the route you need
 
+### Executable identity and worktree review
+
+The executable route creates a private review report and proposed Git
+configuration fragments. It does **not** edit your Git configuration, create or
+remove worktrees, sign commits, authenticate providers, or configure Azure.
+Node 22+ and Git must already be on PATH; nothing is installed by this route.
+Required Phase 8 must be complete before apply/resume.
+
+Create a selection file with six tab-separated fields: `repository`, absolute
+checkout root, expected name, expected email, signing policy (`ssh`, `openpgp`
+or `off`), and the directory that should contain this repository's main and
+linked checkouts. Replace the example paths and identity with your own:
+
+```bash
+umask 077
+printf 'repository\t%s\t%s\t%s\t%s\t%s\n' \
+  "$HOME/Developer/github.com/my-account/project" \
+  'Your Name' 'you@example.com' ssh \
+  "$HOME/Developer/github.com/my-account" > identities.tsv
+day-one-mac advanced --module 18 --plan --manifest "$PWD/identities.tsv"
+```
+
+Keep the selection file private and outside public repositories; it contains
+personal identity and local paths.
+
+Add a row for every checkout whose effective identity you want checked,
+including linked worktrees. A layout root is a boundary, not an identity rule:
+Git's `includeIf gitdir` matches its administrative Git directory, which can
+differ from a linked checkout's visible path. The report records both paths.
+
+Review any `FAIL` results, then publish a snapshot and proposals:
+
+```bash
+day-one-mac advanced --module 18 --apply --manifest "$PWD/identities.tsv"
+day-one-mac advanced --module 18 --check
+```
+
+Apply prints the artifact directory. Read `report.md`,
+`identity-proposals.json`, and the numbered `identity-*.gitconfig` fragments.
+Even a failed check produces diagnostic proposals, but apply exits nonzero
+until the selected checks pass. Do not replace a complete configuration file
+with a fragment; review the current owner and merge only intended settings.
+Choosing `off` explicitly proposes disabling commit signing for that scope.
+
+After manually correcting configuration or layout, preview again and capture
+fresh evidence from the saved choices:
+
+```bash
+day-one-mac advanced --module 18 --plan
+day-one-mac advanced --module 18 --resume
+day-one-mac advanced --module 18 --check
+```
+
+Resume creates a new snapshot; previous reports remain available. Check detects
+drift without accepting it. The layout gate rejects detached, missing, prunable
+or out-of-boundary worktrees; a locked worktree is reported but not unlocked.
+Signing checks verify configured policy, key presence and a readable SSH
+allowed-signers file, **not** a successful signature or trust. Dirty files,
+branch freshness, remote access and Azure defaults remain outside this check.
+Continue with the selected manual routes below; automated success alone leaves
+the dashboard `partial`.
+
 This module contains two independent upgrades. They may be completed and
 checked separately:
 

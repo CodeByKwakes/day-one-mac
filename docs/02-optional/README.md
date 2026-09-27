@@ -101,8 +101,10 @@ Advanced [21](../03-advanced/21-audit-maintenance-and-rebuild.md) supports bound
 audit snapshots and drift checks; Advanced
 [22](../03-advanced/22-ai-skills-and-mcp-operations.md#executable-inventory-and-drift-route)
 adds selected AI governance evidence. Advanced 15/17 generate dotfile proposals
-and shell bundles; 19 applies selected scalar preferences. Advanced 18/20 remain
-guided, even when their guides contain runnable commands. See the
+and shell bundles; 19 applies selected scalar preferences. Advanced 18 generates
+identity/worktree review artifacts; 20 stages explicit checksummed files into
+fresh private directories. Every listed module now has a bounded executable
+scope, while authentication, trust, imports and live migration remain manual. See the
 [execution reference](../20-reference/MODULE-EXECUTION.md) for flags, state,
 backups, verification limits and the contributor extension contract.
 

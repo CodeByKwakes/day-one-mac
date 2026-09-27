@@ -126,8 +126,9 @@ module_is_selected() {
   [[ "$id" != 16 || ! -s "$STATE_DIR/software-16.tsv" ]] || return 0
   [[ "$id" != 10A || ! -s "$STATE_DIR/omniroute-selection.tsv" ]] || return 0
   [[ "$id" != 19 || ! -s "$STATE_DIR/preferences-19-selection.tsv" ]] || return 0
+  [[ "$id" != 20 || ! -s "$STATE_DIR/restore-20-selection.tsv" ]] || return 0
   case "$id" in
-    11|12|14|15|17|21|22) [[ ! -s "$STATE_DIR/artifact-$id-selection.tsv" ]] || return 0 ;;
+    11|12|14|15|17|18|21|22) [[ ! -s "$STATE_DIR/artifact-$id-selection.tsv" ]] || return 0 ;;
   esac
   if [[ "$id" =~ ^(15|16|17|18|19|20|21|22)$ ]]; then
     marker="$STATE_ROOT/advanced/completed/$id"
@@ -380,8 +381,13 @@ evaluate_module() {
     14) check_14 ;;
     16) check_16 ;;
     21) check_21 ;;
-    18|20) check_advanced "$id" ;;
-    15|17|22)
+    20)
+      if [[ ! -s "$STATE_DIR/restore-20-selection.tsv" ]]; then check_advanced 20
+      elif "$SCRIPT_DIR/configure-restore.sh" --check >/dev/null 2>&1; then
+        set_result partial 'restore staging or no-restore decision verified; live migration remains manual' 'Review the Module 20 checklist; no data was promoted or imported.'
+      else set_result review 'restore source, intent or staging needs review' 'Run advanced --module 20 --check; do not overwrite changed files.'
+      fi ;;
+    15|17|18|22)
       if [[ -s "$STATE_DIR/artifact-$id-selection.tsv" ]]; then check_artifact "$id"
       else check_advanced "$id"; fi ;;
     19)

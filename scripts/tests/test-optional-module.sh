@@ -52,7 +52,8 @@ while IFS=$'\t' read -r id layer mode prerequisite title guide; do
 done < "$PROJECT_DIR/config/modules.tsv"
 run_module --list > "$TEST_ROOT/list"
 grep -Fq $'09\toptional\texecutable' "$TEST_ROOT/list" || fail 'missing database capability'
-grep -Fq $'20\tadvanced\tguided' "$TEST_ROOT/list" || fail 'advanced capability is misleading'
+grep -Fq $'18\tadvanced\texecutable' "$TEST_ROOT/list" || fail 'identity review capability is missing'
+grep -Fq $'20\tadvanced\texecutable' "$TEST_ROOT/list" || fail 'restore staging capability is missing'
 grep -Fq $'22\tadvanced\texecutable' "$TEST_ROOT/list" || fail 'governance capability is missing'
 run_module --module 13 --plan --packages eza,fzf > "$TEST_ROOT/plan"
 grep -Fq 'brew install eza' "$TEST_ROOT/plan" || fail 'missing plan operation'
@@ -64,7 +65,7 @@ expect_failure 2 run_module --module 13 --resume --packages eza
 expect_failure 2 run_module --module 13 --plan --services postgres
 expect_failure 2 run_module --module 13 --check
 expect_failure 10 run_module --module 11 --apply
-expect_failure 2 run_module --module 20 --apply
+expect_failure 2 run_module --module 20 --plan --services postgres
 expect_failure 2 run_module --module ../09 --plan
 [[ ! -e "$TEST_STATE" ]] || fail 'invalid request saved state'
 

@@ -32,6 +32,15 @@ check remains `review`; manual completion is user-attested, not inferred.
 
 ## Status meanings
 
+Saved Module 18 identity manifests and Module 20 restore selections count as
+selected. Passing checks remain `partial`: configuration changes, provider
+authentication, actual signing, worktree lifecycle and live migration are not
+performed. A no-restore decision is verified without a mounted disk but still
+does not attest the guide checklist. Drift, missing backup volumes, staging
+conflicts and invalid records produce `review`; a guide marker cannot override
+these executable checks. Module 21 includes both modules in its saved-selection
+audit and drift report.
+
 Saved Module 15/17 artifact selections and Module 19 preference choices also
 count without the wizard. Passing checks stay `partial`: chezmoi import, shell
 activation and GUI/security review remain manual. Dotfile/helper drift,
