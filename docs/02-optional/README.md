@@ -12,9 +12,9 @@ complete development foundation.
 | 10 | [AI clients](10-ai-agents.md) | Selected payload installer; guided sign-in/configuration | You deliberately want one or more supported AI clients. |
 | 10A | [OmniRoute](10a-omniroute.md) | Guided Docker configuration | Selected clients should use an optional local Docker AI gateway. |
 | 11 | [MCP servers](11-mcp-servers.md) | Guided client and secret configuration | A selected AI client needs a reviewed external tool connection. |
-| 12 | [VS Code profiles](12-vscode-profiles.md) | Guided application UI setup | Work, personal, or content creation needs isolated editor profiles. |
+| 12 | [VS Code profiles](12-vscode-profiles.md) | Generate/verify a reviewed profile bundle; manual import | Work, personal, or content creation needs isolated editor profiles. |
 | 13 | [Enhanced CLI tools](13-enhanced-cli-tools.md) | Installer: installs and records selected formulae | You want additional terminal utilities beyond the required base. |
-| 14 | [Warp Drive](14-warp-drive.md) | Validated bundle plus guided Warp import | You want the validated importable command and workflow collection. |
+| 14 | [Warp Drive](14-warp-drive.md) | Versioned, verified bundle export; manual Warp import | You want the validated importable command and workflow collection. |
 
 Open the interactive selector later with:
 
@@ -90,9 +90,14 @@ not sign-in or subscription access; finish the [AI client guide](10-ai-agents.md
 After an interruption, use `--module 10 --resume` with your intended application
 policy. The default policy is `check-only`; `--yes` never chooses Homebrew.
 
-Modules 09, 10 and 13 support this interface. Advanced 16 also supports a
+Modules 09, 10 and 13 support payload installation through this interface.
+Modules [12](12-vscode-profiles.md) and [14](14-warp-drive.md) use the same
+actions to generate and verify artifacts, not to import them.
+Advanced 16 also supports a
 [reviewed software selection](../03-advanced/16-brewfile-apps-and-editor.md#executable-selected-payload-route).
-Other modules remain guided, even when their guides contain runnable commands. See the
+Advanced [21](../03-advanced/21-audit-maintenance-and-rebuild.md) supports bounded
+audit snapshots and drift checks. Other modules remain guided, even when their
+guides contain runnable commands. See the
 [execution reference](../20-reference/MODULE-EXECUTION.md) for flags, state,
 backups, verification limits and the contributor extension contract.
 

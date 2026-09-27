@@ -124,6 +124,9 @@ module_is_selected() {
   [[ "$id" != 13 || ! -s "$STATE_DIR/optional-cli-packages" ]] || return 0
   [[ "$id" != 10 || ! -s "$STATE_DIR/software-10-clients" ]] || return 0
   [[ "$id" != 16 || ! -s "$STATE_DIR/software-16.tsv" ]] || return 0
+  case "$id" in
+    12|14|21) [[ ! -s "$STATE_DIR/artifact-$id-selection.tsv" ]] || return 0 ;;
+  esac
   if [[ "$id" =~ ^(15|16|17|18|19|20|21|22)$ ]]; then
     marker="$STATE_ROOT/advanced/completed/$id"
     [[ -f "$marker" ]] && return 0
@@ -253,6 +256,7 @@ check_11() {
 
 check_12() {
   local profiles=""
+  if [[ -s "$STATE_DIR/artifact-12-selection.tsv" ]]; then check_artifact 12; return; fi
   command -v code >/dev/null 2>&1 || { set_result blocked 'VS Code command is unavailable' 'Repair required Phase 7 before configuring profiles.'; return; }
   profiles="$(code --list-profiles 2>/dev/null || true)"
   if [[ -n "$profiles" ]]; then
@@ -290,6 +294,7 @@ check_13() {
 }
 
 check_14() {
+  if [[ -s "$STATE_DIR/artifact-14-selection.tsv" ]]; then check_artifact 14; return; fi
   if "$SCRIPT_DIR/validate-warp-drive.sh" >/dev/null 2>&1; then
     set_result partial 'the bundled Warp Drive collection is valid; Warp import state cannot be read safely' 'Verify the import in Warp and complete the Optional 14 checklist.'
   else
@@ -308,6 +313,27 @@ check_advanced() {
     set_result ready 'completion fingerprint matches the current guide' 'No action required.'
   else
     set_result review 'the guide changed after completion was recorded' "Review Module $id and record completion again only after its checklist passes."
+  fi
+}
+
+check_artifact() {
+  local id="$1"
+  if "$SCRIPT_DIR/configure-artifacts.sh" --module "$id" --check >/dev/null 2>&1; then
+    set_result partial 'generated artifact is verified; import or maintenance checklist remains manual' "Review Module $id and its generated manual-steps.txt."
+    if [[ "$id" == 21 && -f "$STATE_ROOT/advanced/completed/21" ]]; then
+      check_advanced 21
+      if [[ "$RESULT_STATUS" == ready ]]; then
+        set_result ready 'bounded audit passes without drift; current guide checklist is user-attested' 'This is not a full machine-health or rebuild verification.'
+      fi
+    fi
+  else
+    set_result review 'artifact integrity, selection, or audit evidence needs review' "Run --module $id --check for details, then review --plan before applying."
+  fi
+}
+
+check_21() {
+  if [[ -s "$STATE_DIR/artifact-21-selection.tsv" ]]; then check_artifact 21
+  else check_advanced 21
   fi
 }
 
@@ -342,7 +368,8 @@ evaluate_module() {
     13) check_13 ;;
     14) check_14 ;;
     16) check_16 ;;
-    15|17|18|19|20|21|22) check_advanced "$id" ;;
+    21) check_21 ;;
+    15|17|18|19|20|22) check_advanced "$id" ;;
   esac
 }
 

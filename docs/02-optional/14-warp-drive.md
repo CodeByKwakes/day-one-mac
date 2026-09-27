@@ -20,6 +20,32 @@ verification gates work without the imported workflow objects.
 
 ## Step 14.1 — Verify the required Warp application
 
+### Prepare a versioned export first
+
+The executable part of Module 14 validates and copies the bundled collection
+to a new private artifact directory. It does not open Warp or import anything:
+
+```bash
+day-one-mac optional --module 14 --plan
+day-one-mac optional --module 14 --apply
+day-one-mac optional --module 14 --check
+```
+
+Apply requires Phase 8 and confirmation. It prints the versioned output path;
+inside it, import the **Day One Mac** directory using Step 14.3. Inspect
+`manual-steps.txt` first. Check verifies exported file integrity and alignment
+with the currently bundled source. A valid export is not evidence that Warp
+contains the collection, so dashboard status remains partial.
+
+Use `day-one-mac optional --module 14 --resume` after an interrupted export.
+Previous versions are retained, and a failed new export does not replace the
+current artifact. If an updated runtime changes the source bundle, resume
+stops: review a new plan and apply to approve the changed collection.
+Workspace selection, sign-in, import, duplicate handling and cloud sync remain
+manual. No workflow is executed during export.
+
+### Check the application before importing
+
 Phase 4 verifies Warp and records who manages it. Confirm that result before
 attempting the optional import:
 

@@ -104,6 +104,8 @@ scripts/clean-development-state.sh
 scripts/configure-cli-tools.sh
 scripts/configure-databases.sh
 scripts/configure-software.sh
+scripts/configure-artifacts.sh
+scripts/lib/audit-evidence.sh
 scripts/optional-module.sh
 scripts/lib/module-execution.sh
 scripts/configure-macos-settings.sh

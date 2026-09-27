@@ -934,6 +934,10 @@ run_fixture "AI clients and software selections preserve ownership and manual bo
   "AI client and software module fixture failed" \
   "$SCRIPT_DIR/tests/test-software-modules.sh" || true
 
+run_fixture "profile/Warp artifacts and audit snapshots preserve manual boundaries" \
+  "artifact module regression fixture failed" \
+  "$SCRIPT_DIR/tests/test-artifact-modules.sh" || true
+
 run_fixture "unified optional and advanced dashboard reports evidence safely" \
   "unified optional and advanced dashboard fixture failed" \
   "$SCRIPT_DIR/tests/test-optional-status.sh" || true

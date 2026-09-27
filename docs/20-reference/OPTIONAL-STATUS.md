@@ -32,6 +32,15 @@ check remains `review`; manual completion is user-attested, not inferred.
 
 ## Status meanings
 
+Generated Module 12/14 artifacts count as selected even without the wizard.
+Valid files are `partial` because application import, workspace choice and
+Sync state remain manual. Invalid/missing outputs or changed Warp source are
+`review`. Module 21 additionally checks live bounded evidence against its
+latest snapshot; drift or failed evidence means `review`. With clean evidence
+and a current user-confirmed Module 21 guide marker it can be `ready`; without
+that marker it remains `partial`. None of these states proves full machine
+health or successful application import.
+
 | Status | Meaning | What to do |
 |---|---|---|
 | `ready` | The result has sufficient machine-verifiable evidence, or an Advanced guide fingerprint is current. | No action is required. |

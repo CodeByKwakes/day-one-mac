@@ -26,6 +26,12 @@ HOME="$test_home" "$portable" optional --list | grep -Fq $'16\tadvanced\texecuta
   || fail_test 'standalone runtime omitted executable software selections'
 [[ -x "$runtime/scripts/configure-software.sh" ]] \
   || fail_test 'standalone runtime omitted the software runner'
+for module in 12 14 21; do
+  HOME="$test_home" "$portable" optional --list | grep -Eq "^${module}[[:space:]].*[[:space:]]executable[[:space:]]" \
+    || fail_test "standalone runtime omitted artifact module $module"
+done
+HOME="$test_home" "$runtime/scripts/configure-artifacts.sh" --help | grep -Fq 'publishes a new private version' \
+  || fail_test 'standalone artifact runner cannot resolve its dependencies'
 HOME="$test_home" "$runtime/scripts/configure-software.sh" --help | grep -Fq 'Default VS Code profile' \
   || fail_test 'standalone software runner cannot resolve its dependencies'
 [[ ! -e "$runtime/node_modules" ]] \

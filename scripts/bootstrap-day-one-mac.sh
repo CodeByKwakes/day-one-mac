@@ -777,6 +777,10 @@ run_optional_center() {
       && info 'Enhanced CLI installer: day-one-mac cli-tools'
     contains_csv "$OPTIONAL_MODULES" ai-clients \
       && info 'AI payload preview: day-one-mac optional --module 10 --plan (sign-in remains manual)'
+    contains_csv "$OPTIONAL_MODULES" vscode-profiles \
+      && info 'Profile bundle: day-one-mac optional --module 12 --plan --manifest /path/to/profile.tsv (import remains manual)'
+    contains_csv "$OPTIONAL_MODULES" warp-drive \
+      && info 'Warp export preview: day-one-mac optional --module 14 --plan (import remains manual)'
     contains_csv "$OPTIONAL_MODULES" advanced \
       && info 'Advanced guided tracker: day-one-mac advanced --guided'
     if contains_csv "$OPTIONAL_MODULES" ai-clients \
