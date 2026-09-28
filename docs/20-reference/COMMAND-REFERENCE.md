@@ -26,8 +26,9 @@ day-one-mac --wizard
 ```
 
 It installs a versioned runtime under `~/.local/share/day-one-mac` and works
-from any directory without a Git checkout. Phase 5 later adopts the same
-launcher into chezmoi. See [Install and manage the standalone runtime](PORTABLE-COMMAND.md).
+from any directory without a Git checkout. The runtime installer remains the
+launcher's owner; Phase 5 must not adopt it into chezmoi. See
+[Install and manage the standalone runtime](PORTABLE-COMMAND.md).
 
 ### Direct scripts — fallback and maintenance
 
@@ -52,8 +53,8 @@ public installer or an offline release archive.
 
 ## Complete portable command list
 
-Install this command before Phase 1; the standalone runtime remains its sole owner
-into chezmoi. See [PORTABLE-COMMAND.md](PORTABLE-COMMAND.md) for installation,
+Install this command before Phase 1; the standalone runtime remains its sole owner.
+See [PORTABLE-COMMAND.md](PORTABLE-COMMAND.md) for installation,
 updates and rollback.
 
 | Portable command | Direct script equivalent | Use it when |
@@ -61,6 +62,7 @@ updates and rollback.
 | `day-one-mac` | `./bootstrap-day-one-mac.sh` | Open the main setup wizard using saved choices when available. |
 | `day-one-mac bootstrap [options]` | Downloaded-dispatcher operation | Clone or reuse the project and install the portable command before Phase 1. |
 | `day-one-mac help` | No exact script; dispatcher help | See the installed top-level commands. `-h` and `--help` are equivalent. |
+| `day-one-mac --version` | Read the active runtime's `VERSION` | Print the runtime or checkout version. `version` is an alias; this does not check for updates. |
 | `day-one-mac root` | Read `~/.day-one-mac/runtime-root` | Print the active standalone runtime or linked development root. |
 | `day-one-mac runtime-status` | `./runtime-manager.sh status` | Show the active version, location and checksum result. |
 | `day-one-mac update` | `./runtime-manager.sh update` | Download and install the latest verified public release beside the current version. |
@@ -96,7 +98,7 @@ updates and rollback.
 | `day-one-mac finalize [options]` | `./finalize-setup.sh [options]` | Review or compact setup evidence after Phase 8, or deliberately detach the setup system. |
 | `day-one-mac remove [options]` | `./remove-day-one-mac.sh [options]` | Choose a recorded, sectional, or full removal plan with an ownership-aware preview. |
 | `day-one-mac rollback [options]` | `./rollback-recorded-setup.sh [options]` | Preview or reverse only changes recorded as belonging to Day One Mac. |
-| `day-one-mac clean [options]` | `./clean-development-state.sh [options]` | Preview a broad development cleanup or create/resume its recovery archive. This is wider than recorded rollback. |
+| `day-one-mac reset-development [options]` | `./clean-development-state.sh [options]` | Preview a broad reset that can remove **all** Homebrew packages and Homebrew, not just Day One-owned items. `clean` remains a compatibility alias with the same warning. |
 | `day-one-mac verify` | `./verify.sh` | Verify installed runtime integrity and syntax without running setup. |
 | `day-one-mac validate` | `./validate.sh` (checkout only) | Run contributor regression checks from a checkout; alias for `verify` in an installed runtime. |
 
@@ -154,6 +156,113 @@ Important setup selectors include:
 Run `day-one-mac setup --help` or `./bootstrap-day-one-mac.sh --help` before
 using unattended flags. `--yes` accepts ordinary confirmations; it does not
 bypass typed destructive confirmations or select an application owner.
+
+### Required-phase action contract
+
+These actions apply to required Phases 1–8. They share the action names used by
+optional modules, but are not transactions or saved execution plans. The
+[beginner walkthrough](../01-required/README.md#preview-apply-check-and-resume)
+shows one complete selection example.
+
+| Action | Behaviour | Writes setup state? |
+|---|---|---|
+| `setup --plan` | Describe selected phase effects and manual gates; require an explicit or saved track and stack. | No |
+| `setup --apply` | Save choices and run selected phases in phase order, even when markers are current. | Yes |
+| `setup --check` | Inspect local prerequisites with no sign-in, network probe, template rendering, shell startup or report generation. | No |
+| `setup --resume` | Reuse saved choices; skip only current markers with a `pass` or `not-required` local result. Otherwise rerun existing phase gates. | Yes |
+| `setup --status` | Show saved choices and recorded completion. Text status also inspects Installation Centre readiness; JSON status does not. | No |
+
+With no `--phase`, actions cover all eight phases. Repeat `--phase NN` to select
+several; explicit actions visit them once each in ascending phase order. A
+full apply/resume also runs the optional macOS settings checkpoint and required
+Installation Centre. Selected Phases 3–8 can invoke the Installation Centre
+when it is not current, so selecting one phase is not a guarantee of no package
+installation.
+
+Plan/check use supplied choices before saved choices, then defaults for optional
+selectors. A plan is not saved: repeat the reviewed choices when applying.
+Resume requires a complete saved selection and rejects selection-changing flags
+such as `--stack`, `--auth-mode`, `--new-dotfiles` and `--macos-settings`.
+Use plan/apply to change choices deliberately. The application-install policy
+may still be supplied for a resumed run.
+
+Choose only one action. Do not combine it with `--dry-run`, `--reset-progress`,
+`--install-centre` or `--ssh-pin`. Inspection rejects `--yes` and
+`--accept-preparation`. When explicit apply/resume includes Phase 1 with `--yes`,
+it also requires `--accept-preparation`: your assertion that macOS is updated
+and prior data is backed up or the machine contains only disposable test data.
+That flag is not independent backup evidence. Interactive runs ask instead.
+There is no general unattended guarantee: accounts, passphrases, administrator
+approval and GUI operations can still need your participation.
+
+### Local check coverage and limits
+
+| Phase | Local evidence inspected | What remains manual or outside this check |
+|---|---|---|
+| 1 | Populated author identity | Current updates and verified backup/disposable-data assertion |
+| 2 | Selected developer-tools directory and native Homebrew executable | Tool compatibility, licence, update and Homebrew health |
+| 3 | FileVault, SSH configuration, selected encrypted key or 1Password payload/CLI | Agent access, registration, signing, recovery-method custody |
+| 4 | Command availability, selected Git identity, ghq root, required app payloads | Hosting sessions, SSH reachability, complete Git defaults |
+| 5 | Required dotfile paths, commands and launcher | chezmoi ownership/drift, template effects, clean-shell behaviour |
+| 6 | Current-PATH tool commands and Node-mode pnpm directory | Node LTS selection and working uv-managed Python |
+| 7 | VS Code payload, command and settings file; not required for core | Effective safety settings and GUI launch |
+| 8 | Aggregate local checks, runtime verification and Brewfile presence | Source secret scan, remote privacy/push or local backup, Brewfile management |
+
+Presence is not configuration correctness. `manual` results remain even after a
+successful earlier acceptance run. At present, only Phase 7 with the core preset
+has no manual gate; resume therefore normally reruns the other phases. No check
+marks a phase complete. Phase 8 **apply** still writes `verification.md` and can
+create/adopt a missing Brewfile; Phase 8 **check** does neither.
+
+### Inspection output and exit codes
+
+```bash
+day-one-mac setup --plan --track 1 --stack both --json
+day-one-mac setup --check --phase 05 --json
+day-one-mac setup --status --json
+```
+
+JSON is available only for plan/check/status. Successful inspection requests
+emit one object on stdout with `schema_version: 1`, `action`,
+`scope: "local-read-only"`, `selection`, `phases`, and `exit_code`. `checked_at`
+is a UTC timestamp for check, otherwise `null`. A phase entry has `phase`,
+`recorded` (`pending`, `changed`, `current`), `live` (`not-checked`, `pass`,
+`fail`, `manual`, `not-required`), `impact`, and human-readable `details`.
+Parse the structured fields rather than the details text. Author identity and
+credentials are not emitted in these JSON objects.
+
+Invalid arguments/platform or missing required choices produce an error on
+stderr and may produce no JSON. Check output remains valid JSON when its exit
+code is nonzero. Check timestamps are observations, not saved attestations.
+
+| Exit code | Meaning |
+|---:|---|
+| 0 | Requested inspection succeeded with no failed/manual checks, or action completed |
+| 2 | Invalid arguments, incomplete selections or unsupported check/apply platform |
+| 10 | Manual action or verification remains |
+| 11 | A local check or setup gate failed; takes precedence over manual checks |
+
+Legacy commands and subprocess failures can also return other nonzero codes;
+do not treat an unlisted code as success. JSON status is not machine health,
+and exit 0 from plan is not approval to apply.
+
+### Compatibility and validation scope
+
+The no-argument wizard, `--guided`, implicit apply (`setup --phase 05`), and
+legacy `--dry-run` remain available. The wizard's historical marker-based resume
+is unchanged; use explicit `setup --resume` for the additional local checks.
+Existing markers can become `changed` after runner/library changes even if the
+Mac itself has not changed. This release keeps conservative fingerprints.
+
+`verify` checks runtime integrity and script syntax, not full machine readiness.
+`validate` prints its scope: contributor regression suites in a source checkout,
+runtime integrity only in an installed package. Use `setup --check` for bounded
+local inspection and Phase 8 apply for the existing acceptance gates.
+
+For optional modules, `optional --status --check` and
+`optional --check --status` both select the dashboard. Combining `--status`
+with a module selection or apply/plan/resume action is rejected rather than
+silently choosing one route.
 
 ### Installation Centre and application ownership
 
@@ -307,7 +416,7 @@ day-one-mac finalize
 day-one-mac rollback
 day-one-mac remove --guided
 day-one-mac remove --inventory
-day-one-mac clean
+day-one-mac reset-development
 ```
 
 Execution requires an explicit mode:
@@ -316,7 +425,7 @@ Execution requires an explicit mode:
 day-one-mac finalize --execute
 day-one-mac rollback --execute
 day-one-mac remove --guided --execute
-day-one-mac clean --execute --archive-root "/absolute/recovery/parent"
+day-one-mac reset-development --execute --archive-root "/absolute/recovery/parent"
 ```
 
 Choose the narrowest tool:
@@ -326,7 +435,13 @@ Choose the narrowest tool:
 | Keep setup but compact evidence | `day-one-mac finalize` |
 | Reverse only manifest-recorded changes | `day-one-mac rollback` |
 | Select recorded changes or sections interactively | `day-one-mac remove --guided` |
-| Remove all Homebrew development state with recovery options | `day-one-mac clean` |
+| Remove all Homebrew development state with recovery options | `day-one-mac reset-development` |
+
+`clean` is a compatibility alias for the broad reset, **not cache cleanup**.
+Use `finalize` only for setup-evidence compaction; it preserves installed tools
+and current recovery records. Neither operation deletes an acceptance VM,
+revokes test credentials, or removes ad-hoc rehearsal logs. Export and verify
+private evidence before considering those separate cleanup actions.
 
 Read [Removal and reset](../04-operations/REMOVE-DAY-ONE-MAC.md) before executing any of them.
 
