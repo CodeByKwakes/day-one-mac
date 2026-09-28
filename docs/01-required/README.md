@@ -38,6 +38,69 @@ The macOS settings checkpoint is optional, but making a reviewed choice is part
 of the required sequence. The Installation Centre is required because later
 phases configure applications that must already exist.
 
+## Preview, apply, check, and resume
+
+This is an alternative to the main wizard, not an extra checklist. It is useful
+when you want to see the intended effects before running a phase. Check
+`day-one-mac setup --help` first: older installed releases might not yet expose
+these actions. A source checkout uses `./scripts/day-one-mac` instead.
+
+1. Preview your choices. This example selects GitHub, both language stacks,
+   Keychain-backed SSH, and private Git-backed dotfiles. Replace the example
+   author identity with your own; never put a password in these options.
+
+   ```bash
+   day-one-mac setup --plan --track 1 --stack both \
+     --auth-mode keychain --name "Your Name" --email "you@example.com" \
+     --preset recommended-productivity --primary-ide vscode \
+     --new-dotfiles --dotfiles-versioning git --macos-settings skip
+   ```
+
+   Read the impact and manual steps for each phase. Planning saves nothing and
+   does not reserve package versions. Missing optional choices use displayed
+   defaults; it does not assume a hosting track or language stack.
+
+2. When the choices are right, run the same command with `--apply` in place of
+   `--plan`. Apply changes the Mac, saves your choices, and runs the existing
+   phase gates. Complete any Apple installer, sign-in, key approval or GUI step
+   it requests. Do not add `--yes` just to get past a question you have not read.
+
+3. Inspect the current local prerequisites without applying configuration:
+
+   ```bash
+   day-one-mac setup --check
+   ```
+
+   `fail` identifies a missing or mismatched local prerequisite. `manual` means
+   the check cannot establish the full outcome without an interactive or
+   external operation. It is expected even on a previously accepted Mac. For
+   example, an encrypted key on disk does not prove that GitHub accepts it.
+   Checks use the current Terminal PATH and do not execute your startup files.
+
+4. After completing a requested manual step, continue with saved choices:
+
+   ```bash
+   day-one-mac setup --resume
+   ```
+
+   Resume works at phase level, not at individual-command level. It skips only
+   a phase whose saved fingerprint is current **and** whose local check returns
+   `pass` or `not-required`. The current checks retain manual gates for Phases
+   1–6 and Phase 8, and for Phase 7 outside the core preset, so expect those
+   phases to run their existing gates again. Resume can install software or
+   apply reviewed configuration; it is not another read-only check.
+
+To limit an action, add `--phase 05` (or repeat `--phase` for several phases).
+Phases 3–8 may still invoke the required Installation Centre. A full apply also
+runs the settings checkpoint after Phase 1 and the Installation Centre after
+Phase 2. Explicit apply runs selected phases even if previously recorded done.
+
+Use `day-one-mac setup --status` for saved progress, not proof of current health.
+The read-only check does not rewrite the Phase 8 report or completion markers.
+Full acceptance still uses Phase 8 and the manual checks in its guide. See the
+[action reference](../20-reference/COMMAND-REFERENCE.md#required-phase-action-contract)
+for exit codes, JSON output and compatibility rules.
+
 ---
 
 [← Beginner start](../START-HERE.md) · [Begin Phase 1 →](01-first-boot-and-decisions.md)

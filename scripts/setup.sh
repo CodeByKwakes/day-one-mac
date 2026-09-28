@@ -27,6 +27,9 @@ APPLICATION_PROVENANCE_REPORT="$STATE_DIR/application-provenance.md"
 DRY_RUN=0
 ASSUME_YES=0
 SHOW_STATUS=0
+SETUP_ACTION=""
+JSON_OUTPUT=0
+ACCEPT_PREPARATION=0
 RESET_PROGRESS=0
 SSH_PIN_PROVIDER=""
 RUN_INSTALLATION_CENTRE=0
@@ -76,6 +79,13 @@ usage() {
   cat <<'EOF'
 Usage: ./setup.sh [options]
 
+  --plan                      read-only impact plan; no setup commands executed
+  --apply                     explicitly run selected phases (all eight by default)
+  --check                     read-only local checks; manual gates remain explicit
+  --resume                    reuse saved choices; recheck before skipping phases
+  --json                      schema v1 output for --plan, --check, or --status
+  --accept-preparation        attest updated macOS and verified backup/disposable data
+                              required with --yes when explicit actions run Phase 1
   --guided                    run the eight required phases (default)
   --phase NN                  run one required phase; repeatable
   --track 1|2|3               1 GitHub; 2 Azure DevOps; 3 both
@@ -95,7 +105,7 @@ Usage: ./setup.sh [options]
   --install-centre            install/revalidate required apps and CLI tools, then exit
   --ssh-pin [PROVIDER]        save 1Password public keys to ~/.ssh, then exit
                               PROVIDER is github, azure, or both (default: the saved track)
-  --status                    show selections and phase completion
+  --status                    show recorded completion, not current machine health
   --reset-progress            archive completion markers; keep installed files
   --dry-run                   preview commands and write nothing
   --yes                       accept ordinary setup confirmations
@@ -105,6 +115,9 @@ Progress, logs, backups and the exact install manifest live under:
   ~/.day-one-mac/
 
 An existing ~/.fresh-mac-setup directory is read as a compatibility fallback.
+Plan/check never write reports, save choices, unlock agents, or sign in.
+Exit codes: 0 success, 2 invalid usage, 10 manual action, 11 failed gate.
+Legacy --dry-run and implicit apply commands remain supported.
 EOF
 }
 
@@ -864,6 +877,7 @@ show_status() {
   printf '  Early macOS settings: %s\n' "${MACOS_SETTINGS_PLAN:-not selected}"
   printf '  Optional plan: %s\n' "${OPTIONAL_MODULES:-none}"
   printf '  State: %s\n\n' "$STATE_DIR"
+  info 'Phase markers are recorded completion, not a live health check. Use setup --check.'
   for phase in 01 02 03 04 05 06 07 08; do
     if phase_done "$phase"; then
       status='✓ done'; ui_status success "$status  $phase — $(phase_title "$phase")"
@@ -882,6 +896,243 @@ show_status() {
       fi
     fi
   done
+}
+
+# Explicit required-phase actions stay in this runner so legacy phase execution
+# and the new contract cannot acquire different mutation implementations.
+set_setup_action() {
+  [[ -z "$SETUP_ACTION" || "$SETUP_ACTION" == "$1" ]] || {
+    err 'Choose only one of --plan, --apply, --check, --resume, or --status.'; exit 2; }
+  SETUP_ACTION="$1"
+}
+
+required_phase_selected() {
+  [[ -z "$REQUESTED_PHASES" || " $REQUESTED_PHASES " == *" ${1#0} "* ]]
+}
+
+required_phase_impact() {
+  case "$1" in
+    01) printf 'Record track, stack and Git identity. Manual: confirm macOS update and verified backup or disposable data.' ;;
+    02) printf 'Install/verify Apple developer tools and native Homebrew; update Homebrew. Manual: Apple installer, licence and administrator approval.' ;;
+    03) printf 'Require Installation Centre; configure selected %s authentication and SSH; require FileVault. Manual: account/key approval and recovery method.' "$AUTH_MODE" ;;
+    04) printf 'Require Installation Centre; configure Git defaults and Developer folders for track %s. Manual: provider sign-in and authentication tests.' "$TRACK" ;;
+    05) printf 'Require Installation Centre; review/apply chezmoi source, manage shell files and Starship, verify/change login shell. Preserve conflicting user files for review.' ;;
+    06) printf 'Require Installation Centre; install/update %s toolchains (Node LTS via fnm and/or Python via uv); configure pnpm when selected.' "$STACK" ;;
+    07) if [[ "$PRESET" == core ]]; then printf 'Not required for core preset.'
+        else printf 'Require Installation Centre; create missing VS Code settings; verify launcher and safe AI approval settings. Manual: GUI launcher installation.'; fi ;;
+    08) printf 'Require Installation Centre; run verification and WRITE verification.md; create/adopt a missing Brewfile. Manual: signing/GUI review and %s dotfiles recovery checks.' "$DOTFILES_VERSIONING" ;;
+  esac
+}
+
+required_json_string() {
+  local value="$1" char number i
+  printf '"'
+  for ((i=0; i<${#value}; i++)); do
+    char="${value:i:1}"
+    case "$char" in
+      '"') printf '%s' '\"' ;; \\) printf '%s' "\\\\" ;;
+      *) printf -v number '%d' "'$char"
+         if (( number < 32 )); then printf '\\u%04x' "$number"; else printf '%s' "$char"; fi ;;
+    esac
+  done
+  printf '"'
+}
+
+# A check is deliberately local and non-interactive. No phase_XX function,
+# shell startup, chezmoi template, auth client or report writer is called here.
+# Only explicit read probes are allowed. A limited probe is never proof that
+# its untested manual/network gates passed.
+required_check_note() {
+  local result="$1" message="$2"
+  CHECK_DETAILS="${CHECK_DETAILS}${CHECK_DETAILS:+$'\n'}$result: $message"
+  case "$result:$CHECK_RESULT" in
+    fail:*) CHECK_RESULT=fail ;;
+    manual:pass) CHECK_RESULT=manual ;;
+  esac
+}
+
+required_check_file() {
+  if [[ -f "$1" && -r "$1" ]]; then required_check_note pass "$2 exists"
+  else required_check_note fail "$2 is missing or unreadable"; fi
+}
+
+required_check_command() {
+  if have "$1"; then required_check_note pass "$1 is on the current PATH"
+  else required_check_note fail "$1 is missing from the current PATH"; fi
+}
+
+required_check_app() {
+  # Payload inspection only: do not invoke brew or produce provenance reports.
+  local DAY_ONE_MAC_APPLICATION_BREW_LOOKUP=disabled
+  if day_one_app_detect "$1" && day_one_app_is_satisfied; then
+    required_check_note pass "$1 payload is present"
+  else required_check_note fail "$1 payload is missing or has an unexpected identity"; fi
+}
+
+check_required_phase() {
+  local phase="$1" selected command_name target key component result details
+  CHECK_RESULT=pass CHECK_DETAILS=''
+  case "$phase" in
+    01)
+      if [[ -n "$GIT_NAME" && "$GIT_NAME" != *$'\n'* && "$GIT_NAME" != *$'\r'* \
+         && "$GIT_EMAIL" =~ ^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$ ]]; then
+        required_check_note pass 'Git author choices are populated'
+      else required_check_note fail 'Supply a single-line author name and valid email in Phase 1'; fi
+      required_check_note manual 'Confirm current macOS update and readable backup/disposable data; saved completion cannot prove either'
+      ;;
+    02)
+      selected="$(xcode-select -p 2>/dev/null || true)"
+      if [[ -n "$selected" && -d "$selected" ]]; then
+        required_check_note pass 'Apple developer-tools directory is selected'
+      else required_check_note fail 'Complete the Apple Command Line Tools installation'; fi
+      if [[ -x /opt/homebrew/bin/brew ]]; then required_check_note pass 'Native Homebrew executable exists'
+      else required_check_note fail 'Native Homebrew is missing'; fi
+      required_check_note manual 'Phase 2 must verify tool compatibility/licence and Homebrew health; no installer or update ran'
+      ;;
+    03)
+      if fdesetup status 2>/dev/null | grep -q 'FileVault is On'; then required_check_note pass 'FileVault is on'
+      else required_check_note fail 'FileVault is not confirmed on'; fi
+      if [[ "$AUTH_MODE" != https ]]; then required_check_file "$HOME/.ssh/config" 'SSH configuration'; fi
+      case "$AUTH_MODE" in
+        keychain)
+          for component in github azure; do
+            case "$component" in
+              github) uses_github || continue; key="$HOME/.ssh/id_ed25519" ;;
+              azure) uses_azure || continue; key="$HOME/.ssh/id_rsa_azure" ;;
+            esac
+            if [[ "$(keychain_key_protection "$key")" == encrypted ]]; then
+              required_check_note pass "$component key is passphrase protected"
+            else required_check_note fail "$component key is missing, unprotected or unverifiable"; fi
+          done ;;
+        1password) required_check_app 1password; required_check_command op ;;
+      esac
+      required_check_note manual 'Agent access, provider registration, signing and recovery-key custody need interactive verification'
+      ;;
+    04)
+      while IFS= read -r command_name; do
+        case "$command_name" in ripgrep) command_name=rg ;; azure-cli) command_name=az ;; esac
+        required_check_command "$command_name"
+      done < <(required_formulae)
+      # Guard the Apple Git shim on fresh Macs: do not trigger CLT installation.
+      selected="$(xcode-select -p 2>/dev/null || true)"
+      if [[ -n "$selected" && -d "$selected" ]] && have git; then
+        for key in user.name user.email ghq.root; do
+          case "$key" in user.name) target="$GIT_NAME" ;; user.email) target="$GIT_EMAIL" ;; ghq.root) target="$HOME/Developer" ;; esac
+          if [[ -n "$target" && "$(git config --global --get "$key" 2>/dev/null || true)" == "$target" ]]; then
+            required_check_note pass "Git $key matches selection"
+          else required_check_note fail "Git $key is missing or differs from selection"; fi
+        done
+      else required_check_note fail 'Git configuration cannot be checked until developer tools are ready'; fi
+      while IFS= read -r component; do required_check_app "$component"; done < <(required_application_ids)
+      required_check_note manual 'Hosting sessions, SSH reachability and full Git defaults require Phase 4; no login or network probe ran'
+      ;;
+    05)
+      for command_name in chezmoi starship; do required_check_command "$command_name"; done
+      for target in .zprofile .zshrc .gitconfig .gitignore_global .ssh/config .config/starship.toml .config/zsh/path.zsh .config/zsh/aliases.zsh; do
+        required_check_file "$HOME/$target" "$target"
+      done
+      if [[ -x "$HOME/.local/bin/day-one-mac" ]]; then required_check_note pass 'Portable launcher exists'
+      else required_check_note fail 'Portable launcher is missing'; fi
+      required_check_note manual 'Review chezmoi drift and clean-shell behaviour in Phase 5; checks do not render templates or execute startup files'
+      ;;
+    06)
+      if uses_node; then
+        for command_name in fnm node npm pnpm; do required_check_command "$command_name"; done
+        [[ -d "$HOME/Library/pnpm" ]] || required_check_note fail 'pnpm home directory is missing'
+      fi
+      uses_python && required_check_command uv
+      required_check_note manual 'Verify selected runtime versions in Phase 6; command presence does not prove Node LTS or uv-managed Python is ready'
+      ;;
+    07)
+      if [[ "$PRESET" == core ]]; then
+        CHECK_RESULT=not-required; CHECK_DETAILS='VS Code is not required for the core preset'
+      else
+        required_check_app visual-studio-code
+        required_check_command code
+        required_check_file "$HOME/Library/Application Support/Code/User/settings.json" 'VS Code settings'
+        required_check_note manual 'Verify effective auto-approval settings and GUI launch in Phase 7; no editor process was launched'
+      fi
+      ;;
+    08)
+      result=pass details=''
+      for component in 01 02 03 04 05 06 07; do
+        check_required_phase "$component"
+        details="${details}${details:+$'\n'}$component $CHECK_RESULT: $CHECK_DETAILS"
+        if [[ "$CHECK_RESULT" == fail ]]; then result=fail
+        elif [[ "$CHECK_RESULT" == manual && "$result" == pass ]]; then result=manual; fi
+      done
+      CHECK_RESULT="$result" CHECK_DETAILS="$details"
+      if "$SCRIPT_DIR/verify.sh" >/dev/null 2>&1; then required_check_note pass 'Runtime verification passed'
+      else required_check_note fail 'Runtime verification failed; run day-one-mac verify'; fi
+      required_check_file "$HOME/Brewfile" 'Brewfile'
+      required_check_note manual 'Phase 8 must verify source secrets, remote privacy/push state or local backup, and Brewfile management; no report or source was modified'
+      ;;
+  esac
+  return 0
+}
+
+inspect_required_actions() {
+  local action="$1" phase recorded checked_at='' first=1 result=0 impact
+  [[ "$action" != check ]] || checked_at="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+  if [[ "$JSON_OUTPUT" == 1 ]]; then
+    printf '{"schema_version":1,"action":"%s","scope":"local-read-only","checked_at":' "$action"
+    if [[ -n "$checked_at" ]]; then required_json_string "$checked_at"; else printf null; fi
+    printf ',"selection":{"track":'; required_json_string "$TRACK"
+    printf ',"stack":'; required_json_string "$STACK"
+    printf ',"preset":'; required_json_string "$PRESET"
+    printf ',"auth_mode":'; required_json_string "$AUTH_MODE"
+    printf ',"primary_ide":'; required_json_string "$PRIMARY_IDE"
+    printf ',"macos_settings":'; required_json_string "$MACOS_SETTINGS_PLAN"
+    printf ',"dotfiles_versioning":'; required_json_string "$DOTFILES_VERSIONING"
+    printf '},"phases":['
+  else
+    printf 'Required setup %s — local read-only inspection\n' "$action"
+    printf 'Track: %s | Stack: %s | Preset: %s | Authentication: %s | Dotfiles: %s\n' "$TRACK" "$STACK" "$PRESET" "$AUTH_MODE" "$DOTFILES_VERSIONING"
+    printf 'Primary IDE: %s | Early macOS settings: %s\n' "$PRIMARY_IDE" "$MACOS_SETTINGS_PLAN"
+    printf 'Recorded completion is not live health. Manual/network/GUI checks are not automated here.\n'
+    [[ -z "$checked_at" ]] || printf 'Checked at: %s\n' "$checked_at"
+  fi
+  for phase in 01 02 03 04 05 06 07 08; do
+    required_phase_selected "$phase" || continue
+    recorded=pending
+    if phase_done "$phase"; then recorded=current
+    elif [[ -e "$COMPLETED_DIR/$phase" ]]; then recorded=changed; fi
+    CHECK_RESULT=not-checked CHECK_DETAILS=''
+    [[ "$action" != check ]] || check_required_phase "$phase"
+    if [[ "$CHECK_RESULT" == fail ]]; then result="$EX_GATE"
+    elif [[ "$CHECK_RESULT" == manual && "$result" == 0 ]]; then result="$EX_MANUAL"; fi
+    impact="$(required_phase_impact "$phase")"
+    if [[ "$JSON_OUTPUT" == 1 ]]; then
+      [[ "$first" == 1 ]] || printf ','; first=0
+      printf '{"phase":"%s","recorded":"%s","live":"%s","impact":' "$phase" "$recorded" "$CHECK_RESULT"
+      required_json_string "$impact"
+      printf ',"details":'; required_json_string "$CHECK_DETAILS"; printf '}'
+    else
+      printf '\n%s — %s\n  Recorded: %s | Local check: %s\n' "$phase" "$(phase_title "$phase")" "$recorded" "$CHECK_RESULT"
+      if [[ "$action" == plan ]]; then printf '  Apply impact: %s\n  Guide: %s\n' "$impact" "$(phase_doc "$phase")"; fi
+      [[ -z "$CHECK_DETAILS" ]] || printf '%s\n' "$CHECK_DETAILS" | sed 's/^/  /'
+    fi
+  done
+  if [[ "$JSON_OUTPUT" == 1 ]]; then printf '],"exit_code":%s}\n' "$result"
+  elif [[ "$action" == plan ]]; then
+    printf '\nPlan only: nothing saved or executed. Apply the same selection flags explicitly.\n'
+    printf 'All-phase apply also runs the optional macOS settings checkpoint after 01 and the Installation Centre after 02.\n'
+    printf 'Phases 03–08 can run the Installation Centre automatically when it is not current.\n'
+  fi
+  return "$result"
+}
+
+run_required_action_phase() {
+  local phase="$1" action="$2"
+  if [[ "$action" == resume ]] && phase_done "$phase"; then
+    check_required_phase "$phase"
+    if [[ "$CHECK_RESULT" == pass || "$CHECK_RESULT" == not-required ]]; then
+      ok "Phase $phase recorded current and local check passed — skipping"
+      return 0
+    fi
+    info "Phase $phase needs revalidation ($CHECK_RESULT); running its existing gates."
+  fi
+  run_phase "$phase"
 }
 
 run_macos_settings_checkpoint() {
@@ -944,6 +1195,9 @@ run_macos_settings_checkpoint() {
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --plan|--apply|--check|--resume) set_setup_action "${1#--}" ;;
+    --json) JSON_OUTPUT=1 ;;
+    --accept-preparation) ACCEPT_PREPARATION=1 ;;
     --guided) GUIDED=1 ;;
     --phase)
       shift
@@ -978,7 +1232,7 @@ while [[ $# -gt 0 ]]; do
       fi
       GUIDED=0
       ;;
-    --status) SHOW_STATUS=1; GUIDED=0 ;;
+    --status) set_setup_action status; SHOW_STATUS=1; GUIDED=0 ;;
     --reset-progress) RESET_PROGRESS=1; GUIDED=0 ;;
     --dry-run) DRY_RUN=1 ;;
     --yes) ASSUME_YES=1 ;;
@@ -987,6 +1241,50 @@ while [[ $# -gt 0 ]]; do
   esac
   shift
 done
+
+# Validate action combinations before locks, selections, installers or writes.
+if [[ -n "$SETUP_ACTION" ]]; then
+  if [[ "$RESET_PROGRESS" == 1 || "$RUN_INSTALLATION_CENTRE" == 1 || -n "$SSH_PIN_PROVIDER" || "$DRY_RUN" == 1 ]]; then
+    err 'Required-phase actions cannot be combined with --dry-run, --reset-progress, --install-centre or --ssh-pin.'; exit 2
+  fi
+  case "$SETUP_ACTION" in
+    plan|check|status)
+      [[ "$ASSUME_YES" == 0 && "$ACCEPT_PREPARATION" == 0 ]] || {
+        err '--yes and --accept-preparation are apply/resume options, not inspection options.'; exit 2; } ;;
+  esac
+fi
+if [[ "$JSON_OUTPUT" == 1 && "$SETUP_ACTION" != plan && "$SETUP_ACTION" != check && "$SETUP_ACTION" != status ]]; then
+  err '--json requires --plan, --check or --status.'; exit 2
+fi
+if [[ "$ACCEPT_PREPARATION" == 1 && "$SETUP_ACTION" != apply && "$SETUP_ACTION" != resume ]]; then
+  err '--accept-preparation requires --apply or --resume.'; exit 2
+fi
+if [[ "$SETUP_ACTION" == resume ]]; then
+  for option in "${ORIGINAL_ARGS[@]}"; do
+    case "$option" in
+      --track|--stack|--name|--email|--preset|--primary-ide|--dotfiles-repo|--new-dotfiles|--dotfiles-versioning|--local-dotfiles|--auth-mode|--macos-settings|--skip-macos-settings)
+        err '--resume reuses saved choices; use --plan and --apply to change them.'; exit 2 ;;
+    esac
+  done
+  for selection in track stack git-name git-email preset primary-ide auth-mode dotfiles-versioning macos-settings-plan; do
+    [[ -n "$(state_value "$selection")" ]] || {
+      err "No complete saved selection ($selection is missing). Run --plan then --apply first."; exit 2; }
+  done
+fi
+if [[ "$SETUP_ACTION" == plan || "$SETUP_ACTION" == check || "$SETUP_ACTION" == resume ]]; then
+  [[ -n "${TRACK:-$(state_value track)}" && -n "${STACK:-$(state_value stack)}" ]] || {
+    err 'Supply --track and --stack, or complete setup choices first. Inspection never guesses these selections.'; exit 2; }
+  # Load and validate without prompting. Defaulted choices are shown in output;
+  # Phase 1 reports missing identity instead of inventing one.
+  DRY_RUN=1
+  load_or_choose_selections
+  DRY_RUN=0
+fi
+if [[ "$SETUP_ACTION" == plan || "$SETUP_ACTION" == check ]]; then
+  if [[ "$SETUP_ACTION" == check ]]; then day_one_require_apple_silicon || exit 2; fi
+  inspect_required_actions "$SETUP_ACTION"
+  exit $?
+fi
 
 if [[ -z "$APP_INSTALL_POLICY" ]]; then
   if [[ "$DRY_RUN" == 1 ]]; then APP_INSTALL_POLICY=prompt
@@ -1002,7 +1300,14 @@ fi
 day_one_require_apple_silicon || exit 2
 
 if day_one_uses_legacy_state; then
-  warn "Using pre-rename setup state at $STATE_ROOT; saved progress remains valid."
+  warn "Using pre-rename setup state at $STATE_ROOT; saved progress remains valid." >&2
+fi
+
+if [[ "$SETUP_ACTION" == apply || "$SETUP_ACTION" == resume ]]; then
+  if required_phase_selected 01 && [[ "$ASSUME_YES" == 1 && "$ACCEPT_PREPARATION" != 1 ]]; then
+    err 'Phase 1 needs an explicit preparation attestation: --accept-preparation. --yes alone is not evidence of a backup.'
+    exit "$EX_MANUAL"
+  fi
 fi
 
 if [[ "$DRY_RUN" != 1 && "$SHOW_STATUS" != 1 ]]; then
@@ -1059,9 +1364,9 @@ if [[ "$SHOW_STATUS" == 1 ]]; then
   [[ -n "$AUTH_MODE" ]] || AUTH_MODE=1password
   OPTIONAL_MODULES="$(state_value optional-modules)"
   if [[ -n "$TRACK" && "$(state_value track-schema-version)" != "$TRACK_SCHEMA_VERSION" && "$TRACK_EXPLICIT" != 1 ]]; then
-    warn "Saved track uses the retired numbering; rerun with --track 1, 2, or 3."
+    warn "Saved track uses the retired numbering; rerun with --track 1, 2, or 3." >&2
   fi
-  show_status
+  if [[ "$JSON_OUTPUT" == 1 ]]; then inspect_required_actions status; else show_status; fi
   exit 0
 fi
 
@@ -1080,6 +1385,20 @@ if [[ "$DOTFILES_EXPLICIT" == 1 || -n "$DOTFILES_REPO" ]]; then
 fi
 save_state_value dotfiles-versioning "$DOTFILES_VERSIONING"
 save_state_value macos-settings-plan "$MACOS_SETTINGS_PLAN"
+
+if [[ "$SETUP_ACTION" == apply || "$SETUP_ACTION" == resume ]]; then
+  for phase in 01 02 03 04 05 06 07 08; do
+    required_phase_selected "$phase" || continue
+    run_required_action_phase "$phase" "$SETUP_ACTION"
+    # Selected phases stay bounded like legacy --phase; only a full run adds
+    # the optional settings checkpoint and the post-foundation install stage.
+    if [[ -z "$REQUESTED_PHASES" ]]; then
+      if [[ "$phase" == 01 ]]; then run_macos_settings_checkpoint; fi
+      if [[ "$phase" == 02 ]] && ! installation_centre_done; then run_installation_centre; fi
+    fi
+  done
+  exit 0
+fi
 
 if [[ "$RUN_INSTALLATION_CENTRE" == 1 ]]; then
   run_installation_centre

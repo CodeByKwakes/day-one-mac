@@ -9,8 +9,10 @@ phase_01() {
   info "Guide: $(phase_doc 01)"
   info "Track $TRACK — $(track_name)"
   info "Stack — $STACK"
-  confirm "Is macOS fully updated, and is all prior data already in a verified backup?" \
-    || { warn "Finish the Phase 1 preparation and rerun."; return "$EX_MANUAL"; }
+  if [[ "${ACCEPT_PREPARATION:-0}" != 1 ]]; then
+    confirm "Is macOS fully updated, and is all prior data already in a verified backup?" \
+      || { warn "Finish the Phase 1 preparation and rerun."; return "$EX_MANUAL"; }
+  fi
   phase_step_done "macOS update and readable backup confirmed"
   phase_next "Git identity and setup choices" "Enter a valid author name and email, then review the saved hosting and stack choices."
   # Apple's Git shim can open the CLT installer on a fresh Mac. Explicit

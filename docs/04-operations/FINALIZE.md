@@ -18,6 +18,19 @@ Do not delete `~/.day-one-mac` manually. It contains ownership manifests,
 captured originals, verification evidence, settings restore information, and
 the project locator used by the portable command.
 
+### Optional rehearsal cleanup is separate
+
+Neither finalisation nor detachment deletes an acceptance VM, downloaded
+installers, ad-hoc smoke-test folders, private test repositories, or provider
+credentials. Before removing any of those, preserve the acceptance report and
+the raw evidence it references. Verify the copy outside the VM before deleting
+the VM. Review test-key and account authorisations separately; deleting a local
+key does not revoke its provider registration.
+
+For everyday record compaction, use the `finalize` preview below.
+`reset-development` (also called `clean` for compatibility) is a broad reset
+that can remove all Homebrew software, not a way to tidy rehearsal logs.
+
 ## Compact and retain operations — recommended
 
 Preview:
@@ -83,9 +96,10 @@ archive and checksum, moves the portable command when present, then moves the
 complete state directory into `day-one-mac-state/`. `~/.day-one-mac` therefore
 no longer exists.
 
-Installed software and configuration remain unchanged. A future `chezmoi
-apply` may recreate the managed portable command; remove that source entry
-deliberately if detachment should remain permanent.
+Installed software and configuration remain unchanged. Current setup keeps the
+portable command under runtime ownership, not chezmoi. If an older, unmigrated
+dotfiles source still manages the launcher, review that source entry separately:
+a later `chezmoi apply` could recreate it. Do not delete unrelated source files.
 
 ## Restore a detached state
 

@@ -44,6 +44,13 @@ Compatibility:
   --preflight [options]        older name for --safety-report
 
 Direct setup:
+  --plan                      read-only phase impact plan; does not save choices
+  --apply                     run selected phases explicitly (all eight by default)
+  --check                     local read-only checks; manual gates remain explicit
+  --resume                    reuse saved choices and recheck before skipping phases
+  --json                      schema v1 output for --plan, --check or --status
+  --accept-preparation        confirm updated macOS and backup/disposable data;
+                              required with --yes for explicit Phase 1 actions
   --applications [options]    check app ownership; optionally install missing casks
   --install-centre            install/revalidate all required software, then exit
   --ssh-pin [PROVIDER]        save 1Password public keys to ~/.ssh, then exit
@@ -62,7 +69,7 @@ Direct setup:
   --macos-settings MODE       configure or skip the early optional settings wizard
   --skip-macos-settings       continue to Phase 2 without preference changes
   --app-install-policy MODE   prompt, homebrew, or check-only for missing apps
-  --status                    show saved choices and phase completion
+  --status                    show recorded completion, not live machine health
   --reset-progress            archive completion markers; keep installed files
   --yes                       accept ordinary setup confirmations
   -h, --help                  show this help

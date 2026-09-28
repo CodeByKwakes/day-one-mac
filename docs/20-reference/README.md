@@ -8,6 +8,7 @@ phases that must all be completed before running the setup.
 | Question | Reference |
 |---|---|
 | Which command or script should I run? | [Complete command reference](COMMAND-REFERENCE.md) |
+| How do required-phase plan, apply, check and resume differ? | [Required-phase action contract](COMMAND-REFERENCE.md#required-phase-action-contract) |
 | How do I see one status view for Optional and Advanced modules? | [Optional and advanced status dashboard](OPTIONAL-STATUS.md) |
 | How do I plan, apply, check or resume an executable module? | [Module execution reference](MODULE-EXECUTION.md) |
 | How do I install or download `day-one-mac` before Phase 1? | [Portable command](PORTABLE-COMMAND.md) |

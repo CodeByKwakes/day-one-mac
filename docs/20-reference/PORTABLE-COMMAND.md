@@ -69,7 +69,7 @@ have already chosen to execute. Verify the installer itself first when your
 policy requires it:
 
 ```bash
-gh attestation verify "$INSTALLER" --repo CodeByKwakes/day-one-mac \\
+gh attestation verify "$INSTALLER" --repo CodeByKwakes/day-one-mac \
   --signer-workflow CodeByKwakes/day-one-mac/.github/workflows/release.yml
 ```
 
