@@ -99,6 +99,7 @@ if ! resolve_project_root; then
 fi
 
 case "${1:-}" in
+  --version|version) printf 'day-one-mac %s\n' "$(sed -n '1p' "$PROJECT_ROOT/VERSION")" ;;
   root) printf '%s\n' "$PROJECT_ROOT" ;;
   runtime-status) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" status "$@" ;;
   update) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" update "$@" ;;
@@ -109,7 +110,11 @@ case "${1:-}" in
   verify) shift; exec "$PROJECT_ROOT/scripts/verify.sh" "$@" ;;
   validate)
     shift
-    if [[ -x "$PROJECT_ROOT/scripts/validate.sh" ]]; then exec "$PROJECT_ROOT/scripts/validate.sh" "$@"; fi
+    if [[ -x "$PROJECT_ROOT/scripts/validate.sh" ]]; then
+      printf 'Scope: contributor source validation (includes regression fixtures).\n' >&2
+      exec "$PROJECT_ROOT/scripts/validate.sh" "$@"
+    fi
+    printf 'Scope: installed-runtime integrity only; use setup --check for local machine checks.\n' >&2
     exec "$PROJECT_ROOT/scripts/verify.sh" "$@"
     ;;
   safety-report|preflight) shift; exec "$PROJECT_ROOT/scripts/preflight-audit.sh" "$@" ;;
@@ -127,20 +132,30 @@ case "${1:-}" in
   macos-settings) shift; exec "$PROJECT_ROOT/scripts/configure-macos-settings.sh" "$@" ;;
   optional)
     shift
+    dashboard=0
+    module_action=0
+    dashboard_args=()
+    for module_arg in "$@"; do
+      case "$module_arg" in
+        --status) dashboard=1 ;;
+        *) dashboard_args+=("$module_arg") ;;
+      esac
+      case "$module_arg" in
+        --module|--list|--plan|--apply|--resume|--inventory) module_action=1 ;;
+      esac
+    done
+    if [[ "$dashboard" == 1 ]]; then
+      [[ "$module_action" == 0 ]] || {
+        printf 'Do not combine the optional --status dashboard with module actions.\n' >&2; exit 2; }
+      # --check --status and --status --check both select the dashboard.
+      exec "$PROJECT_ROOT/scripts/optional-status.sh" ${dashboard_args[@]+"${dashboard_args[@]}"}
+    fi
     for module_arg in "$@"; do
       case "$module_arg" in
         --module|--list|--plan|--apply|--check|--resume|--inventory)
-          # --status --check retains the existing dashboard contract.
-          if [[ "${1:-}" != --status ]]; then
-            exec /bin/bash "$PROJECT_ROOT/scripts/optional-module.sh" "$@"
-          fi
-          ;;
+          exec /bin/bash "$PROJECT_ROOT/scripts/optional-module.sh" "$@" ;;
       esac
     done
-    if [[ "${1:-}" == --status ]]; then
-      shift
-      exec "$PROJECT_ROOT/scripts/optional-status.sh" "$@"
-    fi
     exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" --optional "$@"
     ;;
   optional-status|modules) shift; exec "$PROJECT_ROOT/scripts/optional-status.sh" "$@" ;;
@@ -160,49 +175,65 @@ case "${1:-}" in
     ;;
   cli-tools) shift; exec "$PROJECT_ROOT/scripts/configure-cli-tools.sh" "$@" ;;
   remove) shift; exec "$PROJECT_ROOT/scripts/remove-day-one-mac.sh" "$@" ;;
-  clean) shift; exec "$PROJECT_ROOT/scripts/clean-development-state.sh" "$@" ;;
+  clean|reset-development)
+    shift
+    printf 'Warning: broad development reset, not cache cleanup. Execution can remove all Homebrew packages and Homebrew itself. Preview is the default.\n' >&2
+    exec "$PROJECT_ROOT/scripts/clean-development-state.sh" "$@"
+    ;;
   rollback) shift; exec "$PROJECT_ROOT/scripts/rollback-recorded-setup.sh" "$@" ;;
   setup) shift; exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" "$@" ;;
   help|-h|--help)
     printf '%s\n' \
       'day-one-mac commands:' \
+      '' \
+      'Runtime and documentation:' \
+      '  --version         print the active runtime or checkout version' \
       '  bootstrap         clone/reuse the project and install this command' \
       '  runtime-status    show and verify the active standalone runtime' \
       '  update            install the latest verified public release' \
       '  rollback-runtime  preview or select a previous installed runtime' \
       '  uninstall-runtime remove only the command and runtime; preserve setup' \
       '  docs              list, locate, or open installed documentation' \
+      '' \
+      'Required setup and inspection:' \
       '  setup [options]   run or inspect the eight required phases' \
+      '                    --plan | --apply | --check | --resume; --phase NN selects phases' \
       '  shell-status      inspect zsh, PATH, completions and shell tools' \
       '  safety-report     create the Stage 0 read-only safety report' \
       '  prepare-existing  choose Stage 0 Route A or Route B' \
       '  applications      check required or optional app ownership' \
       '  install           install or revalidate required software' \
       '  ssh-pin           save 1Password public keys to ~/.ssh' \
+      '' \
+      'Optional and advanced configuration:' \
       '  raycast           manage optional Day One Raycast commands' \
       '  workspace         create and open bounded projectless tasks' \
       '  macos-settings    configure or restore optional macOS preferences' \
       '  optional          choose modules; --status shows or audits Modules 09–22' \
       '                    --list lists capabilities; --module ID --plan|--apply|--check|--resume' \
       '  databases         install, resume, or verify optional databases' \
-      '  finalize          compact records or detach after Phase 8' \
       '  advanced          track guides; all 15–22 support bounded explicit actions' \
       '  advanced-audit    write the private extended audit' \
+      '' \
+      'Validation and maintenance:' \
       '  verify            check the installed runtime integrity' \
       '  validate          validate a checkout (runtime: same as verify)' \
       '  inventory         write the complete application inventory' \
       '  cli-tools         select optional Homebrew formulae' \
       '  remove            choose recorded, sectional, or full removal' \
-      '  clean             preview broad development cleanup' \
+      '  finalize          preview record compaction or detach after Phase 8' \
+      '  reset-development preview broad reset: ALL Homebrew packages, not just ours' \
       '  rollback          preview manifest-owned rollback' \
       '  root              print the active runtime or development root' \
       '' \
       'Compatibility aliases:' \
+      '  clean             same as reset-development (NOT ordinary cleanup)' \
       '  preflight         same as safety-report' \
       '  prepare-reset     same as prepare-existing' \
       '  audit             same as advanced-audit' \
       '  optional-status   same as optional --status' \
       '  modules           same as optional --status'
     ;;
-  *) exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" "$@" ;;
+  ''|-*) exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" "$@" ;;
+  *) printf 'Unknown command: %s\nRun day-one-mac --help to list commands.\n' "$1" >&2; exit 2 ;;
 esac

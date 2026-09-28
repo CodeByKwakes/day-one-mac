@@ -408,6 +408,7 @@ required_scripts=(
   tests/test-optional-status.sh
   tests/test-chezmoi-vscode-tools.sh
   tests/test-day-one-mac.sh
+  tests/test-required-actions.sh
   tests/test-preflight.sh
   tests/test-secret-scan-and-ssh.sh
   tests/test-phase3-onepassword.sh
@@ -894,7 +895,7 @@ else
   fail "optional database installer or selector handoff is incomplete"
 fi
 
-if grep -Fq 'if [[ "${1:-}" == --status ]]' "$SCRIPT_DIR/day-one-mac" \
+if grep -Fq 'if [[ "$dashboard" == 1 ]]' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'optional-status|modules) shift; exec "$PROJECT_ROOT/scripts/optional-status.sh"' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq -- '--audit' "$SCRIPT_DIR/optional-status.sh" \
    && grep -Fq 'Modules 09–22' "$SCRIPT_DIR/optional-status.sh" \
@@ -921,6 +922,10 @@ fi
 run_fixture "Day One Mac regression fixture passes" \
   "Day One Mac regression fixture failed" \
   "$SCRIPT_DIR/tests/test-day-one-mac.sh" || true
+
+run_fixture "required phase actions preserve read-only and resume boundaries" \
+  "required phase action regressions failed" \
+  "$SCRIPT_DIR/tests/test-required-actions.sh" || true
 
 run_fixture "optional database installer is idempotent and diagnostic" \
   "optional database installer regression fixture failed" \

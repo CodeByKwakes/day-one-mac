@@ -21,6 +21,12 @@ try {
   write(helpers, 'helper\tnavigation\nhelper\tpackages\n');
   write(restore, 'mode\tno-restore\n');
   const installedState = stateSnapshot(state);
+  need(run(['--version']).trim() === `day-one-mac ${fs.readFileSync(path.join(runtime, 'VERSION'), 'utf8').trim()}`, 'Packaged version is incorrect.');
+  const requiredPlan = JSON.parse(run(['setup', '--plan', '--track', '1', '--stack', 'both', '--json']));
+  need(requiredPlan.schema_version === 1 && requiredPlan.phases.length === 8, 'Packaged required-phase plan is incomplete.');
+  const requiredCheck = JSON.parse(run(['setup', '--check', '--phase', '05', '--track', '1', '--stack', 'both', '--json'], 11));
+  need(requiredCheck.phases[0].live === 'fail' && requiredCheck.checked_at, 'Packaged checks must detect the empty fixture home.');
+  need(stateSnapshot(state) === installedState, 'Packaged required-phase inspection changed installer state.');
   for (const [id, manifest] of [['17', helpers], ['18', identities], ['20', restore]]) run(['advanced', '--module', id, '--plan', '--manifest', manifest]);
   need(stateSnapshot(state) === installedState, 'Packaged plans changed installer state.');
   run(['advanced', '--module', '20', '--apply', '--manifest', restore, '--yes'], 10);
