@@ -705,7 +705,9 @@ day-one-mac ssh-pin azure
 ```
 
 It finds the item by matching your track against the SSH Key titles in
-1Password, which is why the Step 3.4 naming convention matters. It refuses to
+1Password, which is why the Step 3.4 naming convention matters. It requests
+only the selected item's `public key` field, not the full item or its private
+key. The response must contain exactly one public-key field. It refuses to
 write anything it cannot confirm is a single-line public key, so a wrong field
 or an ambiguous title stops with an explanation rather than putting the wrong
 thing in `~/.ssh`:
@@ -719,6 +721,11 @@ thing in `~/.ssh`:
 
 Phase 3 also offers to do this for you when it notices a pin is missing, so you
 may have already said yes there.
+
+If retrieval fails, the command reports a sanitized error rather than printing
+the raw 1Password response. Check the 1Password app and CLI integration, then
+retry or use **The manual way** below. A timeout is reported separately; it
+does not mean the key is missing.
 
 ### The manual way
 

@@ -141,11 +141,18 @@ grep -Fq 'export_provider_public_key' "$pin_harness" \
   || fail_test 'export_provider_public_key module failed to load'
 
 fake_op_pin() {
+  local get_status="${3:-0}"
   cat > "$pin_root/bin/op" <<EOS
 #!/bin/sh
 case "\$1 \$2" in
   "item list") printf '%s' '$1' ;;
-  "item get")  printf '%s' '$2' ;;
+  "item get")
+    [ "\$4" = --fields ] && [ "\$5" = 'label=public key' ] || exit 93
+    if [ '$get_status' != 0 ]; then
+      printf 'SENSITIVE_ERROR_CANARY\\n' >&2
+      exit '$get_status'
+    fi
+    printf '%s' '$2' | jq -c '[.fields[]? | select(.label == "public key")]' ;;
 esac
 EOS
   chmod +x "$pin_root/bin/op"
@@ -164,6 +171,20 @@ fake_op_pin "$one_item" '{"fields":[{"label":"public key","value":"ssh-ed25519 A
   || fail_test 'a valid public key was not written'
 grep -q '^ssh-ed25519 ' "$pin_root/home/.ssh/github-auth.pub" \
   || fail_test 'the written pin file does not contain the public key'
+
+# Provider failures must not echo raw item/error output or leave temp payloads.
+mkdir -p "$pin_root/tmp"
+for failure in 1 124; do
+  fake_op_pin "$one_item" '{}' "$failure"
+  output="$(TMPDIR="$pin_root/tmp/" run_pin)"
+  [[ "$(tail -1 <<<"$output")" == REFUSED ]] || fail_test 'failed public-field read was accepted'
+  ! grep -Fq SENSITIVE_ERROR_CANARY <<<"$output" || fail_test 'raw provider error leaked'
+  [[ -z "$(ls -A "$pin_root/tmp")" ]] || fail_test 'public-field temporary output leaked'
+done
+
+# Multiple same-label fields must not silently select the first key.
+fake_op_pin "$one_item" '{"fields":[{"label":"public key","value":"ssh-ed25519 AAAA"},{"label":"public key","value":"ssh-ed25519 BBBB"}]}'
+[[ "$(run_pin | tail -1)" == REFUSED ]] || fail_test 'multiple public fields were accepted'
 
 # Private material must never land in ~/.ssh, whatever the field says. Build
 # the marker at runtime so the public repository does not contain a key block.
@@ -244,9 +265,10 @@ cat > "$track_root/bin/op" <<'EOS'
 case "$1 $2" in
   "item list") printf '%s' '[{"title":"GitHub — Personal — Authentication"},{"title":"Azure DevOps — Work — Authentication"}]' ;;
   "item get")
+    [ "$4" = --fields ] && [ "$5" = 'label=public key' ] || exit 93
     case "$3" in
-      *GitHub*) printf '%s' '{"fields":[{"label":"public key","value":"ssh-ed25519 AAAAGH you@example.com"}]}' ;;
-      *Azure*)  printf '%s' '{"fields":[{"label":"public key","value":"ssh-rsa AAAAAZ work@example.com"}]}' ;;
+      *GitHub*) printf '%s' '[{"label":"public key","value":"ssh-ed25519 AAAAGH you@example.com"}]' ;;
+      *Azure*)  printf '%s' '[{"label":"public key","value":"ssh-rsa AAAAAZ work@example.com"}]' ;;
     esac ;;
 esac
 EOS

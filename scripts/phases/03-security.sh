@@ -123,9 +123,29 @@ onepassword_ssh_item_titles() {
         '.[] | select((.title // "") | ascii_downcase | contains($p)) | .title' 2>/dev/null
 }
 
+# Fetch only the public field, never the complete SSH item. Subshell traps keep
+# cleanup local to this read and do not replace the runner's own traps.
+onepassword_public_key_value() (
+  local tmp result
+  tmp="$(mktemp -t day-one-mac-pubkey)" || return 1
+  trap 'rm -f "$tmp" "${tmp}.deadline"' EXIT
+  trap 'exit 130' INT
+  trap 'exit 143' TERM
+  if run_with_deadline "$tmp" 20 op item get "$1" --fields 'label=public key' --format json; then
+    # CLI versions may encode a selected field as an object or an array.
+    # Require exactly one public field; never accept a complete item response.
+    jq -er 'if type == "array" then . else [.] end |
+      if length == 1 and .[0].label == "public key" and (.[0].value | type) == "string"
+      then .[0].value else error("expected one public field") end' "$tmp" 2>/dev/null
+  else
+    result=$?
+    return "$result"
+  fi
+)
+
 # Save a provider's 1Password public key as the pinned ~/.ssh/<provider>-auth.pub.
 export_provider_public_key() {
-  local provider="$1" target pattern label titles narrowed narrowed_count title count value tmp status
+  local provider="$1" target pattern label titles narrowed narrowed_count title count value status
   case "$provider" in
     github) target="$HOME/.ssh/github-auth.pub"; pattern=github; label='GitHub' ;;
     azure)  target="$HOME/.ssh/azure-devops-auth.pub"; pattern=azure; label='Azure DevOps' ;;
@@ -177,25 +197,22 @@ export_provider_public_key() {
       ;;
   esac
 
-  tmp="$(mktemp -t day-one-mac-pubkey)"
-  run_with_deadline "$tmp" 20 op item get "$title" --format json
-  status=$?
-  if [[ "$status" -ne 0 ]]; then
+  if value="$(onepassword_public_key_value "$title")"; then
+    :
+  else
+    status=$?
     [[ "$status" -eq 124 ]] \
       && warn "Reading '$title' from 1Password timed out; approve the prompt and retry." \
-      || warn "Could not read '$title' from 1Password."
-    while IFS= read -r line; do [[ -z "$line" ]] || warn "  $line"; done < "$tmp"
-    rm -f "$tmp"
+      || warn "Could not read exactly one public-key field from '$title' in 1Password."
+    warn "Review the public-key field in the 1Password app or use the manual route in Step 3.7."
     return 1
   fi
-  value="$(jq -r '.fields[]? | select((.label // "") == "public key") | .value' < "$tmp" 2>/dev/null | sed -n '1p')"
-  rm -f "$tmp"
   value="${value%"${value##*[![:space:]]}"}"
 
   if ! public_key_is_valid "$value"; then
     warn "'$title' did not yield a usable public key."
     warn "Expected one line beginning 'ssh-ed25519 ' or 'ssh-rsa '. Nothing was written to ~/.ssh."
-    warn "Check the item's field labels with: op item get \"$title\""
+    warn "Review the public-key field in the 1Password app; do not export the complete item."
     return 1
   fi
 
