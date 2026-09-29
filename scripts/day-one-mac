@@ -193,7 +193,7 @@ case "${1:-}" in
       '  update            install the latest verified public release' \
       '  rollback-runtime  preview or select a previous installed runtime' \
       '  uninstall-runtime remove only the command and runtime; preserve setup' \
-      '  docs              list, locate, or open installed documentation' \
+      '  docs              browse, export, locate, or open bundled documentation' \
       '' \
       'Required setup and inspection:' \
       '  setup [options]   run or inspect the eight required phases' \

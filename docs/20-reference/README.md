@@ -2,6 +2,10 @@
 
 # Day One Mac reference library
 
+For task-oriented reading, use the [Manual Setup Handbook](../manual/README.md)
+or [chezmoi learning path](../manual/chezmoi.md). For an offline browser view,
+exports or printing, see [documentation commands](DOCUMENTATION-COMMANDS.md).
+
 These documents explain decisions and operating conventions. They are not extra
 phases that must all be completed before running the setup.
 

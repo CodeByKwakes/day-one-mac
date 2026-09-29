@@ -19,6 +19,9 @@ folder before starting.
 | Need one status or audit view for Modules 09–22 | [Optional and advanced status dashboard](20-reference/OPTIONAL-STATUS.md) |
 | Need power-user automation or migration | [Advanced modules](03-advanced/README.md) |
 | Need help configuring an installed application | [Application guides](10-app-guides/README.md) |
+| Want human decisions and manual tasks grouped together | [Manual Setup Handbook](manual/README.md) |
+| Want first setup, daily use, templates or recovery for dotfiles | [Chezmoi learning path](manual/chezmoi.md) |
+| Want browser reading, an offline export or a printable guide | [Documentation commands](20-reference/DOCUMENTATION-COMMANDS.md) |
 | Need to undo, finalise, or remove setup changes | [Operations](04-operations/README.md) |
 | Need a command, definition, or configuration example | [Reference library](20-reference/README.md) |
 | Need to set up or learn when to use chezmoi | [Complete chezmoi setup tutorial](20-reference/CHEZMOI-SETUP-TUTORIAL.md) |
@@ -88,6 +91,7 @@ docs/
 ├── 02-optional/           Modules 9–14, only after Phase 8
 ├── 03-advanced/           Modules 15–22 for power users
 ├── 04-operations/         Finalisation, rollback, reset, and removal
+├── manual/                Handbook and chezmoi learning path; links to canonical guides
 ├── 10-app-guides/         1Password, Raycast, VS Code, Warp, shortcuts
 ├── 20-reference/          Commands, layouts, dotfiles, glossary, examples
 └── 99-maintenance/        Documentation audits and maintainer notes

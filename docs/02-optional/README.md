@@ -2,6 +2,10 @@
 
 # Optional Day One Mac modules
 
+For human decisions, imports and trust approvals grouped in one place, use the
+[Manual Setup Handbook](../manual/README.md). It separates current CLI work from
+the manual steps, including the [chezmoi learning path](../manual/chezmoi.md).
+
 Complete required Phase 8 before adding these modules. Add only what a real
 project or workflow needs; skipping every optional module still leaves a
 complete development foundation.

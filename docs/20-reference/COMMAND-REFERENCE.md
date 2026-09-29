@@ -69,6 +69,8 @@ updates and rollback.
 | `day-one-mac rollback-runtime [options]` | `./runtime-manager.sh rollback [options]` | Preview or select a previous installed runtime without undoing setup changes. |
 | `day-one-mac uninstall-runtime [options]` | `./runtime-manager.sh uninstall [options]` | Remove only the launcher and runtime while preserving setup state and the configured environment. |
 | `day-one-mac docs [TOPIC] [--open]` | `./runtime-manager.sh docs …` | List, locate, or open documentation inside the active runtime. Topics include `chezmoi`, `optional`, and `advanced`; use `--list` for all topics or `--folder --open` for the complete documentation folder. |
+| `day-one-mac docs [TOPIC] --browser` | `./runtime-manager.sh docs …` | Open a temporary offline HTML reader. Use `handbook` for manual tasks or `chezmoi-guide` for the learning path. No server or extra runtime is needed. |
+| `day-one-mac docs export --format html\|markdown --output NEW_DIRECTORY` | `./runtime-manager.sh docs export …` | Export bundled project guides and examples to a new directory. See [contents, printing and safety](DOCUMENTATION-COMMANDS.md). |
 | `day-one-mac shell-status` | `./shell-status.sh` | Run a read-only check of Homebrew zsh, startup files, clean-shell PATHs, completions and selected tools. |
 | `day-one-mac setup [options]` | `./bootstrap-day-one-mac.sh [options]` | Start, resume, inspect, or reset the required eight-phase setup. |
 | `day-one-mac install [options]` | `./bootstrap-day-one-mac.sh --install-centre [options]` | Install or revalidate required applications and command-line tools after Phase 2. |

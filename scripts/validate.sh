@@ -86,6 +86,9 @@ required_docs=(
   install-day-one-mac
   README.md
   docs/README.md
+  docs/manual/README.md
+  docs/manual/chezmoi.md
+  docs/20-reference/DOCUMENTATION-COMMANDS.md
   docs/START-HERE.md
   docs/PROCESS-OVERVIEW.md
   docs/NEW-DEVICE-SETUP-BLUEPRINT.md
@@ -409,6 +412,8 @@ required_scripts=(
   tests/test-chezmoi-vscode-tools.sh
   tests/test-day-one-mac.sh
   tests/test-required-actions.sh
+  tests/test-docs.sh
+  docs.sh
   tests/test-preflight.sh
   tests/test-secret-scan-and-ssh.sh
   tests/test-phase3-onepassword.sh
@@ -926,6 +931,10 @@ run_fixture "Day One Mac regression fixture passes" \
 run_fixture "required phase actions preserve read-only and resume boundaries" \
   "required phase action regressions failed" \
   "$SCRIPT_DIR/tests/test-required-actions.sh" || true
+
+run_fixture "offline documentation exports preserve navigation and privacy boundaries" \
+  "offline documentation regressions failed" \
+  "$SCRIPT_DIR/tests/test-docs.sh" || true
 
 run_fixture "optional database installer is idempotent and diagnostic" \
   "optional database installer regression fixture failed" \

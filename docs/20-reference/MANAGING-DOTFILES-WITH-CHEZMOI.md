@@ -2,6 +2,10 @@
 
 # Update shell dotfiles safely with chezmoi
 
+New to this workflow? Choose your starting point in the
+[chezmoi learning path](../manual/chezmoi.md). This guide is for specific tasks,
+not a second bootstrap procedure.
+
 **Document type:** how-to guide · **Audience:** users maintaining a completed Day One Mac setup
 
 Phase 5 makes chezmoi the source of truth for `.zprofile`, `.zshrc`, shared
@@ -240,17 +244,13 @@ process.
 
 ## Remove a managed file from both source and target
 
-This is a destructive change. First create a reviewed source commit or backup,
-then edit the source directory deliberately. Preview the target removal with:
-
-```bash
-chezmoi diff "$HOME/.config/example/config.toml"
-chezmoi apply --dry-run --verbose "$HOME/.config/example/config.toml"
-```
-
-Apply only after the output explicitly shows the intended target. Do not use a
-broad apply to test a deletion. If the file merely needs a different owner,
-use `chezmoi forget` instead.
+This is a separate, destructive decision, not the normal maintenance flow.
+Removing a source file alone is not a reliable instruction to remove its live
+target. First preserve a reviewed source revision or backup and identify the
+exact live file to remove. Stop management using the preceding `forget`
+procedure, then remove only that exact live file through Finder after confirming
+that its owning application no longer needs it. Verify both source ownership
+and the live path afterwards. If only ownership is changing, keep the live file.
 
 ## Record an application-generated change
 
@@ -428,11 +428,16 @@ because they appear in the same repository.
 Use a working shell to inspect the source and rendered target:
 
 ```bash
-/bin/zsh
+/bin/zsh -f
 chezmoi cat "$HOME/.zshrc"
-/bin/zsh -n "$(chezmoi source-path "$HOME/.zshrc")"
+chezmoi cat "$HOME/.zshrc" | /bin/zsh -n
 chezmoi diff "$HOME/.zshrc"
 ```
+
+`-f` skips your normal startup configuration in the recovery shell. The syntax
+check reads rendered content without executing it, so it also works when the
+source is a template. Rendering still requires a trusted source; do not share
+the printed content if it contains private values.
 
 Correct the source, apply only the repaired file, and rerun:
 

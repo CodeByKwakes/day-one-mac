@@ -1,5 +1,9 @@
 # Advanced optional setup
 
+Use the [Manual Setup Handbook](../manual/README.md) for grouped human decisions,
+verification and recovery. The [chezmoi learning path](../manual/chezmoi.md)
+connects first setup, everyday maintenance, ownership and advanced templates.
+
 **Start only after the eight required phases pass.** Nothing in this directory
 is needed for a secure, working development Mac.
 

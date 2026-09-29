@@ -12,6 +12,11 @@ mkdir -p "$TEST_ROOT/temporary"
 HOME="$TEST_ROOT/installed-home" TMPDIR="$TEST_ROOT/temporary" \
   "$PROJECT_ROOT/install-day-one-mac" --archive "$archive" >/dev/null
 HOME="$TEST_ROOT/installed-home" "$TEST_ROOT/installed-home/.local/bin/day-one-mac" verify >/dev/null
+HOME="$TEST_ROOT/installed-home" "$TEST_ROOT/installed-home/.local/bin/day-one-mac" \
+  docs export --format html --output "$TEST_ROOT/export" >/dev/null
+[[ -f "$TEST_ROOT/export/index.html" && -f "$TEST_ROOT/export/docs/manual/chezmoi.md" ]] \
+  || fail 'installed release could not export its bundled handbook and chezmoi guides'
+HOME="$TEST_ROOT/installed-home" "$TEST_ROOT/installed-home/.local/bin/day-one-mac" verify >/dev/null
 [[ -z "$(find "$TEST_ROOT/temporary" -mindepth 1 -print -quit)" ]] || fail 'installer leaked extraction directory'
 
 # Explicit archive must win over the checkout autodetection.

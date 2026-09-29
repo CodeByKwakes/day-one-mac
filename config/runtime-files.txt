@@ -1,6 +1,7 @@
 # Explicit runtime files, one repository-relative regular file per line.
 # Regenerate deliberately when adding a runtime module; never include local files.
 CHANGELOG.md
+CONTRIBUTING.md
 LICENSE
 README.md
 SECURITY.md
@@ -92,6 +93,9 @@ docs/NEW-DEVICE-SETUP-BLUEPRINT.md
 docs/PROCESS-OVERVIEW.md
 docs/PROJECT-GUIDE.md
 docs/README.md
+docs/manual/README.md
+docs/manual/chezmoi.md
+docs/20-reference/DOCUMENTATION-COMMANDS.md
 docs/RELEASE-TOKEN-SETUP.md
 docs/START-HERE.md
 install-day-one-mac
@@ -139,6 +143,13 @@ scripts/prepare-existing-mac.sh
 scripts/remove-day-one-mac.sh
 scripts/rollback-recorded-setup.sh
 scripts/runtime-manager.sh
+scripts/docs.sh
+scripts/lib/docs-browser.html
+scripts/lib/docs-browser.css
+scripts/lib/docs-browser.js
+scripts/vendor/markdown-it/markdown-it.min.js
+scripts/vendor/markdown-it/LICENSE
+scripts/vendor/markdown-it/PROVENANCE.md
 scripts/setup.sh
 scripts/shell-status.sh
 scripts/verify.sh

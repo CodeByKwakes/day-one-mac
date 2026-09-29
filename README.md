@@ -14,6 +14,7 @@ base is working.
 - **Need one specific command:** [open the command reference](docs/20-reference/COMMAND-REFERENCE.md).
 - **Need to learn or maintain chezmoi:** [open the complete chezmoi setup tutorial](docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md).
 - **Need to browse everything:** [open the documentation index](docs/README.md).
+- **Need manual application steps or chezmoi workflows:** [open the manual handbook](docs/manual/README.md).
 
 ## Install without keeping a repository
 
@@ -39,6 +40,8 @@ guides at any time:
 day-one-mac docs --list
 day-one-mac docs start --open
 day-one-mac docs chezmoi --open
+day-one-mac docs handbook --browser
+day-one-mac docs chezmoi-guide --browser
 ```
 
 The runtime container is `~/.local/share/day-one-mac`; its `current` link points
@@ -64,7 +67,10 @@ day-one-mac/
 └── warp-drive/          Importable Warp workflows
 ```
 
-Start with the [complete chezmoi setup tutorial](docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md).
+Start with the [chezmoi learning path](docs/manual/chezmoi.md) for first setup,
+everyday edits, ownership, templates, secrets and recovery. For offline HTML,
+Markdown exports and browser printing, use the
+[documentation commands](docs/20-reference/DOCUMENTATION-COMMANDS.md).
 It links the Phase 5 baseline, script-assisted and fully manual routes, daily
 maintenance, command reference, ownership boundaries, private Git, and
 local-only backups.
