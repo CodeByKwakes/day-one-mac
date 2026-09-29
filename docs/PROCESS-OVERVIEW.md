@@ -218,12 +218,16 @@ backup records you created while following the manual guide.
 
 ## 5. Understand required applications
 
-The base setup always expects these applications or payloads:
+The non-core productivity presets expect these applications or payloads:
 
 - Raycast;
 - Warp;
 - Visual Studio Code;
 - JetBrains Mono Nerd Font.
+
+The `core` preset omits this group. See the
+[software catalogue](20-reference/SOFTWARE-CATALOGUE.md) for every application,
+formula and conditional selection rule.
 
 The `1password` authentication mode additionally requires 1Password and the
 1Password CLI. The `keychain`, `external`, and `https` modes do not install or
@@ -456,7 +460,7 @@ After Phase 8, the Mac has:
 - a predictable `~/Developer` layout managed with `ghq`;
 - chezmoi-managed dotfiles and a Starship-enabled zsh shell;
 - Node with npm/pnpm, Python with uv, or both;
-- Raycast, Warp, and VS Code;
+- Raycast, Warp, and VS Code when a non-core productivity preset was selected;
 - a reviewed Brewfile and either a private dotfiles remote or a protected
   local-only source; and
 - on the script-assisted route, application provenance, audit evidence, and

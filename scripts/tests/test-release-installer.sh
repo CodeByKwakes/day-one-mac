@@ -16,6 +16,14 @@ HOME="$TEST_ROOT/installed-home" "$TEST_ROOT/installed-home/.local/bin/day-one-m
   docs export --format html --output "$TEST_ROOT/export" >/dev/null
 [[ -f "$TEST_ROOT/export/index.html" && -f "$TEST_ROOT/export/docs/manual/chezmoi.md" ]] \
   || fail 'installed release could not export its bundled handbook and chezmoi guides'
+for topic in second-brain-guide security 1password keychain ssh software; do
+  doc_path="$(HOME="$TEST_ROOT/installed-home" "$TEST_ROOT/installed-home/.local/bin/day-one-mac" docs "$topic")"
+  [[ -f "$doc_path" ]] || fail "installed topic is missing: $topic"
+done
+for guide in second-brain security 1password keychain-ssh ssh-signing-and-recovery; do
+  [[ -f "$TEST_ROOT/export/docs/manual/$guide.md" ]] || fail "export omitted handbook guide: $guide"
+done
+[[ -f "$TEST_ROOT/export/docs/20-reference/SOFTWARE-CATALOGUE.md" ]] || fail 'export omitted software catalogue'
 HOME="$TEST_ROOT/installed-home" "$TEST_ROOT/installed-home/.local/bin/day-one-mac" verify >/dev/null
 [[ -z "$(find "$TEST_ROOT/temporary" -mindepth 1 -print -quit)" ]] || fail 'installer leaked extraction directory'
 

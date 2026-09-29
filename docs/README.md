@@ -21,6 +21,9 @@ folder before starting.
 | Need help configuring an installed application | [Application guides](10-app-guides/README.md) |
 | Want human decisions and manual tasks grouped together | [Manual Setup Handbook](manual/README.md) |
 | Want first setup, daily use, templates or recovery for dotfiles | [Chezmoi learning path](manual/chezmoi.md) |
+| Want an Obsidian or Notion knowledge system with backup and recovery | [Second Brain walkthrough](manual/second-brain.md) |
+| Need 1Password, Keychain, SSH, signing or account recovery | [Security learning path](manual/security.md) |
+| Want to know what each app/formula does and whether it is required | [Software catalogue](20-reference/SOFTWARE-CATALOGUE.md) |
 | Want browser reading, an offline export or a printable guide | [Documentation commands](20-reference/DOCUMENTATION-COMMANDS.md) |
 | Need to undo, finalise, or remove setup changes | [Operations](04-operations/README.md) |
 | Need a command, definition, or configuration example | [Reference library](20-reference/README.md) |
@@ -91,7 +94,7 @@ docs/
 ├── 02-optional/           Modules 9–14, only after Phase 8
 ├── 03-advanced/           Modules 15–22 for power users
 ├── 04-operations/         Finalisation, rollback, reset, and removal
-├── manual/                Handbook and chezmoi learning path; links to canonical guides
+├── manual/               Handbook: chezmoi, Second Brain, security and SSH
 ├── 10-app-guides/         1Password, Raycast, VS Code, Warp, shortcuts
 ├── 20-reference/          Commands, layouts, dotfiles, glossary, examples
 └── 99-maintenance/        Documentation audits and maintainer notes

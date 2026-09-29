@@ -10,6 +10,9 @@ installed release and contributors checking a source checkout.
 ```bash
 day-one-mac docs handbook --browser
 day-one-mac docs chezmoi-guide --browser
+day-one-mac docs second-brain-guide --browser
+day-one-mac docs security --browser
+day-one-mac docs software --browser
 ```
 
 The command creates a private temporary reader and opens it in your default
@@ -72,6 +75,21 @@ Existing topics keep their meaning: `manual` is the complete manual setup guide,
 and `chezmoi` is the setup tutorial. New topics are `handbook`, `chezmoi-guide`,
 `chezmoi-daily`, `chezmoi-reference`, and `chezmoi-concepts`. The handbook brings
 manual tasks together without breaking older commands or guide links.
+
+Additional setup topics:
+
+| Topic | Guide |
+|---|---|
+| `second-brain-guide` | Obsidian/Notion walkthrough, manual handoffs and recovery |
+| `security` | Security learning path and FileVault |
+| `1password` | Vault-owned SSH keys and account setup |
+| `keychain` | Local encrypted keys with Apple Keychain passphrases |
+| `ssh` | Provider registration, real signing test and troubleshooting |
+| `software` | Applications, required/conditional formulae and optional tools |
+
+The original `second-brain` topic still opens the existing Second Brain library.
+All new guides are included in both export formats. None exports user notes,
+account sessions, SSH keys or installed-software inventories.
 
 ## Contents, safety and cleanup
 

@@ -36,6 +36,49 @@ try {
   assert.match(run(['handbook']), /manual\/README.md/);
   assert.match(run(['chezmoi-guide']), /manual\/chezmoi.md/);
   assert.match(run(['--list']), /chezmoi-daily/);
+  assert.match(run(['second-brain']), /second-brain\/README.md/);
+  const handbookTopics = {
+    'second-brain-guide': 'docs/manual/second-brain.md',
+    security: 'docs/manual/security.md',
+    '1password': 'docs/manual/1password.md',
+    keychain: 'docs/manual/keychain-ssh.md',
+    ssh: 'docs/manual/ssh-signing-and-recovery.md',
+    software: 'docs/20-reference/SOFTWARE-CATALOGUE.md',
+  };
+  for (const [topic, file] of Object.entries(handbookTopics)) {
+    assert.equal(fs.realpathSync(run([topic]).trim()), fs.realpathSync(path.join(fixture, file)));
+    assert.ok(run(['--list']).includes(topic));
+  }
+
+  // Compare the public catalogue with executable selection sources, not a
+  // second hand-maintained package list. Sourcing setup exposes functions only.
+  const catalogue = fs.readFileSync(path.join(fixture, handbookTopics.software), 'utf8');
+  const rows = heading => catalogue.split(heading)[1].split('\n## ')[0]
+    .split('\n').filter(line => line.startsWith('| ')).slice(1)
+    .map(line => line.split('|').slice(1, -1).map(cell => cell.trim().replaceAll('`', '')));
+  const appRows = rows('## Registered applications, CLI casks and font');
+  const registeredApps = fs.readFileSync(path.join(fixture, 'config/applications.tsv'), 'utf8')
+    .split('\n').filter(line => line && !line.startsWith('#')).map(line => line.split('\t'));
+  assert.deepEqual(appRows.map(row => row[0]).sort(), registeredApps.map(row => row[0]).sort());
+  for (const [id, , , name, cask] of registeredApps) {
+    const documented = appRows.find(row => row[0] === id);
+    assert.equal(documented[2], cask, id);
+    assert.ok(documented[1].startsWith(name), id);
+  }
+  const optionalRows = rows('## Optional formulae');
+  const optionalFormulae = fs.readFileSync(path.join(fixture, 'config/optional-formulae.tsv'), 'utf8')
+    .split('\n').filter(line => line && !line.startsWith('#')).map(line => line.split('\t'));
+  assert.deepEqual(optionalRows.map(row => row.slice(0, 3)), optionalFormulae);
+  const selectedFormulae = spawnSync('/bin/bash', ['-c',
+    'source "$1/scripts/setup.sh"; for TRACK in 1 2 3; do for STACK in node python both; do required_formulae; done; done',
+    'catalogue-fixture', fixture], {
+    env: { HOME: home, PATH: '/usr/bin:/bin:/usr/sbin:/sbin',
+      DAY_ONE_MAC_STATE_ROOT: path.join(home, '.day-one-mac'), DAY_ONE_MAC_DISABLE_BREW_DISCOVERY: '1' },
+    encoding: 'utf8',
+  });
+  assert.equal(selectedFormulae.status, 0, selectedFormulae.stderr);
+  assert.deepEqual(rows('## Required and conditional formulae').map(row => row[0]).sort(),
+    Array.from(new Set(selectedFormulae.stdout.trim().split('\n'))).sort());
   fs.writeFileSync(path.join(fixture, 'SHA256SUMS'), 'runtime marker');
   run(['export', '--format', 'html', '--output', path.join(fixture, 'export')], 2);
   assert.ok(!fs.existsSync(path.join(fixture, 'export')));
@@ -58,6 +101,9 @@ try {
   const embedded = new Map(Array.from(html.matchAll(/class="document-data" data-path="([^"]+)">([^<]+)<\/script>/g),
     match => [match[1], Buffer.from(match[2], 'base64').toString('utf8')]));
   assert.equal(embedded.get('docs/manual/chezmoi.md'), fs.readFileSync(path.join(root, 'docs/manual/chezmoi.md'), 'utf8'));
+  for (const file of Object.values(handbookTopics)) {
+    assert.equal(embedded.get(file), fs.readFileSync(path.join(root, file), 'utf8'));
+  }
   for (const name of ['CHEZMOI-SETUP-TUTORIAL', 'MANAGING-DOTFILES-WITH-CHEZMOI', 'CHEZMOI-COMMAND-REFERENCE', 'CHEZMOI-CONCEPTS-AND-BOUNDARIES']) {
     assert.ok(embedded.has(`docs/20-reference/${name}.md`));
   }
@@ -70,6 +116,9 @@ try {
   run(['export', '--format', 'markdown', '--output', mdDir]);
   assert.ok(!fs.existsSync(path.join(mdDir, 'index.html')));
   assert.equal(fs.readFileSync(path.join(mdDir, 'docs/manual/chezmoi.md'), 'utf8'), embedded.get('docs/manual/chezmoi.md'));
+  for (const file of Object.values(handbookTopics)) {
+    assert.equal(fs.readFileSync(path.join(mdDir, file), 'utf8'), embedded.get(file));
+  }
 
   const markdownIt = require(path.join(fixture, 'scripts/vendor/markdown-it/markdown-it.min.js'));
   const { documentationRenderer } = require(path.join(fixture, 'scripts/lib/docs-browser.js'));
@@ -118,7 +167,7 @@ try {
   fs.symlinkSync(path.join(temporary, 'manual'), path.join(fixture, 'docs/manual'));
   run(['export', '--format', 'markdown', '--output', rejected], 1);
   assert.ok(!fs.existsSync(rejected));
-  console.log('PASS: offline docs, all guide links/anchors, chezmoi coverage, exports, privacy, no-overwrite, and symlink rejection');
+  console.log('PASS: offline docs, guide links/anchors, handbook topics, software catalogue coverage, exports, privacy, no-overwrite, and symlink rejection');
 } finally {
   fs.rmSync(temporary, { recursive: true, force: true });
 }

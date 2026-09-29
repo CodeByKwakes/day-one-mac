@@ -1,5 +1,9 @@
 # Second Brain — choose your knowledge system
 
+For an end-to-end route through this library, use the
+[Second Brain handbook walkthrough](../docs/manual/second-brain.md). It separates
+local preparation from manual app setup, acceptance checks and recovery.
+
 [← Day One Mac](../README.md)
 
 This folder contains two complete Second Brain builds. Choose one as the

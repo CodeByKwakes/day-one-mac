@@ -2,6 +2,11 @@
 
 # Phase 3 — Security, 1Password, and SSH
 
+For a route-focused beginner walkthrough, start with the
+[security learning path](../manual/security.md): separate 1Password and Keychain
+tutorials, provider registration, real signing verification and recovery. This
+phase page remains the detailed reference for the runner's gates.
+
 **Time:** 30–60 minutes · **Required:** everyone
 
 ## Outcome

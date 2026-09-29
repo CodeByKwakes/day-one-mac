@@ -15,6 +15,12 @@ and recovery. This is not another mandatory checklist.
   select only needed extras, then use the chapters below. Do not repeat the
   fully manual bootstrap over an already configured Mac.
 - **Maintaining dotfiles:** start with the [chezmoi learning path](chezmoi.md).
+- **Building a knowledge system:** follow the [Second Brain walkthrough](second-brain.md)
+  for Obsidian or Notion, integrations, daily use and recovery.
+- **Accounts, keys and signing:** choose the [security learning path](security.md),
+  then [1Password](1password.md) or [Apple Keychain](keychain-ssh.md).
+- **Choosing software:** use the [application and formula catalogue](../20-reference/SOFTWARE-CATALOGUE.md)
+  for descriptions, selection rules, ownership and manual follow-up.
 
 Existing detailed guides remain the canonical instructions, linked from this
 handbook rather than copied into a second, competing procedure. Their old paths
@@ -151,6 +157,9 @@ never use a successful checksum as permission to overwrite live data.
 ```bash
 day-one-mac docs handbook --browser
 day-one-mac docs chezmoi-guide --browser
+day-one-mac docs second-brain-guide --browser
+day-one-mac docs security --browser
+day-one-mac docs software --browser
 day-one-mac docs export --format html --output ./day-one-docs
 day-one-mac docs export --format markdown --output ./day-one-markdown
 ```

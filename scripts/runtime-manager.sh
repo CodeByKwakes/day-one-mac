@@ -146,6 +146,7 @@ open_docs() {
           '' \
           'Topics: start, index, manual, process, project, commands, chezmoi, status, optional, advanced, second-brain' \
           'Handbook topics: handbook, chezmoi-guide, chezmoi-daily, chezmoi-reference, chezmoi-concepts' \
+          'Setup guides: second-brain-guide, security, 1password, keychain, ssh, software' \
           '' \
           'Without --open or --browser, the command prints the installed path.' \
           '--browser opens an offline HTML reader; --open keeps the default Markdown app.'
@@ -177,6 +178,12 @@ open_docs() {
       'commands' "$RUNTIME_ROOT/docs/20-reference/COMMAND-REFERENCE.md" \
       'chezmoi' "$RUNTIME_ROOT/docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md" \
       'handbook' "$RUNTIME_ROOT/docs/manual/README.md" \
+      'second-brain-guide' "$RUNTIME_ROOT/docs/manual/second-brain.md" \
+      'security' "$RUNTIME_ROOT/docs/manual/security.md" \
+      '1password' "$RUNTIME_ROOT/docs/manual/1password.md" \
+      'keychain' "$RUNTIME_ROOT/docs/manual/keychain-ssh.md" \
+      'ssh' "$RUNTIME_ROOT/docs/manual/ssh-signing-and-recovery.md" \
+      'software' "$RUNTIME_ROOT/docs/20-reference/SOFTWARE-CATALOGUE.md" \
       'chezmoi-guide' "$RUNTIME_ROOT/docs/manual/chezmoi.md" \
       'chezmoi-daily' "$RUNTIME_ROOT/docs/20-reference/MANAGING-DOTFILES-WITH-CHEZMOI.md" \
       'chezmoi-reference' "$RUNTIME_ROOT/docs/20-reference/CHEZMOI-COMMAND-REFERENCE.md" \
@@ -200,6 +207,12 @@ open_docs() {
       commands) target="$RUNTIME_ROOT/docs/20-reference/COMMAND-REFERENCE.md" ;;
       chezmoi) target="$RUNTIME_ROOT/docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md" ;;
       handbook) target="$RUNTIME_ROOT/docs/manual/README.md" ;;
+      second-brain-guide) target="$RUNTIME_ROOT/docs/manual/second-brain.md" ;;
+      security) target="$RUNTIME_ROOT/docs/manual/security.md" ;;
+      1password) target="$RUNTIME_ROOT/docs/manual/1password.md" ;;
+      keychain) target="$RUNTIME_ROOT/docs/manual/keychain-ssh.md" ;;
+      ssh) target="$RUNTIME_ROOT/docs/manual/ssh-signing-and-recovery.md" ;;
+      software) target="$RUNTIME_ROOT/docs/20-reference/SOFTWARE-CATALOGUE.md" ;;
       chezmoi-guide) target="$RUNTIME_ROOT/docs/manual/chezmoi.md" ;;
       chezmoi-daily) target="$RUNTIME_ROOT/docs/20-reference/MANAGING-DOTFILES-WITH-CHEZMOI.md" ;;
       chezmoi-reference) target="$RUNTIME_ROOT/docs/20-reference/CHEZMOI-COMMAND-REFERENCE.md" ;;

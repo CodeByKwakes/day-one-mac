@@ -88,6 +88,12 @@ required_docs=(
   docs/README.md
   docs/manual/README.md
   docs/manual/chezmoi.md
+  docs/manual/second-brain.md
+  docs/manual/security.md
+  docs/manual/1password.md
+  docs/manual/keychain-ssh.md
+  docs/manual/ssh-signing-and-recovery.md
+  docs/20-reference/SOFTWARE-CATALOGUE.md
   docs/20-reference/DOCUMENTATION-COMMANDS.md
   docs/START-HERE.md
   docs/PROCESS-OVERVIEW.md

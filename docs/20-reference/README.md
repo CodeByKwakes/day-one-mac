@@ -25,6 +25,7 @@ phases that must all be completed before running the setup.
 | What should chezmoi manage, and why? | [Chezmoi concepts and safety boundaries](CHEZMOI-CONCEPTS-AND-BOUNDARIES.md) |
 | Where will files and tools live? | [Expected filesystem layout](EXPECTED-LAYOUT.md) |
 | Does Homebrew, Company Portal, the App Store, or another installer own this app? | [Application ownership](APPLICATION-OWNERSHIP.md) |
+| What does each app/formula do, and when is it selected? | [Software catalogue](SOFTWARE-CATALOGUE.md) |
 | How do I clone a private GitHub repository on a new Mac? | [Private GitHub repository access](GITHUB-PRIVATE-REPOSITORY.md) |
 | Where should Codex, Claude, VS Code, and standalone tasks work? | [AI workspaces](AI-WORKSPACES.md) |
 | What does an unfamiliar term mean? | [Plain-English glossary](GLOSSARY.md) |
