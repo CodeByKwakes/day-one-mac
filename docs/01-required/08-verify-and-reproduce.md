@@ -73,7 +73,7 @@ It records pass/fail results for:
 
 - Native Apple-silicon execution, Xcode or Command Line Tools readiness, and
   Homebrew at the Apple-silicon `/opt/homebrew` prefix.
-- Git identity, the `ghq` repository root, chezmoi, Starship, Raycast, Warp,
+- Git identity, selected developer folders and optional `ghq` root, chezmoi, Starship, Raycast, Warp,
   and the VS Code CLI.
 - The ownership source of every required catalogue item: 1Password, its CLI,
   Raycast, VS Code, Warp, and JetBrains Mono Nerd Font.
@@ -336,7 +336,7 @@ locations with `brew --prefix`, `chezmoi source-path`, `pnpm store path`, and
 
 - [ ] The project validator run by Phase 8 passes.
 - [ ] The machine verification report contains no failed gate.
-- [ ] `ghq root` reports the intended `~/Developer` root.
+- [ ] Selected folders exist; if ghq was selected, its roots match the [reviewed layout](../manual/developer-folders.md).
 - [ ] `day-one-mac runtime-status` reports `standalone runtime` and `Integrity: verified`.
 - [ ] `day-one-mac root` reports the active versioned runtime (or the intentional linked source for contributors).
 - [ ] `day-one-mac finalize --help` confirms that post-setup record

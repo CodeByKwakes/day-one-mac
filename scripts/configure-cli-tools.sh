@@ -107,7 +107,8 @@ is_installed() { grep -Fqx "$1" <<<"$INSTALLED_FORMULAE"; }
 print_catalogue() {
   local i last_group="" state
   ui_title '🧰' 'Optional command-line tools'
-  printf 'Required and not toggleable here: chezmoi, ghq, git, jq, ripgrep, starship, zsh\n'
+  printf 'Required and not toggleable here: chezmoi, git, jq, ripgrep, starship, zsh\n'
+  printf 'Optional ghq has its own selection: day-one-mac folders --help\n'
   for ((i=0; i<${#FORMULAE[@]}; i++)); do
     if [[ "${TOOL_GROUPS[$i]}" != "$last_group" ]]; then
       printf '\n%s\n' "${TOOL_GROUPS[$i]}"
@@ -139,7 +140,7 @@ interactive_select() {
     printf '  Up/Down or j/k: move   Space: toggle   a: all   n: none\n'
     printf '  Enter: review          q: quit\n\n'
     printf 'Required base — locked and not toggleable\n'
-    printf '  🔒 chezmoi  🔒 ghq  🔒 git  🔒 jq  🔒 ripgrep  🔒 starship  🔒 zsh\n'
+    printf '  🔒 chezmoi  🔒 git  🔒 jq  🔒 ripgrep  🔒 starship  🔒 zsh\n'
     last_group=""
     for ((i=0; i<${#FORMULAE[@]}; i++)); do
       if [[ "${TOOL_GROUPS[$i]}" != "$last_group" ]]; then printf '\n%s\n' "${TOOL_GROUPS[$i]}"; last_group="${TOOL_GROUPS[$i]}"; fi

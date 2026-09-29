@@ -178,7 +178,7 @@ AUTH_MODE=1password
 PRESET=recommended-productivity AUTH_MODE=https
 grep -Fqx visual-studio-code <<<"$(required_application_ids)" || fail 'default preset lost VS Code'
 # CLI preview must honor core all the way through installation and Phase 7.
-preview="$(HOME="$TEST_ROOT/preview-home" "$TEST_SCRIPT_DIR/setup.sh" --dry-run --preset core --auth-mode https --track 1 --stack node --name 'Test Developer' --email test@example.invalid --local-dotfiles --skip-macos-settings)"
+preview="$(HOME="$TEST_ROOT/preview-home" "$TEST_SCRIPT_DIR/setup.sh" --dry-run --preset core --auth-mode https --track 1 --stack node --layout none --ghq no --name 'Test Developer' --email test@example.invalid --local-dotfiles --skip-macos-settings)"
 grep -Fq 'Core preset: VS Code installation and configuration are not required.' <<<"$preview" || fail 'core CLI preview did not skip editor'
 if grep -Eq 'brew install --cask (visual-studio-code|warp|raycast|1password)' <<<"$preview"; then fail 'core preview installs desktop casks'; fi
 [[ ! -e "$TEST_ROOT/preview-home/.day-one-mac" ]] || fail 'preview wrote setup state'

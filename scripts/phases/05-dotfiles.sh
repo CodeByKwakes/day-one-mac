@@ -148,7 +148,8 @@ migrate_legacy_gitconfig_source() {
   source_entry="$(chezmoi source-path "$target")"
   [[ -n "$source_root" && -e "$source_entry" ]] || return 0
 
-  keys=$'user.name\nuser.email\ninit.defaultBranch\npull.ff\nfetch.prune\npush.autoSetupRemote\nghq.root\nalias.lg\ncore.excludesFile\nmerge.conflictStyle'
+  # ghq roots belong to the folder capability/user source; never flatten multiple roots.
+  keys=$'user.name\nuser.email\ninit.defaultBranch\npull.ff\nfetch.prune\npush.autoSetupRemote\nalias.lg\ncore.excludesFile\nmerge.conflictStyle'
   if [[ "$PRIMARY_IDE" == vscode ]]; then
     keys+=$'\ncore.editor\nmerge.tool\nmergetool.vscode.cmd\ndiff.tool\ndifftool.vscode.cmd'
   fi
@@ -476,7 +477,8 @@ phase_05() {
   # Keep the gate compatible with sources created before cmdifftext/cmmerge
   # were added. Those convenience aliases are in the current baseline, but a
   # visual-tool upgrade must not force-edit a user's versioned alias file.
-  clean_shell_check='command -v brew git ghq chezmoi starship day-one-mac >/dev/null && [[ "$(command -v zsh)" == /opt/homebrew/bin/zsh ]] && alias cdayone gs gd gds gl gremotes cm cmstatus cmdiff cmverify cmdoctor brewcheck brewout brewcleanpreview brewautopreview >/dev/null && [[ ":$PATH:" == *":$HOME/.local/bin:"* ]]'
+  clean_shell_check='command -v brew git chezmoi starship day-one-mac >/dev/null && [[ "$(command -v zsh)" == /opt/homebrew/bin/zsh ]] && alias cdayone gs gd gds gl gremotes cm cmstatus cmdiff cmverify cmdoctor brewcheck brewout brewcleanpreview brewautopreview >/dev/null && [[ ":$PATH:" == *":$HOME/.local/bin:"* ]]'
+  [[ "${GHQ_CHOICE:-}" != yes ]] || clean_shell_check+=' && command -v ghq >/dev/null'
   uses_node && clean_shell_check+=' && [[ "$PNPM_HOME" == "$HOME/Library/pnpm" && ":$PATH:" == *":$PNPM_HOME:"* ]]'
   env -i HOME="$HOME" USER="$(id -un)" LOGNAME="$(id -un)" TERM="${TERM:-xterm-256color}" PATH='/usr/bin:/bin:/usr/sbin:/sbin' SHELL="$homebrew_zsh" \
     "$homebrew_zsh" -lic "$clean_shell_check" || {

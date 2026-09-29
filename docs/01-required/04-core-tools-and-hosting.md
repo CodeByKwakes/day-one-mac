@@ -24,7 +24,7 @@ selected in Phase 1 passes both CLI and SSH authentication.
 - **Script-assisted route:** run `day-one-mac setup --phase 04`. The runner rechecks the required
 applications and command-line tools prepared by the
 [Installation Centre](INSTALLATION-CENTRE.md). It does not install them here.
-The phase creates the selected hosting folders, sets Git defaults, opens
+The phase creates the selected developer layout, sets Git defaults, opens
 provider login when required, and verifies SSH. If software is missing, rerun
 the Installation Centre and then return to Phase 4.
 
@@ -41,7 +41,7 @@ clear instruction if something has been removed or changed owner.
 
 | Type | Everyone | Conditional |
 |---|---|---|
-| Formulae | `chezmoi`, `ghq`, `git`, `jq`, `ripgrep`, `starship`, `zsh` | `fnm`, `pnpm` for Node; `uv` for Python; `gh` for Tracks 1 and 3; `azure-cli` for Tracks 2 and 3 |
+| Formulae | `chezmoi`, `git`, `jq`, `ripgrep`, `starship`, `zsh` | Opt-in `ghq`; `fnm`, `pnpm` for Node; `uv` for Python; `gh` for Tracks 1 and 3; `azure-cli` for Tracks 2 and 3 |
 | Applications/font | JetBrains Mono Nerd Font, Raycast, Visual Studio Code, Warp | Their preferred casks are `font-jetbrains-mono-nerd-font`, `raycast`, `visual-studio-code`, and `warp`; a valid external installation also passes |
 
 1Password and its CLI were prepared in the Installation Centre and configured
@@ -91,7 +91,7 @@ The equivalent manual installations below are recovery commands for the
 Installation Centre. Do not run them over a company-managed application:
 
 ```bash
-brew install chezmoi ghq git jq ripgrep starship zsh
+brew install chezmoi git jq ripgrep starship zsh
 brew install --cask \
   font-jetbrains-mono-nerd-font \
   raycast \
@@ -117,33 +117,15 @@ launchers.
 
 ## Step 4.2 — Create the development folders
 
-The base layout separates repositories by hosting provider while keeping
-sandbox and archive work provider-neutral:
+Choose **No predefined layout**, **Repository-oriented**, **Purpose-oriented**,
+or **Keep existing**, independently of the hosting track. All create/reuse
+`~/Developer`; only Purpose-oriented adds `Projects`, `Sandbox`, `Resources`,
+and `Archive`. No choice moves existing repositories.
 
-```text
-~/Developer/
-├── github.com/       Tracks 1 and 3 only
-├── dev.azure.com/    Tracks 2 and 3 only
-├── _Projectless/     optional — created only if you need it (see below)
-├── _sandbox/         disposable experiments
-└── _archive/         retained but inactive projects
-```
-
-Create the common folders:
-
-```bash
-mkdir -p ~/Developer/{_sandbox,_archive}
-```
-
-Then create only the selected provider roots:
-
-```bash
-mkdir -p ~/Developer/github.com      # Tracks 1 and 3
-mkdir -p ~/Developer/dev.azure.com   # Tracks 2 and 3
-```
-
-Repositories normally live below an owner or organization directory, for
-example `~/Developer/github.com/example/project`.
+Follow [Developer folders and optional ghq](../manual/developer-folders.md) for
+the full manual walkthrough, where to place different kinds of work, and the
+standalone CLI. ghq is a separate opt-in. Existing setups must explicitly review
+these choices; earlier phase completion does not select a layout or ghq.
 
 Do not create `_Projectless` unless you use an AI client or another tool for
 file-based tasks that do not yet belong to a repository. Optional Module 10
@@ -173,7 +155,6 @@ git config --global init.defaultBranch main
 git config --global pull.ff only
 git config --global fetch.prune true
 git config --global push.autoSetupRemote true
-git config --global ghq.root "$HOME/Developer"
 git config --global core.excludesFile "$HOME/.gitignore_global"
 git config --global merge.conflictStyle zdiff3
 ```
@@ -238,19 +219,18 @@ git config --global --list --show-origin
 Use repository-local `git config user.email ...` when one project needs a
 different identity. Do not hardcode credentials or access tokens in Git config.
 
-Verify the repository manager and configured root:
+Only if ghq was selected, verify the repository manager and configured roots:
 
 ```bash
 ghq root
-ghq list
+ghq root --all
+ghq list -p
 ```
 
-`ghq root` must print the expanded absolute path — `/Users/your-name/Developer`,
-not the literal text `~/Developer`. A GitHub repository
-cloned with `ghq get github.com/OWNER/REPOSITORY` is then placed below
-`~/Developer/github.com/OWNER/REPOSITORY`. Azure clone URLs may contain a
-provider-specific path, so confirm the destination before moving or renaming
-an Azure checkout.
+The primary root must match your selected layout: `~/Developer` for none or
+repository, `~/Developer/Projects` for purpose, or the confirmed primary root for
+Keep existing. The command prints an absolute path. Use the folder guide to
+review multiple roots, chezmoi ownership, and provider-specific clone paths.
 
 ## Step 4.4 — Authenticate GitHub on Tracks 1 and 3
 
@@ -458,10 +438,10 @@ to the Installation Centre instead of starting another installer here.
 
 ## Phase 4 completion checklist 🚦
 
-- [ ] `git`, `ghq`, `chezmoi`, `jq`, `rg`, and `starship` are available.
+- [ ] `git`, `chezmoi`, `jq`, `rg`, and `starship` are available; `ghq` only if selected.
 - [ ] The ownership check reports Raycast, Warp, VS Code, and the Nerd Font as ready.
 - [ ] Every externally installed required app is identified as external and was left unchanged.
-- [ ] `ghq root` prints `~/Developer` as an absolute path.
+- [ ] Selected folders exist; if ghq is selected, its primary/all roots match the reviewed layout.
 - [ ] `fnm` and `pnpm` exist for `node` or `both`.
 - [ ] `uv` exists for `python` or `both`.
 - [ ] Only provider folders required by the selected track were created.

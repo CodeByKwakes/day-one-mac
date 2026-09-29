@@ -37,7 +37,7 @@ printed artifact path. Review their contents before activating them:
 
 | Bundle | Functions | Behaviour after you deliberately invoke a function |
 |---|---|---|
-| `navigation.zsh` | `day_one_cdev`, `day_one_gs` | Change to the ghq root, or show Git status |
+| `navigation.zsh` | `day_one_cdev`, `day_one_gs` | Change to `~/Developer` without requiring ghq, or show Git status |
 | `packages.zsh` | `day_one_pm_for_dir`, `day_one_pm_frozen_plan` | Identify npm/pnpm, or print a frozen-install proposal without executing it |
 
 The package inspector parses `package.json` as JSON; it never loads project
@@ -119,7 +119,7 @@ shown below. Add `cdev` or the Docker group only if those workflows are useful:
 
 ```zsh
 # Repositories and Git
-alias cdev='cd "$(ghq root)"'
+alias cdev='cd "$HOME/Developer"'
 alias cdayone='cd "$(day-one-mac root)"'
 alias gs='git status --short --branch'
 alias gd='git diff'

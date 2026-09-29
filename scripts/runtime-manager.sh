@@ -185,6 +185,7 @@ open_docs() {
       'ssh' "$RUNTIME_ROOT/docs/manual/ssh-signing-and-recovery.md" \
       'software' "$RUNTIME_ROOT/docs/20-reference/SOFTWARE-CATALOGUE.md" \
       'chezmoi-guide' "$RUNTIME_ROOT/docs/manual/chezmoi.md" \
+      'folders' "$RUNTIME_ROOT/docs/manual/developer-folders.md" \
       'chezmoi-daily' "$RUNTIME_ROOT/docs/20-reference/MANAGING-DOTFILES-WITH-CHEZMOI.md" \
       'chezmoi-reference' "$RUNTIME_ROOT/docs/20-reference/CHEZMOI-COMMAND-REFERENCE.md" \
       'chezmoi-concepts' "$RUNTIME_ROOT/docs/20-reference/CHEZMOI-CONCEPTS-AND-BOUNDARIES.md" \
@@ -214,6 +215,7 @@ open_docs() {
       ssh) target="$RUNTIME_ROOT/docs/manual/ssh-signing-and-recovery.md" ;;
       software) target="$RUNTIME_ROOT/docs/20-reference/SOFTWARE-CATALOGUE.md" ;;
       chezmoi-guide) target="$RUNTIME_ROOT/docs/manual/chezmoi.md" ;;
+      folders) target="$RUNTIME_ROOT/docs/manual/developer-folders.md" ;;
       chezmoi-daily) target="$RUNTIME_ROOT/docs/20-reference/MANAGING-DOTFILES-WITH-CHEZMOI.md" ;;
       chezmoi-reference) target="$RUNTIME_ROOT/docs/20-reference/CHEZMOI-COMMAND-REFERENCE.md" ;;
       chezmoi-concepts) target="$RUNTIME_ROOT/docs/20-reference/CHEZMOI-CONCEPTS-AND-BOUNDARIES.md" ;;

@@ -15,6 +15,7 @@ and recovery. This is not another mandatory checklist.
   select only needed extras, then use the chapters below. Do not repeat the
   fully manual bootstrap over an already configured Mac.
 - **Maintaining dotfiles:** start with the [chezmoi learning path](chezmoi.md).
+- **Organising projects:** choose one of [four developer layouts and optional ghq](developer-folders.md), with a fully manual route or independent CLI assistance.
 - **Building a knowledge system:** follow the [Second Brain walkthrough](second-brain.md)
   for Obsidian or Notion, integrations, daily use and recovery.
 - **Accounts, keys and signing:** choose the [security learning path](security.md),

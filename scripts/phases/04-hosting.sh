@@ -4,6 +4,7 @@
 phase_04() {
   local global_ignore global_ignore_content vscode_cli vscode_command
   local app_id formula ssh_output
+  local FOLDERS_PHASE_PREPARED=1
   ui_title '4️⃣' 'Phase 04 — Core tools and hosting'
   info "Guide: $(phase_doc 04)"
   phase_next "required tools and application ownership checks" "Complete the Installation Centre, then rerun Phase 4."
@@ -37,6 +38,7 @@ phase_04() {
   else
     while IFS= read -r formula; do
       [[ -n "$formula" ]] || continue
+      if [[ "$formula" == ghq ]] && have ghq; then continue; fi
       brew list --formula "$formula" >/dev/null 2>&1 || {
         err "required formula is missing: $formula"
         return "$EX_GATE"
@@ -46,11 +48,7 @@ phase_04() {
   phase_step_done "required command-line tools available"
 
   phase_next "development folders and Git defaults" "Review Steps 4.2–4.3 and correct the Git identity or ghq root."
-  create_directory "$HOME/Developer"
-  create_directory "$HOME/Developer/_sandbox"
-  create_directory "$HOME/Developer/_archive"
-  uses_github && create_directory "$HOME/Developer/github.com"
-  uses_azure && create_directory "$HOME/Developer/dev.azure.com"
+  folders_apply || return $?
 
   if [[ "$DRY_RUN" != 1 ]]; then record_path_before_write "$HOME/.gitconfig"; fi
   run git config --global user.name "$GIT_NAME"
@@ -59,7 +57,6 @@ phase_04() {
   run git config --global pull.ff only
   run git config --global fetch.prune true
   run git config --global push.autoSetupRemote true
-  run git config --global ghq.root "$HOME/Developer"
   run git config --global alias.lg "log --color --graph --decorate --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %C(bold blue)<%an>%Creset' --abbrev-commit"
   global_ignore="$HOME/.gitignore_global"
   global_ignore_content=$'# Files created by macOS or temporary terminal editors.\n.DS_Store\n.AppleDouble\n.LSOverride\n._*\n.Trashes\n*.swp\n*.swo\n*~\n'
@@ -90,12 +87,11 @@ phase_04() {
   if [[ "$DRY_RUN" == 1 ]]; then
     uses_github && print_command gh auth login --git-protocol "$(git_protocol_for_mode)" --web --skip-ssh-key
     uses_azure && print_command az login
-    print_command ghq root
+    [[ "$GHQ_CHOICE" != yes ]] || print_command ghq root
     return 0
   fi
-  [[ "$(ghq root 2>/dev/null | sed -n '1p')" == "$HOME/Developer" ]] || {
-    err "ghq root is not $HOME/Developer"; return "$EX_GATE"; }
-  phase_step_done "development folders, Git defaults and ghq root configured"
+  folders_check || return $?
+  phase_step_done "selected development folders, Git defaults and optional ghq verified"
   phase_next "selected hosting account authentication" "Finish the browser sign-in, then confirm the matching SSH public key is registered with the provider."
   if uses_github; then
     record_path_before_write "$HOME/.config/gh"

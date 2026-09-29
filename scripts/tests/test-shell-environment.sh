@@ -200,13 +200,20 @@ run_gate() {
     _ "$home/.config/zsh/aliases.zsh" "$1" "${2:-}" >/dev/null 2>&1
 }
 run_gate "$check_body" || fail_test 'valid shell prerequisites were rejected'
-for missing in brew git ghq chezmoi starship zsh day-one-mac; do
+for missing in brew git chezmoi starship zsh day-one-mac; do
   missing_path="$prefix/bin/$missing"
   [[ "$missing" != day-one-mac ]] || missing_path="$home/.local/bin/$missing"
   mv "$missing_path" "$TEST_ROOT/hidden-command"
   if run_gate "$check_body"; then fail_test "shell gate ignored missing $missing"; fi
   mv "$TEST_ROOT/hidden-command" "$missing_path"
 done
+ghq_check="$(sed -n "s/^  .* || clean_shell_check+='\\(.*\\)'$/\\1/p" "$SCRIPT_DIR/phases/05-dotfiles.sh")"
+[[ -n "$ghq_check" ]] || fail_test 'optional ghq predicate extraction failed'
+run_gate "$check_body$ghq_check" || fail_test 'selected ghq was rejected'
+mv "$prefix/bin/ghq" "$TEST_ROOT/hidden-ghq"
+run_gate "$check_body" || fail_test 'unselected ghq was required'
+if run_gate "$check_body$ghq_check"; then fail_test 'selected ghq was not required'; fi
+mv "$TEST_ROOT/hidden-ghq" "$prefix/bin/ghq"
 if run_gate "$check_body" gs; then fail_test 'shell gate ignored a missing alias'; fi
 # Make the final Node predicate pass while a preceding alias predicate fails.
 run_gate "$check_body$node_check" || fail_test 'valid Node shell prerequisites were rejected'

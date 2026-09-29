@@ -182,6 +182,7 @@ case "${1:-}" in
     ;;
   rollback) shift; exec "$PROJECT_ROOT/scripts/rollback-recorded-setup.sh" "$@" ;;
   setup) shift; exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" "$@" ;;
+  folders) shift; exec /bin/bash "$PROJECT_ROOT/scripts/configure-folders.sh" "$@" ;;
   help|-h|--help)
     printf '%s\n' \
       'day-one-mac commands:' \
@@ -197,6 +198,7 @@ case "${1:-}" in
       '' \
       'Required setup and inspection:' \
       '  setup [options]   run or inspect the eight required phases' \
+      '  folders           standalone layouts and opt-in ghq: --plan | --apply | --check | --resume' \
       '                    --plan | --apply | --check | --resume; --phase NN selects phases' \
       '  shell-status      inspect zsh, PATH, completions and shell tools' \
       '  safety-report     create the Stage 0 read-only safety report' \

@@ -39,6 +39,7 @@ try {
   assert.match(run(['second-brain']), /second-brain\/README.md/);
   const handbookTopics = {
     'second-brain-guide': 'docs/manual/second-brain.md',
+    folders: 'docs/manual/developer-folders.md',
     security: 'docs/manual/security.md',
     '1password': 'docs/manual/1password.md',
     keychain: 'docs/manual/keychain-ssh.md',
@@ -70,7 +71,7 @@ try {
     .split('\n').filter(line => line && !line.startsWith('#')).map(line => line.split('\t'));
   assert.deepEqual(optionalRows.map(row => row.slice(0, 3)), optionalFormulae);
   const selectedFormulae = spawnSync('/bin/bash', ['-c',
-    'source "$1/scripts/setup.sh"; for TRACK in 1 2 3; do for STACK in node python both; do required_formulae; done; done',
+    'source "$1/scripts/setup.sh"; for GHQ_CHOICE in no yes; do for TRACK in 1 2 3; do for STACK in node python both; do required_formulae; done; done; done',
     'catalogue-fixture', fixture], {
     env: { HOME: home, PATH: '/usr/bin:/bin:/usr/sbin:/sbin',
       DAY_ONE_MAC_STATE_ROOT: path.join(home, '.day-one-mac'), DAY_ONE_MAC_DISABLE_BREW_DISCOVERY: '1' },

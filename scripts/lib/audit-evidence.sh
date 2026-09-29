@@ -24,6 +24,7 @@ day_one_audit_evidence() {
   done
   # Hash only explicit, non-secret setup records. No directory-wide credential scan.
   for file in track stack preset auth-mode primary-ide optional-modules database-services \
+      folder-layout ghq-choice folder-ghq-root \
       optional-cli-packages software-10-clients software-16.tsv install-manifest.tsv \
       artifact-11-selection.tsv artifact-12-selection.tsv artifact-14-selection.tsv \
       artifact-22-selection.tsv omniroute-selection.tsv artifact-15-selection.tsv \

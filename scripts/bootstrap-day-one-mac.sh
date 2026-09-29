@@ -11,6 +11,7 @@ source "$HERE/lib/application-ownership.sh"
 source "$HERE/lib/platform.sh"
 source "$HERE/lib/state.sh"
 source "$HERE/lib/operation-lock.sh"
+source "$HERE/lib/developer-folders.sh"
 ORIGINAL_ARGS=("$@")
 
 STATE_ROOT="$(day_one_state_root)"
@@ -58,6 +59,9 @@ Direct setup:
   --phase NN                   run one required phase; repeatable
   --track 1|2|3               1 GitHub; 2 Azure DevOps; 3 both
   --stack node|python|both    language toolchain selection
+  --layout LAYOUT             none, repository, purpose, or existing
+  --ghq no|yes                optional ghq (not preselected)
+  --ghq-root PATH             confirmed primary root for existing + ghq yes
   --name "Full Name"          Git author name
   --email ADDRESS             primary Git author email
   --preset PRESET            core or recommended-productivity (default)
@@ -362,6 +366,7 @@ print_review_body() {
   printf 'Required setup — preset: %s\n' "$PRESET"
   printf '  Hosting:   Track %s — %s\n' "$TRACK" "$(track_label "$TRACK")"
   printf '  Stack:     %s\n' "$(stack_label "$STACK")"
+  printf '  Folders:   %s; ghq: %s; existing root: %s\n' "$FOLDER_LAYOUT" "$GHQ_CHOICE" "$FOLDER_GHQ_ROOT"
   printf '  Git name:  %s\n' "$GIT_NAME"
   printf '  Git email: %s\n' "$GIT_EMAIL"
   if [[ "$PRIMARY_IDE" == vscode ]]; then
@@ -461,6 +466,7 @@ write_wizard_report() {
     printf -- '- Saved: `%s`\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
     printf -- '- Hosting: `Track %s — %s`\n' "$TRACK" "$(track_label "$TRACK")"
     printf -- '- Stack: `%s`\n' "$(stack_label "$STACK")"
+    printf -- '- Developer layout: `%s`; ghq: `%s`; existing root: `%s`\n' "$FOLDER_LAYOUT" "$GHQ_CHOICE" "$FOLDER_GHQ_ROOT"
     printf -- '- Git name: `%s`\n' "$GIT_NAME"
     printf -- '- Git email: `%s`\n' "$GIT_EMAIL"
     printf -- '- Primary IDE: `%s`\n' "$PRIMARY_IDE"
@@ -501,6 +507,7 @@ save_wizard_choices() {
   save_state_value track "$TRACK"
   save_state_value track-schema-version 2
   save_state_value stack "$STACK"
+  folders_save_choices || return $?
   save_state_value git-name "$GIT_NAME"
   save_state_value git-email "$GIT_EMAIL"
   save_state_value preset "$PRESET"
@@ -524,6 +531,34 @@ choose_track() {
   SINGLE_LABELS=('Track 1 — GitHub' 'Track 2 — Azure DevOps' 'Track 3 — GitHub + Azure DevOps')
   select_one 'Choose the hosting services this Mac will use:' "$default_index"
   TRACK="$SINGLE_RESULT"
+}
+
+choose_folders() {
+  local default_index=0
+  case "$FOLDER_LAYOUT" in repository) default_index=1 ;; purpose) default_index=2 ;; existing) default_index=3 ;; esac
+  SINGLE_VALUES=(none repository purpose existing)
+  SINGLE_LABELS=(
+    'No predefined layout — create/reuse ~/Developer only'
+    'Repository-oriented — host/owner/repository under ~/Developer'
+    'Purpose-oriented — Projects, Sandbox, Resources, Archive'
+    'Keep existing — preserve roots and all repository locations'
+  )
+  select_one 'Choose future placement; no repositories will be moved:' "$default_index"
+  FOLDER_LAYOUT="$SINGLE_RESULT"
+  SINGLE_VALUES=(no yes)
+  SINGLE_LABELS=('Do not select ghq — leave any existing copy and settings untouched' 'Select ghq — install if missing; review existing settings before configuring')
+  select_one 'Use ghq for repository cloning and discovery?' 0
+  GHQ_CHOICE="$SINGLE_RESULT"
+  FOLDER_GHQ_ROOT=''
+  if [[ "$GHQ_CHOICE" == yes && "$FOLDER_LAYOUT" == existing ]]; then
+    printf '\nReview ghq root --all in another terminal. No roots will be rewritten.\n'
+    while :; do
+      printf 'Confirmed absolute primary root (the output of ghq root): '
+      IFS= read -r FOLDER_GHQ_ROOT || return 1
+      [[ "$FOLDER_GHQ_ROOT" == /* && "$FOLDER_GHQ_ROOT" != *[$'\t\r\n']* ]] && break
+      warn 'Enter an absolute, single-line path.'
+    done
+  fi
 }
 
 choose_stack() {
@@ -827,6 +862,7 @@ configure_wizard() {
   local default_name default_email
   choose_track
   choose_stack
+  choose_folders
   clear_screen
   ui_banner '🔐' 'Git identity'
   printf 'This identity becomes the global default. Advanced Module 18 adds multiple identities later.\n\n'
@@ -845,6 +881,8 @@ configure_wizard() {
 
 has_saved_core_choices() {
   [[ "$(state_value track-schema-version)" == 2 ]] \
+    && [[ "$FOLDER_LAYOUT" =~ ^(none|repository|purpose|existing)$ ]] \
+    && [[ "$GHQ_CHOICE" =~ ^(yes|no)$ ]] \
     && [[ "$(state_value track)" =~ ^[123]$ ]] \
     && [[ "$(state_value stack)" =~ ^(node|python|both)$ ]] \
     && [[ "$DOTFILES_VERSIONING" =~ ^(git|local)$ ]] \
@@ -855,6 +893,9 @@ has_saved_core_choices() {
 load_saved_choices() {
   TRACK="$(state_value track)"
   STACK="$(state_value stack)"
+  FOLDER_LAYOUT="$(state_value folder-layout)"
+  GHQ_CHOICE="$(state_value ghq-choice)"
+  FOLDER_GHQ_ROOT="$(state_value folder-ghq-root)"
   GIT_NAME="$(state_value git-name)"
   GIT_EMAIL="$(state_value git-email)"
   PRESET="$(state_value preset)"
@@ -948,6 +989,8 @@ run_wizard() {
   printf '\nStarting the required setup. After Phase 2, one Installation Centre prepares all required software before configuration.\n'
 
   setup_args=(--guided --track "$TRACK" --stack "$STACK" --name "$GIT_NAME" --email "$GIT_EMAIL" --primary-ide "$PRIMARY_IDE")
+  setup_args+=(--layout "$FOLDER_LAYOUT" --ghq "$GHQ_CHOICE")
+  [[ -z "$FOLDER_GHQ_ROOT" ]] || setup_args+=(--ghq-root "$FOLDER_GHQ_ROOT")
   if [[ -n "$DOTFILES_REPO" ]]; then setup_args+=(--dotfiles-repo "$DOTFILES_REPO")
   else setup_args+=(--new-dotfiles)
   fi

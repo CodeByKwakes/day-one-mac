@@ -701,8 +701,6 @@ section. The required values are equivalent to:
     excludesFile = /Users/your-name/.gitignore_global
 [merge]
     conflictStyle = zdiff3
-[ghq]
-    root = /Users/your-name/Developer
 ```
 
 When VS Code was selected as the primary IDE, additional `core.editor`,
@@ -722,10 +720,14 @@ git config --global --get fetch.prune
 git config --global --get push.autoSetupRemote
 git config --global --get core.excludesFile
 git config --global --get merge.conflictStyle
-git config --global --get ghq.root
 ```
 
 ### `~/.gitignore_global`
+
+ghq is optional. Preserve its reviewed configuration in the owning source;
+do not copy a universal root into every Mac's Git config. See the
+[manual folder and ghq guide](../manual/developer-folders.md) for plain files,
+chezmoi templates, and multi-root setups.
 
 The managed baseline contains only operating-system and temporary editor
 files. Add project-specific patterns to the repository's own `.gitignore`.
@@ -897,9 +899,9 @@ line from Step 5.3 is absent.
 Then verify:
 
 ```bash
-command -v brew git ghq chezmoi starship day-one-mac
+command -v brew git chezmoi starship day-one-mac
 command -v zsh # must print /opt/homebrew/bin/zsh
-ghq root
+ghq root                 # only if selected; compare with the reviewed layout
 day-one-mac root
 chezmoi doctor
 chezmoi source-path

@@ -72,7 +72,7 @@ Do not run commands against real projects solely as a presence check.
 | Formula | Purpose | Selected when | Command | Configuration guide |
 |---|---|---|---|---|
 | `chezmoi` | Track and render portable dotfiles into the home directory | Always | `chezmoi` | [Learning path](../manual/chezmoi.md); review diffs before apply |
-| `ghq` | Keep cloned repositories in a predictable directory layout | Always | `ghq` | [Phase 4](../01-required/04-core-tools-and-hosting.md); choose repository root |
+| `ghq` | Locate and clone repositories beneath reviewed roots | Only when opted in | `ghq` | [Developer folders](../manual/developer-folders.md); independent of hosting track and chezmoi |
 | `git` | Version control for repositories and dotfiles | Always | `git` | [Phase 4](../01-required/04-core-tools-and-hosting.md); author identity and separate signing |
 | `jq` | Read and transform JSON | Always | `jq` | [Foundation](../01-required/02-command-line-foundation.md); no account needed |
 | `ripgrep` | Search file contents efficiently | Always | `rg` | [Core tools](../01-required/04-core-tools-and-hosting.md); no account needed |

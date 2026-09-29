@@ -278,8 +278,11 @@ detach_archives=("$detach_recovery"/Day-One-Mac-Detached-*)
 (cd "${detach_archives[0]}" && shasum -a 256 -c SHA256SUMS.txt >/dev/null)
 
 dry_output="$TEST_ROOT/dry-run.txt"
+printf 'repository\n' > "$TEST_STATE_ROOT/folder-layout"
+printf 'no\n' > "$TEST_STATE_ROOT/ghq-choice"
 HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE_ROOT" \
   "$SCRIPT_DIR/bootstrap-day-one-mac.sh" --dry-run --track 3 --stack both \
+  --layout repository --ghq no \
   --name 'Test User' --email test@example.com --yes > "$dry_output"
 grep -Fq 'Day One Mac guided setup — 8 required phases' "$dry_output"
 grep -Fq 'Optional databases, AI, MCP and VS Code profiles are not run here.' "$dry_output"
@@ -290,7 +293,7 @@ grep -Fq 'would require a clean, pushed, private GitHub or Azure DevOps dotfiles
 grep -Fq 'would run the optional macOS Settings Wizard before Phase 2' "$dry_output"
 grep -Fq '$ '"$SCRIPT_DIR"'/configure-macos-settings.sh --wizard' "$dry_output"
 grep -Fq '$ brew install starship' "$dry_output"
-grep -Fq '$ brew install ghq' "$dry_output"
+! grep -Fq '$ brew install ghq' "$dry_output"
 grep -Fq '$ brew install gh' "$dry_output"
 grep -Fq '$ brew install azure-cli' "$dry_output"
 grep -Fq '$ brew install pnpm' "$dry_output"

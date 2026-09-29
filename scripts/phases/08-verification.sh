@@ -267,7 +267,7 @@ phase_08() {
   report_check "Xcode or Command Line Tools readiness" verify_apple_developer_tools
   report_check "Apple-silicon Homebrew prefix" bash -c '[[ "$(brew --prefix 2>/dev/null)" == /opt/homebrew ]]'
   report_check "Git identity" git config --global user.email
-  report_check "ghq repository root" bash -c '[[ "$(ghq root 2>/dev/null | sed -n "1p")" == "$HOME/Developer" ]]'
+  report_check "selected developer folders and optional ghq" folders_check
   report_check "Day One Mac project root" bash -c '[[ "$(day-one-mac root)" == "$1" ]]' _ "$PROJECT_DIR"
   report_check "post-setup finalisation command" day-one-mac finalize --help
   report_check "advanced setup command" day-one-mac advanced --list

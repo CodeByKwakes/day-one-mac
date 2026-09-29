@@ -73,6 +73,7 @@ updates and rollback.
 | `day-one-mac docs export --format html\|markdown --output NEW_DIRECTORY` | `./runtime-manager.sh docs export …` | Export bundled project guides and examples to a new directory. See [contents, printing and safety](DOCUMENTATION-COMMANDS.md). |
 | `day-one-mac shell-status` | `./shell-status.sh` | Run a read-only check of Homebrew zsh, startup files, clean-shell PATHs, completions and selected tools. |
 | `day-one-mac setup [options]` | `./bootstrap-day-one-mac.sh [options]` | Start, resume, inspect, or reset the required eight-phase setup. |
+| `day-one-mac folders --plan\|--apply\|--check\|--resume` | `/bin/bash ./configure-folders.sh [options]` | Choose `--layout none\|repository\|purpose\|existing` and `--ghq no\|yes`; independently create/check folders without other phases. See [folder choices, prerequisites and recovery](../manual/developer-folders.md). |
 | `day-one-mac install [options]` | `./bootstrap-day-one-mac.sh --install-centre [options]` | Install or revalidate required applications and command-line tools after Phase 2. |
 | `day-one-mac applications [options]` | `./application-status.sh [options]` | Check required or optional application ownership and resolve selected missing apps. |
 | `day-one-mac ssh-pin [github\|azure\|both]` | `./bootstrap-day-one-mac.sh --ssh-pin …` | Export reviewed 1Password SSH public keys to stable `~/.ssh` public-key files. |
@@ -139,6 +140,9 @@ Important setup selectors include:
 ```text
 --track 1|2|3
 --stack node|python|both
+--layout none|repository|purpose|existing
+--ghq no|yes
+--ghq-root /absolute/primary/root
 --name "Full Name"
 --email ADDRESS
 --preset core|recommended-productivity

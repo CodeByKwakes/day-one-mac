@@ -161,9 +161,13 @@ Choose exactly one:
 
 | Track | Select when | What later phases do |
 |---|---|---|
-| **1 — GitHub** | Repositories are hosted only on GitHub | Install `gh`, create `~/Developer/github.com`, and verify GitHub SSH |
-| **2 — Azure DevOps 🏢** | Work is hosted only in Azure DevOps | Install `az`, create only the Azure host folder, and omit every GitHub gate |
-| **3 — GitHub + Azure DevOps 🏢** | This Mac uses both providers | Install `gh` and `az`, create both host folders, and verify both |
+| **1 — GitHub** | Repositories are hosted only on GitHub | Install `gh` and verify GitHub SSH |
+| **2 — Azure DevOps 🏢** | Work is hosted only in Azure DevOps | Install `az` and omit every GitHub gate |
+| **3 — GitHub + Azure DevOps 🏢** | This Mac uses both providers | Install `gh` and `az` and verify both |
+
+Choose the [developer layout and optional ghq](../manual/developer-folders.md)
+separately. Four layouts are available; no ghq installation is preselected.
+Existing folders and repositories are never moved by this choice.
 
 The track controls hosting only. It does not force Docker, AI clients, the
 OmniRoute gateway, MCP, or VS Code profiles.

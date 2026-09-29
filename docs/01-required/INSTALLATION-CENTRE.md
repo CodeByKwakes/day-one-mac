@@ -59,8 +59,12 @@ owned by its original installer.
 Everyone receives:
 
 ```text
-chezmoi  ghq  git  jq  ripgrep  starship  zsh
+chezmoi  git  jq  ripgrep  starship  zsh
 ```
+
+ghq is installed only when explicitly selected alongside the developer layout.
+An existing compatible copy is reused without adopting its package ownership.
+See [folder choices and optional ghq](../manual/developer-folders.md).
 
 The saved choices add only the relevant tools:
 
