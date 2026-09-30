@@ -3,6 +3,25 @@
 
 function documentationRenderer(markdownIt, documents, currentPath) {
   const md = markdownIt({ html: false, linkify: false, typographer: false });
+  // Recognize only a list item's leading Markdown task marker. These symbols
+  // describe the source document; they are not controls or live setup evidence.
+  md.core.ruler.after('inline', 'document_checklists', state => {
+    for (let index = 2; index < state.tokens.length; index++) {
+      const token = state.tokens[index];
+      if (token.type !== 'inline' || state.tokens[index - 1].type !== 'paragraph_open'
+          || state.tokens[index - 2].type !== 'list_item_open') continue;
+      if (!/^\[([ xX])\](?:\s|$)/.test(token.content)) continue;
+      const first = token.children?.[0];
+      const match = first?.type === 'text' && first.content.match(/^\[([ xX])\](?:[ \t]+|$)/);
+      if (!match) continue;
+      const checked = match[1].toLowerCase() === 'x';
+      const marker = new state.Token('html_inline', '', 0);
+      marker.content = `<span class="task-marker${checked ? ' task-checked' : ''}" role="img" aria-label="${checked ? 'Checked' : 'Unchecked'} checklist item (documented state)"></span>`;
+      first.content = first.content.slice(match[0].length);
+      token.children.unshift(marker);
+      state.tokens[index - 2].attrJoin('class', 'task-item');
+    }
+  });
   const slugs = new Map();
   md.renderer.rules.heading_open = (tokens, index, options, env, self) => {
     const base = tokens[index + 1].content.toLowerCase().replace(/[^a-z0-9 _-]/g, '').replace(/[ \t]/g, '-');

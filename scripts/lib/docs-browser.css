@@ -69,6 +69,9 @@ h4 { margin: 1.5rem 0 .5rem; }
 h1, h2, h3, h4 { scroll-margin-top: calc(var(--header-height) + 1.5rem); }
 p, ul, ol { margin: 1rem 0; }
 article li + li { margin-top: .35rem; }
+.task-item { list-style: none; }
+.task-marker { display: inline-block; position: relative; width: .9em; height: .9em; margin-left: -1.35em; margin-right: .45em; border: 1px solid currentColor; border-radius: .1em; vertical-align: -.05em; color: var(--muted); }
+.task-checked::after { content: ''; position: absolute; left: .23em; top: .06em; width: .25em; height: .5em; border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(45deg); }
 hr { margin: 2rem 0; border: 0; border-top: 1px solid var(--line); }
 .heading-link { margin-left: .5rem; color: var(--muted); font-size: .7em; font-weight: 400; text-decoration: none; opacity: 0; }
 :is(h2, h3):hover .heading-link, .heading-link:focus-visible { opacity: 1; }

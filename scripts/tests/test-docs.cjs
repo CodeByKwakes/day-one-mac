@@ -145,6 +145,17 @@ try {
   assert.ok(!rendered.includes('<script>'));
   assert.ok(!rendered.includes('<img'));
   assert.ok(!rendered.includes('href="javascript:'));
+  const checklist = render('- [ ] **Review** [the guide](README.md)\n- [x] Recorded\n  - [X] Nested\n- Ordinary item\n\n1. [ ] Ordered item\n\n- [ ] Loose item\n\n  Another paragraph with [ ] literal text.\n\n[ ] Not a list\n\n- `[ ]` Inline code\n- \\[ ] Escaped marker\n\n```sh\n- [ ] Code example\n```');
+  assert.equal((checklist.match(/class="task-item"/g) || []).length, 5);
+  assert.equal((checklist.match(/class="task-marker task-checked"/g) || []).length, 2);
+  assert.match(checklist, /role="img" aria-label="Unchecked checklist item \(documented state\)"/);
+  assert.match(checklist, /<strong>Review<\/strong>/);
+  assert.match(checklist, /<li>Ordinary item<\/li>/);
+  assert.match(checklist, /<p>\[ \] Not a list<\/p>/);
+  assert.match(checklist, /<code>\[ \]<\/code>/);
+  assert.match(checklist, /<li>\[ \] Escaped marker<\/li>/);
+  assert.match(checklist, /- \[ \] Code example/);
+  assert.ok(!/<input|role="checkbox"|tabindex=/.test(checklist), 'Checklist symbols are non-interactive and do not imply saved progress');
 
   // Check every rendered local Markdown link, including relative paths and anchors.
   const pages = new Map(Array.from(embedded, ([file, text]) => [file, documentationRenderer(markdownIt, embedded, file).render(text)]));
