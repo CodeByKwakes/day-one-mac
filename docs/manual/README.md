@@ -20,6 +20,9 @@ and recovery. This is not another mandatory checklist.
   for Obsidian or Notion, integrations, daily use and recovery.
 - **Accounts, keys and signing:** choose the [security learning path](security.md),
   then [1Password](1password.md) or [Apple Keychain](keychain-ssh.md).
+- **Private npm packages:** use [Azure Artifacts npm authentication](azure-artifacts-npm.md)
+  only if your project needs that feed. Setup, token renewal, and credential
+  handling remain manual; Git/SSH authentication is separate.
 - **Choosing software:** use the [application and formula catalogue](../20-reference/SOFTWARE-CATALOGUE.md)
   for descriptions, selection rules, ownership and manual follow-up.
 

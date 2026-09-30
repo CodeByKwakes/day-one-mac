@@ -102,6 +102,30 @@ try {
   const embedded = new Map(Array.from(html.matchAll(/class="document-data" data-path="([^"]+)">([^<]+)<\/script>/g),
     match => [match[1], Buffer.from(match[2], 'base64').toString('utf8')]));
   assert.equal(embedded.get('docs/manual/chezmoi.md'), fs.readFileSync(path.join(root, 'docs/manual/chezmoi.md'), 'utf8'));
+  const npmGuide = 'docs/manual/azure-artifacts-npm.md';
+  assert.equal(embedded.get(npmGuide), fs.readFileSync(path.join(root, npmGuide), 'utf8'),
+    'The private-registry guide is bundled in offline HTML');
+  // Exercise the published encoder with synthetic input only. Replace the
+  // clipboard sink before execution; never read or modify the real clipboard.
+  if (process.platform === 'darwin') {
+    const encoder = embedded.get(npmGuide).match(/```sh\n\/bin\/zsh -f -c '\n([\s\S]*?)\n'\n```/)?.[1];
+    assert.ok(encoder, 'The documented macOS encoder is present');
+    assert.equal((encoder.match(/\/usr\/bin\/pbcopy/g) || []).length, 1);
+    const safeEncoder = encoder.replace('/usr/bin/pbcopy', '/bin/cat');
+    const dummy = 'documentation-fixture-not-a-token';
+    const encode = input => spawnSync('/bin/zsh', ['-f', '-c', safeEncoder], {
+      input, encoding: 'utf8', env: { PATH: '/usr/bin:/bin', HOME: home },
+    });
+    const encoded = encode(`${dummy}\n`);
+    assert.equal(encoded.status, 0, encoded.stderr);
+    assert.ok(encoded.stdout.includes(Buffer.from(dummy).toString('base64')));
+    assert.ok(!encoded.stdout.includes(dummy), 'The prompt does not echo input');
+    const empty = encode('\n');
+    assert.equal(empty.status, 1);
+    assert.match(empty.stderr, /No token entered/);
+    assert.ok(!empty.stdout.includes('Encoded credential copied'));
+    assert.equal(encode('').status, 1, 'EOF cancels without reporting success');
+  }
   for (const file of Object.values(handbookTopics)) {
     assert.equal(embedded.get(file), fs.readFileSync(path.join(root, file), 'utf8'));
   }
@@ -117,6 +141,8 @@ try {
   run(['export', '--format', 'markdown', '--output', mdDir]);
   assert.ok(!fs.existsSync(path.join(mdDir, 'index.html')));
   assert.equal(fs.readFileSync(path.join(mdDir, 'docs/manual/chezmoi.md'), 'utf8'), embedded.get('docs/manual/chezmoi.md'));
+  assert.equal(fs.readFileSync(path.join(mdDir, npmGuide), 'utf8'), embedded.get(npmGuide),
+    'The private-registry guide is included in Markdown exports');
   for (const file of Object.values(handbookTopics)) {
     assert.equal(fs.readFileSync(path.join(mdDir, file), 'utf8'), embedded.get(file));
   }
@@ -129,6 +155,10 @@ try {
   assert.equal(new Set(listed).size, listed.length, 'Each guide has one canonical navigation location');
   assert.deepEqual([...listed].sort(), [...embedded.keys()].sort(), 'All bundled guides remain discoverable');
   assert.deepEqual(navigation.groups[1].sections[1].entries.map(entry => entry.path), coreSequence);
+  const registries = navigation.groups.find(group => group.label === 'Customisation')
+    .sections.find(section => section.label === 'Private package registries');
+  assert.deepEqual(registries.entries, [{ path: npmGuide, label: 'Azure Artifacts: npm authentication' }]);
+  assert.ok(!coreSequence.includes(npmGuide), 'Private-registry setup is optional');
   assert.ok(coreSequence.indexOf('docs/01-required/MACOS-SETTINGS.md') < coreSequence.indexOf('docs/01-required/02-command-line-foundation.md'));
   assert.ok(coreSequence.indexOf('docs/01-required/INSTALLATION-CENTRE.md') < coreSequence.indexOf('docs/01-required/03-security-and-ssh.md'));
   assert.ok(findDocumentation(navigation.titles, ' CHEZMOI ').length > 1);

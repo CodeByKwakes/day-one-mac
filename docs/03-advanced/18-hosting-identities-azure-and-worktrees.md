@@ -13,6 +13,11 @@ history or secrets.
 
 ## Choose only the route you need
 
+Azure Artifacts package access is separate from Git identities and SSH login.
+If a project needs private npm packages, follow the optional
+[manual Azure Artifacts guide](../manual/azure-artifacts-npm.md). Module 18 does
+not configure npm credentials or collect PATs.
+
 ### Executable identity and worktree review
 
 The executable route creates a private review report and proposed Git

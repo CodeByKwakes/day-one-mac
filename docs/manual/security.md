@@ -53,6 +53,14 @@ have account access, prove a recovery code works without an exercise, or infer
 that every repository is authorised. Module 18's metadata checks are not a real
 signature test. Reading this handbook never completes a phase.
 
+## Private package registry credentials
+
+For a project using private npm packages, follow
+[Azure Artifacts npm authentication](azure-artifacts-npm.md). This is an optional,
+separate credential flow: Git/SSH login does not authenticate npm. Keep raw and
+encoded PATs out of setup state, acceptance evidence, and plaintext dotfiles
+repositories, including private ones.
+
 ## FileVault and recovery
 
 In **System Settings → Privacy & Security → FileVault**, inspect the current

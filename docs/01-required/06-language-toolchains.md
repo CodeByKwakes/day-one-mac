@@ -21,6 +21,11 @@ guide does not freeze versions that will become stale.
   below are for understanding and recovery. **LTS** means a longer-supported Node release; a **lockfile**
 records exact project dependencies. See [GLOSSARY.md](../20-reference/GLOSSARY.md).
 
+If your selected Node project needs private Azure Artifacts packages, use the
+[manual npm authentication guide](../manual/azure-artifacts-npm.md) after Node.js
+and npm work. It is optional, not a Phase 6 completion gate. The fully manual
+and script-assisted routes use the same guide; no PAT belongs in setup state.
+
 ## Ownership model
 
 | Concern | Owner |

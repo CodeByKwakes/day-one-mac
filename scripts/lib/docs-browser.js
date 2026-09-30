@@ -75,6 +75,7 @@ function documentationNavigation(documents) {
     'docs/manual/developer-folders.md': 'Developer folders and ghq',
     'docs/manual/second-brain.md': 'Second Brain setup',
     'docs/manual/security.md': 'Security, SSH and signing',
+    'docs/manual/azure-artifacts-npm.md': 'Azure Artifacts: npm authentication',
   };
   const entries = paths => paths.filter(path => documents.has(path) && !claimed.has(path)).map(path => {
     claimed.add(path);
@@ -91,6 +92,7 @@ function documentationNavigation(documents) {
       { label: 'Script-assisted phases', entries: entries(coreSequence) },
     ] },
     { label: 'Customisation', sections: [
+      { label: 'Private package registries', entries: entries(['docs/manual/azure-artifacts-npm.md']) },
       { label: 'Manual learning guides', entries: entries(matching('docs/manual/')) },
       { label: 'Application guides', entries: entries(matching('docs/10-app-guides/')) },
       { label: 'Optional modules', entries: entries(matching('docs/02-optional/')) },

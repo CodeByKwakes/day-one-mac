@@ -64,6 +64,12 @@ Keep per-Mac values in the local chezmoi configuration. Keep private keys,
 tokens, provider login state and session databases in their secure owning tool.
 Do not add the Day One Mac launcher, runtime or `~/.day-one-mac` state.
 
+For private npm feeds, keep credential-bearing `.npmrc` content out of plaintext
+source and Git. The `private` filename attribute restricts permissions; it does
+not encrypt the file. Review existing ownership before inserting a PAT. See
+[Azure Artifacts npm authentication](azure-artifacts-npm.md#if-you-use-chezmoi)
+for the manual credential boundary and rotation procedure.
+
 A template is a recipe that renders different text from the same source on
 different Macs. Review both the template and its rendered output. Do not adopt
 one Mac's rendered file over a template just to obtain an empty diff.

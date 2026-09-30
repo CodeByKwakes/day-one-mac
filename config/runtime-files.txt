@@ -97,6 +97,7 @@ docs/PROCESS-OVERVIEW.md
 docs/PROJECT-GUIDE.md
 docs/README.md
 docs/manual/README.md
+docs/manual/azure-artifacts-npm.md
 docs/manual/chezmoi.md
 docs/manual/second-brain.md
 docs/manual/security.md
