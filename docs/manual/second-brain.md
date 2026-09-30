@@ -116,6 +116,37 @@ evidence. The [Notion entry guide](../../second-brain/notion/README.md) lists ou
 
 ## 3. Use it before expanding it
 
+### Link a repository without syncing its contents
+
+Repositories and notes are separate: code stays in your selected
+[Developer layout](developer-folders.md), while Obsidian vaults stay outside it
+(normally under `~/Vaults`) and Notion stays in its chosen cloud workspace.
+Neither manager discovers repositories, creates project notes from them, indexes
+source code, pulls Git changes, or synchronises GitHub Issues/Azure Boards.
+
+1. Clone or locate the intended repository first. For Azure Repos Git, follow
+   [clone and update one repository](../03-advanced/18-hosting-identities-azure-and-worktrees.md#clone-one-azure-repository-and-update-it-later).
+   Use the hosting site's normal browser URL for the note, not an SSH clone URL
+   or a URL containing a credential.
+2. **Obsidian:** create a note using the supplied Project template, or make your
+   own project note. Set its `repo` property to that browser URL. Optionally record
+   the absolute checkout path in the note body for your own machine; this is not
+   a portable link and does not automatically open an editor.
+3. **Notion:** set **Repo URL** on the Projects row; relate Knowledge notes to
+   that project. Put issue/Boards links in the page body rather than copying
+   task status into a second task tracker.
+4. Record decisions and useful context in notes; keep source files, dependencies,
+   `.git`, `.env`, credentials and build output in their owning locations.
+5. Open the repository link while signed in to the intended account. Confirm the
+   repository, project and note are the ones you meant to connect. A working link
+   proves navigation, not automatic sync or permission for other note readers.
+
+Work repository names and URLs can themselves be sensitive. Use only an
+employer-approved vault/workspace, sharing policy and backup. A link grants no
+repository access and does not authorise an AI tool to read the checkout.
+
+### Keep a useful review routine
+
 Daily: capture one idea with its source, then retrieve something you already
 know. Weekly: process the inbox, connect related notes, review active projects
 and discard low-value duplication. AI output stays unapproved until a human

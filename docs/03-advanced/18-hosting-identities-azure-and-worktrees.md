@@ -6,8 +6,8 @@
 
 ## Outcome
 
-Repositories live in a provider-aware ghq layout, Git chooses the correct
-identity from the checkout path, selected hosting CLIs have explicit defaults,
+Repositories use your selected folder layout, with ghq only if opted in. Git
+chooses the correct identity from the checkout path, selected hosting CLIs have explicit defaults,
 and concurrent branch work uses safe Git worktrees without duplicating Git
 history or secrets.
 
@@ -97,7 +97,6 @@ explicitly recorded as not selected.
 
 ```bash
 day-one-mac --status
-ghq root
 git config --global --get user.name
 git config --global --get user.email
 ```
@@ -114,17 +113,28 @@ Do not install or authenticate a second provider merely because its commands
 appear below. Track 1 skips Azure sections; Track 2 skips GitHub repository
 sections; Track 3 completes both.
 
+For a fully manual setup, skip `day-one-mac --status` and use your own recorded
+choices. If you selected ghq, inspect `ghq root` and `ghq root --all` separately.
+
 ## Step 18.2 — Use a predictable ghq layout
 
-The required base configures `~/Developer` as `ghq.root`. Clone through ghq:
+ghq is optional. Follow [Developer folders and optional ghq](../manual/developer-folders.md)
+for the four choices: no predefined layout, repository-oriented, purpose-oriented,
+or keep existing. The first two use `~/Developer` as the selected ghq root;
+purpose-oriented uses `~/Developer/Projects`; keep-existing retains the root you
+confirmed. Without ghq, use `git clone` with an explicit destination instead.
+
+Only if ghq was selected, clone through it after configuring provider access
+in Step 18.4. Replace the placeholders with the exact provider clone URL:
 
 ```bash
-ghq get git@github.com:<owner>/<repository>.git
-ghq get <azure-ssh-url>
-ghq list
+ghq get 'git@github.com:OWNER/REPOSITORY.git'
+ghq get 'git@ssh.dev.azure.com:v3/ORGANISATION/PROJECT/REPOSITORY'
+ghq list -p
 ```
 
-Expected paths have provider and owner components, for example:
+Provider and owner components appear below the selected root. These are examples,
+not paths to create or assume; inspect the actual output of `ghq list -p`:
 
 ```text
 ~/Developer/github.com/personal-account/project
@@ -155,12 +165,16 @@ main `.gitconfig`:
     path = ~/.gitconfig-secondary
 ```
 
-For Azure, route the exact ghq prefix produced on this Mac rather than guessing
-it. Inspect first:
+Adapt the example prefix to your selected layout. For Azure, route the actual
+checkout prefix rather than guessing it. With ghq selected, inspect:
 
 ```bash
-ghq list | rg 'azure|visualstudio|ssh.dev.azure'
+ghq list -p
 ```
+
+Without ghq, run `git -C '/absolute/path/to/checkout' rev-parse --show-toplevel`
+for each checkout. With either route, inspect its remote using
+`git -C '/absolute/path/to/checkout' remote -v` before assigning a work identity.
 
 The more specific include should appear after general configuration. Never
 route by branch name or remote text; `includeIf gitdir:` is based on the local
@@ -192,24 +206,105 @@ copied into `~/.ssh`.
 
 ### Track 2 or 3 — Azure DevOps 🏢
 
+Git authentication and Azure CLI authentication are separate. Use the
+[1Password](../manual/1password.md) or [Keychain SSH](../manual/keychain-ssh.md)
+guide for the selected SSH owner. Register the public key in the correct Azure
+organisation; never upload the private key. Verify a first-connection host
+fingerprint against [Microsoft's SSH guidance](https://learn.microsoft.com/en-us/azure/devops/repos/git/use-ssh-keys-to-authenticate?view=azure-devops).
+A GitHub deploy key does not grant Azure access.
+
+Azure CLI and its extension are needed only for `az` commands, not for Git
+cloning over SSH. If you chose the CLI route, check its existing sign-in and extension:
+
 ```bash
 az account show --output table
 az extension show --name azure-devops
-ssh -T git@ssh.dev.azure.com
 ```
 
-Configure defaults explicitly for the current organisation and project:
+For the CLI route, replace the placeholders and configure defaults explicitly
+for the current organisation and project:
 
 ```bash
 az devops configure --defaults \
-  organization=https://dev.azure.com/<organisation> \
-  project=<project>
+  organization='https://dev.azure.com/ORGANISATION' \
+  project='PROJECT'
 az devops configure --list
 ```
 
 Do not commit organisation URLs or project names into public dotfiles when they
 identify a private employer. Put them in machine-local chezmoi data or an
 untracked work-specific include.
+
+### Clone one Azure repository and update it later
+
+This walkthrough is for **Azure Repos Git**, not TFVC. An Azure DevOps project
+can contain several repositories. Cloning one does not download every repository,
+Boards item, pipeline setting, artifact or wiki. Day One Mac does not bulk-clone
+projects or synchronise them into a Second Brain.
+
+1. Confirm that your account can read the chosen repository.
+2. In Azure DevOps, open **Repos → Files**, select the repository, and choose
+   **Clone**. Copy its SSH URL for the SSH setup above. If company policy requires
+   HTTPS, use the HTTPS URL and its approved credential flow instead; never put a
+   PAT in the URL or a shell command. See [Microsoft's cloning guide](https://learn.microsoft.com/en-us/azure/devops/repos/git/clone?view=azure-devops).
+3. Choose **one** placement route: ghq from Step 18.2, or ordinary Git below.
+   Do not run both and create duplicate checkouts.
+
+For ordinary Git, replace the example URL and destination before running.
+This example uses the purpose-oriented layout; for other layouts choose a path
+under your selected root. Use a new destination, not an existing checkout:
+
+```bash
+azure_repo_url='git@ssh.dev.azure.com:v3/ORGANISATION/PROJECT/REPOSITORY'
+repo_path="$HOME/Developer/Projects/ORGANISATION/PROJECT/REPOSITORY"
+mkdir -p "$(dirname "$repo_path")"
+git clone "$azure_repo_url" "$repo_path"
+```
+
+If you used ghq, set `repo_path` to the actual absolute checkout path shown by
+`ghq list -p`. Verify the remote, branch and effective identity:
+
+```bash
+git -C "$repo_path" remote -v
+git -C "$repo_path" status --short --branch
+git -C "$repo_path" config user.email
+```
+
+Confirm the remote is the intended organisation/project/repository. An empty
+repository has no source files yet; this alone is not an authentication failure.
+Before running project scripts or installing dependencies, review its README
+and trust requirements. Package-feed authentication is a separate setup.
+
+To update an existing checkout later, set `repo_path` again in a new Terminal
+session. Check for local changes and confirm the branch's upstream:
+
+```bash
+git -C "$repo_path" status --short --branch
+git -C "$repo_path" branch -vv
+```
+
+Stop if changes need preserving, the branch is detached, or its upstream is
+missing or incorrect. Once those are resolved, update the current branch:
+
+```bash
+git -C "$repo_path" pull --ff-only
+git -C "$repo_path" status --short --branch
+```
+
+`--ff-only` refuses divergent history instead of creating a merge automatically;
+review the branch with your team rather than using a hard reset. It is not a
+backup of local changes. See the [Git pull reference](https://git-scm.com/docs/git-pull).
+
+| Problem | What to check |
+|---|---|
+| Permission denied or repository not found | Exact clone URL, repository read permission, selected SSH key and organisation registration; CLI sign-in alone does not prove Git access |
+| Host-key warning | Stop and verify the published fingerprint; do not disable host-key checking |
+| Destination already exists | Inspect it; update the existing checkout or choose a new path, never delete it just to retry |
+| Pull refuses to fast-forward | Local and remote history diverged; agree on a merge/rebase strategy before proceeding |
+| Dependencies fail after a successful clone | Check the project's package registry instructions, including the separate Azure Artifacts guide |
+
+After verification, [link the repository from your Second Brain](../manual/second-brain.md#link-a-repository-without-syncing-its-contents).
+Use the browser repository URL for a shared note, not the SSH clone URL.
 
 ## Step 18.5 — Verify signing and allowed signers
 
@@ -361,7 +456,7 @@ downloads while each worktree keeps its own `node_modules` links.
 - [ ] The chosen route(s) are recorded: identities/hosting, worktrees, or both.
 - [ ] Any unselected route is explicitly recorded as not selected rather than
       mistaken for incomplete work.
-- [ ] `ghq root` and real repository paths match the intended provider layout.
+- [ ] Real repository paths match the selected layout; ghq roots are checked only if ghq was selected.
 - [ ] Each real repository resolves the correct email and configuration origin.
 - [ ] Only selected-track CLIs and SSH hosts are required.
 - [ ] 1Password provides SSH private identities; `~/.ssh` contains config/public data only.

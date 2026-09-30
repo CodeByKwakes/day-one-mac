@@ -161,6 +161,11 @@ want in `ghq get github.com/OWNER/REPOSITORY`. It creates the host/owner hierarc
 under the primary root. Review provider-specific Azure paths before assuming a
 destination. Never use `ghq migrate` as part of this setup: it moves repositories.
 
+For Azure Repos Git, use the [clone and update walkthrough](../03-advanced/18-hosting-identities-azure-and-worktrees.md#clone-one-azure-repository-and-update-it-later),
+which covers both optional ghq and ordinary Git. Folder setup does not clone
+repositories or prove provider access. Keep notes separate and use
+[manual Second Brain links](second-brain.md#link-a-repository-without-syncing-its-contents).
+
 ## CLI-assisted equivalent
 
 Open this guide with `day-one-mac docs folders --browser`; the handbook export
