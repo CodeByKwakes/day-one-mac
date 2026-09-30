@@ -276,6 +276,12 @@ report_ssh_key_storage() {
     # filenames; an inline LC_ALL=C printf can emit partial multibyte bytes.
     label="$(export LC_ALL=C; printf '%q' "${candidate/#"$HOME"/~}")"
     label="${label//|/\\|}"
+    # Physical Unix sockets contain no key bytes. Do not connect to them or
+    # exempt sibling files; links to sockets still fail below.
+    if [[ ! -L "$candidate" && -S "$candidate" ]]; then
+      printf '| SSH storage inventory: %s | SKIP — Unix socket, not a key file; endpoint trust not assessed |\n' "$label" >> "$report"
+      continue
+    fi
     if [[ -L "$candidate" || ! -f "$candidate" || ! -r "$candidate" ]]; then
       ssh_storage_failure "$report" "$label"
       continue
@@ -318,8 +324,8 @@ report_ssh_key_storage() {
   done 3< "$inventory"
   rm -f "$inventory"
   if [[ "$AUTH_MODE" == keychain ]]; then
-    if uses_github && [[ ! -e "$HOME/.ssh/id_ed25519" ]]; then ssh_storage_failure "$report" 'selected GitHub Keychain key missing'; fi
-    if uses_azure && [[ ! -e "$HOME/.ssh/id_rsa_azure" ]]; then ssh_storage_failure "$report" 'selected Azure Keychain key missing'; fi
+    if uses_github && [[ ! -f "$HOME/.ssh/id_ed25519" ]]; then ssh_storage_failure "$report" 'selected GitHub Keychain key missing or not a regular file'; fi
+    if uses_azure && [[ ! -f "$HOME/.ssh/id_rsa_azure" ]]; then ssh_storage_failure "$report" 'selected Azure Keychain key missing or not a regular file'; fi
   fi
   if [[ "$count" == 0 ]]; then
     printf '| SSH private-key inventory | No recognised key files found in physical ~/.ssh tree; not a whole-disk scan |\n' >> "$report"

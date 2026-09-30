@@ -349,6 +349,42 @@ printf 'PASS: passphrase enforcement, agent failure and SSH marker migration\n'
   check_storage
   [[ "$VERIFY_FAILURES" == 1 ]] || fail_test 'symlink was followed or ignored'
   rm "$HOME/.ssh/link"
+  # A real Unix socket is an endpoint, not stored key bytes. Never exempt
+  # its whole directory, follow a link to it, or connect to it for this audit.
+  mkdir -p "$HOME/.ssh/agent"
+  python3 - "$HOME/.ssh/agent/id_socket" <<'PY'
+import socket
+import sys
+
+with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as endpoint:
+    endpoint.bind(sys.argv[1])
+PY
+  for AUTH_MODE in 1password external https; do
+    check_storage
+    [[ "$VERIFY_FAILURES:$VERIFY_REVIEWS" == 0:0 ]] || fail_test 'Unix socket treated as a key file'
+    grep -q 'SKIP — Unix socket, not a key file' "$storage_report" || fail_test 'socket exclusion not reported'
+  done
+  AUTH_MODE=keychain
+  check_storage
+  [[ "$VERIFY_FAILURES" == 1 ]] || fail_test 'socket satisfied missing selected Keychain key'
+  mv "$HOME/.ssh/agent/id_socket" "$HOME/.ssh/id_ed25519"
+  check_storage
+  [[ "$VERIFY_FAILURES" == 1 ]] || fail_test 'socket replaced selected GitHub key'
+  mv "$HOME/.ssh/id_ed25519" "$HOME/.ssh/id_rsa_azure"
+  uses_github() { return 1; }; uses_azure() { return 0; }
+  check_storage
+  [[ "$VERIFY_FAILURES" == 1 ]] || fail_test 'socket replaced selected Azure key'
+  uses_github() { return 0; }; uses_azure() { return 1; }
+  mv "$HOME/.ssh/id_rsa_azure" "$HOME/.ssh/agent/id_socket"
+  AUTH_MODE=1password
+  ln -s "$HOME/.ssh/agent/id_socket" "$HOME/.ssh/socket-link"
+  check_storage
+  [[ "$VERIFY_FAILURES" == 1 ]] || fail_test 'symlink to socket accepted'
+  rm "$HOME/.ssh/socket-link"
+  cp "$TEST_ROOT/keychain-home/.ssh/plain" "$HOME/.ssh/agent/hidden-key"
+  check_storage
+  [[ "$VERIFY_FAILURES" == 1 ]] || fail_test 'key beside agent socket ignored'
+  rm "$HOME/.ssh/agent/hidden-key" "$HOME/.ssh/agent/id_socket"
   mkfifo "$HOME/.ssh/fifo"
   check_storage
   [[ "$VERIFY_FAILURES" == 1 ]] || fail_test 'special file accepted'

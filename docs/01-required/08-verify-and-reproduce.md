@@ -139,9 +139,14 @@ verification or evidence of write access.
 The storage inventory reads the physical `~/.ssh` tree, including hidden and
 nested files. It looks for recognised private-key headers regardless of the
 filename or `.pub` suffix, and treats non-public `id_*` files as candidates
-even when malformed. It does not follow symlinks; unreadable entries, links,
-special files and incomplete scans block verification rather than producing a
-clean result. This is not a whole-disk or all-formats secret scan: keys outside
+even when malformed. Physical Unix sockets, such as SSH-agent endpoints, are
+reported as SKIP: they are communication endpoints, not key files. The audit
+does not connect to them or assess their trust, and still scans files beside
+them. A socket cannot satisfy a required Keychain key-file check.
+It does not follow symlinks, including links to sockets; unreadable files,
+links, other special files (such as FIFOs) and incomplete scans block
+verification rather than producing a clean result.
+This is not a whole-disk or all-formats secret scan: keys outside
 this tree and unrecognised formats without a conventional name may be missed.
 Do not move or rename keys to make them disappear from the report.
 
@@ -150,6 +155,7 @@ Do not move or rename keys to make them disappear from the report.
 | PASS | The named check passed; for expected Keychain provider keys, encryption was detected |
 | REVIEW | An encrypted legacy/additional key was found; decide whether its retention is justified |
 | REVIEWED | You explicitly approved retaining that encrypted file during this audit; this is **not** a vault-only setup |
+| SKIP | A physical Unix socket was excluded from key-file checks; this is not an authentication or endpoint-security pass |
 | FAIL | A key is unprotected/unverifiable, a scan failed, or an authentication check failed; repair the named issue |
 
 The encryption probe uses an empty passphrase non-interactively. It never asks
