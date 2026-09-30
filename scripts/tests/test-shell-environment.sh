@@ -242,3 +242,6 @@ for directive in 'export ZDOTDIR="$HOME/custom-zsh"' 'unsetopt RCS'; do
 done
 
 printf 'PASS: managed shell files, clean PATHs, aliases and required login-shell gate work\n'
+
+# This fixture creates its own bounded PTY; redirected CI stdin is intentional.
+python3 "$SCRIPT_DIR/tests/test-phase8-terminal.py"

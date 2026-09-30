@@ -415,7 +415,9 @@ phase_08() {
   fi
   report_check "FileVault" bash -c "fdesetup status 2>/dev/null | grep -q 'FileVault is On'"
   report_check "Gatekeeper" bash -c "spctl --status 2>/dev/null | grep -q 'assessments enabled'"
-  uses_node && report_check "Node, npm and pnpm" zsh -lic 'node --version && npm --version && pnpm --version'
+  # Load login/interactive startup files, but leave terminal job control with
+  # the calling shell so the later key-retention read cannot receive SIGTTIN.
+  uses_node && report_check "Node, npm and pnpm" zsh +m -lic 'node --version && npm --version && pnpm --version'
   uses_python && report_check "Python via uv" uv python find
   uses_github && report_check "GitHub CLI" gh auth status
   uses_azure && report_check "Azure CLI" az account show
