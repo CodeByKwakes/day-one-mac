@@ -16,6 +16,12 @@ files with chezmoi, set up the Starship Terminal prompt, install the selected
 programming languages, prepare VS Code, and verify that the result can be
 rebuilt.
 
+The developer-folder pilot now offers [four layouts with optional ghq](manual/developer-folders.md).
+The wizard collects these choices separately; ghq is not preselected. Existing
+setups must review them before resuming affected phases. Non-interactive setup
+must supply `--layout none|repository|purpose|existing` and `--ghq no|yes`, or
+have saved choices. This pilot does not change the other base-tool defaults.
+
 The setup is resumable. A phase receives a ✓ only after its checks pass. If a
 phase stops, earlier completed phases stay saved and the screen explains what
 is complete, what remains, and what to do next.

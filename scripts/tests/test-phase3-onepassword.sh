@@ -121,6 +121,14 @@ printf 'PASS: 1Password CLI integration, deadline, and track key-type checks\n'
 
 pin_root="$TEST_ROOT/pin"
 mkdir -p "$pin_root/bin" "$pin_root/home/.ssh"
+ssh-keygen -q -t ed25519 -N '' -f "$pin_root/test-key"
+ssh-keygen -q -t ed25519 -N '' -f "$pin_root/other-key"
+ssh-keygen -q -t rsa -b 3072 -N '' -f "$pin_root/azure-key"
+TEST_PUBLIC="$(cat "$pin_root/test-key.pub")"
+TEST_RSA_PUBLIC="$(cat "$pin_root/azure-key.pub")"
+TEST_IDENTITIES="$(ssh-keygen -l -E sha256 -f "$pin_root/test-key.pub")"
+export TEST_PUBLIC TEST_RSA_PUBLIC TEST_IDENTITIES
+public_json="$(jq -nc --arg value "$TEST_PUBLIC" '{fields:[{label:"public key",value:$value}]}')"
 pin_harness="$pin_root/h.sh"
 {
   printf 'set -euo pipefail\n'
@@ -134,6 +142,9 @@ pin_harness="$pin_root/h.sh"
   printf 'write_text_file() { mkdir -p "$(dirname "$1")"; printf "%%s" "$2" > "$1"; }\n'
   printf 'source "%s/lib/deadline.sh"\n' "$SCRIPT_DIR"
   printf 'source "%s/phases/03-security.sh"\n' "$SCRIPT_DIR"
+  printf 'confirm() { [[ "${CONFIRM_PIN:-yes}" == yes ]] || return 1; if [[ "${LOCK_AFTER_CONFIRM:-0}" == 1 ]]; then TEST_IDENTITIES=""; fi; return 0; }\n'
+  printf 'ask() { [[ -n "${SELECT_PIN:-}" ]] && printf "%%s\\n" "$SELECT_PIN"; }\n'
+  printf 'agent_identities() { printf "%%s\\n" "$TEST_IDENTITIES"; }\n'
   printf 'export_provider_public_key github && printf "WROTE\\n" || printf "REFUSED\\n"\n'
 } > "$pin_harness"
 
@@ -141,11 +152,18 @@ grep -Fq 'export_provider_public_key' "$pin_harness" \
   || fail_test 'export_provider_public_key module failed to load'
 
 fake_op_pin() {
+  local get_status="${3:-0}"
   cat > "$pin_root/bin/op" <<EOS
 #!/bin/sh
 case "\$1 \$2" in
-  "item list") printf '%s' '$1' ;;
-  "item get")  printf '%s' '$2' ;;
+  "item list") printf '%s' '$1' | jq '[to_entries[] | .value + {id: (.value.id // ("aaaaaaaaaaaaaaaaaaaaaaaaa" + (.key | tostring)))}]' ;;
+  "item get")
+    [ "\$4" = --fields ] && [ "\$5" = 'label=public key' ] || exit 93
+    if [ '$get_status' != 0 ]; then
+      printf 'SENSITIVE_ERROR_CANARY\\n' >&2
+      exit '$get_status'
+    fi
+    printf '%s' '$2' | jq -c '[.fields[]? | select(.label == "public key")]' ;;
 esac
 EOS
   chmod +x "$pin_root/bin/op"
@@ -158,12 +176,34 @@ run_pin() {
 
 one_item='[{"title":"GitHub — Personal — Authentication"}]'
 
+# Reproduce the VM failure: a valid public field is NOT proof the agent can
+# use it. A mismatched key must leave both absent and existing pins untouched.
+fake_op_pin "$one_item" "$public_json"
+output="$(TEST_IDENTITIES="$(ssh-keygen -l -E sha256 -f "$pin_root/other-key.pub")" run_pin)"
+[[ "$(tail -1 <<<"$output")" == REFUSED ]] \
+  || fail_test 'a public key absent from the agent was written'
+[[ ! -e "$pin_root/home/.ssh/github-auth.pub" ]] || fail_test 'mismatch created a pin'
+
 # A well-formed public key is written.
-fake_op_pin "$one_item" '{"fields":[{"label":"public key","value":"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExample you@example.com"}]}'
+fake_op_pin "$one_item" "$public_json"
 [[ "$(run_pin | tail -1)" == WROTE ]] \
   || fail_test 'a valid public key was not written'
 grep -q '^ssh-ed25519 ' "$pin_root/home/.ssh/github-auth.pub" \
   || fail_test 'the written pin file does not contain the public key'
+
+# Provider failures must not echo raw item/error output or leave temp payloads.
+mkdir -p "$pin_root/tmp"
+for failure in 1 124; do
+  fake_op_pin "$one_item" '{}' "$failure"
+  output="$(TMPDIR="$pin_root/tmp/" run_pin)"
+  [[ "$(tail -1 <<<"$output")" == REFUSED ]] || fail_test 'failed public-field read was accepted'
+  ! grep -Fq SENSITIVE_ERROR_CANARY <<<"$output" || fail_test 'raw provider error leaked'
+  [[ -z "$(ls -A "$pin_root/tmp")" ]] || fail_test 'public-field temporary output leaked'
+done
+
+# Multiple same-label fields must not silently select the first key.
+fake_op_pin "$one_item" '{"fields":[{"label":"public key","value":"ssh-ed25519 AAAA"},{"label":"public key","value":"ssh-ed25519 BBBB"}]}'
+[[ "$(run_pin | tail -1)" == REFUSED ]] || fail_test 'multiple public fields were accepted'
 
 # Private material must never land in ~/.ssh, whatever the field says. Build
 # the marker at runtime so the public repository does not contain a key block.
@@ -185,7 +225,7 @@ fake_op_pin "$one_item" '{"fields":[{"label":"private key","value":"secret"}]}'
 # setup. Pinning is for authentication, so the signing key must be ignored
 # rather than the user being told to rename a sensible pair.
 fake_op_pin '[{"title":"GitHub — Authentication"},{"title":"GitHub — Signing"}]' \
-  '{"fields":[{"label":"public key","value":"ssh-ed25519 AAAAAUTH you@example.com"}]}'
+  "$public_json"
 output="$(run_pin)"
 [[ "$(tail -1 <<<"$output")" == WROTE ]] \
   || fail_test 'an authentication key alongside a signing key was not resolved'
@@ -198,12 +238,13 @@ fake_op_pin '[{"title":"GitHub — Personal — Authentication"},{"title":"GitHu
 [[ "$(run_pin | tail -1)" == REFUSED ]] \
   || fail_test 'two authentication keys should stay ambiguous'
 
-# A lone signing key is used, but the mismatch is called out.
+# A lone signing-labelled key must not be silently repurposed.
 fake_op_pin '[{"title":"GitHub — Signing"}]' \
   '{"fields":[{"label":"public key","value":"ssh-ed25519 AAAASIGN you@example.com"}]}'
 output="$(run_pin)"
-grep -Fq 'looks like a signing key' <<<"$output" \
-  || fail_test 'pinning a lone signing key did not warn about the key role'
+[[ "$(tail -1 <<<"$output")" == REFUSED ]] || fail_test 'a lone signing key was accepted'
+grep -Fq 'signing-labelled items are excluded' <<<"$output" \
+  || fail_test 'signing-only refusal did not explain the role'
 
 # No match, and several matches, both refuse rather than guess.
 fake_op_pin '[]' '{}'
@@ -213,6 +254,84 @@ output="$(run_pin)"
 [[ "$(tail -1 <<<"$output")" == REFUSED ]] || fail_test 'an ambiguous item choice did not refuse'
 grep -Fq 'Several 1Password SSH Key items match' <<<"$output" \
   || fail_test 'the ambiguous-item refusal did not explain itself'
+
+# The title preference that caused the real failure must never resolve this
+# pair automatically. Explicit selection retrieves the stable ID, not title.
+fake_op_pin '[{"title":"GitHub — Authentication"},{"title":"GitHub — Rehearsal"}]' "$public_json"
+[[ "$(ASSUME_YES=1 run_pin | tail -1)" == REFUSED ]] || fail_test '--yes guessed an identity'
+[[ "$(SELECT_PIN=2 run_pin | tail -1)" == WROTE ]] || fail_test 'explicit selection was rejected'
+for selection in q 0 3 999999999999999999999; do
+  [[ "$(SELECT_PIN="$selection" run_pin | tail -1)" == REFUSED ]] || fail_test 'invalid selection wrote a pin'
+done
+
+# Duplicate titles remain separate IDs. The mock fails if retrieval uses a
+# title or the unselected ID, even though both titles look identical.
+fake_op_pin '[{"title":"GitHub — Authentication"},{"title":"GitHub — Authentication"}]' "$public_json"
+sed -i.bak '/"item get")/a\
+    [ "$3" = aaaaaaaaaaaaaaaaaaaaaaaaa1 ] || exit 94
+' "$pin_root/bin/op"
+[[ "$(SELECT_PIN=2 run_pin | tail -1)" == WROTE ]] || fail_test 'duplicate title lost selected ID'
+
+# Confirmation refusal, a locked agent, malformed bytes, and an existing
+# mismatched pin all leave user files unchanged.
+fake_op_pin "$one_item" "$public_json"
+[[ "$(CONFIRM_PIN=no run_pin | tail -1)" == REFUSED ]] || fail_test 'declined confirmation wrote a pin'
+[[ ! -e "$pin_root/home/.ssh/github-auth.pub" ]] || fail_test 'declined pin exists'
+[[ "$(TEST_IDENTITIES='' run_pin | tail -1)" == REFUSED ]] || fail_test 'locked agent accepted'
+[[ "$(LOCK_AFTER_CONFIRM=1 run_pin | tail -1)" == REFUSED ]] || fail_test 'lock during confirmation accepted'
+[[ ! -e "$pin_root/home/.ssh/github-auth.pub" ]] || fail_test 'late lock wrote a pin'
+cp "$pin_root/other-key.pub" "$pin_root/home/.ssh/github-auth.pub"
+output="$(HOME="$pin_root/home" TEST_IDENTITIES='' PATH="$pin_root/bin:$PATH" bash "$pin_harness")"
+[[ "$(tail -1 <<<"$output")" == REFUSED ]] || fail_test 'mismatch replaced an existing pin'
+cmp -s "$pin_root/other-key.pub" "$pin_root/home/.ssh/github-auth.pub" || fail_test 'old pin changed'
+fake_op_pin "$one_item" '{"fields":[{"label":"public key","value":"ssh-ed25519 AAAA malformed"}]}'
+[[ "$(run_pin | tail -1)" == REFUSED ]] || fail_test 'unparseable public key accepted'
+fake_op_pin "$one_item" "$public_json"
+ln -s "$pin_root/other-key.pub" "$pin_root/home/.ssh/github-auth.pub"
+output="$(HOME="$pin_root/home" PATH="$pin_root/bin:$PATH" bash "$pin_harness")"
+[[ "$(tail -1 <<<"$output")" == REFUSED && -L "$pin_root/home/.ssh/github-auth.pub" ]] \
+  || fail_test 'symlink pin was overwritten'
+rm "$pin_root/home/.ssh/github-auth.pub"
+
+# A refusal must propagate through the real phase, before config/chezmoi or
+# the runner can mark success. Existing pins are checked, not blindly reused.
+gate_harness="$pin_root/gate.sh"
+cat > "$gate_harness" <<'EOS'
+set -euo pipefail
+source "$SCRIPT_DIR/phases/03-security.sh"
+DRY_RUN=0 AUTH_MODE=1password TRACK=1 EX_MANUAL=10 EX_GATE=20
+info() { :; }; warn() { :; }; err() { :; }; ok() { :; }
+ui_title() { :; }; ui_section() { :; }; phase_next() { :; }; phase_step_done() { :; }
+phase_doc() { :; }
+load_brew() { :; }; scan_applications() { :; }; verify_application() { :; }; have() { :; }
+verify_onepassword_cli_integration() { :; }
+agent_identities() { printf '%s\n' "$TEST_IDENTITIES"; }
+uses_github() { return 0; }; uses_azure() { return 1; }
+confirm() { return 0; }; export_provider_public_key() { return 1; }
+configure_onepassword_ssh() { printf 'CONFIG_WRITE\n'; }
+if phase_03; then printf 'UNEXPECTED_PASS\n'; else printf 'STOP=%s\n' "$?"; fi
+EOS
+rm -f "$pin_root/home/.ssh/github-auth.pub"
+export SCRIPT_DIR
+output="$(HOME="$pin_root/home" PATH="$pin_root/bin:$PATH" bash "$gate_harness")"
+[[ "$output" == 'STOP=10' ]] || fail_test 'export failure did not stop the phase before writing'
+cp "$pin_root/other-key.pub" "$pin_root/home/.ssh/github-auth.pub"
+output="$(HOME="$pin_root/home" PATH="$pin_root/bin:$PATH" bash "$gate_harness")"
+[[ "$output" == 'STOP=10' ]] || fail_test 'existing mismatched pin did not stop the phase'
+cmp -s "$pin_root/other-key.pub" "$pin_root/home/.ssh/github-auth.pub" || fail_test 'phase changed rejected pin'
+
+# Per-provider types matter: an unrelated RSA identity must not make an
+# Ed25519 Azure pin acceptable. A matching existing GitHub pin is reusable.
+HOME="$pin_root/home" bash -c '
+  set -euo pipefail
+  source "$SCRIPT_DIR/phases/03-security.sh"
+  warn() { :; }; info() { :; }
+  uses_github() { return 0; }; uses_azure() { return 1; }
+  agent_identities() { printf "%s\n" "$TEST_IDENTITIES"; }
+  if verify_public_key_with_onepassword_agent azure "$TEST_PUBLIC"; then exit 1; fi
+  cp "$1" "$HOME/.ssh/github-auth.pub"
+  verify_existing_provider_key_pins
+' _ "$pin_root/test-key.pub" || fail_test 'provider type or existing valid pin check failed'
 
 # The validator itself, directly.
 val_harness="$pin_root/v.sh"
@@ -242,15 +361,24 @@ mkdir -p "$track_root/bin"
 cat > "$track_root/bin/op" <<'EOS'
 #!/bin/sh
 case "$1 $2" in
-  "item list") printf '%s' '[{"title":"GitHub — Personal — Authentication"},{"title":"Azure DevOps — Work — Authentication"}]' ;;
+  "item list") printf '%s' '[{"id":"aaaaaaaaaaaaaaaaaaaaaaaaa0","title":"GitHub — Personal — Authentication"},{"id":"aaaaaaaaaaaaaaaaaaaaaaaaa1","title":"Azure DevOps — Work — Authentication"}]' ;;
   "item get")
+    [ "$4" = --fields ] && [ "$5" = 'label=public key' ] || exit 93
     case "$3" in
-      *GitHub*) printf '%s' '{"fields":[{"label":"public key","value":"ssh-ed25519 AAAAGH you@example.com"}]}' ;;
-      *Azure*)  printf '%s' '{"fields":[{"label":"public key","value":"ssh-rsa AAAAAZ work@example.com"}]}' ;;
+      aaaaaaaaaaaaaaaaaaaaaaaaa0) jq -nc --arg value "$TEST_PUBLIC" '[{label:"public key",value:$value}]' ;;
+      aaaaaaaaaaaaaaaaaaaaaaaaa1) jq -nc --arg value "$TEST_RSA_PUBLIC" '[{label:"public key",value:$value}]' ;;
     esac ;;
 esac
 EOS
 chmod +x "$track_root/bin/op"
+cat > "$track_root/bin/ssh-add" <<'EOS'
+#!/bin/sh
+case "$SSH_AUTH_SOCK" in */2BUA8C4S2C.com.1password/t/agent.sock) ;; *) exit 1 ;; esac
+printf '%s\n' "$TEST_IDENTITIES" "$TEST_RSA_IDENTITIES"
+EOS
+chmod +x "$track_root/bin/ssh-add"
+TEST_RSA_IDENTITIES="$(ssh-keygen -l -E sha256 -f "$pin_root/azure-key.pub")"
+export TEST_RSA_IDENTITIES
 
 pin_for_track() {
   local track="$1" home="$track_root/h$1" state="$track_root/s$1"

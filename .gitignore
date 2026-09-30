@@ -1,5 +1,10 @@
 .DS_Store
 node_modules/
+!/scripts/vendor/
+!/scripts/vendor/markdown-it/
+!/scripts/vendor/markdown-it/markdown-it.min.js
+!/scripts/vendor/markdown-it/LICENSE
+!/scripts/vendor/markdown-it/PROVENANCE.md
 dist/
 *.log
 *.tmp

@@ -69,13 +69,18 @@ updates and rollback.
 | `day-one-mac rollback-runtime [options]` | `./runtime-manager.sh rollback [options]` | Preview or select a previous installed runtime without undoing setup changes. |
 | `day-one-mac uninstall-runtime [options]` | `./runtime-manager.sh uninstall [options]` | Remove only the launcher and runtime while preserving setup state and the configured environment. |
 | `day-one-mac docs [TOPIC] [--open]` | `./runtime-manager.sh docs …` | List, locate, or open documentation inside the active runtime. Topics include `chezmoi`, `optional`, and `advanced`; use `--list` for all topics or `--folder --open` for the complete documentation folder. |
+| `day-one-mac docs [TOPIC] --browser` | `./runtime-manager.sh docs …` | Open a temporary offline HTML reader. Use `handbook` for manual tasks or `chezmoi-guide` for the learning path. No server or extra runtime is needed. |
+| `day-one-mac docs export --format html\|markdown --output NEW_DIRECTORY` | `./runtime-manager.sh docs export …` | Export bundled project guides and examples to a new directory. See [contents, printing and safety](DOCUMENTATION-COMMANDS.md). |
 | `day-one-mac shell-status` | `./shell-status.sh` | Run a read-only check of Homebrew zsh, startup files, clean-shell PATHs, completions and selected tools. |
 | `day-one-mac setup [options]` | `./bootstrap-day-one-mac.sh [options]` | Start, resume, inspect, or reset the required eight-phase setup. |
+| `day-one-mac folders --plan\|--apply\|--check\|--resume` | `/bin/bash ./configure-folders.sh [options]` | Choose `--layout none\|repository\|purpose\|existing` and `--ghq no\|yes`; independently create/check folders without other phases. See [folder choices, prerequisites and recovery](../manual/developer-folders.md). |
 | `day-one-mac install [options]` | `./bootstrap-day-one-mac.sh --install-centre [options]` | Install or revalidate required applications and command-line tools after Phase 2. |
 | `day-one-mac applications [options]` | `./application-status.sh [options]` | Check required or optional application ownership and resolve selected missing apps. |
 | `day-one-mac ssh-pin [github\|azure\|both]` | `./bootstrap-day-one-mac.sh --ssh-pin …` | Export reviewed 1Password SSH public keys to stable `~/.ssh` public-key files. |
 | `day-one-mac macos-settings [options]` | `./configure-macos-settings.sh [options]` | Configure, inspect, preview, or restore optional Finder, Dock, keyboard, and trackpad preferences. |
 | `day-one-mac workspace [command]` | `./workspace-manager.sh [command]` | Create, inspect, complete, or open a bounded projectless task. |
+| `day-one-mac second-brain obsidian [options]` | `second-brain/obsidian/scripts/second-brain-manager.sh` (from project root) | Preview or apply vault layouts and local integrations. Use `--guided` to choose a layout; `--apply` explicitly enables changes. |
+| `day-one-mac second-brain notion [options]` | `second-brain/notion/scripts/notion-second-brain-manager.sh` (from project root) | Preview or save a local workspace plan and helpers. No cloud provisioning or sign-in; use `--help` for options. |
 | `day-one-mac raycast [options]` | `./configure-raycast.sh [options]` | Choose `alongside-spotlight` or `raycast-only` launcher guidance, then preview, generate, inspect, or archive the optional track-aware Raycast Script Commands. Raycast uses `⌥Space` in both modes. |
 | `day-one-mac optional --guided` | `./bootstrap-day-one-mac.sh --optional --guided` | Choose optional modules after required Phase 8 passes and continue to available installers. |
 | `day-one-mac optional --list` | `./optional-module.sh --list` | List executable versus guided module capabilities, not completion. |
@@ -137,6 +142,9 @@ Important setup selectors include:
 ```text
 --track 1|2|3
 --stack node|python|both
+--layout none|repository|purpose|existing
+--ghq no|yes
+--ghq-root /absolute/primary/root
 --name "Full Name"
 --email ADDRESS
 --preset core|recommended-productivity

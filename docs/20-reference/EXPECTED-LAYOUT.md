@@ -28,11 +28,15 @@ same `ghq` hierarchy used for other projects:
 ~/Developer/github.com/CodeByKwakes/day-one-mac
 ```
 
-Phase 4 configures:
+The following clone examples show the **repository-oriented** choice with ghq.
+They are not mandatory paths. Phase 4 now delegates to the
+[four-layout folder capability](../manual/developer-folders.md):
 
 ```text
-ghq root = ~/Developer
-~/Developer/<provider>/<owner-or-organisation>/<repository>
+none/repository + ghq: ~/Developer/<provider>/<owner>/<repository>
+purpose + ghq:        ~/Developer/Projects/<provider>/<owner>/<repository>
+keep existing + ghq:  confirmed existing root(s), unchanged
+without ghq:          chosen folders only; Git clone destinations are manual
 ```
 
 Examples:
@@ -58,7 +62,9 @@ source containing the files managed by chezmoi.
 
 ## Beginner view: files you are expected to use
 
-Most users interact with only these locations:
+Most users interact with these locations. The Developer subtree below is an
+**existing-layout example**, not a template the runner imposes. Numbered or
+legacy folders are retained; new purpose-oriented layouts use plain names.
 
 ```text
 ~/Developer/                           cloned project repositories
@@ -80,14 +86,16 @@ Users normally inspect them only for troubleshooting, auditing, or rollback.
 
 ## Technical ownership tree
 
-The required setup produces or manages the following structure. Entries marked
-**conditional** depend on the selected hosting track or development stack.
+This ownership map includes conditional and legacy paths; it is not a directory
+creation checklist. Hosting, stack, folder layout, and ghq selection each affect
+the result. In particular, old `_sandbox`/`_archive` folders are retained, not
+created by the new folder capability.
 
 ```text
 ~
 ├── Brewfile                              Homebrew desired state; managed by chezmoi
 │
-├── Developer/                            ghq root
+├── Developer/                            common development root; ghq is optional
 │   ├── github.com/                       Track 1 or 3 project repositories
 │   │   └── CodeByKwakes/
 │   │       └── day-one-mac/              optional contributor source checkout
@@ -158,6 +166,9 @@ The required setup produces or manages the following structure. Entries marked
 │   ├── track
 │   ├── track-schema-version
 │   ├── stack
+│   ├── folder-layout                     none, repository, purpose, or existing
+│   ├── ghq-choice                        yes or no; explicit opt-in
+│   ├── folder-ghq-root                   confirmed primary root for Keep existing
 │   ├── git-name
 │   ├── git-email
 │   ├── dotfiles-versioning      # git or local
@@ -183,7 +194,7 @@ The required setup produces or manages the following structure. Entries marked
 │   └── gh/                               Track 1 or 3
 │
 ├── .azure/                               Track 2 or 3
-├── .gitconfig                            conservative Git defaults and ghq root
+├── .gitconfig                            conservative Git defaults; optional ghq settings
 ├── .gitignore_global                     macOS and temporary-editor ignores
 ├── .zprofile                             loads the shared PATH configuration
 ├── .zshrc                                history, completion, fnm, aliases and Starship
@@ -373,7 +384,7 @@ Use commands rather than assumptions for implementation-owned locations:
 
 ```bash
 day-one-mac root
-ghq root
+ghq root                # only if selected; compare with reviewed layout
 chezmoi source-path
 chezmoi managed -p absolute
 brew --prefix

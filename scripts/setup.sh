@@ -13,6 +13,7 @@ source "$SCRIPT_DIR/lib/platform.sh"
 source "$SCRIPT_DIR/lib/state.sh"
 source "$SCRIPT_DIR/lib/operation-lock.sh"
 source "$SCRIPT_DIR/lib/deadline.sh"
+source "$SCRIPT_DIR/lib/developer-folders.sh"
 ORIGINAL_ARGS=("$@")
 STATE_ROOT="$(day_one_state_root)"
 STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
@@ -37,6 +38,10 @@ INSTALLATION_CENTRE_RAN=0
 GUIDED=1
 REQUESTED_PHASES=""
 TRACK=""
+FOLDER_LAYOUT=""
+GHQ_CHOICE=""
+FOLDER_GHQ_ROOT=""
+FOLDER_CHOICES_EXPLICIT=0
 STACK=""
 GIT_NAME=""
 GIT_EMAIL=""
@@ -90,6 +95,9 @@ Usage: ./setup.sh [options]
   --phase NN                  run one required phase; repeatable
   --track 1|2|3               1 GitHub; 2 Azure DevOps; 3 both
   --stack node|python|both    language toolchain selection
+  --layout LAYOUT             none, repository, purpose, or existing
+  --ghq no|yes                optional ghq; yes approves installation in the Centre
+  --ghq-root PATH             confirmed primary root for existing layout + ghq yes
   --auth-mode MODE            1password (default), keychain, external, or https
   --name "Full Name"          Git author name
   --email ADDRESS             primary Git author email
@@ -232,6 +240,10 @@ uses_python() { [[ "$STACK" == python || "$STACK" == both ]]; }
 
 load_or_choose_selections() {
   local saved_track saved_track_schema
+  folders_load_choices
+  if [[ -n "$FOLDER_LAYOUT" || -n "$GHQ_CHOICE" || -n "$FOLDER_GHQ_ROOT" ]]; then
+    folders_validate_choices || return $?
+  fi
   if [[ -z "$TRACK" ]]; then
     saved_track="$(state_value track)"
     saved_track_schema="$(state_value track-schema-version)"
@@ -336,7 +348,7 @@ phase_fingerprint() {
     08) inputs="$TRACK|$STACK|$GIT_NAME|$GIT_EMAIL|$PRIMARY_IDE|$AUTH_MODE|$DOTFILES_REPO|$DOTFILES_VERSIONING|applications=$application_catalog_hash" ;;
   esac
   { printf 'phase-schema=%s\n' "$schema"; printf 'implementation=%s\n' "$implementation";
-    printf 'inputs=%s\n' "$inputs|preset=${PRESET:-recommended-productivity}"; } \
+    printf 'inputs=%s\n' "$inputs|preset=${PRESET:-recommended-productivity}|layout=${FOLDER_LAYOUT:-}|ghq=${GHQ_CHOICE:-}|root=${FOLDER_GHQ_ROOT:-}"; } \
     | shasum -a 256 | awk '{print $1}'
 }
 
@@ -361,7 +373,8 @@ phase_done() {
 }
 
 required_formulae() {
-  printf '%s\n' chezmoi ghq git jq ripgrep starship zsh
+  printf '%s\n' chezmoi git jq ripgrep starship zsh
+  [[ "${GHQ_CHOICE:-}" != yes ]] || printf '%s\n' ghq
   if uses_node; then printf '%s\n' fnm pnpm; fi
   uses_python && printf '%s\n' uv
   uses_github && printf '%s\n' gh
@@ -397,6 +410,7 @@ installation_centre_components_ready() {
   done <<<"$application_list"
   while IFS= read -r formula; do
     [[ -n "$formula" ]] || continue
+    if [[ "$formula" == ghq ]] && have ghq; then continue; fi
     brew list --formula "$formula" >/dev/null 2>&1 || return 1
   done <<<"$formula_list"
 }
@@ -662,6 +676,8 @@ choose_installation_centre_policy() {
 run_installation_centre() {
   local app_id formula rc missing_count=0 previous_policy="$APP_INSTALL_POLICY"
   local app_ids="" formulae="" application_list
+  folders_validate_choices || return $?
+  folders_inspect_paths || return $?
   ui_title '📦' 'Required Installation Centre'
   info 'Applications are installed and ownership-checked here before configuration begins.'
   info "Guide: $DOC_DIR/01-required/INSTALLATION-CENTRE.md"
@@ -713,7 +729,10 @@ run_installation_centre() {
   done < <(required_formulae)
   ui_section '🧰' 'Required command-line tools'
   info "selected for Track $TRACK and stack $STACK: $formulae"
-  for formula in $formulae; do install_formula "$formula"; done
+  for formula in $formulae; do
+    if [[ "$formula" == ghq ]] && have ghq; then info 'Reusing existing ghq; not claiming package ownership'; continue; fi
+    install_formula "$formula"
+  done
   [[ "$DRY_RUN" == 1 ]] || hash -r 2>/dev/null || true
 
   if [[ "$DRY_RUN" != 1 ]] && ! installation_centre_components_ready; then
@@ -915,7 +934,7 @@ required_phase_impact() {
     01) printf 'Record track, stack and Git identity. Manual: confirm macOS update and verified backup or disposable data.' ;;
     02) printf 'Install/verify Apple developer tools and native Homebrew; update Homebrew. Manual: Apple installer, licence and administrator approval.' ;;
     03) printf 'Require Installation Centre; configure selected %s authentication and SSH; require FileVault. Manual: account/key approval and recovery method.' "$AUTH_MODE" ;;
-    04) printf 'Require Installation Centre; configure Git defaults and Developer folders for track %s. Manual: provider sign-in and authentication tests.' "$TRACK" ;;
+    04) printf 'Require Installation Centre; configure Git defaults and Developer layout %s; ghq %s. Missing choices require explicit review. Manual: provider sign-in and authentication tests.' "${FOLDER_LAYOUT:-unselected}" "${GHQ_CHOICE:-unselected}" ;;
     05) printf 'Require Installation Centre; review/apply chezmoi source, manage shell files and Starship, verify/change login shell. Preserve conflicting user files for review.' ;;
     06) printf 'Require Installation Centre; install/update %s toolchains (Node LTS via fnm and/or Python via uv); configure pnpm when selected.' "$STACK" ;;
     07) if [[ "$PRESET" == core ]]; then printf 'Not required for core preset.'
@@ -1016,13 +1035,15 @@ check_required_phase() {
       # Guard the Apple Git shim on fresh Macs: do not trigger CLT installation.
       selected="$(xcode-select -p 2>/dev/null || true)"
       if [[ -n "$selected" && -d "$selected" ]] && have git; then
-        for key in user.name user.email ghq.root; do
-          case "$key" in user.name) target="$GIT_NAME" ;; user.email) target="$GIT_EMAIL" ;; ghq.root) target="$HOME/Developer" ;; esac
+        for key in user.name user.email; do
+          case "$key" in user.name) target="$GIT_NAME" ;; user.email) target="$GIT_EMAIL" ;; esac
           if [[ -n "$target" && "$(git config --global --get "$key" 2>/dev/null || true)" == "$target" ]]; then
             required_check_note pass "Git $key matches selection"
           else required_check_note fail "Git $key is missing or differs from selection"; fi
         done
       else required_check_note fail 'Git configuration cannot be checked until developer tools are ready'; fi
+      if details="$(folders_check 2>&1)"; then required_check_note pass "$details"
+      else required_check_note fail "$details"; fi
       while IFS= read -r component; do required_check_app "$component"; done < <(required_application_ids)
       required_check_note manual 'Hosting sessions, SSH reachability and full Git defaults require Phase 4; no login or network probe ran'
       ;;
@@ -1079,6 +1100,9 @@ inspect_required_actions() {
     if [[ -n "$checked_at" ]]; then required_json_string "$checked_at"; else printf null; fi
     printf ',"selection":{"track":'; required_json_string "$TRACK"
     printf ',"stack":'; required_json_string "$STACK"
+    printf ',"folder_layout":'; required_json_string "${FOLDER_LAYOUT:-}"
+    printf ',"ghq":'; required_json_string "${GHQ_CHOICE:-}"
+    printf ',"ghq_root":'; required_json_string "${FOLDER_GHQ_ROOT:-}"
     printf ',"preset":'; required_json_string "$PRESET"
     printf ',"auth_mode":'; required_json_string "$AUTH_MODE"
     printf ',"primary_ide":'; required_json_string "$PRIMARY_IDE"
@@ -1089,6 +1113,7 @@ inspect_required_actions() {
     printf 'Required setup %s — local read-only inspection\n' "$action"
     printf 'Track: %s | Stack: %s | Preset: %s | Authentication: %s | Dotfiles: %s\n' "$TRACK" "$STACK" "$PRESET" "$AUTH_MODE" "$DOTFILES_VERSIONING"
     printf 'Primary IDE: %s | Early macOS settings: %s\n' "$PRIMARY_IDE" "$MACOS_SETTINGS_PLAN"
+    printf 'Developer layout: %s | ghq: %s\n' "${FOLDER_LAYOUT:-unselected}" "${GHQ_CHOICE:-unselected}"
     printf 'Recorded completion is not live health. Manual/network/GUI checks are not automated here.\n'
     [[ -z "$checked_at" ]] || printf 'Checked at: %s\n' "$checked_at"
   fi
@@ -1207,6 +1232,9 @@ while [[ $# -gt 0 ]]; do
       ;;
     --track) shift; [[ $# -gt 0 ]] || { err "--track needs 1, 2, or 3"; exit 2; }; TRACK="$1"; TRACK_EXPLICIT=1 ;;
     --stack) shift; [[ $# -gt 0 ]] || { err "--stack needs node, python, or both"; exit 2; }; STACK="$1" ;;
+    --layout) shift; [[ $# -gt 0 ]] || exit 2; FOLDER_LAYOUT="$1"; FOLDER_CHOICES_EXPLICIT=1 ;;
+    --ghq) shift; [[ $# -gt 0 ]] || exit 2; GHQ_CHOICE="$1"; FOLDER_CHOICES_EXPLICIT=1 ;;
+    --ghq-root) shift; [[ $# -gt 0 ]] || exit 2; FOLDER_GHQ_ROOT="$1"; FOLDER_CHOICES_EXPLICIT=1 ;;
     --name) shift; [[ $# -gt 0 ]] || { err "--name needs a value"; exit 2; }; GIT_NAME="$1" ;;
     --email) shift; [[ $# -gt 0 ]] || { err "--email needs a value"; exit 2; }; GIT_EMAIL="$1" ;;
     --preset) shift; [[ $# -gt 0 ]] || { err "--preset needs core or recommended-productivity"; exit 2; }; PRESET="$1" ;;
@@ -1262,11 +1290,11 @@ fi
 if [[ "$SETUP_ACTION" == resume ]]; then
   for option in "${ORIGINAL_ARGS[@]}"; do
     case "$option" in
-      --track|--stack|--name|--email|--preset|--primary-ide|--dotfiles-repo|--new-dotfiles|--dotfiles-versioning|--local-dotfiles|--auth-mode|--macos-settings|--skip-macos-settings)
+      --layout|--ghq|--ghq-root|--track|--stack|--name|--email|--preset|--primary-ide|--dotfiles-repo|--new-dotfiles|--dotfiles-versioning|--local-dotfiles|--auth-mode|--macos-settings|--skip-macos-settings)
         err '--resume reuses saved choices; use --plan and --apply to change them.'; exit 2 ;;
     esac
   done
-  for selection in track stack git-name git-email preset primary-ide auth-mode dotfiles-versioning macos-settings-plan; do
+  for selection in folder-layout ghq-choice track stack git-name git-email preset primary-ide auth-mode dotfiles-versioning macos-settings-plan; do
     [[ -n "$(state_value "$selection")" ]] || {
       err "No complete saved selection ($selection is missing). Run --plan then --apply first."; exit 2; }
   done
@@ -1343,11 +1371,12 @@ if [[ -n "$SSH_PIN_PROVIDER" ]]; then
       if uses_azure; then export_provider_public_key azure || ssh_pin_failures=1; fi
       ;;
   esac
-  [[ "$ssh_pin_failures" == 0 ]] || { err "No public key was pinned."; exit 1; }
+  [[ "$ssh_pin_failures" == 0 ]] || { err "At least one provider pin failed; review the per-provider results above."; exit 1; }
   exit 0
 fi
 
 if [[ "$SHOW_STATUS" == 1 ]]; then
+  folders_load_choices
   TRACK="${TRACK:-$(state_value track)}"
   STACK="${STACK:-$(state_value stack)}"
   GIT_NAME="${GIT_NAME:-$(state_value git-name)}"
@@ -1371,6 +1400,14 @@ if [[ "$SHOW_STATUS" == 1 ]]; then
 fi
 
 load_or_choose_selections
+if [[ "$RUN_INSTALLATION_CENTRE" == 1 ]] || required_phase_selected 03 || required_phase_selected 04 \
+    || required_phase_selected 05 || required_phase_selected 06 || required_phase_selected 07 || required_phase_selected 08; then
+  folders_validate_choices
+fi
+if [[ -n "$FOLDER_LAYOUT" || -n "$GHQ_CHOICE" ]]; then
+  folders_validate_choices
+  folders_save_choices
+fi
 save_state_value project-root "$PROJECT_DIR"
 save_state_value track "$TRACK"
 save_state_value track-schema-version "$TRACK_SCHEMA_VERSION"

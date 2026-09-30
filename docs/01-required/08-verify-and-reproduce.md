@@ -73,7 +73,7 @@ It records pass/fail results for:
 
 - Native Apple-silicon execution, Xcode or Command Line Tools readiness, and
   Homebrew at the Apple-silicon `/opt/homebrew` prefix.
-- Git identity, the `ghq` repository root, chezmoi, Starship, Raycast, Warp,
+- Git identity, selected developer folders and optional `ghq` root, chezmoi, Starship, Raycast, Warp,
   and the VS Code CLI.
 - The ownership source of every required catalogue item: 1Password, its CLI,
   Raycast, VS Code, Warp, and JetBrains Mono Nerd Font.
@@ -104,7 +104,7 @@ or open it in TextEdit:
 open -e "$HOME/.day-one-mac/verification.md"
 ```
 
-It is a Markdown table; every row ending in `FAIL` or `REVIEW` needs attention.
+It is a Markdown table; every `FAIL` or pending `REVIEW` row needs attention.
 
 Installed software is not enough; the command must work in the environment
 where it will be used.
@@ -117,6 +117,80 @@ The application ownership detail is also written to:
 
 An external or Mac App Store result is a pass. It means that the app remains
 the responsibility of Company Portal, the App Store, or its existing installer.
+
+### SSH authentication and existing key storage
+
+These are separate checks. Selecting 1Password changes the intended Git
+authentication route; it does not grant permission to delete earlier keys.
+
+For SSH modes, Phase 8 tests each selected provider with strict host checking.
+It never accepts a new or changed host key. In 1Password mode it also requires
+every selected provider's physical public pin to match an identity offered by
+the 1Password agent, and the effective SSH configuration to use that socket,
+that pin alone, and `IdentitiesOnly yes`. An unrelated agent identity is not
+enough. A missing pin, configuration override, locked/unavailable agent or
+failed provider test stops the audit. Diagnostics are suppressed; use the
+[SSH troubleshooting guide](../manual/ssh-signing-and-recovery.md#troubleshoot-without-weakening-the-boundary)
+locally, and independently confirm the provider identifies the intended account.
+HTTPS mode skips SSH tests; CLI sessions are checked separately and do not
+prove HTTPS access to every repository. Authentication is not commit-signature
+verification or evidence of write access.
+
+The storage inventory reads the physical `~/.ssh` tree, including hidden and
+nested files. It looks for recognised private-key headers regardless of the
+filename or `.pub` suffix, and treats non-public `id_*` files as candidates
+even when malformed. Physical Unix sockets, such as SSH-agent endpoints, are
+reported as SKIP: they are communication endpoints, not key files. The audit
+does not connect to them or assess their trust, and still scans files beside
+them. A socket cannot satisfy a required Keychain key-file check.
+It does not follow symlinks, including links to sockets; unreadable files,
+links, other special files (such as FIFOs) and incomplete scans block
+verification rather than producing a clean result.
+This is not a whole-disk or all-formats secret scan: keys outside
+this tree and unrecognised formats without a conventional name may be missed.
+Do not move or rename keys to make them disappear from the report.
+
+| Result | Meaning and next action |
+|---|---|
+| PASS | The named check passed; for expected Keychain provider keys, encryption was detected |
+| REVIEW | An encrypted legacy/additional key was found; decide whether its retention is justified |
+| REVIEWED | You explicitly approved retaining that encrypted file during this audit; this is **not** a vault-only setup |
+| SKIP | A physical Unix socket was excluded from key-file checks; this is not an authentication or endpoint-security pass |
+| FAIL | A key is unprotected/unverifiable, a scan failed, or an authentication check failed; repair the named issue |
+
+The encryption probe uses an empty passphrase non-interactively. It never asks
+for or records the real passphrase, and does not measure its strength. Key
+bytes are not printed or added to dotfiles. The audit does not change keys,
+provider registrations, the SSH agent allow-list or global Git signing settings.
+
+**Shared manual review, before approving retention:**
+
+1. Identify the named file's owner and purpose. Inspect its matching **public**
+   key's fingerprint, not the private contents.
+2. Check other host configurations, repository/identity-specific signing
+   settings and recovery procedures that may still depend on it. Successful
+   GitHub authentication alone does not prove the old key is unused.
+3. Verify the replacement route and a recovery plan. For an imported key with
+   the same fingerprint, revoking the old provider registration also revokes
+   the vault-backed copy; do not confuse deleting a redundant local copy with
+   revoking an identity.
+4. If retention is intentional, keep a private note of its purpose and review
+   date. Otherwise arrange a separately approved migration or retirement with
+   the key's owner. Never commit the private key, even to a private repository.
+
+**Script-assisted continuation:** rerun `day-one-mac setup --phase 08` in a
+terminal **without `--yes`**. For each encrypted legacy/additional file, type
+`retain` only after the review above. Return leaves it at REVIEW. Approval is
+per file, per audit; the file is checked again for changes after approval.
+`--yes` and redirected/non-interactive input cannot approve retention. Pending
+reviews return the manual-action status (10); failures take precedence. Expected
+encrypted keys for the selected Keychain providers need no extra retention
+prompt; additional keys do. Unprotected or unverifiable files cannot use this
+exception. Nothing is deleted automatically.
+
+**Manual route:** perform the same ownership, protection, authentication and
+recovery review without Day One Mac commands and record the outcome yourself.
+No runner report or approval marker is created.
 
 ## Step 8.3 — Record Homebrew desired state
 
@@ -324,6 +398,8 @@ locations with `brew --prefix`, `chezmoi source-path`, `pnpm store path`, and
 | Symptom | Resolution |
 |---|---|
 | The verification report contains one failure | Return to the named owning phase; do not mark Phase 8 complete manually |
+| Encrypted legacy key remains REVIEW | Complete the per-file review above; rerun interactively without `--yes`. Do not delete or rename it just to pass |
+| Provider SSH check fails after an agent check passes | Review the selected public pin, effective host configuration and provider trust; agent presence alone is insufficient |
 | A required app passes but is absent from the Brewfile | Check `application-provenance.md`; external applications correctly remain outside Homebrew desired state |
 | `brew bundle dump` says the Brewfile exists | Review and preserve it; the runner intentionally refuses overwrite |
 | `chezmoi add ~/Brewfile` includes unexpected edits | Inspect `chezmoi diff` and apply only reviewed targets |
@@ -335,8 +411,10 @@ locations with `brew --prefix`, `chezmoi source-path`, `pnpm store path`, and
 ## Phase 8 completion checklist 🚦
 
 - [ ] The project validator run by Phase 8 passes.
-- [ ] The machine verification report contains no failed gate.
-- [ ] `ghq root` reports the intended `~/Developer` root.
+- [ ] The machine verification report contains no failed gate or pending review.
+- [ ] Each retained encrypted legacy key is explicitly reviewed; the report does
+      not describe a setup with retained disk keys as vault-only.
+- [ ] Selected folders exist; if ghq was selected, its roots match the [reviewed layout](../manual/developer-folders.md).
 - [ ] `day-one-mac runtime-status` reports `standalone runtime` and `Integrity: verified`.
 - [ ] `day-one-mac root` reports the active versioned runtime (or the intentional linked source for contributors).
 - [ ] `day-one-mac finalize --help` confirms that post-setup record

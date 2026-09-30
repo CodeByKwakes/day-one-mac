@@ -2,6 +2,12 @@
 
 # Required application setup
 
+For all registered apps and formulae, including conditional and optional tools,
+use the [software catalogue](../20-reference/SOFTWARE-CATALOGUE.md).
+The productivity apps below are omitted by the `core` preset; 1Password is
+selected only for its authentication mode. For complete credential setup, start
+with the [security learning path](../manual/security.md).
+
 The Installation Centre verifies the required desktop applications and asks how to provide only
 those that are missing. An existing valid copy from a company portal, the Mac App Store,
 or a trusted manual installer is kept as-is. This hub explains when to open

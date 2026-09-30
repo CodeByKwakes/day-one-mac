@@ -211,6 +211,7 @@ for relative in \
   install-manifest.tsv path-manifest.tsv originals verification.md \
   application-provenance.md application-provenance.tsv wizard-selections.md \
   track track-schema-version stack git-name git-email dotfiles-repo \
+  folder-layout ghq-choice folder-ghq-root \
   dotfiles-versioning macos-settings-plan optional-modules ai-clients \
   database-services mcp-servers setup.log macos-settings finalized-at \
   finalization.md

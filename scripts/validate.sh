@@ -86,6 +86,15 @@ required_docs=(
   install-day-one-mac
   README.md
   docs/README.md
+  docs/manual/README.md
+  docs/manual/chezmoi.md
+  docs/manual/second-brain.md
+  docs/manual/security.md
+  docs/manual/1password.md
+  docs/manual/keychain-ssh.md
+  docs/manual/ssh-signing-and-recovery.md
+  docs/20-reference/SOFTWARE-CATALOGUE.md
+  docs/20-reference/DOCUMENTATION-COMMANDS.md
   docs/START-HERE.md
   docs/PROCESS-OVERVIEW.md
   docs/NEW-DEVICE-SETUP-BLUEPRINT.md
@@ -389,6 +398,9 @@ required_scripts=(
   configure-databases.sh
   optional-status.sh
   configure-cli-tools.sh
+  configure-folders.sh
+  lib/developer-folders.sh
+  tests/test-developer-folders.sh
   configure-macos-settings.sh
   workspace-manager.sh
   finalize-setup.sh
@@ -409,6 +421,8 @@ required_scripts=(
   tests/test-chezmoi-vscode-tools.sh
   tests/test-day-one-mac.sh
   tests/test-required-actions.sh
+  tests/test-docs.sh
+  docs.sh
   tests/test-preflight.sh
   tests/test-secret-scan-and-ssh.sh
   tests/test-phase3-onepassword.sh
@@ -460,8 +474,8 @@ if grep -Fq 'exec bash "$HERE/setup.sh" "$@"' "$SCRIPT_DIR/bootstrap-day-one-mac
    && grep -Fq 'day_one_require_apple_silicon' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq 'verify_apple_developer_tools' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq 'for phase in 01 02 03 04 05 06 07 08' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
-   && grep -Fq 'printf '\''%s\n'\'' chezmoi ghq git jq ripgrep starship zsh' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
-   && grep -Fq 'git config --global ghq.root' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'printf '\''%s\n'\'' chezmoi git jq ripgrep starship zsh' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'folders_apply' "$SCRIPT_DIR/phases/04-hosting.sh" \
    && grep -Fq 'git config --global push.autoSetupRemote true' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq 'git config --global core.excludesFile' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq 'if [[ "$PRIMARY_IDE" == vscode ]]' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
@@ -926,6 +940,14 @@ run_fixture "Day One Mac regression fixture passes" \
 run_fixture "required phase actions preserve read-only and resume boundaries" \
   "required phase action regressions failed" \
   "$SCRIPT_DIR/tests/test-required-actions.sh" || true
+
+run_fixture "developer folders preserve existing layouts and make ghq optional" \
+  "developer folder regressions failed" \
+  /bin/bash "$SCRIPT_DIR/tests/test-developer-folders.sh" || true
+
+run_fixture "offline documentation exports preserve navigation and privacy boundaries" \
+  "offline documentation regressions failed" \
+  "$SCRIPT_DIR/tests/test-docs.sh" || true
 
 run_fixture "optional database installer is idempotent and diagnostic" \
   "optional database installer regression fixture failed" \

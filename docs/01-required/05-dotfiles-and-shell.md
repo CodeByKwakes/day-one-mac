@@ -225,6 +225,12 @@ starts Homebrew zsh with an almost empty environment and verifies both shell
 kinds, so it cannot accidentally pass because the parent terminal already had
 Homebrew on PATH.
 
+Every required command, alias, and PATH check must pass in each shell; a later
+successful check cannot hide an earlier failure. When Node.js is selected, the
+pnpm environment checks must pass too. A stricter check may expose a problem
+that an earlier run missed; review the failure before retrying rather than
+assuming the existing configuration needs replacing.
+
 `SHARE_HISTORY` makes commands entered in one Warp tab available in another.
 Remove only that option through `chezmoi edit ~/.zshrc` if separate per-tab
 history is preferred; the history file and the remaining safety options still
@@ -233,9 +239,19 @@ work.
 ### Existing `.zshenv` files
 
 Day One Mac does not create `.zshenv`, because that file affects every zsh,
-including scripts. Phase 5 stops for review if an existing `.zshenv` changes
-`ZDOTDIR` or disables normal startup files with `unsetopt RCS`. The safety
-report and cleanup inventory include the file, but never rewrite it blindly.
+including scripts. Before initializing chezmoi or adopting files, Phase 5
+checks the existing `.zshenv` for recognized `ZDOTDIR` assignments and
+`unsetopt RCS` settings that redirect or disable normal startup files. If it
+finds one, it stops for review and leaves the layout intact. Review it with
+whoever maintains that configuration before retrying; do not remove it merely
+to make the check pass.
+
+This is a limited text check, not a complete analysis of arbitrary shell code.
+It does not execute `.zshenv` during inspection or certify a remote dotfiles
+repository. Phase 5 repeats the check after an explicitly reviewed apply from
+an existing chezmoi source, before adopting the standard shell files. The
+safety report and cleanup inventory include `.zshenv`, but never rewrite it
+blindly.
 
 ## Step 5.3a — Safe aliases
 
@@ -685,8 +701,6 @@ section. The required values are equivalent to:
     excludesFile = /Users/your-name/.gitignore_global
 [merge]
     conflictStyle = zdiff3
-[ghq]
-    root = /Users/your-name/Developer
 ```
 
 When VS Code was selected as the primary IDE, additional `core.editor`,
@@ -706,10 +720,14 @@ git config --global --get fetch.prune
 git config --global --get push.autoSetupRemote
 git config --global --get core.excludesFile
 git config --global --get merge.conflictStyle
-git config --global --get ghq.root
 ```
 
 ### `~/.gitignore_global`
+
+ghq is optional. Preserve its reviewed configuration in the owning source;
+do not copy a universal root into every Mac's Git config. See the
+[manual folder and ghq guide](../manual/developer-folders.md) for plain files,
+chezmoi templates, and multi-root setups.
 
 The managed baseline contains only operating-system and temporary editor
 files. Add project-specific patterns to the repository's own `.gitignore`.
@@ -881,9 +899,9 @@ line from Step 5.3 is absent.
 Then verify:
 
 ```bash
-command -v brew git ghq chezmoi starship day-one-mac
+command -v brew git chezmoi starship day-one-mac
 command -v zsh # must print /opt/homebrew/bin/zsh
-ghq root
+ghq root                 # only if selected; compare with the reviewed layout
 day-one-mac root
 chezmoi doctor
 chezmoi source-path

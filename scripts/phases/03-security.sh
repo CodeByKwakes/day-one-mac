@@ -113,19 +113,98 @@ public_key_is_valid() {
   esac
 }
 
-# Print the 1Password SSH Key item titles that look like they belong to a
-# provider. Matching is on the title, so the Step 3.4 naming convention
-# ("GitHub — Personal — Authentication") is what makes this work.
-onepassword_ssh_item_titles() {
-  local pattern="$1"
-  op item list --categories "SSH Key" --format json 2>/dev/null \
-    | jq -r --arg p "$pattern" \
-        '.[] | select((.title // "") | ascii_downcase | contains($p)) | .title' 2>/dev/null
+# Titles discover candidates, but are neither an identity nor proof of access.
+# Retain stable item IDs so duplicate titles cannot redirect the public read.
+onepassword_ssh_items() (
+  local pattern="$1" tmp
+  tmp="$(mktemp -t day-one-mac-items)" || return 1
+  trap 'rm -f "$tmp" "${tmp}.deadline"' EXIT
+  trap 'exit 130' INT
+  trap 'exit 143' TERM
+  run_with_deadline "$tmp" 20 op item list --categories "SSH Key" --format json || return 1
+  jq -ce --arg p "$pattern" '
+    if type != "array" then error("expected item list") else
+      [.[] | select((.title // "") | ascii_downcase | contains($p)) |
+        if (.id | type) != "string" or (.id | test("^[a-zA-Z0-9]{26}$") | not)
+        then error("expected item ID") else {id, title} end]
+    end' "$tmp" 2>/dev/null
+)
+
+# Parse real key material, not just its prefix. Only the fingerprint escapes
+# the private temporary file; ssh-keygen diagnostics and key bytes stay hidden.
+public_key_fingerprint() (
+  local value="$1" tmp result
+  public_key_is_valid "$value" || return 1
+  tmp="$(mktemp -t day-one-mac-fingerprint)" || return 1
+  trap 'rm -f "$tmp"' EXIT
+  trap 'exit 130' INT
+  trap 'exit 143' TERM
+  printf '%s\n' "$value" > "$tmp"
+  result="$(ssh-keygen -l -E sha256 -f "$tmp" 2>/dev/null)" || return 1
+  [[ "$result" != *$'\n'* ]] || return 1
+  printf '%s\n' "$result" | awk '$2 ~ /^SHA256:/ {print $2}'
+)
+
+verify_public_key_with_onepassword_agent() {
+  local provider="$1" value="$2" fingerprint identities
+  fingerprint="$(public_key_fingerprint "$value")" || fingerprint=""
+  if [[ -z "$fingerprint" ]]; then
+    warn "The $provider pin is not a parseable single public key. Nothing was changed."
+    return 1
+  fi
+  if [[ "$provider" == azure && "$value" != 'ssh-rsa '* ]]; then
+    warn 'The Azure DevOps pin must be an RSA public key. Nothing was changed.'
+    return 1
+  fi
+  identities="$(agent_identities "$ONEPASSWORD_AGENT_SOCK")"
+  if ! printf '%s\n' "$identities" | awk -v fp="$fingerprint" '$2 == fp {found=1} END {exit !found}'; then
+    warn "The selected $provider key ($fingerprint) is not offered by the 1Password SSH agent."
+    warn 'Unlock 1Password and review the intended item and agent allow-list; do not enable unrelated keys just to pass this check.'
+    return 1
+  fi
+  info "Verified $provider public-key fingerprint: $fingerprint"
 }
+
+verify_existing_provider_key_pins() {
+  local provider target value
+  for provider in github azure; do
+    case "$provider" in
+      github) uses_github || continue; target="$HOME/.ssh/github-auth.pub" ;;
+      azure) uses_azure || continue; target="$HOME/.ssh/azure-devops-auth.pub" ;;
+    esac
+    [[ -e "$target" || -L "$target" ]] || continue
+    if [[ -L "$HOME/.ssh" || -L "$target" || ! -f "$target" || ! -r "$target" ]]; then
+      warn "Review the physical public-key file at $target; it was not changed."
+      return 1
+    fi
+    value="$(cat "$target")" || return 1
+    verify_public_key_with_onepassword_agent "$provider" "$value" || return 1
+  done
+}
+
+# Fetch only the public field, never the complete SSH item. Subshell traps keep
+# cleanup local to this read and do not replace the runner's own traps.
+onepassword_public_key_value() (
+  local tmp result
+  tmp="$(mktemp -t day-one-mac-pubkey)" || return 1
+  trap 'rm -f "$tmp" "${tmp}.deadline"' EXIT
+  trap 'exit 130' INT
+  trap 'exit 143' TERM
+  if run_with_deadline "$tmp" 20 op item get "$1" --fields 'label=public key' --format json; then
+    # CLI versions may encode a selected field as an object or an array.
+    # Require exactly one public field; never accept a complete item response.
+    jq -er 'if type == "array" then . else [.] end |
+      if length == 1 and .[0].label == "public key" and (.[0].value | type) == "string"
+      then .[0].value else error("expected one public field") end' "$tmp" 2>/dev/null
+  else
+    result=$?
+    return "$result"
+  fi
+)
 
 # Save a provider's 1Password public key as the pinned ~/.ssh/<provider>-auth.pub.
 export_provider_public_key() {
-  local provider="$1" target pattern label titles narrowed narrowed_count title count value tmp status
+  local provider="$1" target pattern label items candidates item_id title count choice value status fingerprint
   case "$provider" in
     github) target="$HOME/.ssh/github-auth.pub"; pattern=github; label='GitHub' ;;
     azure)  target="$HOME/.ssh/azure-devops-auth.pub"; pattern=azure; label='Azure DevOps' ;;
@@ -135,67 +214,59 @@ export_provider_public_key() {
   have op || { warn "The 1Password CLI ('op') is required to export a public key."; return 1; }
   have jq || { warn "'jq' is required to export a public key; rerun the Installation Centre."; return 1; }
 
-  titles="$(onepassword_ssh_item_titles "$pattern")"
-  count="$(printf '%s' "$titles" | grep -c . || true)"
+  if ! items="$(onepassword_ssh_items "$pattern")"; then
+    warn 'Could not list SSH key candidates in 1Password within 20 seconds. Unlock the app and retry.'
+    return 1
+  fi
+  candidates="$(printf '%s' "$items" | jq -c '[.[] | select(.title | test("signing|sign key"; "i") | not)]')" || return 1
+  count="$(printf '%s' "$candidates" | jq 'length')"
   if [[ "$count" -eq 0 ]]; then
-    warn "No 1Password SSH Key item has '$pattern' in its title."
+    warn "No authentication candidate has '$pattern' in its title; signing-labelled items are excluded."
     warn "Create the key in Step 3.4 and name it by provider, for example '$label — Personal — Authentication'."
     return 1
   fi
+  choice=1
   if [[ "$count" -gt 1 ]]; then
-    # Holding both an authentication key and a signing key is normal and
-    # correct — GitHub treats them as different key types. Only the
-    # authentication key belongs in an IdentityFile, so narrow rather than
-    # asking the user to rename a sensible pair.
-    narrowed="$(printf '%s\n' "$titles" | grep -vi 'signing\|sign key' || true)"
-    narrowed_count="$(printf '%s' "$narrowed" | grep -c . || true)"
-    if [[ "$narrowed_count" -eq 1 ]]; then
-      info "Ignoring the signing key; an IdentityFile pins the authentication key."
-      titles="$narrowed"; count=1
-    elif [[ "$narrowed_count" -gt 1 ]]; then
-      # Still several: prefer an explicitly named authentication key.
-      narrowed="$(printf '%s\n' "$narrowed" | grep -i 'auth' || true)"
-      if [[ "$(printf '%s' "$narrowed" | grep -c . || true)" -eq 1 ]]; then
-        titles="$narrowed"; count=1
-      fi
+    info "Several 1Password SSH Key items match '$pattern'; choose the intended identity, not the best-looking title:"
+    printf '%s' "$candidates" | jq -r 'to_entries[] | "  \(.key + 1)) \(.value.title | tojson) [\(.value.id)]"'
+    if [[ "${ASSUME_YES:-0}" == 1 ]]; then
+      warn '--yes cannot choose between identities. Run interactively or use the manual route in Step 3.7.'
+      return 1
     fi
+    choice="$(ask 'Choose the intended key number (q cancels)' q '^([1-9][0-9]*|q)$')" || return 1
+    [[ "$choice" =~ ^[1-9][0-9]*$ && "${#choice}" -le 6 ]] || return 1
+    [[ "$choice" -le "$count" ]] || { warn 'No such key number; nothing was changed.'; return 1; }
   fi
-  if [[ "$count" -gt 1 ]]; then
-    warn "Several 1Password SSH Key items match '$pattern' and the authentication key is not obvious:"
-    while IFS= read -r title; do [[ -z "$title" ]] || warn "  $title"; done <<<"$titles"
-    warn "Add 'Authentication' to the title of the one Git should use, or save the public key manually with Step 3.7."
-    return 1
-  fi
-  title="$(printf '%s' "$titles" | sed -n '1p')"
-  info "Using the 1Password item: $title"
-  # An IdentityFile selects the key Git authenticates with. A signing key is a
-  # different role, so pinning one is almost certainly a mistake.
-  case "$title" in
-    *[Ss]igning*|*[Ss]ign\ [Kk]ey*)
-      warn "'$title' looks like a signing key, not an authentication key."
-      warn "If Git cannot authenticate afterwards, pin the authentication key instead."
-      ;;
-  esac
+  item_id="$(printf '%s' "$candidates" | jq -r --argjson n "$choice" '.[$n - 1].id')"
+  title="$(printf '%s' "$candidates" | jq -c --argjson n "$choice" '.[$n - 1].title')"
+  info "Selected 1Password item: $title [$item_id]"
 
-  tmp="$(mktemp -t day-one-mac-pubkey)"
-  run_with_deadline "$tmp" 20 op item get "$title" --format json
-  status=$?
-  if [[ "$status" -ne 0 ]]; then
+  if value="$(onepassword_public_key_value "$item_id")"; then
+    :
+  else
+    status=$?
     [[ "$status" -eq 124 ]] \
       && warn "Reading '$title' from 1Password timed out; approve the prompt and retry." \
-      || warn "Could not read '$title' from 1Password."
-    while IFS= read -r line; do [[ -z "$line" ]] || warn "  $line"; done < "$tmp"
-    rm -f "$tmp"
+      || warn "Could not read exactly one public-key field from '$title' in 1Password."
+    warn "Review the public-key field in the 1Password app or use the manual route in Step 3.7."
     return 1
   fi
-  value="$(jq -r '.fields[]? | select((.label // "") == "public key") | .value' < "$tmp" 2>/dev/null | sed -n '1p')"
-  rm -f "$tmp"
   value="${value%"${value##*[![:space:]]}"}"
 
   if ! public_key_is_valid "$value"; then
     warn "'$title' did not yield a usable public key."
     warn "Expected one line beginning 'ssh-ed25519 ' or 'ssh-rsa '. Nothing was written to ~/.ssh."
-    warn "Check the item's field labels with: op item get \"$title\""
+    warn "Review the public-key field in the 1Password app; do not export the complete item."
+    return 1
+  fi
+
+  verify_public_key_with_onepassword_agent "$provider" "$value" || return 1
+  fingerprint="$(public_key_fingerprint "$value")" || return 1
+  confirm "Save $label key $title [$item_id], fingerprint $fingerprint, to $target?" || return 1
+  # Check again after the confirmation: the app may have locked meanwhile.
+  verify_public_key_with_onepassword_agent "$provider" "$value" || return 1
+  if [[ -L "$HOME/.ssh" || -L "$target" || ( -e "$target" && ! -f "$target" ) ]]; then
+    warn "Refusing a linked or non-file pin path: $target"
     return 1
   fi
 
@@ -319,8 +390,7 @@ ONEPASSWORD_AGENT_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/
 agent_identities() {
   local sock="$1" out
   if [[ -n "$sock" ]]; then
-    [[ -S "$sock" ]] || return 0
-    out="$(env SSH_AUTH_SOCK="$sock" ssh-add -l 2>/dev/null || true)"
+    out="$(env SSH_AUTH_SOCK="$sock" ssh-add -l -E sha256 2>/dev/null || true)"
   else
     out="$(ssh-add -l 2>/dev/null || true)"
   fi
@@ -348,22 +418,31 @@ require_rsa_for_azure() {
 # Offer to write the provider key pins rather than writing them unasked.
 offer_provider_key_pins() {
   local pinned=0
+  verify_existing_provider_key_pins || return 1
   if uses_github && [[ ! -f "$HOME/.ssh/github-auth.pub" ]]; then
     info "The GitHub public key is not pinned to ~/.ssh/github-auth.pub."
     info "Pinning adds an IdentityFile line, which is what makes IdentitiesOnly safe."
     if confirm "Save the GitHub public key from 1Password to ~/.ssh/github-auth.pub now?"; then
-      export_provider_public_key github && pinned=1 || warn "Falling back to the manual route in Step 3.7."
+      export_provider_public_key github || { warn 'Complete the manual route in Step 3.7, then retry.'; return 1; }
+      pinned=1
+    else
+      warn 'No GitHub pin approved. Complete Step 3.7, then retry.'
+      return 1
     fi
   fi
   if uses_azure && [[ ! -f "$HOME/.ssh/azure-devops-auth.pub" ]]; then
     warn "The Azure public key is not pinned. Azure DevOps accepts only the first key offered,"
     warn "so pinning matters whenever the agent holds more than one identity."
     if confirm "Save the Azure DevOps public key from 1Password to ~/.ssh/azure-devops-auth.pub now?"; then
-      export_provider_public_key azure && pinned=1 || warn "Falling back to the manual route in Step 3.7."
+      export_provider_public_key azure || { warn 'Complete the manual route in Step 3.7, then retry.'; return 1; }
+      pinned=1
+    else
+      warn 'No Azure pin approved. Complete Step 3.7, then retry.'
+      return 1
     fi
   fi
   [[ "$pinned" == 0 ]] || info "A pin was added; the SSH config below will include its IdentityFile."
-  return 0
+  verify_existing_provider_key_pins
 }
 
 # Classify without asking for a secret, changing the key, or printing key bytes.
@@ -476,7 +555,7 @@ phase_03_onepassword() {
   show_agent_identities "$identities"
   require_rsa_for_azure "$identities" || return "$EX_MANUAL"
   phase_step_done "1Password SSH agent exposes at least one usable identity"
-  offer_provider_key_pins
+  offer_provider_key_pins || return "$EX_MANUAL"
 }
 
 phase_03_keychain() {
@@ -539,5 +618,6 @@ phase_03() {
     return "$EX_MANUAL"
   }
   phase_step_done "FileVault is on"
-  ok "Git authentication ($AUTH_MODE) and FileVault verified"
+  ok "Authentication configuration ($AUTH_MODE) and FileVault verified locally"
+  info 'Provider authentication is checked separately in Phase 4.'
 }

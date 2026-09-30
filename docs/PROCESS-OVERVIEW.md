@@ -218,12 +218,16 @@ backup records you created while following the manual guide.
 
 ## 5. Understand required applications
 
-The base setup always expects these applications or payloads:
+The non-core productivity presets expect these applications or payloads:
 
 - Raycast;
 - Warp;
 - Visual Studio Code;
 - JetBrains Mono Nerd Font.
+
+The `core` preset omits this group. See the
+[software catalogue](20-reference/SOFTWARE-CATALOGUE.md) for every application,
+formula and conditional selection rule.
 
 The `1password` authentication mode additionally requires 1Password and the
 1Password CLI. The `keychain`, `external`, and `https` modes do not install or
@@ -280,15 +284,13 @@ The standalone runtime is:
 ~/.local/share/day-one-mac/current
 ```
 
-`ghq` uses `~/Developer` as its root:
-
-```text
-~/Developer/
-├── github.com/                       Track 1 or 3 project repositories
-├── dev.azure.com/                    Track 2 or 3
-├── _sandbox/                         disposable experiments
-└── _archive/                         inactive retained projects
-```
+Developer folders have four independent choices: no predefined layout,
+repository-oriented, purpose-oriented, or keep existing. All create/reuse
+`~/Developer`; only purpose-oriented adds `Projects`, `Sandbox`, `Resources`,
+and `Archive`. ghq is a separate opt-in, not a hosting-track requirement.
+When selected, it uses `~/Developer`, `~/Developer/Projects`, or the confirmed
+existing primary root according to the layout. See the
+[manual walkthrough and CLI capability](manual/developer-folders.md).
 
 See [Expected Day One Mac layout](20-reference/EXPECTED-LAYOUT.md) for the complete
 filesystem and ownership map.
@@ -453,10 +455,10 @@ After Phase 8, the Mac has:
 - Apple Command Line Tools and Homebrew;
 - GitHub, Azure DevOps, or both authenticated;
 - the selected Git authentication mode;
-- a predictable `~/Developer` layout managed with `ghq`;
+- an explicitly chosen developer layout, with ghq only if selected;
 - chezmoi-managed dotfiles and a Starship-enabled zsh shell;
 - Node with npm/pnpm, Python with uv, or both;
-- Raycast, Warp, and VS Code;
+- Raycast, Warp, and VS Code when a non-core productivity preset was selected;
 - a reviewed Brewfile and either a private dotfiles remote or a protected
   local-only source; and
 - on the script-assisted route, application provenance, audit evidence, and

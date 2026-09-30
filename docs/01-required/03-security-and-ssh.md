@@ -2,6 +2,11 @@
 
 # Phase 3 — Security, 1Password, and SSH
 
+For a route-focused beginner walkthrough, start with the
+[security learning path](../manual/security.md): separate 1Password and Keychain
+tutorials, provider registration, real signing verification and recovery. This
+phase page remains the detailed reference for the runner's gates.
+
 **Time:** 30–60 minutes · **Required:** everyone
 
 ## Outcome
@@ -17,7 +22,11 @@ written to `~/.ssh`**. That last guarantee holds in every mode except
 
 If an existing key is imported, its old disk copy is retained until
 authentication has been tested and you deliberately archive or remove that
-redundant copy.
+redundant copy. Selecting 1Password does not authorise deleting existing keys.
+Phase 8 checks the selected authentication route separately from existing key
+storage. An encrypted legacy key needs an explicit retention review; an
+unprotected or unverifiable key remains a blocker. See
+[Phase 8's key review](08-verify-and-reproduce.md#ssh-authentication-and-existing-key-storage).
 
 > 🏢 **Company-policy note:** If policy prohibits 1Password, you do not have to
 > stop. Choose another mode in Step 3.0. Do not install an unapproved
@@ -43,7 +52,7 @@ Choose the authentication mode in Step 3.0 before following a branch.
 | 3.4 | Create (or import) your SSH key | 1Password |
 | 3.5 | Confirm the agent can see the key | Terminal |
 | 3.6 | Register the **public** key with your provider | Browser *or* Terminal |
-| 3.7 | Pin a key to a provider — only if you need it | Terminal |
+| 3.7 | Pin the intended provider key (required by the 1Password runner) | Terminal |
 | 3.8 | Turn on FileVault | System Settings |
 | 3.9 | Run the phase | Terminal |
 
@@ -446,9 +455,13 @@ GitHub or Azure DevOps normally does not need replacing. Confirm the fingerprint
 and account in Step 3.6 rather than adding a duplicate.
 
 Do not delete the original files yet. Finish the phase, confirm the provider
-accepts the key in Phase 4, and keep a temporary encrypted backup first. After
-that, use 1Password Developer Watchtower to remove the redundant on-disk private
-key. This playbook deliberately provides no automatic `rm` for private keys.
+accepts the key in Phase 4, and keep a temporary encrypted backup first. Then
+review whether other hosts, signing identities or recovery procedures still
+depend on the disk copy. Retain it explicitly if needed, or use the approved
+owner-specific retirement procedure once its dependencies and recovery plan
+are resolved. Importing the same key into 1Password does not create a new
+identity: revoking that public key at the provider also revokes its vault-backed
+use. This playbook deliberately provides no automatic `rm` for private keys.
 
 ## Step 3.5 — Confirm the agent can see your key
 
@@ -657,10 +670,15 @@ will fail with `Permission denied (publickey)`.
 
 ## Step 3.7 — Pin provider keys when needed
 
-**Skip this step if the agent holds exactly one key and you are on Track 1 or 2.**
-Do it when you are on Track 3, when the agent holds several unrelated keys, or
-whenever Azure DevOps is involved and more than one key is visible — Azure
-accepts the first key offered and will not try a second.
+**Script-assisted 1Password route:** each selected provider needs a verified
+public-key pin before Phase 3 writes its SSH configuration. This also applies
+when the agent currently offers only one key: adding another key later must
+not silently change which identity Git uses.
+
+**Manual route:** pinning is recommended, and is especially important on
+Track 3 or when several unrelated keys are visible. Azure accepts the first
+key offered and will not try a second. Follow **The manual way** below without
+running Day One Mac commands.
 
 Doing this now, before Step 3.9, means the runner picks the files up on its
 first run.
@@ -699,21 +717,43 @@ day-one-mac ssh-pin github
 day-one-mac ssh-pin azure
 ```
 
-It finds the item by matching your track against the SSH Key titles in
-1Password, which is why the Step 3.4 naming convention matters. It refuses to
-write anything it cannot confirm is a single-line public key, so a wrong field
-or an ambiguous title stops with an explanation rather than putting the wrong
-thing in `~/.ssh`:
+The command finds candidates by provider name in their SSH Key titles and
+excludes titles labelled as signing keys. Titles are discovery hints, not
+proof of identity. It does **not** prefer a title containing “Authentication”
+over another candidate.
+
+When several candidates remain, choose their displayed number, or enter `q`
+to cancel. Each row includes the stable item ID, so duplicate titles remain
+distinct. `--yes` cannot choose between identities; non-interactive ambiguity
+stops without changing that provider's pin.
+
+The command requests only the selected item's `public key` field by ID, never
+the full item or its private key. It parses the key with OpenSSH and checks its
+SHA256 fingerprint against the **1Password** agent, not whichever agent your
+shell normally uses. Azure pins must themselves be RSA keys.
+
+Before saving, review the item title, ID, fingerprint and destination in the
+confirmation prompt. Confirm that this is the intended key from Step 3.4 and
+that its fingerprint matches the provider registration from Step 3.6. A match
+with the local agent alone does not prove access to your provider account.
+
+If a key is not offered by the agent, the command stops:
 
 ```text
-  ✗ Several 1Password SSH Key items match 'github':
-  ⚠   GitHub work
-  ⚠   GitHub personal
-  ⚠ Rename them so only one matches this provider, or save the public key manually with Step 3.7.
+  ⚠ The selected github key (SHA256:ExampleFingerprint) is not offered by the 1Password SSH agent.
 ```
 
-Phase 3 also offers to do this for you when it notices a pin is missing, so you
-may have already said yes there.
+Phase 3 offers this flow when a pin is missing. Declining, failing retrieval,
+or finding a mismatched existing pin leaves the phase incomplete **before**
+the SSH configuration and its chezmoi copy are changed. Existing pins are
+checked again on reruns; they are never silently replaced to satisfy the gate.
+The command also refuses symlink pin paths. On Track 3 each provider is a
+separate operation: a successfully saved first pin remains if the second fails.
+
+If retrieval fails, the command reports a sanitized error rather than printing
+the raw 1Password response. Check the 1Password app and CLI integration, then
+retry or use **The manual way** below. A timeout is reported separately; it
+does not mean the key is missing.
 
 ### The manual way
 
@@ -759,7 +799,13 @@ On Track 3:
 3072 SHA256:ZyXwVu987654ExampleFingerprint Azure DevOps — Work — Authentication (RSA)
 ```
 
-Every fingerprint must match the matching line from Step 3.5. Step 3.9 then adds an `IdentityFile` line
+Every fingerprint must match the intended line from Step 3.5 and the provider
+registration. If an existing pin differs, preserve a copy, review the correct
+item in 1Password, then explicitly rerun `day-one-mac ssh-pin github` (or
+`azure`) to replace it, or repeat the manual public-key copy. Do not broaden
+the agent's allow-list to unrelated keys merely to make the check pass.
+
+Step 3.9 then adds an `IdentityFile` line
 for each file it finds, which tells OpenSSH exactly which identity to request
 from the agent for that host.
 
@@ -789,9 +835,9 @@ day-one-mac setup --phase 03
 ```
 
 The runner verifies ownership of both 1Password components, prints their
-versions, checks that `op account list` really works, writes the SSH config,
-lists the identities your agent offers, checks the key type suits your track,
-and checks FileVault. A successful Track 1 run ends like this:
+versions, checks that `op account list` really works, lists the identities your
+agent offers, and verifies each provider pin and key type before writing the
+SSH config. It then checks FileVault. A successful Track 1 run ends like this:
 
 ```text
   ℹ 1Password for Mac 8.12.36
@@ -801,7 +847,8 @@ and checks FileVault. A successful Track 1 run ends like this:
   ℹ   256 SHA256:AbCdEf123456ExampleFingerprint GitHub — Personal — Authentication (ED25519)
   ✓ 1Password SSH agent exposes at least one usable identity
   ✓ FileVault is on
-  ✓ Git authentication (1password) and FileVault verified
+  ✓ Authentication configuration (1password) and FileVault verified locally
+  ℹ Provider authentication is checked separately in Phase 4.
 ```
 
 Anything still manual returns a clear incomplete status with the next action,
@@ -826,7 +873,7 @@ Host github.com
 # <<< Day One Mac: SSH authentication <<<
 ```
 
-If you completed Step 3.7, each host also gets its pin:
+In 1Password mode, each selected host also gets its verified pin:
 
 ```sshconfig
     IdentityFile ~/.ssh/github-auth.pub
@@ -881,6 +928,8 @@ use `sudo` on files your own account owns.
 | `ssh-add -l` cannot connect to an agent | Confirm `SSH_AUTH_SOCK` exactly matches the Group Containers socket in Step 3.5 |
 | `The agent has no identities` | Work through the five checks in Step 3.5 |
 | The runner says the agent offers no RSA identity | Azure DevOps needs RSA; create or import one with Step 3.4b or 3.4c |
+| The selected pin is not offered by the 1Password agent | Unlock 1Password; compare the pin, intended item and agent fingerprints. Review the agent allow-list for that intended key. If the pin is wrong, preserve it and explicitly replace it using Step 3.7. SSH configuration remains unchanged on this refusal. |
+| Several SSH items match, even though one says “Authentication” | Choose the intended item number interactively and confirm its fingerprint. `--yes` cannot resolve this choice; duplicate titles are distinguished by item ID. |
 | Azure rejects an Ed25519 key | Same cause — Azure accepts RSA only |
 | Azure fails while several agent keys are visible | Pin the Azure key with Step 3.7; Azure accepts the first key offered |
 | An imported key shows a different fingerprint | Stop; the private key and expected public key are not the same pair |
@@ -907,11 +956,13 @@ use `sudo` on files your own account owns.
       manually or with `gh ssh-key add` — and SSO is authorized where the
       organization needs it.
 - [ ] `~/.ssh/config` contains the marked Day One Mac block for every selected provider.
-- [ ] Track 3 keys — and Azure whenever several keys are visible — are pinned
-      with public `IdentityFile` entries.
-- [ ] **Except in keychain mode:** no on-disk `~/.ssh/id_*` private-key file
-      exists. In keychain mode provider keys are expected; Phase 8 reports
-      their passphrase protection separately from their storage location.
+- [ ] In the script-assisted 1Password route, every selected provider has a
+      public `IdentityFile` pin whose fingerprint matches the intended agent
+      key and provider registration.
+- [ ] The selected authentication route works independently of the legacy-key
+      inventory. Expected Keychain provider keys are passphrase-protected;
+      other encrypted keys need explicit Phase 8 retention review. Unprotected
+      or unverifiable keys must be resolved, not hidden by renaming them.
 - [ ] Any imported old disk copy remains quarantined until provider
       verification succeeds.
 - [ ] `fdesetup status` reports FileVault is on.

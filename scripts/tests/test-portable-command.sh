@@ -8,6 +8,37 @@ trap 'rm -rf "$TEST_ROOT"' EXIT
 
 fail_test() { printf 'FAIL: %s\n' "$1" >&2; exit 1; }
 
+# Reproduce Git's pre-push environment using disposable repositories only.
+# A stub validator verifies isolation before creating its own fixture repository.
+hook_parent="$TEST_ROOT/hook-parent"
+hook_fixture="$TEST_ROOT/hook-fixture"
+mkdir -p "$hook_parent" "$hook_fixture/scripts"
+git -C "$hook_parent" init -q
+cp "$hook_parent/.git/config" "$TEST_ROOT/hook-parent-config"
+cat > "$hook_fixture/scripts/validate.sh" <<'HOOK_FIXTURE'
+#!/usr/bin/env bash
+set -euo pipefail
+for git_env_name in $(git rev-parse --local-env-vars); do
+  if printenv "$git_env_name" >/dev/null; then
+    printf 'Repository-local variable leaked: %s\n' "$git_env_name" >&2
+    exit 1
+  fi
+done
+git init -q
+[[ -d .git && "$(git rev-parse --is-bare-repository)" == false ]]
+HOOK_FIXTURE
+chmod +x "$hook_fixture/scripts/validate.sh"
+(
+  cd "$hook_fixture"
+  GIT_DIR="$hook_parent/.git" GIT_WORK_TREE="$hook_parent" \
+    GIT_COMMON_DIR="$hook_parent/.git" GIT_INDEX_FILE="$hook_parent/.git/index" \
+    GIT_PREFIX=fixture/ GIT_CONFIG_COUNT=1 \
+    GIT_CONFIG_KEY_0=core.bare GIT_CONFIG_VALUE_0=true \
+    sh "$PROJECT_ROOT/.husky/pre-push"
+) || fail_test 'pre-push leaked repository-local Git environment into validation'
+cmp -s "$TEST_ROOT/hook-parent-config" "$hook_parent/.git/config" \
+  || fail_test 'pre-push fixture changed the parent repository configuration'
+
 test_home="$TEST_ROOT/home"
 mkdir -p "$test_home"
 
@@ -75,6 +106,10 @@ grep -Fq '# Day One Mac bootstrap PATH' "$test_home/.config/zsh/path.zsh" \
   || fail_test 'installer did not create the bootstrap PATH file'
 grep -Fq 'runtime-status    show and verify' < <(HOME="$test_home" "$portable" --help) \
   || fail_test 'portable command help does not document the standalone runtime'
+HOME="$test_home" "$portable" --help | awk '
+  /  setup \[options\]/ { getline; if ($0 ~ /--phase NN selects phases/) found=1 }
+  END { exit !found }
+' || fail_test 'setup action help must stay under setup, not folders'
 
 # Installing a second version must replace the current symlink itself. On
 # macOS, a plain `mv -f next current` follows a directory symlink and silently

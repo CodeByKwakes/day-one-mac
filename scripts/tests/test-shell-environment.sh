@@ -186,4 +186,62 @@ grep -Fq 'gate: Directory Services login shell' <<<"$out" \
 # A transient Directory Services lookup failure must not terminate the whole
 # phase under `set -e`; the function already has an `unknown` display fallback.
 
+# Exercise the exact production predicates, not a success-only approximation.
+check_body="$(sed -n "s/^  clean_shell_check='\\(.*\\)'$/\\1/p" "$SCRIPT_DIR/phases/05-dotfiles.sh")"
+node_check="$(sed -n "s/^  uses_node && clean_shell_check+='\\(.*\\)'$/\\1/p" "$SCRIPT_DIR/phases/05-dotfiles.sh")"
+[[ -n "$check_body" && -n "$node_check" ]] || fail_test 'shell gate extraction failed'
+check_body="${check_body//\/opt\/homebrew/$prefix}"
+printf '#!/bin/sh\nexit 0\n' > "$prefix/bin/ghq"
+chmod +x "$prefix/bin/ghq"
+run_gate() {
+  env -i HOME="$home" PATH="$home/.local/bin:$prefix/bin:$home/Library/pnpm" \
+    PNPM_HOME="$home/Library/pnpm" \
+    /bin/zsh -dfc 'source "$1"; [[ -z "$3" ]] || unalias "$3"; eval "$2"' \
+    _ "$home/.config/zsh/aliases.zsh" "$1" "${2:-}" >/dev/null 2>&1
+}
+run_gate "$check_body" || fail_test 'valid shell prerequisites were rejected'
+for missing in brew git chezmoi starship zsh day-one-mac; do
+  missing_path="$prefix/bin/$missing"
+  [[ "$missing" != day-one-mac ]] || missing_path="$home/.local/bin/$missing"
+  mv "$missing_path" "$TEST_ROOT/hidden-command"
+  if run_gate "$check_body"; then fail_test "shell gate ignored missing $missing"; fi
+  mv "$TEST_ROOT/hidden-command" "$missing_path"
+done
+ghq_check="$(sed -n "s/^  .* || clean_shell_check+='\\(.*\\)'$/\\1/p" "$SCRIPT_DIR/phases/05-dotfiles.sh")"
+[[ -n "$ghq_check" ]] || fail_test 'optional ghq predicate extraction failed'
+run_gate "$check_body$ghq_check" || fail_test 'selected ghq was rejected'
+mv "$prefix/bin/ghq" "$TEST_ROOT/hidden-ghq"
+run_gate "$check_body" || fail_test 'unselected ghq was required'
+if run_gate "$check_body$ghq_check"; then fail_test 'selected ghq was not required'; fi
+mv "$TEST_ROOT/hidden-ghq" "$prefix/bin/ghq"
+if run_gate "$check_body" gs; then fail_test 'shell gate ignored a missing alias'; fi
+# Make the final Node predicate pass while a preceding alias predicate fails.
+run_gate "$check_body$node_check" || fail_test 'valid Node shell prerequisites were rejected'
+if run_gate "$check_body$node_check" gs; then fail_test 'Node gate hid an earlier failure'; fi
+
+# Unsupported startup layouts must stop before ANY chezmoi operation or write.
+preflight_home="$TEST_ROOT/preflight-home"
+mkdir -p "$preflight_home"
+preflight_harness="$TEST_ROOT/preflight.sh"
+{
+  printf 'set -euo pipefail\nEX_MANUAL=21\nDRY_RUN=0\n'
+  printf 'source "%s/phases/05-dotfiles.sh"\n' "$SCRIPT_DIR"
+  printf '%s\n' \
+    'ui_title(){ :; }; info(){ :; }; phase_doc(){ :; }; phase_next(){ :; }' \
+    'have(){ return 0; }; err(){ :; }; warn(){ :; }' \
+    'chezmoi(){ exit 98; }; write_text_file(){ exit 98; }; create_directory(){ exit 98; }' \
+    'if phase_05; then exit 99; else result=$?; [[ "$result" == 21 ]]; fi'
+} > "$preflight_harness"
+for directive in 'export ZDOTDIR="$HOME/custom-zsh"' 'unsetopt RCS'; do
+  printf '%s\n' "$directive" > "$preflight_home/.zshenv"
+  before="$(shasum -a 256 "$preflight_home/.zshenv")"
+  HOME="$preflight_home" /bin/bash "$preflight_harness" \
+    || fail_test 'shell incompatibility was detected after chezmoi or a write'
+  [[ "$before" == "$(shasum -a 256 "$preflight_home/.zshenv")" ]] \
+    || fail_test 'preflight changed user configuration'
+done
+
 printf 'PASS: managed shell files, clean PATHs, aliases and required login-shell gate work\n'
+
+# This fixture creates its own bounded PTY; redirected CI stdin is intentional.
+python3 "$SCRIPT_DIR/tests/test-phase8-terminal.py"

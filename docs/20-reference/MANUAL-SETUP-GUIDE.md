@@ -379,7 +379,7 @@ services selected in the worksheet.
 Install the common command-line tools:
 
 ```bash
-brew install chezmoi ghq git jq ripgrep starship zsh
+brew install chezmoi git jq ripgrep starship zsh
 ```
 
 Install stack-specific tools:
@@ -423,13 +423,10 @@ brew install --cask warp
 > If Company Portal, the App Store, or an administrator supplied a valid app,
 > keep that copy and its update channel. Do not install a Homebrew cask over it.
 
-Create the repository structure for the selected track:
-
-```bash
-mkdir -p "$HOME/Developer/_sandbox" "$HOME/Developer/_archive"
-mkdir -p "$HOME/Developer/github.com"      # Track 1 or 3
-mkdir -p "$HOME/Developer/dev.azure.com"   # Track 2 or 3
-```
+Choose the folder layout independently of the hosting track. Follow the
+[fully manual developer-folder walkthrough](../manual/developer-folders.md#fully-manual-walkthrough)
+for the four choices and optional ghq installation/configuration. No Day One Mac
+command is needed. Skip ghq entirely if ordinary Git cloning meets your needs.
 
 Configure Git, replacing both identity values:
 
@@ -440,7 +437,6 @@ git config --global init.defaultBranch main
 git config --global pull.ff only
 git config --global fetch.prune true
 git config --global push.autoSetupRemote true
-git config --global ghq.root "$HOME/Developer"
 git config --global core.excludesFile "$HOME/.gitignore_global"
 git config --global merge.conflictStyle zdiff3
 ```
@@ -495,8 +491,8 @@ are expected because neither service provides an interactive SSH shell.
 
 **Checkpoint**
 
-- [ ] `git`, `ghq`, `chezmoi`, `jq`, `rg`, and `starship` report versions.
-- [ ] `ghq root` resolves to the absolute `~/Developer` path.
+- [ ] `git`, `chezmoi`, `jq`, `rg`, and `starship` report versions; ghq only if selected.
+- [ ] Selected folders exist; selected ghq reports the root(s) reviewed in the folder guide.
 - [ ] Required applications open and retain their intended installation owner.
 - [ ] Only selected provider folders and CLIs were installed.
 - [ ] Browser and SSH authentication pass for the selected track.
@@ -664,7 +660,7 @@ Open a new login shell and verify:
 
 ```bash
 exec /opt/homebrew/bin/zsh -l
-command -v brew git ghq chezmoi starship
+command -v brew git chezmoi starship
 chezmoi doctor
 chezmoi diff
 ```
@@ -816,7 +812,7 @@ Run the final command checks:
 ```bash
 brew --prefix
 git config --global --list --show-origin
-ghq root
+ghq root                 # only if ghq was selected; compare with your chosen layout
 chezmoi doctor
 chezmoi diff
 starship --version
@@ -1042,7 +1038,7 @@ and troubleshooting harder to explain.
 ### Source control and hosting
 
 - [ ] Git author name and email are correct.
-- [ ] `ghq root` points to `~/Developer`.
+- [ ] If selected, `ghq root` and `ghq root --all` match the reviewed folder layout.
 - [ ] Required GitHub and/or Azure CLI authentication works.
 - [ ] Required SSH authentication works.
 

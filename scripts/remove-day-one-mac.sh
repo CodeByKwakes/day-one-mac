@@ -183,10 +183,8 @@ print_homebrew_inventory() {
 
 developer_repositories() {
   [[ -d "$HOME/Developer" ]] || return 0
-  if have ghq; then
-    ghq list -p 2>/dev/null | awk -v root="$HOME/Developer/" 'index($0, root) == 1' | LC_ALL=C sort -u
-    return
-  fi
+  # Inventory the bounded Developer tree even when ghq ignores some repositories.
+  # External ghq roots remain outside this cleanup command's authority.
   find "$HOME/Developer" \
     \( -type d \( -name node_modules -o -name .venv -o -name vendor -o -name dist -o -name build -o -name .cache \) -prune \) -o \
     \( \( -type d -o -type f \) -name .git -print -prune \) 2>/dev/null \

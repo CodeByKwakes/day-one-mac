@@ -125,10 +125,15 @@ uninstall_runtime() {
 }
 
 open_docs() {
-  local topic='start' target='' should_open=0 show_list=0 use_folder=0 topic_set=0
+  local topic='start' target='' should_open=0 show_list=0 use_folder=0 topic_set=0 browser=0
+  if [[ "${1:-}" == export ]]; then
+    /bin/bash "$RUNTIME_ROOT/scripts/docs.sh" "$@"
+    return
+  fi
   while (( $# )); do
     case "$1" in
       --open) should_open=1; shift ;;
+      --browser) browser=1; shift ;;
       --list) show_list=1; shift ;;
       --folder) use_folder=1; shift ;;
       -h|--help|help)
@@ -136,10 +141,15 @@ open_docs() {
           'Usage: day-one-mac docs [TOPIC] [--open]' \
           '       day-one-mac docs --list' \
           '       day-one-mac docs --folder [--open]' \
+          '       day-one-mac docs [TOPIC] --browser' \
+          '       day-one-mac docs export --format html|markdown --output NEW_DIRECTORY' \
           '' \
           'Topics: start, index, manual, process, project, commands, chezmoi, status, optional, advanced, second-brain' \
+          'Handbook topics: handbook, chezmoi-guide, chezmoi-daily, chezmoi-reference, chezmoi-concepts' \
+          'Setup guides: second-brain-guide, folders, security, 1password, keychain, ssh, software' \
           '' \
-          'Without --open, the command prints the installed path.'
+          'Without --open or --browser, the command prints the installed path.' \
+          '--browser opens an offline HTML reader; --open keeps the default Markdown app.'
         return 0
         ;;
       --*) printf 'Unknown docs option: %s\n' "$1" >&2; return 2 ;;
@@ -153,6 +163,10 @@ open_docs() {
     esac
   done
 
+  if [[ "$browser" == 1 && ( "$should_open" == 1 || "$show_list" == 1 || "$use_folder" == 1 ) ]]; then
+    printf 'Use --browser with a topic, not --open, --list or --folder.\n' >&2
+    return 2
+  fi
   if [[ "$show_list" == 1 ]]; then
     printf '%-14s %s\n' \
       'TOPIC' 'INSTALLED DOCUMENT' \
@@ -163,6 +177,18 @@ open_docs() {
       'project' "$RUNTIME_ROOT/docs/PROJECT-GUIDE.md" \
       'commands' "$RUNTIME_ROOT/docs/20-reference/COMMAND-REFERENCE.md" \
       'chezmoi' "$RUNTIME_ROOT/docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md" \
+      'handbook' "$RUNTIME_ROOT/docs/manual/README.md" \
+      'second-brain-guide' "$RUNTIME_ROOT/docs/manual/second-brain.md" \
+      'security' "$RUNTIME_ROOT/docs/manual/security.md" \
+      '1password' "$RUNTIME_ROOT/docs/manual/1password.md" \
+      'keychain' "$RUNTIME_ROOT/docs/manual/keychain-ssh.md" \
+      'ssh' "$RUNTIME_ROOT/docs/manual/ssh-signing-and-recovery.md" \
+      'software' "$RUNTIME_ROOT/docs/20-reference/SOFTWARE-CATALOGUE.md" \
+      'chezmoi-guide' "$RUNTIME_ROOT/docs/manual/chezmoi.md" \
+      'folders' "$RUNTIME_ROOT/docs/manual/developer-folders.md" \
+      'chezmoi-daily' "$RUNTIME_ROOT/docs/20-reference/MANAGING-DOTFILES-WITH-CHEZMOI.md" \
+      'chezmoi-reference' "$RUNTIME_ROOT/docs/20-reference/CHEZMOI-COMMAND-REFERENCE.md" \
+      'chezmoi-concepts' "$RUNTIME_ROOT/docs/20-reference/CHEZMOI-CONCEPTS-AND-BOUNDARIES.md" \
       'status' "$RUNTIME_ROOT/docs/20-reference/OPTIONAL-STATUS.md" \
       'optional' "$RUNTIME_ROOT/docs/02-optional/README.md" \
       'advanced' "$RUNTIME_ROOT/docs/03-advanced/README.md" \
@@ -181,6 +207,18 @@ open_docs() {
       project) target="$RUNTIME_ROOT/docs/PROJECT-GUIDE.md" ;;
       commands) target="$RUNTIME_ROOT/docs/20-reference/COMMAND-REFERENCE.md" ;;
       chezmoi) target="$RUNTIME_ROOT/docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md" ;;
+      handbook) target="$RUNTIME_ROOT/docs/manual/README.md" ;;
+      second-brain-guide) target="$RUNTIME_ROOT/docs/manual/second-brain.md" ;;
+      security) target="$RUNTIME_ROOT/docs/manual/security.md" ;;
+      1password) target="$RUNTIME_ROOT/docs/manual/1password.md" ;;
+      keychain) target="$RUNTIME_ROOT/docs/manual/keychain-ssh.md" ;;
+      ssh) target="$RUNTIME_ROOT/docs/manual/ssh-signing-and-recovery.md" ;;
+      software) target="$RUNTIME_ROOT/docs/20-reference/SOFTWARE-CATALOGUE.md" ;;
+      chezmoi-guide) target="$RUNTIME_ROOT/docs/manual/chezmoi.md" ;;
+      folders) target="$RUNTIME_ROOT/docs/manual/developer-folders.md" ;;
+      chezmoi-daily) target="$RUNTIME_ROOT/docs/20-reference/MANAGING-DOTFILES-WITH-CHEZMOI.md" ;;
+      chezmoi-reference) target="$RUNTIME_ROOT/docs/20-reference/CHEZMOI-COMMAND-REFERENCE.md" ;;
+      chezmoi-concepts) target="$RUNTIME_ROOT/docs/20-reference/CHEZMOI-CONCEPTS-AND-BOUNDARIES.md" ;;
       status) target="$RUNTIME_ROOT/docs/20-reference/OPTIONAL-STATUS.md" ;;
       optional) target="$RUNTIME_ROOT/docs/02-optional/README.md" ;;
       advanced) target="$RUNTIME_ROOT/docs/03-advanced/README.md" ;;
@@ -195,7 +233,9 @@ open_docs() {
 
   [[ -e "$target" ]] || {
     printf 'Documentation is missing: %s\n' "$target" >&2; return 1; }
-  if [[ "$should_open" == 1 ]]; then
+  if [[ "$browser" == 1 ]]; then
+    /bin/bash "$RUNTIME_ROOT/scripts/docs.sh" --browser "${target#"$RUNTIME_ROOT/"}"
+  elif [[ "$should_open" == 1 ]]; then
     command -v open >/dev/null 2>&1 || {
       printf 'The macOS open command is unavailable. Document: %s\n' "$target" >&2
       return 1

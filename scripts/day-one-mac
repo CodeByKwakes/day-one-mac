@@ -106,6 +106,26 @@ case "${1:-}" in
   rollback-runtime) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" rollback "$@" ;;
   uninstall-runtime) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" uninstall "$@" ;;
   docs) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" docs "$@" ;;
+  second-brain)
+    shift
+    case "${1:-}" in
+      obsidian)
+        shift
+        exec /bin/bash "$PROJECT_ROOT/second-brain/obsidian/scripts/second-brain-manager.sh" "$@"
+        ;;
+      notion)
+        shift
+        exec /bin/bash "$PROJECT_ROOT/second-brain/notion/scripts/notion-second-brain-manager.sh" "$@"
+        ;;
+      ''|help|-h|--help)
+        printf '%s\n' \
+          'Usage: day-one-mac second-brain obsidian|notion [options]' \
+          'Use obsidian --help or notion --help for manager actions.' \
+          'Managers preview by default; --apply is explicit. Notion only manages a local plan.'
+        ;;
+      *) printf 'Unknown Second Brain manager: %s\nChoose obsidian or notion.\n' "$1" >&2; exit 2 ;;
+    esac
+    ;;
   shell-status) shift; exec "$PROJECT_ROOT/scripts/shell-status.sh" "$@" ;;
   verify) shift; exec "$PROJECT_ROOT/scripts/verify.sh" "$@" ;;
   validate)
@@ -182,6 +202,7 @@ case "${1:-}" in
     ;;
   rollback) shift; exec "$PROJECT_ROOT/scripts/rollback-recorded-setup.sh" "$@" ;;
   setup) shift; exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" "$@" ;;
+  folders) shift; exec /bin/bash "$PROJECT_ROOT/scripts/configure-folders.sh" "$@" ;;
   help|-h|--help)
     printf '%s\n' \
       'day-one-mac commands:' \
@@ -193,11 +214,12 @@ case "${1:-}" in
       '  update            install the latest verified public release' \
       '  rollback-runtime  preview or select a previous installed runtime' \
       '  uninstall-runtime remove only the command and runtime; preserve setup' \
-      '  docs              list, locate, or open installed documentation' \
+      '  docs              browse, export, locate, or open bundled documentation' \
       '' \
       'Required setup and inspection:' \
       '  setup [options]   run or inspect the eight required phases' \
       '                    --plan | --apply | --check | --resume; --phase NN selects phases' \
+      '  folders           standalone layouts and opt-in ghq: --plan | --apply | --check | --resume' \
       '  shell-status      inspect zsh, PATH, completions and shell tools' \
       '  safety-report     create the Stage 0 read-only safety report' \
       '  prepare-existing  choose Stage 0 Route A or Route B' \
@@ -206,6 +228,7 @@ case "${1:-}" in
       '  ssh-pin           save 1Password public keys to ~/.ssh' \
       '' \
       'Optional and advanced configuration:' \
+      '  second-brain      preview or configure Obsidian layouts or a local Notion plan' \
       '  raycast           manage optional Day One Raycast commands' \
       '  workspace         create and open bounded projectless tasks' \
       '  macos-settings    configure or restore optional macOS preferences' \

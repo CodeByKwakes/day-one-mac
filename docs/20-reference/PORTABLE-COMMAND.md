@@ -128,10 +128,20 @@ day-one-mac docs --list
 day-one-mac docs start --open
 day-one-mac docs manual --open
 day-one-mac docs chezmoi --open
+day-one-mac docs handbook --browser
+day-one-mac docs chezmoi-guide --browser
 day-one-mac docs --folder --open
 ```
 
-Without `--open`, the command prints the installed path. This is useful when
+Use `--browser` for offline HTML navigation rather than the default Markdown
+application. Export a complete library with
+`day-one-mac docs export --format html --output ./day-one-docs`, or choose
+`--format markdown`. The output directory must be new. See
+[documentation commands](DOCUMENTATION-COMMANDS.md) for print/PDF behaviour,
+contents, version labels and cleanup. Existing `manual` and `chezmoi` topics
+keep their original targets; `handbook` groups manual tasks in one place.
+
+Without `--open` or `--browser`, the command prints the installed path. This is useful when
 opening a guide in a specific editor, for example:
 
 ```bash

@@ -1,6 +1,7 @@
 # Explicit runtime files, one repository-relative regular file per line.
 # Regenerate deliberately when adding a runtime module; never include local files.
 CHANGELOG.md
+CONTRIBUTING.md
 LICENSE
 README.md
 SECURITY.md
@@ -11,6 +12,9 @@ config/modules.tsv
 config/raycast-commands.tsv
 config/raycast-extensions.tsv
 config/runtime-files.txt
+docs/manual/developer-folders.md
+scripts/configure-folders.sh
+scripts/lib/developer-folders.sh
 docs/00-preflight/00-existing-mac-decision.md
 docs/00-preflight/01-private-inventory.md
 docs/00-preflight/02-backup-readiness.md
@@ -92,6 +96,16 @@ docs/NEW-DEVICE-SETUP-BLUEPRINT.md
 docs/PROCESS-OVERVIEW.md
 docs/PROJECT-GUIDE.md
 docs/README.md
+docs/manual/README.md
+docs/manual/azure-artifacts-npm.md
+docs/manual/chezmoi.md
+docs/manual/second-brain.md
+docs/manual/security.md
+docs/manual/1password.md
+docs/manual/keychain-ssh.md
+docs/manual/ssh-signing-and-recovery.md
+docs/20-reference/SOFTWARE-CATALOGUE.md
+docs/20-reference/DOCUMENTATION-COMMANDS.md
 docs/RELEASE-TOKEN-SETUP.md
 docs/START-HERE.md
 install-day-one-mac
@@ -139,6 +153,13 @@ scripts/prepare-existing-mac.sh
 scripts/remove-day-one-mac.sh
 scripts/rollback-recorded-setup.sh
 scripts/runtime-manager.sh
+scripts/docs.sh
+scripts/lib/docs-browser.html
+scripts/lib/docs-browser.css
+scripts/lib/docs-browser.js
+scripts/vendor/markdown-it/markdown-it.min.js
+scripts/vendor/markdown-it/LICENSE
+scripts/vendor/markdown-it/PROVENANCE.md
 scripts/setup.sh
 scripts/shell-status.sh
 scripts/verify.sh

@@ -1,6 +1,7 @@
 {
   "ignores": [
     ".agents/**",
+    ".claude/skills/**",
     "CHANGELOG.md",
     "node_modules/**",
     "second-brain/obsidian/assets/**"

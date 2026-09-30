@@ -148,7 +148,8 @@ migrate_legacy_gitconfig_source() {
   source_entry="$(chezmoi source-path "$target")"
   [[ -n "$source_root" && -e "$source_entry" ]] || return 0
 
-  keys=$'user.name\nuser.email\ninit.defaultBranch\npull.ff\nfetch.prune\npush.autoSetupRemote\nghq.root\nalias.lg\ncore.excludesFile\nmerge.conflictStyle'
+  # ghq roots belong to the folder capability/user source; never flatten multiple roots.
+  keys=$'user.name\nuser.email\ninit.defaultBranch\npull.ff\nfetch.prune\npush.autoSetupRemote\nalias.lg\ncore.excludesFile\nmerge.conflictStyle'
   if [[ "$PRIMARY_IDE" == vscode ]]; then
     keys+=$'\ncore.editor\nmerge.tool\nmergetool.vscode.cmd\ndiff.tool\ndifftool.vscode.cmd'
   fi
@@ -268,6 +269,17 @@ configure_chezmoi_vscode_tools() {
   ok "VS Code configured for chezmoi $missing review"
 }
 
+# Check existing startup redirection before initialization, migration or adoption.
+# This deliberately does not source user configuration just to inspect it.
+phase_05_shell_preflight() {
+  if [[ -e "$HOME/.zshenv" ]] && grep -Eq '(^|[[:space:]])(export[[:space:]]+)?ZDOTDIR=|(^|[[:space:]])unsetopt[[:space:]]+.*RCS' "$HOME/.zshenv"; then
+    err "~/.zshenv changes ZDOTDIR or disables Zsh startup files, so Day One Mac cannot verify the managed shell safely."
+    warn "Leave the existing layout intact and review it with its configuration owner before retrying Phase 5."
+    return "$EX_MANUAL"
+  fi
+  return 0
+}
+
 phase_05() {
   local chezmoi_config chezmoi_content escaped_email escaped_name managed_target
   local existing_managed_source=0 starship_config starship_content starship_created=0 chezmoi_source_dir
@@ -276,6 +288,8 @@ phase_05() {
   local zsh_config_dir zsh_path_file zsh_aliases_file ssh_config ssh_config_created=0 homebrew_zsh clean_shell_check compaudit_output
   ui_title '5️⃣' 'Phase 05 — Dotfiles and Starship'
   info "Guide: $(phase_doc 05)"
+  phase_next "existing shell compatibility" "Review custom Zsh startup redirection with its owner before adopting files."
+  phase_05_shell_preflight || return $?
   phase_next "chezmoi command" "Complete Phase 4 so chezmoi is installed, then rerun Phase 5."
   if ! have chezmoi; then
     [[ "$DRY_RUN" == 1 ]] || { err "chezmoi is missing; complete Phase 4."; return "$EX_GATE"; }
@@ -338,6 +352,9 @@ phase_05() {
     fi
   fi
   phase_step_done "chezmoi source initialised and any existing-source diff reviewed"
+  # An explicitly reviewed apply may have changed .zshenv; recheck before
+  # creating or adopting the standard shell files as well.
+  phase_05_shell_preflight || return $?
   phase_next "managed shell, Starship and portable command files" "Complete Steps 5.2–5.7 and merge any existing file instead of overwriting it blindly."
   starship_config="$HOME/.config/starship.toml"
   starship_content=$'add_newline = false\ncommand_timeout = 1000\n\n[character]\nsuccess_symbol = "[❯](bold green)"\nerror_symbol = "[❯](bold red)"\n'
@@ -424,11 +441,6 @@ phase_05() {
     warn "Add 'eval \"\$(starship init zsh)\"' to ~/.zshrc through chezmoi, then rerun Phase 5."
     return "$EX_MANUAL"
   }
-  if [[ -e "$HOME/.zshenv" ]] && grep -Eq '(^|[[:space:]])(export[[:space:]]+)?ZDOTDIR=|(^|[[:space:]])unsetopt[[:space:]]+.*RCS' "$HOME/.zshenv"; then
-    err "~/.zshenv changes ZDOTDIR or disables Zsh startup files, so Day One Mac cannot verify the managed shell safely."
-    warn "Review ~/.zshenv, remove the conflicting directive through its owner, and rerun Phase 5."
-    return "$EX_MANUAL"
-  fi
   grep -Fq '.config/zsh/path.zsh' "$HOME/.zprofile" || {
     err "~/.zprofile must source ~/.config/zsh/path.zsh; merge the Phase 5 block through chezmoi."
     return "$EX_MANUAL"
@@ -465,8 +477,9 @@ phase_05() {
   # Keep the gate compatible with sources created before cmdifftext/cmmerge
   # were added. Those convenience aliases are in the current baseline, but a
   # visual-tool upgrade must not force-edit a user's versioned alias file.
-  clean_shell_check='command -v brew git ghq chezmoi starship day-one-mac >/dev/null; [[ "$(command -v zsh)" == /opt/homebrew/bin/zsh ]]; alias cdayone gs gd gds gl gremotes cm cmstatus cmdiff cmverify cmdoctor brewcheck brewout brewcleanpreview brewautopreview >/dev/null; [[ ":$PATH:" == *":$HOME/.local/bin:"* ]]'
-  uses_node && clean_shell_check+='; [[ "$PNPM_HOME" == "$HOME/Library/pnpm" && ":$PATH:" == *":$PNPM_HOME:"* ]]'
+  clean_shell_check='command -v brew git chezmoi starship day-one-mac >/dev/null && [[ "$(command -v zsh)" == /opt/homebrew/bin/zsh ]] && alias cdayone gs gd gds gl gremotes cm cmstatus cmdiff cmverify cmdoctor brewcheck brewout brewcleanpreview brewautopreview >/dev/null && [[ ":$PATH:" == *":$HOME/.local/bin:"* ]]'
+  [[ "${GHQ_CHOICE:-}" != yes ]] || clean_shell_check+=' && command -v ghq >/dev/null'
+  uses_node && clean_shell_check+=' && [[ "$PNPM_HOME" == "$HOME/Library/pnpm" && ":$PATH:" == *":$PNPM_HOME:"* ]]'
   env -i HOME="$HOME" USER="$(id -un)" LOGNAME="$(id -un)" TERM="${TERM:-xterm-256color}" PATH='/usr/bin:/bin:/usr/sbin:/sbin' SHELL="$homebrew_zsh" \
     "$homebrew_zsh" -lic "$clean_shell_check" || {
       err "A clean Homebrew-zsh login shell did not load every required command and PATH entry."

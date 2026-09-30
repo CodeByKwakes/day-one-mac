@@ -6,7 +6,12 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/project-paths.sh"
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
+source "$SCRIPT_DIR/lib/state.sh"
+source "$SCRIPT_DIR/lib/developer-folders.sh"
 STATE_ROOT="$(day_one_state_root)"
+STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
+state_value() { [[ ! -r "$STATE_DIR/$1" ]] || sed -n '1p' "$STATE_DIR/$1"; }
+have() { command -v "$1" >/dev/null 2>&1; }
 REPORT="${DAY_ONE_MAC_AUDIT_REPORT:-${FRESH_START_AUDIT_REPORT:-$STATE_ROOT/advanced-audit.md}}"
 REPO_REPORT="${DAY_ONE_MAC_REPO_REPORT:-${FRESH_START_REPO_REPORT:-$STATE_ROOT/repository-audit.tsv}}"
 CHECK_ONLY=0
@@ -85,13 +90,15 @@ STACK="$(sed -n '1p' "$STATE_ROOT/stack" 2>/dev/null || true)"
 case "$TRACK" in 1|2|3) pass_gate "Track state" "Track $TRACK is recorded" ;; *) fail_gate "Track state" "Choose Track 1, 2, or 3 in required Phase 1" ;; esac
 case "$STACK" in node|python|both) pass_gate "Stack state" "$STACK is recorded" ;; *) fail_gate "Stack state" "Choose node, python, or both in required Phase 1" ;; esac
 
-for command_name in brew git ghq chezmoi starship day-one-mac code; do
+for command_name in brew git chezmoi starship day-one-mac code; do
   if command -v "$command_name" >/dev/null 2>&1; then
     pass_gate "$command_name command" "Available on PATH"
   else
     fail_gate "$command_name command" "Missing from PATH"
   fi
 done
+folders_load_choices
+check_command 'Developer folders and optional ghq' 'Selection-sensitive local checks; no migration' folders_check
 
 if /usr/bin/fdesetup status 2>/dev/null | grep -q 'FileVault is On'; then
   pass_gate "FileVault status" "On"
@@ -117,10 +124,7 @@ fi
 
 printf 'state\tremote\trepository\n' > "$REPO_REPORT"
 chmod 600 "$REPO_REPORT"
-if command -v ghq >/dev/null 2>&1; then
-  GHQ_ROOT="$(ghq root 2>/dev/null | sed -n '1p' || true)"
-  if [[ "$GHQ_ROOT" == "$HOME/Developer" ]]; then pass_gate "ghq root" "$GHQ_ROOT"
-  else fail_gate "ghq root" "Expected $HOME/Developer; found ${GHQ_ROOT:-none}"; fi
+if [[ "$GHQ_CHOICE" == yes ]] && command -v ghq >/dev/null 2>&1; then
 
   REPO_COUNT=0
   DIRTY_COUNT=0
@@ -128,7 +132,7 @@ if command -v ghq >/dev/null 2>&1; then
   AHEAD_COUNT=0
   while IFS= read -r repository; do
     [[ -n "$repository" ]] || continue
-    directory="$GHQ_ROOT/$repository"
+    directory="$repository"
     git -C "$directory" rev-parse --git-dir >/dev/null 2>&1 || continue
     REPO_COUNT=$((REPO_COUNT + 1))
     state=CLEAN
@@ -138,7 +142,7 @@ if command -v ghq >/dev/null 2>&1; then
     ahead="$(git -C "$directory" rev-list --count '@{upstream}..HEAD' 2>/dev/null || true)"
     if [[ "$ahead" =~ ^[0-9]+$ && "$ahead" -gt 0 ]]; then state="${state}+AHEAD($ahead)"; AHEAD_COUNT=$((AHEAD_COUNT + 1)); fi
     printf '%s\t%s\t%s\n' "$state" "$remote" "$repository" >> "$REPO_REPORT"
-  done < <(ghq list 2>/dev/null || true)
+  done < <(folders_ghq list -p 2>/dev/null || true)
   if [[ "$DIRTY_COUNT" -gt 0 || "$NO_REMOTE_COUNT" -gt 0 || "$AHEAD_COUNT" -gt 0 ]]; then
     review_gate "Repository risk" "$REPO_COUNT total; $DIRTY_COUNT dirty; $NO_REMOTE_COUNT without origin; $AHEAD_COUNT ahead"
   else
