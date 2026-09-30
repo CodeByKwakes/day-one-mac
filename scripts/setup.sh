@@ -1371,7 +1371,7 @@ if [[ -n "$SSH_PIN_PROVIDER" ]]; then
       if uses_azure; then export_provider_public_key azure || ssh_pin_failures=1; fi
       ;;
   esac
-  [[ "$ssh_pin_failures" == 0 ]] || { err "No public key was pinned."; exit 1; }
+  [[ "$ssh_pin_failures" == 0 ]] || { err "At least one provider pin failed; review the per-provider results above."; exit 1; }
   exit 0
 fi
 
