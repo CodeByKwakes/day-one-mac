@@ -122,7 +122,18 @@ try {
   }
 
   const markdownIt = require(path.join(fixture, 'scripts/vendor/markdown-it/markdown-it.min.js'));
-  const { documentationRenderer } = require(path.join(fixture, 'scripts/lib/docs-browser.js'));
+  const { documentationRenderer, documentationNavigation, findDocumentation, coreSequence } = require(path.join(fixture, 'scripts/lib/docs-browser.js'));
+  const navigation = documentationNavigation(embedded);
+  assert.deepEqual(navigation.groups.map(group => group.label), ['Start here', 'Core setup', 'Customisation', 'Reference and recovery']);
+  const listed = navigation.groups.flatMap(group => group.sections.flatMap(section => section.entries.map(entry => entry.path)));
+  assert.equal(new Set(listed).size, listed.length, 'Each guide has one canonical navigation location');
+  assert.deepEqual([...listed].sort(), [...embedded.keys()].sort(), 'All bundled guides remain discoverable');
+  assert.deepEqual(navigation.groups[1].sections[1].entries.map(entry => entry.path), coreSequence);
+  assert.ok(coreSequence.indexOf('docs/01-required/MACOS-SETTINGS.md') < coreSequence.indexOf('docs/01-required/02-command-line-foundation.md'));
+  assert.ok(coreSequence.indexOf('docs/01-required/INSTALLATION-CENTRE.md') < coreSequence.indexOf('docs/01-required/03-security-and-ssh.md'));
+  assert.ok(findDocumentation(navigation.titles, ' CHEZMOI ').length > 1);
+  assert.deepEqual(findDocumentation(navigation.titles, ''), []);
+  assert.deepEqual(findDocumentation(navigation.titles, 'no-matching-guide-xyz'), []);
   const render = text => documentationRenderer(markdownIt, embedded, 'docs/manual/chezmoi.md').render(text);
   const rendered = render('# Example\n\n# Example\n\n[Daily](../20-reference/MANAGING-DOTFILES-WITH-CHEZMOI.md#recovery)\n\n[Here](#example)\n\n<script>alert(1)</script>\n\n![remote](https://example.org/pixel.png)\n\n[bad](javascript:alert(1))\n\n| A | B |\n|---|---|\n| 1 | 2 |\n\n```sh\n<unsafe>\n```');
   assert.match(rendered, /id="example"/);
@@ -172,3 +183,4 @@ try {
 } finally {
   fs.rmSync(temporary, { recursive: true, force: true });
 }
+require('./test-docs-reader.cjs');
