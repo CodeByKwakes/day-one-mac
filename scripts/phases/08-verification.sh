@@ -231,14 +231,136 @@ report_keychain_key_protection() {
   fi
 }
 
+# Unlike confirm(), retention can never be approved by --yes or redirected input.
+# Approval is per file and per audit, not a saved exception to security checks.
+confirm_retained_ssh_key() {
+  local label="$1" answer
+  [[ "${ASSUME_YES:-0}" != 1 && -t 0 ]] || return 1
+  printf 'Retain encrypted key %s? Confirm its owner, purpose, other uses and recovery plan. Type retain, or Return to leave REVIEW: ' "$label"
+  IFS= read -r answer || return 1
+  [[ "$answer" == retain ]]
+}
+
+ssh_storage_failure() {
+  printf '| SSH private-key storage: %s | FAIL — unverifiable |\n' "$2" >> "$1"
+  VERIFY_FAILURES=$((VERIFY_FAILURES + 1))
+  phase_gate_failed 'SSH private-key storage could not be verified'
+}
+
+# Read only the physical ~/.ssh tree; never follow links or print key bytes.
+# Header detection catches renamed keys, including private material in .pub files.
+# Conventional id_* names remain candidates even when their content is malformed.
+report_ssh_key_storage() {
+  local report="$1" inventory candidate label protection before after scan_status count=0 expected
+  if [[ -L "$HOME/.ssh" || ( -e "$HOME/.ssh" && ! -d "$HOME/.ssh" ) ]]; then
+    ssh_storage_failure "$report" '~/.ssh is not a physical directory'
+    return 0
+  fi
+  if [[ ! -e "$HOME/.ssh" ]]; then
+    if [[ "$AUTH_MODE" == keychain ]]; then
+      ssh_storage_failure "$report" 'selected Keychain keys are missing'
+    else
+      printf '| SSH private-key storage | PASS — no ~/.ssh directory |\n' >> "$report"
+    fi
+    return 0
+  fi
+  inventory="$(mktemp -t day-one-ssh-inventory)" || { ssh_storage_failure "$report" 'inventory unavailable'; return 0; }
+  if ! find -P "$HOME/.ssh" ! -type d -print0 > "$inventory" 2>/dev/null; then
+    rm -f "$inventory"
+    ssh_storage_failure "$report" 'inventory incomplete'
+    return 0
+  fi
+  # Keep stdin attached to the user's terminal for per-file review prompts.
+  while IFS= read -r -d '' candidate <&3; do
+    # Bash 3.2 needs a separate locale assignment before %q for valid UTF-8
+    # filenames; an inline LC_ALL=C printf can emit partial multibyte bytes.
+    label="$(export LC_ALL=C; printf '%q' "${candidate/#"$HOME"/~}")"
+    label="${label//|/\\|}"
+    if [[ -L "$candidate" || ! -f "$candidate" || ! -r "$candidate" ]]; then
+      ssh_storage_failure "$report" "$label"
+      continue
+    fi
+    scan_status=0
+    LC_ALL=C grep -aqE -- '^-----BEGIN ([A-Z0-9]+ )*PRIVATE KEY-----|^PuTTY-User-Key-File-' "$candidate" || scan_status=$?
+    if [[ "$scan_status" -gt 1 ]]; then
+      ssh_storage_failure "$report" "$label"
+      continue
+    fi
+    if [[ "$scan_status" == 1 ]]; then
+      case "${candidate##*/}" in id_*.pub) continue ;; id_*) ;; *) continue ;; esac
+    fi
+    count=$((count + 1))
+    before="$(shasum -a 256 "$candidate" 2>/dev/null)" || before=''
+    protection="$(keychain_key_protection "$candidate")"
+    [[ -n "$before" ]] || protection=unverifiable
+    expected=0
+    if [[ "$AUTH_MODE" == keychain ]]; then
+      if uses_github && [[ "$candidate" == "$HOME/.ssh/id_ed25519" ]]; then expected=1; fi
+      if uses_azure && [[ "$candidate" == "$HOME/.ssh/id_rsa_azure" ]]; then expected=1; fi
+    fi
+    if [[ "$protection" != encrypted ]]; then
+      printf '| SSH private-key storage: %s | FAIL — %s |\n' "$label" "$protection" >> "$report"
+      VERIFY_FAILURES=$((VERIFY_FAILURES + 1))
+      phase_gate_failed 'SSH private-key passphrase protection'
+    elif [[ "$expected" == 1 ]]; then
+      report_keychain_key_protection "$report" "$candidate"
+    elif confirm_retained_ssh_key "$label"; then
+      after="$(shasum -a 256 "$candidate" 2>/dev/null)" || after=''
+      if [[ ! -L "$candidate" && "$before" == "$after" && "$(keychain_key_protection "$candidate")" == encrypted ]]; then
+        printf '| SSH private-key storage: %s | REVIEWED — encrypted file retained by user; not vault-only |\n' "$label" >> "$report"
+      else
+        ssh_storage_failure "$report" "$label changed during review"
+      fi
+    else
+      printf '| SSH private-key storage: %s | REVIEW — encrypted legacy/additional key; retention not approved |\n' "$label" >> "$report"
+      VERIFY_REVIEWS=$((VERIFY_REVIEWS + 1))
+    fi
+  done 3< "$inventory"
+  rm -f "$inventory"
+  if [[ "$AUTH_MODE" == keychain ]]; then
+    if uses_github && [[ ! -e "$HOME/.ssh/id_ed25519" ]]; then ssh_storage_failure "$report" 'selected GitHub Keychain key missing'; fi
+    if uses_azure && [[ ! -e "$HOME/.ssh/id_rsa_azure" ]]; then ssh_storage_failure "$report" 'selected Azure Keychain key missing'; fi
+  fi
+  if [[ "$count" == 0 ]]; then
+    printf '| SSH private-key inventory | No recognised key files found in physical ~/.ssh tree; not a whole-disk scan |\n' >> "$report"
+  fi
+}
+
+# Local agent presence alone does not prove the selected pin or provider works.
+verify_selected_ssh_provider() {
+  local provider="$1" host pin effective identity agent output
+  case "$provider" in
+    github) host=github.com; pin="$HOME/.ssh/github-auth.pub" ;;
+    azure) host=ssh.dev.azure.com; pin="$HOME/.ssh/azure-devops-auth.pub" ;;
+    *) return 1 ;;
+  esac
+  if [[ "$AUTH_MODE" == 1password ]]; then
+    [[ ! -L "$HOME/.ssh" && ! -L "$pin" && -f "$pin" && -r "$pin" ]] || return 1
+    verify_public_key_with_onepassword_agent "$provider" "$(cat "$pin")" || return 1
+    effective="$(ssh -G "git@$host" 2>/dev/null)" || return 1
+    identity="$(printf '%s\n' "$effective" | sed -n 's/^identityfile //p')"
+    agent="$(printf '%s\n' "$effective" | sed -n 's/^identityagent //p')"
+    [[ "$identity" == "$pin" || "$identity" == "~/${pin#"$HOME"/}" ]] || return 1
+    [[ "$agent" == "$ONEPASSWORD_AGENT_SOCK" || "$agent" == "~/${ONEPASSWORD_AGENT_SOCK#"$HOME"/}" ]] || return 1
+    grep -qx 'identitiesonly yes' <<<"$effective" || return 1
+  fi
+  # Unknown/changed host trust stops here; this audit never accepts host keys.
+  output="$(ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=yes -o UpdateHostKeys=no -T "git@$host" 2>&1 || true)"
+  case "$provider" in
+    github) grep -Fq 'successfully authenticated' <<<"$output" ;;
+    azure) grep -Fq 'Shell access is not supported' <<<"$output" ;;
+  esac
+}
+
 phase_08() {
   local brewfile="$HOME/Brewfile" brewfile_created=0 report="$STATE_DIR/verification.md" app_id
-  local disk_keys disk_key
   ui_title '8️⃣' 'Phase 08 — Verify and reproduce'
   info "Guide: $(phase_doc 08)"
   if [[ "$DRY_RUN" == 1 ]]; then
     print_command "$SCRIPT_DIR/verify.sh"
     info "would write $report and verify the selected track and stack"
+    info "would test selected SSH providers without accepting host keys and audit existing key storage separately"
+    info "encrypted legacy keys require per-file retention review; --yes cannot approve it"
     info "would preserve an existing $brewfile, or create and manage it if absent"
     print_command brew bundle dump --file="$brewfile"
     print_command chezmoi add "$brewfile"
@@ -254,6 +376,7 @@ phase_08() {
   phase_step_done "Day One Mac runtime verification passed"
   ensure_state
   VERIFY_FAILURES=0
+  VERIFY_REVIEWS=0
   phase_next "machine verification gates" "Open ~/.day-one-mac/verification.md and return to the phase that owns each failed row."
   {
     printf '# Day One Mac verification\n\n'
@@ -318,42 +441,23 @@ phase_08() {
       printf '| SSH agent identity | NOT REQUIRED — https selected |\n' >> "$report"
       ;;
   esac
-  # Storage location is not encryption state. Keychain mode deliberately keeps
-  # encrypted private files; all other modes retain the no-local-key policy.
-  if [[ "$AUTH_MODE" == keychain ]]; then
-    printf '| Private key files in ~/.ssh | EXPECTED — keychain mode |\n' >> "$report"
-    disk_keys=""
-    uses_github && disk_keys="$HOME/.ssh/id_ed25519"
-    uses_azure && disk_keys="$disk_keys${disk_keys:+$'\n'}$HOME/.ssh/id_rsa_azure"
-    while IFS= read -r disk_key; do
-      [[ -n "$disk_key" ]] || continue
-      report_keychain_key_protection "$report" "$disk_key"
-    done <<<"$disk_keys"
+  if [[ "$AUTH_MODE" == https ]]; then
+    printf '| Provider SSH authentication | NOT REQUIRED — https selected; CLI sessions checked separately |\n' >> "$report"
   else
-    # Name the offending files: "FAIL" alone leaves no way to tell which key
-    # appeared, or whether it is one `gh auth login` created before the
-    # --skip-ssh-key flag was added.
-    disk_keys="$(find "$HOME/.ssh" -maxdepth 1 -type f -name 'id_*' ! -name '*.pub' 2>/dev/null | LC_ALL=C sort || true)"
-    if [[ -z "$disk_keys" ]]; then
-      printf '| No on-disk id_* private-key files in ~/.ssh | PASS |\n' >> "$report"
-    else
-      printf '| No on-disk id_* private-key files in ~/.ssh | FAIL |\n' >> "$report"
-      while IFS= read -r disk_key; do
-        [[ -n "$disk_key" ]] || continue
-        printf '| — unexpected private key | `%s` |\n' "${disk_key/#"$HOME"/~}" >> "$report"
-        warn "Unexpected private key on disk: ${disk_key/#"$HOME"/~}"
-      done <<<"$disk_keys"
-      warn "Auth mode '$AUTH_MODE' keeps no private key in ~/.ssh."
-      warn "If 'gh auth login' created it before --skip-ssh-key was added, remove it from GitHub, then delete it once 1Password's key is confirmed working."
-      VERIFY_FAILURES=$((VERIFY_FAILURES + 1))
-      phase_gate_failed "No on-disk id_* private-key files in ~/.ssh"
-    fi
+    uses_github && report_check 'GitHub selected SSH authentication' verify_selected_ssh_provider github
+    uses_azure && report_check 'Azure selected SSH authentication' verify_selected_ssh_provider azure
   fi
+  report_ssh_key_storage "$report"
   chmod 600 "$report"
   info "report: $report"
   if [[ "$VERIFY_FAILURES" -gt 0 ]]; then
     err "$VERIFY_FAILURES verification gate(s) failed; review the report."
     return "$EX_GATE"
+  fi
+  if [[ "$VERIFY_REVIEWS" -gt 0 ]]; then
+    phase_next 'encrypted legacy SSH-key retention review' 'Review the named keys, their other uses and recovery plan in Phase 8. Rerun interactively without --yes to approve retention per file, or complete a separately approved migration. No key was changed.'
+    warn 'Encrypted legacy keys remain REVIEW, not a vault-only pass. Do not rename, move or delete a key merely to hide it from the audit.'
+    return "$EX_MANUAL"
   fi
   phase_step_done "track- and stack-aware machine audit passed"
   phase_next "reviewed Brewfile under chezmoi management" "Review ~/Brewfile, add it to chezmoi if needed, and rerun Phase 8."

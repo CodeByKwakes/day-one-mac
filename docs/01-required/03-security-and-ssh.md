@@ -22,7 +22,11 @@ written to `~/.ssh`**. That last guarantee holds in every mode except
 
 If an existing key is imported, its old disk copy is retained until
 authentication has been tested and you deliberately archive or remove that
-redundant copy.
+redundant copy. Selecting 1Password does not authorise deleting existing keys.
+Phase 8 checks the selected authentication route separately from existing key
+storage. An encrypted legacy key needs an explicit retention review; an
+unprotected or unverifiable key remains a blocker. See
+[Phase 8's key review](08-verify-and-reproduce.md#ssh-authentication-and-existing-key-storage).
 
 > 🏢 **Company-policy note:** If policy prohibits 1Password, you do not have to
 > stop. Choose another mode in Step 3.0. Do not install an unapproved
@@ -451,9 +455,13 @@ GitHub or Azure DevOps normally does not need replacing. Confirm the fingerprint
 and account in Step 3.6 rather than adding a duplicate.
 
 Do not delete the original files yet. Finish the phase, confirm the provider
-accepts the key in Phase 4, and keep a temporary encrypted backup first. After
-that, use 1Password Developer Watchtower to remove the redundant on-disk private
-key. This playbook deliberately provides no automatic `rm` for private keys.
+accepts the key in Phase 4, and keep a temporary encrypted backup first. Then
+review whether other hosts, signing identities or recovery procedures still
+depend on the disk copy. Retain it explicitly if needed, or use the approved
+owner-specific retirement procedure once its dependencies and recovery plan
+are resolved. Importing the same key into 1Password does not create a new
+identity: revoking that public key at the provider also revokes its vault-backed
+use. This playbook deliberately provides no automatic `rm` for private keys.
 
 ## Step 3.5 — Confirm the agent can see your key
 
@@ -951,9 +959,10 @@ use `sudo` on files your own account owns.
 - [ ] In the script-assisted 1Password route, every selected provider has a
       public `IdentityFile` pin whose fingerprint matches the intended agent
       key and provider registration.
-- [ ] **Except in keychain mode:** no on-disk `~/.ssh/id_*` private-key file
-      exists. In keychain mode provider keys are expected; Phase 8 reports
-      their passphrase protection separately from their storage location.
+- [ ] The selected authentication route works independently of the legacy-key
+      inventory. Expected Keychain provider keys are passphrase-protected;
+      other encrypted keys need explicit Phase 8 retention review. Unprotected
+      or unverifiable keys must be resolved, not hidden by renaming them.
 - [ ] Any imported old disk copy remains quarantined until provider
       verification succeeds.
 - [ ] `fdesetup status` reports FileVault is on.
