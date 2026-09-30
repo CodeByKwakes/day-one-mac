@@ -146,7 +146,7 @@ open_docs() {
           '' \
           'Topics: start, index, manual, process, project, commands, chezmoi, status, optional, advanced, second-brain' \
           'Handbook topics: handbook, chezmoi-guide, chezmoi-daily, chezmoi-reference, chezmoi-concepts' \
-          'Setup guides: second-brain-guide, security, 1password, keychain, ssh, software' \
+          'Setup guides: second-brain-guide, folders, security, 1password, keychain, ssh, software' \
           '' \
           'Without --open or --browser, the command prints the installed path.' \
           '--browser opens an offline HTML reader; --open keeps the default Markdown app.'

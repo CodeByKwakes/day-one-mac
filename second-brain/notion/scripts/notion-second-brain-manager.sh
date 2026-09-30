@@ -19,7 +19,8 @@ CAPTURE_URL=
 
 usage() {
   cat <<'EOF'
-Usage: ./scripts/notion-second-brain-manager.sh [action] [options]
+Usage: day-one-mac second-brain notion [action] [options]
+Direct script: ./scripts/notion-second-brain-manager.sh [action] [options] (from second-brain/notion)
 
 Actions:
   --guided                 Ask for choices interactively.

@@ -49,6 +49,7 @@ try {
   for (const [topic, file] of Object.entries(handbookTopics)) {
     assert.equal(fs.realpathSync(run([topic]).trim()), fs.realpathSync(path.join(fixture, file)));
     assert.ok(run(['--list']).includes(topic));
+    assert.ok(run(['--help']).includes(topic), `docs help omitted ${topic}`);
   }
 
   // Compare the public catalogue with executable selection sources, not a

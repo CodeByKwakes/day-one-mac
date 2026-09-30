@@ -177,7 +177,7 @@ day-one-mac folders --resume
 ```
 
 To opt into ghq, plan with `--ghq yes`. If it is missing, approve its Homebrew
-installation separately with `--install-ghq` on **apply**. Homebrew and Git must
+installation separately with `--install-ghq` on **apply or resume**. Homebrew and Git must
 already be available; this command does not bootstrap prerequisites. A compatible
 existing ghq is reused and not recorded as an installation owned by Day One Mac.
 

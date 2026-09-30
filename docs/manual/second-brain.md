@@ -40,21 +40,20 @@ also have appropriately restricted access.
 In an installed release, preview the reason-first manager:
 
 ```bash
-cd "$(day-one-mac root)/second-brain/obsidian"
-./scripts/second-brain-manager.sh --guided
+day-one-mac second-brain obsidian --guided
 ```
 
-When ready, run `./scripts/second-brain-manager.sh --guided --apply`, review the
+When ready, run `day-one-mac second-brain obsidian --guided --apply`, review the
 newly displayed layout, then type the requested `APPLY LAYOUT` confirmation.
 The manager creates the selected scaffolding and local integration helpers.
 Application installation requires the separate `--install-apps` choice and app
 policy. It does not log in, enable sync or create a remote backup.
 
-Inspect the result from the same directory:
+These commands work from any directory. Inspect the result with:
 
 ```bash
-./scripts/second-brain-manager.sh --show
-./scripts/second-brain-manager.sh --validate
+day-one-mac second-brain obsidian --show
+day-one-mac second-brain obsidian --validate
 second-brain-report
 ```
 
@@ -107,8 +106,7 @@ An entirely manual setup follows those guides directly. For optional local
 planning assistance in an installed release:
 
 ```bash
-cd "$(day-one-mac root)/second-brain/notion"
-./scripts/notion-second-brain-manager.sh --guided
+day-one-mac second-brain notion --guided
 ```
 
 Adding `--apply` saves the approved **local** plan, seeds and selected helper

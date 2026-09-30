@@ -60,7 +60,8 @@ die() { printf '  ✗ %s\n' "$*" >&2; exit 1; }
 
 usage() {
   printf '%s\n' \
-    'Usage: ./scripts/second-brain-manager.sh ACTION [options]' \
+    'Usage: day-one-mac second-brain obsidian ACTION [options]' \
+    'Direct script: ./scripts/second-brain-manager.sh ACTION [options] (from second-brain/obsidian)' \
     '' \
     'Actions:' \
     '  --guided                 ask why, which vaults, domains, folders, and tools' \
