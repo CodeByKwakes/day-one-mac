@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0](https://github.com/CodeByKwakes/day-one-mac/compare/v1.3.0...v1.4.0) (2026-09-30)
+
+
+### Features
+
+* add offline handbook, developer layouts, and SSH verification hardening ([#10](https://github.com/CodeByKwakes/day-one-mac/issues/10)) ([61d3066](https://github.com/CodeByKwakes/day-one-mac/commit/61d3066d5c398bef17b48199438506d48f509391))
+* **cli:** add explicit required-phase actions and inspection ([#8](https://github.com/CodeByKwakes/day-one-mac/issues/8)) ([0469a83](https://github.com/CodeByKwakes/day-one-mac/commit/0469a83d14c8f63a379f4a4cfca3e112e47f8716))
+
 ## [1.3.0](https://github.com/CodeByKwakes/day-one-mac/compare/v1.2.1...v1.3.0) (2026-09-27)
 
 
