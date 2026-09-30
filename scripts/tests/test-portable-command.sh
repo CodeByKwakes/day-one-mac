@@ -75,6 +75,10 @@ grep -Fq '# Day One Mac bootstrap PATH' "$test_home/.config/zsh/path.zsh" \
   || fail_test 'installer did not create the bootstrap PATH file'
 grep -Fq 'runtime-status    show and verify' < <(HOME="$test_home" "$portable" --help) \
   || fail_test 'portable command help does not document the standalone runtime'
+HOME="$test_home" "$portable" --help | awk '
+  /  setup \[options\]/ { getline; if ($0 ~ /--phase NN selects phases/) found=1 }
+  END { exit !found }
+' || fail_test 'setup action help must stay under setup, not folders'
 
 # Installing a second version must replace the current symlink itself. On
 # macOS, a plain `mv -f next current` follows a directory symlink and silently

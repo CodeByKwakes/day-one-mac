@@ -198,8 +198,8 @@ case "${1:-}" in
       '' \
       'Required setup and inspection:' \
       '  setup [options]   run or inspect the eight required phases' \
-      '  folders           standalone layouts and opt-in ghq: --plan | --apply | --check | --resume' \
       '                    --plan | --apply | --check | --resume; --phase NN selects phases' \
+      '  folders           standalone layouts and opt-in ghq: --plan | --apply | --check | --resume' \
       '  shell-status      inspect zsh, PATH, completions and shell tools' \
       '  safety-report     create the Stage 0 read-only safety report' \
       '  prepare-existing  choose Stage 0 Route A or Route B' \
