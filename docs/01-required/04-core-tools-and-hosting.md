@@ -41,7 +41,7 @@ clear instruction if something has been removed or changed owner.
 
 | Type | Everyone | Conditional |
 |---|---|---|
-| Formulae | `chezmoi`, `git`, `jq`, `ripgrep`, `starship`, `zsh` | Opt-in `ghq`; `fnm`, `pnpm` for Node; `uv` for Python; `gh` for Tracks 1 and 3; `azure-cli` for Tracks 2 and 3 |
+| Formulae | `git`, `jq`, `ripgrep` | Selected `chezmoi`, Homebrew `zsh`, `starship`, and `ghq`; `fnm`, `pnpm` for Node; `uv` for Python; `gh` for Tracks 1 and 3; `azure-cli` for Tracks 2 and 3 |
 | Applications/font | JetBrains Mono Nerd Font, Raycast, Visual Studio Code, Warp | Their preferred casks are `font-jetbrains-mono-nerd-font`, `raycast`, `visual-studio-code`, and `warp`; a valid external installation also passes |
 
 1Password and its CLI were prepared in the Installation Centre and configured
@@ -91,7 +91,11 @@ The equivalent manual installations below are recovery commands for the
 Installation Centre. Do not run them over a company-managed application:
 
 ```bash
-brew install chezmoi git jq ripgrep starship zsh
+brew install git jq ripgrep
+# Run each of these only when that component was selected:
+brew install chezmoi
+brew install starship
+brew install zsh
 brew install --cask \
   font-jetbrains-mono-nerd-font \
   raycast \
@@ -438,7 +442,7 @@ to the Installation Centre instead of starting another installer here.
 
 ## Phase 4 completion checklist 🚦
 
-- [ ] `git`, `chezmoi`, `jq`, `rg`, and `starship` are available; `ghq` only if selected.
+- [ ] `git`, `jq`, and `rg` are available; chezmoi, Starship, Homebrew zsh and ghq only if selected.
 - [ ] The ownership check reports Raycast, Warp, VS Code, and the Nerd Font as ready.
 - [ ] Every externally installed required app is identified as external and was left unchanged.
 - [ ] Selected folders exist; if ghq is selected, its primary/all roots match the reviewed layout.

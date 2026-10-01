@@ -14,6 +14,7 @@ source "$SCRIPT_DIR/lib/state.sh"
 source "$SCRIPT_DIR/lib/operation-lock.sh"
 source "$SCRIPT_DIR/lib/deadline.sh"
 source "$SCRIPT_DIR/lib/developer-folders.sh"
+source "$SCRIPT_DIR/lib/configuration-choices.sh"
 ORIGINAL_ARGS=("$@")
 STATE_ROOT="$(day_one_state_root)"
 STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
@@ -49,6 +50,8 @@ PRESET=""
 PRIMARY_IDE=""
 DOTFILES_REPO=""
 DOTFILES_VERSIONING=""
+SHELL_CHOICE=""
+PROMPT_CHOICE=""
 AUTH_MODE=""
 MACOS_SETTINGS_PLAN=""
 OPTIONAL_MODULES=""
@@ -75,10 +78,10 @@ PHASE_SCHEMA_01=5
 PHASE_SCHEMA_02=3
 PHASE_SCHEMA_03=6
 PHASE_SCHEMA_04=6
-PHASE_SCHEMA_05=15
+PHASE_SCHEMA_05=16
 PHASE_SCHEMA_06=2
 PHASE_SCHEMA_07=4
-PHASE_SCHEMA_08=11
+PHASE_SCHEMA_08=12
 
 usage() {
   cat <<'EOF'
@@ -105,8 +108,10 @@ Usage: ./setup.sh [options]
   --primary-ide IDE           vscode or other; controls Git editor integration
   --dotfiles-repo URL         apply an existing private chezmoi source
   --new-dotfiles              create or keep a new chezmoi source
-  --dotfiles-versioning MODE  git (private remote) or local (no Git gate)
+  --dotfiles-versioning MODE  none (unmanaged), local (chezmoi), or git (private repo)
   --local-dotfiles            shorthand for --new-dotfiles --dotfiles-versioning local
+  --shell MODE                keep the current zsh, apple zsh, or homebrew zsh
+  --prompt MODE               none (leave existing prompt alone) or starship
   --macos-settings MODE       ask, configure, or skip the early settings wizard
   --skip-macos-settings       shorthand for --macos-settings skip
   --app-install-policy MODE   prompt, homebrew, or check-only for missing apps
@@ -265,9 +270,7 @@ load_or_choose_selections() {
   if [[ "$DOTFILES_EXPLICIT" != 1 && -z "$DOTFILES_REPO" ]]; then
     DOTFILES_REPO="$(state_value dotfiles-repo)"
   fi
-  [[ -n "$DOTFILES_VERSIONING" ]] || DOTFILES_VERSIONING="$(state_value dotfiles-versioning)"
-  # Existing saved setups predate this choice and always required private Git.
-  [[ -n "$DOTFILES_VERSIONING" ]] || DOTFILES_VERSIONING=git
+  configuration_load_choices
   [[ -n "$MACOS_SETTINGS_PLAN" ]] || MACOS_SETTINGS_PLAN="$(state_value macos-settings-plan)"
   [[ -n "$AUTH_MODE" ]] || AUTH_MODE="$(state_value auth-mode)"
   # Setups saved before this choice existed all used the 1Password agent.
@@ -288,7 +291,9 @@ load_or_choose_selections() {
   [[ "$TRACK" =~ ^[123]$ ]] || { err "track must be 1, 2, or 3"; exit 2; }
   [[ "$STACK" =~ ^(node|python|both)$ ]] || { err "stack must be node, python, or both"; exit 2; }
   [[ "$PRIMARY_IDE" =~ ^(vscode|other)$ ]] || { err "primary IDE must be vscode or other"; exit 2; }
-  [[ "$DOTFILES_VERSIONING" =~ ^(git|local)$ ]] || { err "dotfiles versioning must be git or local"; exit 2; }
+  [[ -z "$DOTFILES_VERSIONING" || "$DOTFILES_VERSIONING" =~ ^(none|git|local)$ ]] || { err "dotfiles versioning must be none, git or local"; exit 2; }
+  [[ -z "$SHELL_CHOICE" || "$SHELL_CHOICE" =~ ^(keep|apple|homebrew)$ ]] || { err "shell must be keep, apple or homebrew"; exit 2; }
+  [[ -z "$PROMPT_CHOICE" || "$PROMPT_CHOICE" =~ ^(none|starship)$ ]] || { err "prompt must be none or starship"; exit 2; }
   [[ "$MACOS_SETTINGS_PLAN" =~ ^(ask|configure|skip)$ ]] || { err "macOS settings choice must be ask, configure, or skip"; exit 2; }
   [[ "$AUTH_MODE" =~ ^(1password|keychain|external|https)$ ]] || {
     err "auth mode must be 1password, keychain, external, or https"; exit 2; }
@@ -317,7 +322,7 @@ phase_title() {
     02) printf 'Command-line foundation\n' ;;
     03) printf 'Security and SSH\n' ;;
     04) printf 'Core tools and hosting\n' ;;
-    05) printf 'Dotfiles and Starship\n' ;;
+    05) printf 'Configuration ownership, shell and prompt\n' ;;
     06) printf 'Language toolchains and pnpm\n' ;;
     07) printf 'VS Code base\n' ;;
     08) printf 'Verify and reproduce\n' ;;
@@ -348,7 +353,7 @@ phase_fingerprint() {
     08) inputs="$TRACK|$STACK|$GIT_NAME|$GIT_EMAIL|$PRIMARY_IDE|$AUTH_MODE|$DOTFILES_REPO|$DOTFILES_VERSIONING|applications=$application_catalog_hash" ;;
   esac
   { printf 'phase-schema=%s\n' "$schema"; printf 'implementation=%s\n' "$implementation";
-    printf 'inputs=%s\n' "$inputs|preset=${PRESET:-recommended-productivity}|layout=${FOLDER_LAYOUT:-}|ghq=${GHQ_CHOICE:-}|root=${FOLDER_GHQ_ROOT:-}"; } \
+    printf 'inputs=%s\n' "$inputs|preset=${PRESET:-recommended-productivity}|layout=${FOLDER_LAYOUT:-}|ghq=${GHQ_CHOICE:-}|root=${FOLDER_GHQ_ROOT:-}|dotfiles=$DOTFILES_VERSIONING|shell=$SHELL_CHOICE|prompt=$PROMPT_CHOICE"; } \
     | shasum -a 256 | awk '{print $1}'
 }
 
@@ -373,7 +378,10 @@ phase_done() {
 }
 
 required_formulae() {
-  printf '%s\n' chezmoi git jq ripgrep starship zsh
+  printf '%s\n' git jq ripgrep
+  uses_chezmoi && printf '%s\n' chezmoi
+  uses_starship && printf '%s\n' starship
+  [[ "$SHELL_CHOICE" != homebrew ]] || printf '%s\n' zsh
   [[ "${GHQ_CHOICE:-}" != yes ]] || printf '%s\n' ghq
   if uses_node; then printf '%s\n' fnm pnpm; fi
   uses_python && printf '%s\n' uv
@@ -892,7 +900,8 @@ show_status() {
   printf '  Preset: %s\n' "${PRESET:-recommended-productivity}"
   printf '  Primary IDE: %s\n' "${PRIMARY_IDE:-not selected}"
   printf '  Git authentication: %s\n' "${AUTH_MODE:-1password}"
-  printf '  Dotfiles: %s\n' "${DOTFILES_VERSIONING:-git}"
+  printf '  Dotfiles: %s\n' "${DOTFILES_VERSIONING:-not selected}"
+  printf '  Shell: %s | Prompt: %s\n' "${SHELL_CHOICE:-not selected}" "${PROMPT_CHOICE:-not selected}"
   printf '  Early macOS settings: %s\n' "${MACOS_SETTINGS_PLAN:-not selected}"
   printf '  Optional plan: %s\n' "${OPTIONAL_MODULES:-none}"
   printf '  State: %s\n\n' "$STATE_DIR"
@@ -929,17 +938,39 @@ required_phase_selected() {
   [[ -z "$REQUESTED_PHASES" || " $REQUESTED_PHASES " == *" ${1#0} "* ]]
 }
 
+configuration_preflight_for_selected_phases() {
+  local phase
+  # Installation Centre installs selected software, not configuration files.
+  [[ "$RUN_INSTALLATION_CENTRE" != 1 ]] || return 0
+  for phase in 03 04 05 06 07 08; do
+    if required_phase_selected "$phase"; then
+      configuration_unmanaged_preflight
+      return $?
+    fi
+  done
+  return 0
+}
+
 required_phase_impact() {
   case "$1" in
     01) printf 'Record track, stack and Git identity. Manual: confirm macOS update and verified backup or disposable data.' ;;
     02) printf 'Install/verify Apple developer tools and native Homebrew; update Homebrew. Manual: Apple installer, licence and administrator approval.' ;;
-    03) printf 'Require Installation Centre; configure selected %s authentication and SSH; require FileVault. Manual: account/key approval and recovery method.' "$AUTH_MODE" ;;
+    03) if [[ "$AUTH_MODE" == https ]]; then
+          printf 'Require Installation Centre and FileVault; no SSH key or agent configuration for HTTPS. Manual: FileVault recovery method; provider sign-in belongs to Phase 4.'
+        else printf 'Require Installation Centre; configure selected %s authentication and SSH; require FileVault. Manual: account/key approval and recovery method.' "$AUTH_MODE"; fi ;;
     04) printf 'Require Installation Centre; configure Git defaults and Developer layout %s; ghq %s. Missing choices require explicit review. Manual: provider sign-in and authentication tests.' "${FOLDER_LAYOUT:-unselected}" "${GHQ_CHOICE:-unselected}" ;;
-    05) printf 'Require Installation Centre; review/apply chezmoi source, manage shell files and Starship, verify/change login shell. Preserve conflicting user files for review.' ;;
+    05) printf 'Require Installation Centre; configuration owner %s, shell %s, prompt %s. Preserve existing files; review ownership conflicts. Unselected choices block apply; none does not remove existing tools.' "${DOTFILES_VERSIONING:-unselected}" "${SHELL_CHOICE:-unselected}" "${PROMPT_CHOICE:-unselected}" ;;
     06) printf 'Require Installation Centre; install/update %s toolchains (Node LTS via fnm and/or Python via uv); configure pnpm when selected.' "$STACK" ;;
     07) if [[ "$PRESET" == core ]]; then printf 'Not required for core preset.'
         else printf 'Require Installation Centre; create missing VS Code settings; verify launcher and safe AI approval settings. Manual: GUI launcher installation.'; fi ;;
-    08) printf 'Require Installation Centre; run verification and WRITE verification.md; create/adopt a missing Brewfile. Manual: signing/GUI review and %s dotfiles recovery checks.' "$DOTFILES_VERSIONING" ;;
+    08)
+      printf 'Require Installation Centre; run selected machine checks and WRITE verification.md. '
+      case "$DOTFILES_VERSIONING" in
+        none) printf 'Create a missing user-owned Brewfile without chezmoi adoption. Manual: verify backups of user-owned configuration and Brewfile.' ;;
+        local) printf 'Create/manage a missing Brewfile with chezmoi; no remote required. Manual: review local source and verify its backup.' ;;
+        git) printf 'Create/manage a missing Brewfile with chezmoi; verify private remote and push state. Manual: review source and recovery.' ;;
+        *) printf 'Select configuration ownership before deciding Brewfile management and recovery checks.' ;;
+      esac ;;
   esac
 }
 
@@ -951,7 +982,9 @@ required_json_string() {
     case "$char" in
       '"') printf '%s' '\"' ;; \\) printf '%s' "\\\\" ;;
       *) printf -v number '%d' "'$char"
-         if (( number < 32 )); then printf '\\u%04x' "$number"; else printf '%s' "$char"; fi ;;
+         # Bash 3.2 may report high UTF-8 bytes as negative in byte locales.
+         # Only ASCII control characters need escaping; preserve UTF-8 bytes.
+         if (( number >= 0 && number < 32 )); then printf '\\u%04x' "$number"; else printf '%s' "$char"; fi ;;
     esac
   done
   printf '"'
@@ -1025,7 +1058,12 @@ check_required_phase() {
           done ;;
         1password) required_check_app 1password; required_check_command op ;;
       esac
-      required_check_note manual 'Agent access, provider registration, signing and recovery-key custody need interactive verification'
+      if [[ "$AUTH_MODE" == https ]]; then
+        required_check_note pass 'HTTPS selected; SSH key and agent checks are not required'
+        required_check_note manual 'FileVault recovery-key custody needs manual confirmation; HTTPS provider sessions are checked separately in Phase 4'
+      else
+        required_check_note manual 'Agent access, provider registration, signing and recovery-key custody need interactive verification'
+      fi
       ;;
     04)
       while IFS= read -r command_name; do
@@ -1045,16 +1083,33 @@ check_required_phase() {
       if details="$(folders_check 2>&1)"; then required_check_note pass "$details"
       else required_check_note fail "$details"; fi
       while IFS= read -r component; do required_check_app "$component"; done < <(required_application_ids)
-      required_check_note manual 'Hosting sessions, SSH reachability and full Git defaults require Phase 4; no login or network probe ran'
+      if [[ "$AUTH_MODE" == https ]]; then
+        required_check_note manual 'HTTPS hosting sessions and full Git defaults require Phase 4; no login or network probe ran'
+      else
+        required_check_note manual 'Hosting sessions, SSH reachability and full Git defaults require Phase 4; no login or network probe ran'
+      fi
       ;;
     05)
-      for command_name in chezmoi starship; do required_check_command "$command_name"; done
-      for target in .zprofile .zshrc .gitconfig .gitignore_global .ssh/config .config/starship.toml .config/zsh/path.zsh .config/zsh/aliases.zsh; do
+      if ! details="$(configuration_validate_choices 2>&1)"; then required_check_note fail "$details"; fi
+      if uses_chezmoi; then required_check_command chezmoi
+      else required_check_note pass 'chezmoi not selected; no source or remote is required'
+        if ! details="$(configuration_unmanaged_preflight 2>&1)"; then required_check_note manual "$details"; fi
+      fi
+      if uses_starship; then
+        required_check_command starship
+        required_check_file "$HOME/.config/starship.toml" 'Starship configuration'
+      else required_check_note pass 'Starship not selected; existing prompt is not changed'; fi
+      for target in .zprofile .zshrc .gitconfig .gitignore_global .config/zsh/path.zsh .config/zsh/aliases.zsh; do
         required_check_file "$HOME/$target" "$target"
       done
+      target="$(configuration_shell_target 2>/dev/null || true)"
+      if [[ -n "$target" && -x "$target" && "${target##*/}" == zsh ]]; then
+        required_check_note pass 'Selected zsh executable exists'
+        if [[ "$(configuration_login_shell 2>/dev/null || true)" != "$target" ]]; then required_check_note manual 'Selected login shell is not active'; fi
+      else required_check_note fail 'Selected shell is unavailable or is not zsh; manual shell setup is needed'; fi
       if [[ -x "$HOME/.local/bin/day-one-mac" ]]; then required_check_note pass 'Portable launcher exists'
       else required_check_note fail 'Portable launcher is missing'; fi
-      required_check_note manual 'Review chezmoi drift and clean-shell behaviour in Phase 5; checks do not render templates or execute startup files'
+      required_check_note manual 'Review selected configuration ownership and clean-shell behaviour in Phase 5; checks do not render templates or execute startup files'
       ;;
     06)
       if uses_node; then
@@ -1086,7 +1141,12 @@ check_required_phase() {
       if "$SCRIPT_DIR/verify.sh" >/dev/null 2>&1; then required_check_note pass 'Runtime verification passed'
       else required_check_note fail 'Runtime verification failed; run day-one-mac verify'; fi
       required_check_file "$HOME/Brewfile" 'Brewfile'
-      required_check_note manual 'Phase 8 must verify source secrets, remote privacy/push state or local backup, and Brewfile management; no report or source was modified'
+      case "$DOTFILES_VERSIONING" in
+        none) required_check_note manual 'Review user-owned configuration and Brewfile backup separately; no backup was verified and no report or source was modified' ;;
+        local) required_check_note manual 'Review source secrets, local backup and Brewfile management through Phase 8 and a separate backup check; no backup was verified and no report or source was modified' ;;
+        git) required_check_note manual 'Phase 8 must verify source secrets, remote privacy/push state and Brewfile management; no report or source was modified' ;;
+        *) required_check_note manual 'Select configuration ownership before Phase 8; no report or source was modified' ;;
+      esac
       ;;
   esac
   return 0
@@ -1108,11 +1168,14 @@ inspect_required_actions() {
     printf ',"primary_ide":'; required_json_string "$PRIMARY_IDE"
     printf ',"macos_settings":'; required_json_string "$MACOS_SETTINGS_PLAN"
     printf ',"dotfiles_versioning":'; required_json_string "$DOTFILES_VERSIONING"
+    printf ',"shell":'; required_json_string "$SHELL_CHOICE"
+    printf ',"prompt":'; required_json_string "$PROMPT_CHOICE"
     printf '},"phases":['
   else
     printf 'Required setup %s — local read-only inspection\n' "$action"
     printf 'Track: %s | Stack: %s | Preset: %s | Authentication: %s | Dotfiles: %s\n' "$TRACK" "$STACK" "$PRESET" "$AUTH_MODE" "$DOTFILES_VERSIONING"
     printf 'Primary IDE: %s | Early macOS settings: %s\n' "$PRIMARY_IDE" "$MACOS_SETTINGS_PLAN"
+    printf 'Shell: %s | Prompt: %s\n' "${SHELL_CHOICE:-unselected}" "${PROMPT_CHOICE:-unselected}"
     printf 'Developer layout: %s | ghq: %s\n' "${FOLDER_LAYOUT:-unselected}" "${GHQ_CHOICE:-unselected}"
     printf 'Recorded completion is not live health. Manual/network/GUI checks are not automated here.\n'
     [[ -z "$checked_at" ]] || printf 'Checked at: %s\n' "$checked_at"
@@ -1241,8 +1304,10 @@ while [[ $# -gt 0 ]]; do
     --primary-ide) shift; [[ $# -gt 0 ]] || { err "--primary-ide needs vscode or other"; exit 2; }; PRIMARY_IDE="$1" ;;
     --dotfiles-repo) shift; [[ $# -gt 0 ]] || { err "--dotfiles-repo needs a URL"; exit 2; }; DOTFILES_REPO="$1"; DOTFILES_VERSIONING=git; DOTFILES_EXPLICIT=1 ;;
     --new-dotfiles) DOTFILES_REPO=""; DOTFILES_EXPLICIT=1 ;;
-    --dotfiles-versioning) shift; [[ $# -gt 0 ]] || { err "--dotfiles-versioning needs git or local"; exit 2; }; DOTFILES_VERSIONING="$1"; [[ "$1" != local ]] || { DOTFILES_REPO=""; DOTFILES_EXPLICIT=1; } ;;
+    --dotfiles-versioning) shift; [[ $# -gt 0 ]] || { err "--dotfiles-versioning needs none, git or local"; exit 2; }; DOTFILES_VERSIONING="$1"; [[ "$1" == git ]] || { DOTFILES_REPO=""; DOTFILES_EXPLICIT=1; } ;;
     --local-dotfiles) DOTFILES_REPO=""; DOTFILES_VERSIONING=local; DOTFILES_EXPLICIT=1 ;;
+    --shell) shift; [[ $# -gt 0 ]] || exit 2; SHELL_CHOICE="$1" ;;
+    --prompt) shift; [[ $# -gt 0 ]] || exit 2; PROMPT_CHOICE="$1" ;;
     --auth-mode) shift; [[ $# -gt 0 ]] || { err "--auth-mode needs 1password, keychain, external, or https"; exit 2; }; AUTH_MODE="$1" ;;
     --macos-settings) shift; [[ $# -gt 0 ]] || { err "--macos-settings needs ask, configure, or skip"; exit 2; }; MACOS_SETTINGS_PLAN="$1" ;;
     --skip-macos-settings) MACOS_SETTINGS_PLAN=skip ;;
@@ -1290,7 +1355,7 @@ fi
 if [[ "$SETUP_ACTION" == resume ]]; then
   for option in "${ORIGINAL_ARGS[@]}"; do
     case "$option" in
-      --layout|--ghq|--ghq-root|--track|--stack|--name|--email|--preset|--primary-ide|--dotfiles-repo|--new-dotfiles|--dotfiles-versioning|--local-dotfiles|--auth-mode|--macos-settings|--skip-macos-settings)
+      --shell|--prompt|--layout|--ghq|--ghq-root|--track|--stack|--name|--email|--preset|--primary-ide|--dotfiles-repo|--new-dotfiles|--dotfiles-versioning|--local-dotfiles|--auth-mode|--macos-settings|--skip-macos-settings)
         err '--resume reuses saved choices; use --plan and --apply to change them.'; exit 2 ;;
     esac
   done
@@ -1387,7 +1452,7 @@ if [[ "$SHOW_STATUS" == 1 ]]; then
   [[ -n "$PRIMARY_IDE" ]] || PRIMARY_IDE=vscode
   DOTFILES_REPO="${DOTFILES_REPO:-$(state_value dotfiles-repo)}"
   DOTFILES_VERSIONING="${DOTFILES_VERSIONING:-$(state_value dotfiles-versioning)}"
-  [[ -n "$DOTFILES_VERSIONING" ]] || DOTFILES_VERSIONING=git
+  configuration_load_choices
   MACOS_SETTINGS_PLAN="${MACOS_SETTINGS_PLAN:-$(state_value macos-settings-plan)}"
   AUTH_MODE="${AUTH_MODE:-$(state_value auth-mode)}"
   [[ -n "$AUTH_MODE" ]] || AUTH_MODE=1password
@@ -1400,6 +1465,11 @@ if [[ "$SHOW_STATUS" == 1 ]]; then
 fi
 
 load_or_choose_selections
+configuration_validate_choices || exit $?
+# Check ownership before Phase 3/4 can change shared SSH/Git targets, not just
+# before Phase 5. Preparation-only runs do not change ownership. A manager
+# opt-out is never an implicit detach operation.
+configuration_preflight_for_selected_phases || exit $?
 if [[ "$RUN_INSTALLATION_CENTRE" == 1 ]] || required_phase_selected 03 || required_phase_selected 04 \
     || required_phase_selected 05 || required_phase_selected 06 || required_phase_selected 07 || required_phase_selected 08; then
   folders_validate_choices
@@ -1421,6 +1491,9 @@ if [[ "$DOTFILES_EXPLICIT" == 1 || -n "$DOTFILES_REPO" ]]; then
   save_state_value dotfiles-repo "$DOTFILES_REPO"
 fi
 save_state_value dotfiles-versioning "$DOTFILES_VERSIONING"
+save_state_value shell-choice "$SHELL_CHOICE"
+save_state_value prompt-choice "$PROMPT_CHOICE"
+save_state_value configuration-schema 1
 save_state_value macos-settings-plan "$MACOS_SETTINGS_PLAN"
 
 if [[ "$SETUP_ACTION" == apply || "$SETUP_ACTION" == resume ]]; then

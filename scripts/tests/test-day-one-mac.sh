@@ -280,6 +280,8 @@ detach_archives=("$detach_recovery"/Day-One-Mac-Detached-*)
 dry_output="$TEST_ROOT/dry-run.txt"
 printf 'repository\n' > "$TEST_STATE_ROOT/folder-layout"
 printf 'no\n' > "$TEST_STATE_ROOT/ghq-choice"
+# This fixture exercises the legacy bundle; new opt-outs have their own matrix.
+printf 'git\n' > "$TEST_STATE_ROOT/dotfiles-versioning"
 HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE_ROOT" \
   "$SCRIPT_DIR/bootstrap-day-one-mac.sh" --dry-run --track 3 --stack both \
   --layout repository --ghq no \

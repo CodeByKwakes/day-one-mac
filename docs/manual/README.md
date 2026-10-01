@@ -14,7 +14,8 @@ and recovery. This is not another mandatory checklist.
 - **Manual steps after CLI preparation:** complete [required Phases 1–8](../01-required/README.md),
   select only needed extras, then use the chapters below. Do not repeat the
   fully manual bootstrap over an already configured Mac.
-- **Maintaining dotfiles:** start with the [chezmoi learning path](chezmoi.md).
+- **Choosing configuration ownership:** select [unmanaged files or chezmoi, shell, and prompt](../01-required/05-dotfiles-and-shell.md#choose-ownership-shell-and-prompt-first) independently.
+- **Maintaining chezmoi-managed dotfiles:** start with the [chezmoi learning path](chezmoi.md).
 - **Organising projects:** choose one of [four developer layouts and optional ghq](developer-folders.md), with a fully manual route or independent CLI assistance.
 - **Building a knowledge system:** follow the [Second Brain walkthrough](second-brain.md)
   for Obsidian or Notion, integrations, daily use and recovery.

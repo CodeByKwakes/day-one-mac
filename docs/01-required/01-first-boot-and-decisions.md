@@ -219,19 +219,25 @@ workflows may expect it. This choice controls only Git integration:
 Selecting **No** does not uninstall VS Code. It also does not erase an editor
 setting that already belongs to you or company policy.
 
-## Step 1.8 — Choose chezmoi protection
+## Step 1.8 — Choose configuration ownership, shell, and prompt
 
-chezmoi always manages the selected dotfiles, but Git version history is a
-choice:
+Choose whether to use chezmoi at all, then choose its protection mode if needed:
 
 | Choice | Phase 8 requirement | Recovery trade-off |
 |---|---|---|
-| **Private Git — recommended** | Clean source, private matching remote, reachable pushed branch | Version history and another-machine recovery |
+| **Unmanaged** | Readable user-owned Brewfile; no chezmoi/source/remote gate | Include configuration files in your normal tested backup; the CLI does not verify that backup |
+| **Private Git** | Clean source, private matching remote, reachable pushed branch | Version history and another-machine recovery |
 | **Local-only** | Readable source and secret scan; no repository or remote gate | No version history; `~/.local/share/chezmoi` must be included in an encrypted backup |
 
 Local-only does not make chezmoi temporary and does not remove existing Git
 metadata. Select it for a new source when policy or preference forbids a
 dotfiles repository.
+
+Independently choose **keep current zsh**, **Apple zsh**, or **Homebrew zsh**, and
+whether to opt into **Starship**. No selection removes existing tools or prompt
+configuration. Existing chezmoi ownership must be reviewed before switching to
+unmanaged mode. See [Phase 5 choices](05-dotfiles-and-shell.md#choose-ownership-shell-and-prompt-first)
+for the manual and CLI branches, conflict handling, and compatibility rules.
 
 ## Step 1.9 — Start the wizard
 
@@ -254,8 +260,9 @@ wizard collects only the decisions needed by the required phases:
 2. Node, Python, or both development stacks.
 3. Primary Git name and email.
 4. Whether VS Code should be Git's primary editor and visual comparison tool.
-5. A new chezmoi source protected by private Git, a new local-only source, or
-   an existing private dotfiles repository.
+5. Unmanaged configuration, local-only chezmoi, or chezmoi with a new/existing private repository.
+6. Keep current zsh, Apple zsh, or Homebrew zsh.
+7. Leave the prompt alone, or install/configure Starship.
 
 Required phases display 🔒 because they cannot be removed; this symbol does
 not mean they are already complete. Review the required-base summary

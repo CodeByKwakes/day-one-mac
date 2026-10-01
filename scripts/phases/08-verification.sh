@@ -369,11 +369,13 @@ phase_08() {
     info "encrypted legacy keys require per-file retention review; --yes cannot approve it"
     info "would preserve an existing $brewfile, or create and manage it if absent"
     print_command brew bundle dump --file="$brewfile"
-    print_command chezmoi add "$brewfile"
+    if uses_chezmoi; then print_command chezmoi add "$brewfile"; fi
     if [[ "$DOTFILES_VERSIONING" == git ]]; then
       info "would require a clean, pushed, private GitHub or Azure DevOps dotfiles origin"
-    else
+    elif uses_chezmoi; then
       info "would verify the local-only chezmoi source and skip Git remote requirements"
+    else
+      info 'would retain a user-owned Brewfile; chezmoi/source/remote checks are not selected'
     fi
     return 0
   fi
@@ -403,8 +405,11 @@ phase_08() {
   report_check "advanced environment report command" day-one-mac advanced-audit --help
   report_check "existing-Mac safety report command" day-one-mac safety-report --plan
   report_check "existing-Mac Route A/Route B command" day-one-mac prepare-existing --help
-  report_check "chezmoi" chezmoi doctor
-  report_check "Starship" starship --version
+  if uses_chezmoi; then report_check "chezmoi" chezmoi doctor
+  else printf '| chezmoi and dotfiles remote | NOT SELECTED — user-owned files |\n' >> "$report"; fi
+  if uses_starship; then report_check "Starship" starship --version
+  else printf '| Starship | NOT SELECTED — existing prompt preserved |\n' >> "$report"; fi
+  report_check 'Selected login shell' verify_configuration_login_shell
   while IFS= read -r app_id; do
     [[ -n "$app_id" ]] || continue
     day_one_app_load "$app_id" || continue
@@ -417,7 +422,7 @@ phase_08() {
   report_check "Gatekeeper" bash -c "spctl --status 2>/dev/null | grep -q 'assessments enabled'"
   # Load login/interactive startup files, but leave terminal job control with
   # the calling shell so the later key-retention read cannot receive SIGTTIN.
-  uses_node && report_check "Node, npm and pnpm" zsh +m -lic 'node --version && npm --version && pnpm --version'
+  uses_node && report_check "Node, npm and pnpm" "$(configuration_shell_target)" +m -lic 'node --version && npm --version && pnpm --version'
   uses_python && report_check "Python via uv" uv python find
   uses_github && report_check "GitHub CLI" gh auth status
   uses_azure && report_check "Azure CLI" az account show
@@ -468,7 +473,7 @@ phase_08() {
     return "$EX_MANUAL"
   fi
   phase_step_done "track- and stack-aware machine audit passed"
-  phase_next "reviewed Brewfile under chezmoi management" "Review ~/Brewfile, add it to chezmoi if needed, and rerun Phase 8."
+  phase_next "reviewed Brewfile with selected ownership" "Review ~/Brewfile and its backup; add it to chezmoi only when that manager is selected."
   if [[ ! -e "$brewfile" ]]; then
     record_path_before_write "$brewfile"
     run brew bundle dump --file="$brewfile"
@@ -476,6 +481,15 @@ phase_08() {
     ok "recorded the installed Homebrew desired state in $brewfile"
   else
     info "preserved existing $brewfile"
+  fi
+  if ! uses_chezmoi; then
+    [[ -f "$brewfile" && -r "$brewfile" && ! -L "$brewfile" ]] || {
+      err 'Unmanaged Brewfile must be a readable regular file; review its owner.'; return "$EX_MANUAL"; }
+    printf '| Brewfile ownership | USER — readable; no chezmoi adoption |\n' >> "$report"
+    warn 'Include ~/Brewfile and your user-owned configuration files in a tested backup. No backup was verified by this check.'
+    phase_step_done 'Brewfile remains user-owned; configuration-manager checks not selected'
+    ok 'Selected base checks passed; unmanaged configuration needs your normal backup.'
+    return 0
   fi
   if ! chezmoi source-path "$brewfile" >/dev/null 2>&1; then
     if [[ "$brewfile_created" == 1 ]]; then

@@ -2,20 +2,23 @@
 
 # Set up, back up, and restore Warp
 
-**When:** after Phase 4 · **Required app:** yes · **Account, Settings Sync, AI, and Warp Drive:** optional
+**When:** after Phase 4, if Warp is selected · **Account, Settings Sync, AI, and Warp Drive:** optional
 
 **Prerequisites completed:** Phase 4 has verified Warp and the required Nerd
-Font. Complete Phase 5 before expecting the managed Starship prompt.
+Font for presets that include Warp. Complete Phase 5 for the selected shell
+configuration; Starship is needed only if you chose it.
 
 ## Outcome
 
-Warp opens a zsh session, displays the chezmoi-managed Starship prompt with the
-required Nerd Font, and has a deliberate privacy and synchronization policy.
+Warp opens the selected zsh session, displays your chosen prompt, and has a
+deliberate privacy and synchronization policy. If Starship was selected, its
+symbols render correctly with the Nerd Font.
 You will also know which parts Warp syncs, which parts need a separate export,
 and how to import the optional Day One workflow collection.
 
-Warp is the required graphical terminal. The shell configuration remains owned
-by chezmoi, not by Warp. This separation lets the same `.zprofile`, `.zshrc`,
+Use this guide when Warp is part of your selected setup. The shell configuration
+remains user-owned (`none`) or chezmoi-owned (`local` or `git`), not owned by
+Warp. This separation lets the same `.zprofile`, `.zshrc`,
 tools, and prompt work in Warp, VS Code, and the built-in Terminal app.
 
 ## Step 1 — First launch
@@ -32,13 +35,17 @@ tools, and prompt work in Warp, VS Code, and the built-in Terminal app.
    sessions.
 5. Open a new tab so the selected shell starts fresh.
 
-Do not ask Warp to replace `.zprofile` or `.zshrc`. Phase 5 manages those files
-through chezmoi so they remain reviewable and reproducible.
+Do not ask Warp to replace `.zprofile` or `.zshrc`. Review changes through the
+configuration owner selected in Phase 5: edit user-owned files directly, or
+review and apply changes through chezmoi.
 
-## Step 2 — Use the shell-owned Starship prompt
+## Step 2 — Choose how Warp displays your prompt
 
 Warp can draw its own prompt or display the prompt supplied by the shell.
-Day One Mac configures Starship in zsh, so choose the shell-owned option:
+If you selected Starship, use the shell-owned option below. If you selected
+`--prompt none`, keep your existing shell prompt or choose Warp's native prompt;
+skip the Starship command and rendering check. Missing Starship is not a failure
+for that choice.
 
 1. Open **Settings → Appearance**.
 2. Find the prompt or input settings.
@@ -65,8 +72,8 @@ Command Palette instead of depending on an old screenshot.
 
 | Area | Day One choice | Why |
 |---|---|---|
-| Startup shell | zsh | Matches the managed shell files |
-| Prompt | Shell (PS1) | Uses Starship everywhere |
+| Startup shell | Selected zsh | Matches the selected shell configuration |
+| Prompt | Shell (PS1) for selected Starship; otherwise your preferred prompt | Does not require installing an unselected prompt |
 | Font | JetBrainsMono Nerd Font | Renders prompt icons correctly |
 | Start at login | Off initially | A terminal does not need to run continuously |
 | Restore windows, tabs, and panes | Off for a clean/minimal setup | Avoids reopening old session output |
@@ -79,14 +86,21 @@ if resuming old tabs is more valuable than beginning with a blank terminal.
 
 ## Step 4 — Verify the Day One environment
 
-Open a new Warp tab and run:
+For the script-assisted route, open a new Warp tab and run:
 
 ```bash
 command -v day-one-mac
 day-one-mac root
-ghq root
-chezmoi source-path
 ```
+
+The fully manual route does not need the `day-one-mac` command. On either route,
+run only the checks for your selected tools:
+
+- With ghq: `ghq root`, matching your [chosen folder layout](../manual/developer-folders.md).
+- With chezmoi (`local` or `git`): `chezmoi source-path`.
+- With Starship: `starship --version`.
+
+Unmanaged ownership and an unselected prompt do not require chezmoi or Starship.
 
 For a Node stack, also run:
 
@@ -504,7 +518,8 @@ team objects, or every local support file.
 ## Warp completion checklist 🚦
 
 - [ ] New Warp tabs use zsh.
-- [ ] Shell (PS1) displays the Starship prompt.
+- [ ] If Starship was selected, Shell (PS1) displays it correctly. Otherwise,
+      the existing shell prompt or selected Warp native prompt works.
 - [ ] JetBrainsMono Nerd Font renders without missing symbols.
 - [ ] Required track and stack commands work in a new tab.
 - [ ] Each selected AI client reports a version and shows the intended account.

@@ -29,7 +29,7 @@ the complete manual flow for commands. Do not combine the routes step by step.
 | 2A | [Required Installation Centre](INSTALLATION-CENTRE.md) | Detect application ownership and provide every required app and CLI before configuration begins. |
 | 3 | [Phase 3 — Security and SSH](03-security-and-ssh.md) | Configure the selected authentication route and verify FileVault. |
 | 4 | [Phase 4 — Core tools and hosting](04-core-tools-and-hosting.md) | Verify core tools, create the development layout, configure Git, and authenticate hosting services. |
-| 5 | [Phase 5 — Dotfiles and shell](05-dotfiles-and-shell.md) | Configure chezmoi, zsh and Starship while keeping the standalone launcher under runtime ownership. |
+| 5 | [Phase 5 — Configuration, shell and prompt](05-dotfiles-and-shell.md) | Use the selected configuration owner, zsh and optional Starship; keep the launcher installer-owned. |
 | 6 | [Phase 6 — Language toolchains](06-language-toolchains.md) | Configure the selected Node/npm/pnpm and/or Python/uv stack. |
 | 7 | [Phase 7 — VS Code base](07-vscode-base.md) | Apply the minimal editor and integrated-terminal baseline. |
 | 8 | [Phase 8 — Verify and reproduce](08-verify-and-reproduce.md) | Run all gates and record the reproducible Homebrew and dotfiles state. |
@@ -46,19 +46,21 @@ when you want to see the intended effects before running a phase. Check
 these actions. A source checkout uses `./scripts/day-one-mac` instead.
 
 1. Preview your choices. This example selects GitHub, both language stacks,
-   Keychain-backed SSH, and private Git-backed dotfiles. Replace the example
+   Keychain-backed SSH, private Git-backed dotfiles, Apple zsh, and no new prompt.
+   It selects no folder layout or ghq. Replace the example
    author identity with your own; never put a password in these options.
 
    ```bash
    day-one-mac setup --plan --track 1 --stack both \
      --auth-mode keychain --name "Your Name" --email "you@example.com" \
      --preset recommended-productivity --primary-ide vscode \
-     --new-dotfiles --dotfiles-versioning git --macos-settings skip
+     --new-dotfiles --dotfiles-versioning git --shell apple --prompt none \
+     --layout none --ghq no --macos-settings skip
    ```
 
    Read the impact and manual steps for each phase. Planning saves nothing and
-   does not reserve package versions. Missing optional choices use displayed
-   defaults; it does not assume a hosting track or language stack.
+   does not reserve package versions. Missing configuration, shell, prompt or
+   folder choices block apply; planning alone does not save or accept them.
 
 2. When the choices are right, run the same command with `--apply` in place of
    `--plan`. Apply changes the Mac, saves your choices, and runs the existing

@@ -194,8 +194,12 @@ In VS Code:
 
 1. Create and save `README.md`.
 2. Open **Terminal → New Terminal**.
-3. Confirm the shell is zsh and the Starship prompt renders.
-4. Run `git --version`, `chezmoi --version`, and the selected runtime command.
+3. Confirm the selected zsh starts. If you selected Starship, confirm its
+   prompt renders; otherwise your existing prompt is valid.
+4. Run `git --version` and the selected runtime command. Run
+   `chezmoi --version` only for local or private-Git chezmoi ownership, and
+   `starship --version` only if you selected Starship. Neither tool is required
+   when its corresponding choice is `none`.
 5. Close the folder without installing unrelated extensions.
 
 ## Troubleshooting

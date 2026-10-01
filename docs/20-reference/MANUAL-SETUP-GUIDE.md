@@ -34,7 +34,7 @@ Both routes produce the same working foundation:
 - Git and a predictable `~/Developer` repository layout;
 - GitHub, Azure DevOps, or both, according to the selected track;
 - the selected Git authentication mode and FileVault;
-- chezmoi-managed shell files and a Starship prompt;
+- user-owned or chezmoi-managed shell files, with an optional Starship prompt;
 - Node with npm and pnpm, Python with uv, or both;
 - Raycast, Warp, Visual Studio Code, and the required Nerd Font; and
 - a reviewed Brewfile and verified environment.
@@ -150,7 +150,10 @@ Complete this worksheet before choosing either route.
 - [ ] Primary Git email: `________________________________`
 - [ ] Git authentication: `1password` / `keychain` / `external` / `https`
 - [ ] Primary IDE: VS Code Git integration / another IDE; leave Git tools unchanged
-- [ ] chezmoi source: existing private repository / new private Git / local-only
+- [ ] Configuration owner: unmanaged / chezmoi local-only / chezmoi private Git
+- [ ] For private Git: existing repository / new repository
+- [ ] Shell: keep the current zsh / Apple zsh / Homebrew zsh
+- [ ] Prompt: leave the existing prompt alone / Starship
 - [ ] After Phase 1, choose early macOS preferences: configure / skip for now
 
 > 🔐 **Local-only chezmoi**
@@ -379,7 +382,16 @@ services selected in the worksheet.
 Install the common command-line tools:
 
 ```bash
-brew install chezmoi git jq ripgrep starship zsh
+brew install git jq ripgrep
+```
+
+Install only the configuration components you selected; these commands are
+independent, not a block to run in full:
+
+```bash
+brew install chezmoi  # local or private-Git configuration only
+brew install zsh     # Homebrew shell selection only; Apple zsh is already supplied
+brew install starship # Starship prompt selection only
 ```
 
 Install stack-specific tools:
@@ -491,7 +503,7 @@ are expected because neither service provides an interactive SSH shell.
 
 **Checkpoint**
 
-- [ ] `git`, `chezmoi`, `jq`, `rg`, and `starship` report versions; ghq only if selected.
+- [ ] `git`, `jq`, and `rg` report versions; chezmoi, Starship and ghq only if selected.
 - [ ] Selected folders exist; selected ghq reports the root(s) reviewed in the folder guide.
 - [ ] Required applications open and retain their intended installation owner.
 - [ ] Only selected provider folders and CLIs were installed.
@@ -501,7 +513,15 @@ are expected because neither service provides an interactive SSH shell.
 
 **Purpose:** keep a small, inspectable source of truth for shell and Git settings.
 
-Initialize either an existing private source or a new source:
+The same shell files work with or without chezmoi. For **unmanaged** setup,
+edit the target files directly and skip all chezmoi commands and its TOML
+configuration below. For **local/private Git**, initialize the selected source,
+then review edits using chezmoi. Never let two managers own the same file.
+Back up existing files before editing; merge blocks rather than replace a
+customized file. See [ownership conflicts](../01-required/05-dotfiles-and-shell.md#choose-ownership-shell-and-prompt-first)
+before changing an existing manager.
+
+For chezmoi only, initialize either an existing private source or a new source:
 
 ```bash
 # Existing private repository
@@ -511,8 +531,13 @@ chezmoi init <private-repository-url>
 chezmoi init
 ```
 
-Create `~/.config/zsh/path.zsh` as the one shared owner of Homebrew and user
-paths:
+Create the directory if missing, then open the files in your chosen editor:
+
+```bash
+mkdir -p "$HOME/.config/zsh"
+```
+
+Create `~/.config/zsh/path.zsh` as the shared Homebrew and user PATH setup:
 
 ```zsh
 typeset -U path PATH
@@ -535,7 +560,8 @@ Create or edit `~/.zprofile`:
 [[ -r "$HOME/.config/zsh/path.zsh" ]] && source "$HOME/.config/zsh/path.zsh"
 ```
 
-Create or edit `~/.zshrc`:
+Create or edit `~/.zshrc`. Omit the complete `starship` block below unless you
+selected Starship. For Python-only setup, omit the `fnm` block too:
 
 ```zsh
 [[ -r "$HOME/.config/zsh/path.zsh" ]] && source "$HOME/.config/zsh/path.zsh"
@@ -585,9 +611,23 @@ alias brewcleanpreview='brew cleanup --dry-run'
 ```
 
 The script-assisted route also adds `cdayone`, which relies on its portable
-`day-one-mac` helper. Omit that alias in the fully manual route.
+`day-one-mac` helper. Omit that alias in the fully manual route. Omit the `cm*`
+aliases when chezmoi is not selected.
 
-Register Homebrew zsh and make it the account login shell. The append is safe
+Inspect your current account shell before choosing a branch:
+
+```bash
+dscl . -read "/Users/$(id -un)" UserShell
+```
+
+- **Keep current zsh:** do not run `chsh` or edit `/etc/shells`. Use the reported
+  executable for the shell checks below. A non-zsh shell needs its own startup
+  instructions; these z-files will not configure bash or fish.
+- **Apple zsh:** check `/bin/zsh --version`, then run `chsh -s /bin/zsh` only if
+  you want to switch. Recheck Directory Services and open a new terminal.
+- **Homebrew zsh:** use the block below after installing the selected formula.
+
+For Homebrew only, register zsh and make it the login shell. The append is safe
 to rerun because `grep` prevents a duplicate line:
 
 ```bash
@@ -601,7 +641,7 @@ dscl . -read "/Users/$(id -un)" UserShell
 The final line must report `/opt/homebrew/bin/zsh`. If Homebrew zsh is ever
 removed or broken, recover from a working shell with `chsh -s /bin/zsh`.
 
-Create `~/.config/starship.toml`:
+Only if Starship is selected, create `~/.config/starship.toml`:
 
 ```toml
 add_newline = false
@@ -612,7 +652,7 @@ success_symbol = "[❯](bold green)"
 error_symbol = "[❯](bold red)"
 ```
 
-Optionally record the machine-local editor and setup choices in
+Only if chezmoi is selected, optionally record the machine-local editor and setup choices in
 `~/.config/chezmoi/chezmoi.toml`. Replace the example values and keep this file
 out of the managed source:
 
@@ -639,12 +679,15 @@ name = "Your Name"
 email = "you@example.com"
 ```
 
-Add only reviewed targets:
+Only if chezmoi is selected, add reviewed targets. Omit `~/.ssh/config` when
+HTTPS authentication left it absent. Add Starship's file separately only if selected:
 
 ```bash
 chezmoi add "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" \
   "$HOME/.ssh/config" "$HOME/.config/zsh/path.zsh" \
-  "$HOME/.config/zsh/aliases.zsh" "$HOME/.config/starship.toml"
+  "$HOME/.config/zsh/aliases.zsh"
+# Only when Starship is selected:
+chezmoi add "$HOME/.config/starship.toml"
 chezmoi managed
 chezmoi diff
 ```
@@ -656,22 +699,32 @@ For a private-Git source, initialize Git and publish only to a private remote
 after the secret review. For local-only, do not create the Git repository and
 back up `~/.local/share/chezmoi` separately.
 
-Open a new login shell and verify:
+Open both a login and non-login shell using the **selected executable**. This
+example uses Apple zsh; substitute `/opt/homebrew/bin/zsh` for Homebrew, or the
+confirmed current zsh path for keep:
 
 ```bash
-exec /opt/homebrew/bin/zsh -l
-command -v brew git chezmoi starship
-chezmoi doctor
-chezmoi diff
+/bin/zsh -lic 'command -v brew git; print -l $path'
+/bin/zsh -ic 'command -v brew git; print -l $path'
+```
+
+Check that Homebrew and the intended user paths appear without duplicate
+entries. For Node selections, confirm `PNPM_HOME` is set in both shells.
+Then run only the applicable checks:
+
+```bash
+chezmoi doctor  # only when chezmoi is selected
+chezmoi diff    # review all changes; do not apply an unfamiliar source
+starship prompt # only when Starship is selected
 ```
 
 **Checkpoint**
 
-- [ ] The source path exists and every managed target is understood.
-- [ ] `chezmoi diff` is empty or every VS Code comparison is understood.
-- [ ] A new zsh login shell finds Homebrew and displays Starship.
-- [ ] The source contains no credentials.
-- [ ] Private-Git or local-only recovery has been deliberately chosen.
+- [ ] Every configuration file has one understood owner.
+- [ ] If chezmoi is selected, the source exists, contains no credentials, and its diff is understood.
+- [ ] Login and non-login zsh find Homebrew and selected tools; Starship displays only if selected or retained from an existing setup.
+- [ ] The account shell matches the choice; keeping it required no switch.
+- [ ] Recovery covers user-owned files, a local source, or a private repository as selected.
 
 ### Manual 6 — install the selected language toolchains
 
@@ -792,11 +845,18 @@ Create a Brewfile only when one does not already exist:
 ```bash
 test -e "$HOME/Brewfile" || brew bundle dump --file="$HOME/Brewfile"
 brew bundle check --file="$HOME/Brewfile" --no-upgrade
+```
+
+For unmanaged configuration, keep this Brewfile user-owned and include it and
+the shell files in your normal tested backup. Do not run chezmoi commands.
+For chezmoi selections only, review and adopt it:
+
+```bash
 chezmoi add "$HOME/Brewfile"
 chezmoi diff
 ```
 
-Review the complete chezmoi source:
+For chezmoi selections only, review the complete source:
 
 ```bash
 SOURCE="$(chezmoi source-path)"
@@ -813,9 +873,9 @@ Run the final command checks:
 brew --prefix
 git config --global --list --show-origin
 ghq root                 # only if ghq was selected; compare with your chosen layout
-chezmoi doctor
-chezmoi diff
-starship --version
+chezmoi doctor           # only when selected
+chezmoi diff             # only when selected
+starship --version      # only when selected
 fdesetup status
 spctl --status
 code --version
@@ -831,7 +891,7 @@ backup contains `~/.local/share/chezmoi`.
 
 - [ ] Every checkpoint above passes.
 - [ ] `~/Brewfile` describes the intended Homebrew state.
-- [ ] The chezmoi source is secret-free and recoverable.
+- [ ] Configuration is recoverable; any selected chezmoi source is secret-free.
 - [ ] A small real repository opens, installs dependencies, and runs its tests.
 
 ## Script-assisted setup flow

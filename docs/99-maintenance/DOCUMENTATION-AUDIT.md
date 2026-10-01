@@ -72,10 +72,10 @@ states how the routes apply, and Second Brain guides use the same vocabulary.
 | Installation Centre | Resolve ownership and install every required app/tool | [`INSTALLATION-CENTRE.md`](../01-required/INSTALLATION-CENTRE.md) | Required catalogue reports ready, without replacing external installations |
 | 3 | Configure selected Git authentication and verify FileVault | [`03-security-and-ssh.md`](../01-required/03-security-and-ssh.md) | Selected provider authentication and FileVault pass |
 | 4 | Configure core tools, ghq layout, Git defaults, Raycast and Warp | [`04-core-tools-and-hosting.md`](../01-required/04-core-tools-and-hosting.md) | Track-aware tools and Git settings pass |
-| 5 | Establish chezmoi source, shell files, Starship and Homebrew zsh | [`05-dotfiles-and-shell.md`](../01-required/05-dotfiles-and-shell.md) | Managed targets, launcher ownership and login shell pass |
+| 5 | Configure user-owned files or the selected chezmoi source, selected zsh and optional Starship | [`05-dotfiles-and-shell.md`](../01-required/05-dotfiles-and-shell.md) | Selected ownership, prompt, launcher ownership and login shell pass |
 | 6 | Install selected language stacks and pnpm | [`06-language-toolchains.md`](../01-required/06-language-toolchains.md) | Selected runtimes and package managers pass |
 | 7 | Verify minimal VS Code base | [`07-vscode-base.md`](../01-required/07-vscode-base.md) | VS Code base is usable; profiles stay optional |
-| 8 | Validate project/runtime, capture Brewfile and protect dotfiles | [`08-verify-and-reproduce.md`](../01-required/08-verify-and-reproduce.md) | Complete validator, runtime integrity and selected dotfiles protection pass |
+| 8 | Validate project/runtime, capture Brewfile and check selected ownership | [`08-verify-and-reproduce.md`](../01-required/08-verify-and-reproduce.md) | Validator, runtime integrity and selected configuration checks pass; backups require separate manual verification |
 
 No optional module is required by a Phase 1–8 completion gate. The only
 pre-Phase-3 insertion is the Installation Centre because later phases cannot

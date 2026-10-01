@@ -345,7 +345,7 @@ changed phase.
 | [📦 · Required Installation Centre](01-required/INSTALLATION-CENTRE.md) | All required apps, font and Terminal tools installed or accepted before configuration | Track and stack aware |
 | [03 · Security and SSH](01-required/03-security-and-ssh.md) | 1Password CLI/agent and FileVault | Provider key registration follows track |
 | [04 · Core tools and hosting](01-required/04-core-tools-and-hosting.md) | Git defaults, folders and provider authentication | Track aware |
-| [05 · Dotfiles and Starship](01-required/05-dotfiles-and-shell.md) | Small managed dotfiles source and working prompt | Private Git or local-only source |
+| [05 · Configuration ownership, shell and prompt](01-required/05-dotfiles-and-shell.md) | User-owned files or a chezmoi source, selected zsh, and optional Starship | Ownership, shell and prompt are independent choices |
 | [06 · Language toolchains and pnpm](01-required/06-language-toolchains.md) | Selected runtimes work in a new shell | Stack aware |
 | [07 · VS Code base](01-required/07-vscode-base.md) | Clean editor, terminal and minimal settings | Everyone |
 | [08 · Verify and reproduce](01-required/08-verify-and-reproduce.md) | Audit report, Brewfile and selected dotfiles protection | Track, stack and versioning aware |
@@ -355,7 +355,7 @@ Stage 0 safety report + Route A/B transition (only when needed)
       ↓
 01 Decisions → 02 Foundation → 📦 Install required software → 03 Security
       → 04 Tools and hosting
-      → 05 chezmoi + Starship → 06 Runtime + pnpm → 07 VS Code
+      → 05 Selected owner + shell + prompt → 06 Runtime + pnpm → 07 VS Code
       → 08 Audited and reproducible
               ├─ 09 Databases            🤖 ⚙️ Optional
               ├─ 10 AI clients           🤖 ⚙️ Optional

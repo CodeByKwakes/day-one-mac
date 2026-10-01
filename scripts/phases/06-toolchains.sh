@@ -2,11 +2,12 @@
 # Sourced phase implementation; shared runner context is supplied by setup.sh.
 
 phase_06() {
-  local fnm_dir pnpm_home uv_python_bin uv_python_dir
+  local fnm_dir pnpm_home uv_python_bin uv_python_dir selected_zsh
+  selected_zsh="$(configuration_shell_target)"
   ui_title '6️⃣' 'Phase 06 — Language toolchains and pnpm'
   info "Guide: $(phase_doc 06)"
   if uses_node; then
-    phase_next "Node LTS, npm and pnpm" "Review the Node steps, then ensure PNPM_HOME is exported by the chezmoi-managed .zprofile."
+    phase_next "Node LTS, npm and pnpm" "Review the Node steps, then ensure PNPM_HOME is exported by the selected shell configuration from Phase 5."
     if ! have fnm; then
       [[ "$DRY_RUN" == 1 ]] || { err "fnm is missing; complete Phase 4."; return "$EX_GATE"; }
     fi
@@ -22,7 +23,7 @@ phase_06() {
       record_path_before_write "$HOME/.local/state/fnm_multishells"
       run fnm install --lts --use
       run fnm default "$(fnm current)"
-      pnpm_home="$(zsh -lc 'printf %s "${PNPM_HOME:-$HOME/Library/pnpm}"')"
+      pnpm_home="$("$selected_zsh" -lc 'printf %s "${PNPM_HOME:-$HOME/Library/pnpm}"')"
       [[ "$pnpm_home" == "$HOME"/* ]] || {
         err "PNPM_HOME must be a specific path beneath HOME: $pnpm_home"; return "$EX_GATE"; }
       create_directory "$pnpm_home"
@@ -35,8 +36,8 @@ phase_06() {
       npm --version
       pnpm --version
       (cd "$HOME" && pnpm store path)
-      if ! zsh -lc '[[ -n "$PNPM_HOME" && -d "$PNPM_HOME" && ":$PATH:" == *":$PNPM_HOME:"* ]]'; then
-        warn "Add the PNPM_HOME block from Phase 5 to the chezmoi-managed .zprofile, apply it, then rerun Phase 6."
+      if ! "$selected_zsh" -lc '[[ -n "$PNPM_HOME" && -d "$PNPM_HOME" && ":$PATH:" == *":$PNPM_HOME:"* ]]'; then
+        warn "Merge the Phase 5 PNPM_HOME block through the selected configuration owner, then rerun Phase 6."
         return "$EX_MANUAL"
       fi
     fi
