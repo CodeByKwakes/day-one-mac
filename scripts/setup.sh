@@ -938,6 +938,19 @@ required_phase_selected() {
   [[ -z "$REQUESTED_PHASES" || " $REQUESTED_PHASES " == *" ${1#0} "* ]]
 }
 
+configuration_preflight_for_selected_phases() {
+  local phase
+  # Installation Centre installs selected software, not configuration files.
+  [[ "$RUN_INSTALLATION_CENTRE" != 1 ]] || return 0
+  for phase in 03 04 05 06 07 08; do
+    if required_phase_selected "$phase"; then
+      configuration_unmanaged_preflight
+      return $?
+    fi
+  done
+  return 0
+}
+
 required_phase_impact() {
   case "$1" in
     01) printf 'Record track, stack and Git identity. Manual: confirm macOS update and verified backup or disposable data.' ;;
@@ -1454,8 +1467,9 @@ fi
 load_or_choose_selections
 configuration_validate_choices || exit $?
 # Check ownership before Phase 3/4 can change shared SSH/Git targets, not just
-# before Phase 5. A manager opt-out is never an implicit detach operation.
-configuration_unmanaged_preflight || exit $?
+# before Phase 5. Preparation-only runs do not change ownership. A manager
+# opt-out is never an implicit detach operation.
+configuration_preflight_for_selected_phases || exit $?
 if [[ "$RUN_INSTALLATION_CENTRE" == 1 ]] || required_phase_selected 03 || required_phase_selected 04 \
     || required_phase_selected 05 || required_phase_selected 06 || required_phase_selected 07 || required_phase_selected 08; then
   folders_validate_choices

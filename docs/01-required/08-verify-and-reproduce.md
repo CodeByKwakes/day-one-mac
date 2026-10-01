@@ -430,11 +430,15 @@ locations with `brew --prefix`, `chezmoi source-path`, `pnpm store path`, and
 - [ ] The application provenance report shows every required app as ready and identifies its installation source.
 - [ ] The completed machine agrees with `EXPECTED-LAYOUT.md` or documented dynamic paths.
 - [ ] `~/Brewfile` contains only intended Homebrew desired state.
-- [ ] The Brewfile and required dotfiles are managed by chezmoi.
-- [ ] `chezmoi diff` is empty or every VS Code comparison is understood.
-- [ ] The source is clean and the secret-pattern scan has no review items.
-- [ ] Private-Git mode has a private, reachable, pushed remote; or local-only
-      mode is recorded and the source has an encrypted backup plan.
+- [ ] With chezmoi (`local` or `git`), the Brewfile and required dotfiles are
+      managed; `chezmoi diff` is empty or every comparison is understood, and
+      the source secret-pattern scan has no pending review items.
+- [ ] In private-Git mode, the source is clean and its private remote is
+      reachable and pushed. In local-only mode, the source is included in a
+      tested encrypted backup; no Git remote is required.
+- [ ] In unmanaged mode (`none`), the user-owned Brewfile and configuration
+      files are included in a tested backup. No chezmoi source, diff, or remote
+      is required. The CLI does not verify this backup; confirm it separately.
 - [ ] A new login shell finds the selected tools.
 - [ ] The cleanup boundaries in `ROLLBACK.md` are understood.
 

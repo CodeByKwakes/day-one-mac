@@ -173,6 +173,13 @@ out="$(PATH="$sw_bin:$PATH" bash "$sw_harness" || true)"
 grep -Fq 'chsh -s /bin/zsh' <<<"$out" \
   || fail_test 'the switch did not tell the user how to recover a broken login shell'
 
+# Selecting Apple's shell must not describe a Homebrew removal risk.
+out="$(SHELL_CHOICE=apple PATH="$sw_bin:$PATH" bash "$sw_harness" || true)"
+grep -Fq 'Selected zsh: /bin/zsh' <<<"$out" || fail_test 'Apple shell target was not selected'
+if grep -Fq 'If Homebrew zsh is ever removed' <<<"$out"; then
+  fail_test 'Apple shell selection showed Homebrew-specific recovery guidance'
+fi
+
 # The function must verify Directory Services after a successful chsh.
 sw_success="$TEST_ROOT/switch-success.sh"
 {

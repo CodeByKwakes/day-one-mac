@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Sourced phase implementation; shared runner context is supplied by setup.sh.
 
-# Switch the login shell to the Homebrew zsh.
+# Switch the login shell to the selected Apple or Homebrew zsh.
 #
 # This is the one place Day One Mac changes a macOS account setting, and it is
 # the one change that can lock you out of a working login shell, so it is
@@ -41,7 +41,9 @@ switch_login_shell_to_homebrew_zsh() {
   # State the recovery path before anything changes, not just before chsh:
   # the /etc/shells step can fail, and the user should already know the way out.
   warn "Changing your login shell affects every new terminal."
-  warn "If Homebrew zsh is ever removed, recover with: chsh -s /bin/zsh"
+  if [[ "$target" != /bin/zsh ]]; then
+    warn "If Homebrew zsh is ever removed, recover with: chsh -s /bin/zsh"
+  fi
 
   if [[ "$DRY_RUN" == 1 ]]; then
     grep -Fqx "$target" /etc/shells 2>/dev/null || print_command sudo tee -a /etc/shells

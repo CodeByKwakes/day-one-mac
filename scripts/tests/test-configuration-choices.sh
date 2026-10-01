@@ -42,6 +42,8 @@ grep -qx zsh <<<"$(required_formulae)"
 # startup itself is separately tested by test-shell-environment.sh.
 env() { printf '%s\n' "$*" >> "$HOME/shell-checks"; return 0; }
 switch_login_shell_to_homebrew_zsh() { printf '%s\n' "$SHELL_CHOICE" >> "$HOME/switch-request"; }
+# Called indirectly by the sourced Phase 5/8 shell-selection checks.
+# shellcheck disable=SC2329
 configuration_login_shell() { printf '/bin/zsh\n'; }
 starship() { printf '%s\n' "$*" >> "$HOME/starship-calls"; }
 chezmoi() {
@@ -139,8 +141,23 @@ if phase_05 > "$HOME/conflict"; then exit 1; else [[ "$?" == "$EX_MANUAL" ]]; fi
 mkdir -p "$HOME/.config/chezmoi"
 if configuration_unmanaged_preflight; then exit 1; else [[ "$?" == 10 ]]; fi
 
+# Ownership conflicts must stop configuration phases, but not unrelated
+# preparation or a standalone software installation checkpoint.
+for REQUESTED_PHASES in ' 1' ' 2' ' 1 2'; do
+  configuration_preflight_for_selected_phases
+done
+REQUESTED_PHASES='' RUN_INSTALLATION_CENTRE=1
+configuration_preflight_for_selected_phases
+RUN_INSTALLATION_CENTRE=0
+for REQUESTED_PHASES in '' ' 3' ' 4' ' 5' ' 6' ' 7' ' 8' ' 1 4'; do
+  if configuration_preflight_for_selected_phases; then exit 1; else [[ "$?" == 10 ]]; fi
+done
+REQUESTED_PHASES=''
+
 export HOME="$TEST_ROOT/unsupported"
 mkdir -p "$HOME"
+# Called indirectly by the sourced Phase 5 preflight.
+# shellcheck disable=SC2329
 configuration_login_shell() { printf '/bin/bash\n'; }
 if phase_05 > "$HOME/result"; then exit 1; else [[ "$?" == "$EX_MANUAL" ]]; fi
 [[ ! -e "$HOME/.config" && ! -e "$HOME/.zshrc" ]]
@@ -154,4 +171,28 @@ HOME="$TEST_ROOT/plan" DAY_ONE_MAC_STATE_ROOT="$TEST_ROOT/plan/state" /bin/bash 
   --plan --track 1 --stack python --dotfiles-versioning none --shell apple --prompt none --json > "$TEST_ROOT/plan.json"
 node -e 'const r=JSON.parse(require("fs").readFileSync(process.argv[1])); if(r.selection.dotfiles_versioning!=="none" || r.selection.shell!=="apple" || r.selection.prompt!=="none") process.exit(1)' "$TEST_ROOT/plan.json"
 [[ ! -e "$TEST_ROOT/plan" ]]
+
+# Exercise the actual CLI dispatch as well as the scope predicate. Dry runs
+# must reach preparation/installation without touching the existing source.
+mkdir -p "$TEST_ROOT/bounded/.config/chezmoi"
+printf 'preserve me\n' > "$TEST_ROOT/bounded/.config/chezmoi/fixture"
+for bounded_action in 01 02 install-centre 04; do
+  action_args=(--phase "$bounded_action")
+  [[ "$bounded_action" != install-centre ]] || action_args=(--install-centre)
+  result=0
+  HOME="$TEST_ROOT/bounded" DAY_ONE_MAC_STATE_ROOT="$TEST_ROOT/bounded/state" \
+    /bin/bash "$TEST_SCRIPT_DIR/setup.sh" --dry-run --yes --track 1 --stack python \
+    --name Fixture --email fixture@example.invalid --preset core --primary-ide other \
+    --auth-mode https --layout none --ghq no --dotfiles-versioning none --shell apple \
+    --prompt none "${action_args[@]}" > "$TEST_ROOT/bounded-$bounded_action.log" 2>&1 || result=$?
+  if [[ "$bounded_action" == 04 ]]; then
+    [[ "$result" == 10 ]]
+    grep -q 'Existing chezmoi configuration/source needs an ownership review' "$TEST_ROOT/bounded-$bounded_action.log"
+  else
+    [[ "$result" == 0 ]] || { cat "$TEST_ROOT/bounded-$bounded_action.log"; exit 1; }
+    ! grep -q 'needs an ownership review' "$TEST_ROOT/bounded-$bounded_action.log"
+  fi
+done
+[[ "$(cat "$TEST_ROOT/bounded/.config/chezmoi/fixture")" == 'preserve me' ]]
+[[ ! -e "$TEST_ROOT/bounded/state" ]]
 printf 'Configuration ownership, selection, preservation and rerun fixtures passed.\n'
