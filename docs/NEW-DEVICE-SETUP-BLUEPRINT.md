@@ -6,6 +6,10 @@ This document audits the Day One Mac repository and the macOS environment
 observed on 25 September 2026. It then turns those findings into a repeatable
 setup plan for a new Apple-silicon Mac.
 
+The machine observations below are historical, not today's installation
+requirements. For a new setup, ghq, chezmoi, Homebrew zsh, and Starship are
+independent opt-ins. An absent unselected tool is not a gap to repair.
+
 Use this page for decisions, sequencing, and verification. Use the linked phase
 guides for the exact implementation steps. Existing Macs that contain data or
 configuration must complete [Stage 0 preflight](00-preflight/README.md) before
@@ -61,11 +65,11 @@ ahead of `origin/main`.
 |---|---|---|---|
 | P0 | No setup track, language stack, or required phase is recorded. | Start or resume `day-one-mac --wizard` and complete Phases 1–8 before optional work. | This restores a verifiable baseline. It may repeat checks for tools already installed, but phase scripts are designed to inspect before changing state. |
 | P0 | The current shell initializes NVM, while the project standard is fnm. | Choose fnm for the new device and migrate deliberately; do not initialize NVM and fnm together. | One manager prevents PATH ambiguity and version drift. Global NVM packages must be inventoried and reinstalled intentionally. |
-| P0 | The required dotfile and command baseline is incomplete. | Install and configure `ghq`, `chezmoi`, Starship, and the portable `day-one-mac` command through the required phases. | These tools provide the repository layout, reproducible shell state, prompt, and ongoing setup controls. Chezmoi adds a private source repository that must be maintained. |
+| P0 | Configuration ownership, folder layout, shell, and prompt choices need to be recorded. | Choose the folder layout and optional ghq, user-owned files or chezmoi, the zsh executable, and an optional Starship prompt independently. Install the portable `day-one-mac` command only for the script-assisted route. | User-owned files need a separate backup. Chezmoi can use a local-only source or private Git; it does not require a remote, ghq, Starship, or Homebrew zsh. |
 | P0 | FileVault could not be confirmed in the sandbox. | Run `fdesetup status` directly in Terminal and complete the recovery-key checklist in Phase 3. | Disk encryption is a security gate. The recovery key must be stored outside the Mac, not in this repository. |
 | P1 | The Brewfile is missing five casks and 13 installed items are outdated. | Review `brew bundle check --verbose` and `brew outdated --greedy`; install or remove desired entries before upgrading in batches. | Reconciliation restores declared state. Blindly installing or upgrading everything can introduce app conflicts, so review ownership first. |
 | P1 | The shell has repeated Homebrew, NVM, Docker, JetBrains, OrbStack, and `/usr/local/bin` PATH entries. | Make `~/.config/zsh/path.zsh` the single PATH authority and source it once. Keep `/usr/local/bin` only for a known Intel-only dependency. | Deterministic ordering avoids shadowed binaries and slow startup. Removing a legacy path can expose tools that were installed outside Homebrew. |
-| P1 | `uv`, `gh`, and `ghq` are missing; Azure CLI is installed but its status was not safely testable in the sandbox. | Install only the tools required by the chosen stack and hosting track, then authenticate interactively. | Track- and stack-based installation keeps the machine smaller. Authentication remains a manual security boundary. |
+| P1 | `uv`, `gh`, and `ghq` were absent from the audited command path; Azure CLI status was not safely testable in the sandbox. | Install only tools required by the chosen stack, hosting track, and explicit ghq choice, then authenticate the selected providers interactively. | Missing unselected tools do not need remediation. Authentication remains a manual security boundary. |
 | P1 | There is no repository `.editorconfig` or shared VS Code recommendation/task file. | Add a minimal `.editorconfig` and consider `.vscode/extensions.json` plus validation tasks. Keep personal settings out of the repo. | This reduces whitespace and task-discovery drift. Shared recommendations require maintenance and should remain intentionally small. |
 | P1 | GitHub Actions use version tags such as `actions/checkout@v5`. | Pin third-party actions to reviewed commit SHAs and enable automated update proposals for Actions. | SHA pinning reduces supply-chain risk. It makes updates less readable and shifts maintenance into dependency-update pull requests. |
 | P2 | Husky now provides shared commit-message, pre-commit, and pre-push hooks for contributors. | Keep CI authoritative and keep each hook delegated to commitlint, lint-staged, or the existing validator. | Hooks provide earlier feedback but can be bypassed and require Node dependencies; CI must enforce the same important rules. |
@@ -236,16 +240,17 @@ Use one owner for each concern:
 | Concern | Owner |
 |---|---|
 | System packages and GUI applications | Homebrew and the generated Brewfile |
-| Dotfiles | private chezmoi source repository |
+| Dotfiles | User-owned files, local-only chezmoi, or private-Git chezmoi, as selected |
+| Login shell | Selected Apple zsh, Homebrew zsh, or retained compatible zsh |
 | Shell PATH | `~/.config/zsh/path.zsh`, sourced once |
 | Interactive aliases | `~/.config/zsh/aliases.zsh` |
-| Prompt | Starship |
+| Prompt | Existing prompt, or Starship only when selected |
 | Node versions | fnm |
 | JavaScript package manager | Homebrew pnpm |
 | Python versions, environments, and tools | uv |
-| Repository placement | ghq under `~/Developer` |
+| Repository placement | Selected `~/Developer` layout; ghq only when selected, using that layout's root |
 | Secrets and SSH approval | 1Password, with manual trust decisions |
-| Setup state and verification | Day One Mac runtime |
+| Setup state and verification | Day One Mac runtime on the script-assisted route; your own records on the manual route |
 
 Do not copy `.zshrc` from the audited Mac as-is. Migrate only intentional
 aliases and application integrations after the required shell phase passes.
@@ -285,6 +290,10 @@ shell files and Intel-era binaries do not become part of the new baseline.
 
 ### 2. Install and inspect Day One Mac
 
+This sequence uses the script-assisted route. For a fully manual setup, follow
+the [manual walkthrough](20-reference/MANUAL-SETUP-GUIDE.md) instead; it does not
+require installing Day One Mac.
+
 Use the [Start Here guide](START-HERE.md) to download the standalone installer,
 verify the published checksum, preview its actions, and install the runtime.
 The public release is the normal new-device path; cloning the source repository
@@ -304,7 +313,11 @@ Run the wizard and record:
 - hosting track: GitHub, Azure, or both;
 - language stack: Node, Python, or both;
 - primary editor;
-- Git authentication and dotfile approach.
+- Git authentication;
+- folder layout and whether to use ghq;
+- configuration ownership: user-owned (`none`), local-only chezmoi, or private Git;
+- shell: keep compatible zsh, Apple zsh, or Homebrew zsh;
+- prompt: keep the existing prompt (`none`), or select Starship.
 
 ```bash
 day-one-mac --wizard
@@ -325,18 +338,28 @@ token or private key into a setup-state file.
 
 ### 5. Build the reproducible shell
 
-Use Phase 5 to initialize the private chezmoi source, the managed PATH and alias
-files, and Starship. Start with a small dotfile set. Exclude caches, history,
-tokens, machine identifiers, and generated completion files.
+Use Phase 5 with the selected configuration owner, shell, and prompt. Keep
+files user-owned or initialize/adopt the chosen local-only or private-Git
+chezmoi source. Configure Starship only when selected. Start with a small
+dotfile set. Exclude caches, history, tokens, machine identifiers, and generated
+completion files from a chezmoi source.
 
 After applying dotfiles, open a new login shell and check command ownership:
 
 ```bash
-command -v brew git day-one-mac ghq chezmoi starship
+command -v brew git day-one-mac
 printf '%s\n' "$PATH" | tr ':' '\n'
-chezmoi doctor
-chezmoi status
+day-one-mac shell-status
 ```
+
+Add only the checks for tools you selected:
+
+- ghq: run `ghq root` and compare it with the chosen folder layout.
+- chezmoi (`local` or `git`): run `chezmoi doctor` and `chezmoi status`.
+- Starship: run `starship --version` and check prompt rendering.
+
+With user-owned files or no selected prompt, missing chezmoi or Starship is not
+a failure. Apple zsh does not require installing Homebrew zsh.
 
 Each important directory should appear once. `/opt/homebrew/bin` should precede
 `/usr/local/bin` on Apple silicon.
@@ -422,18 +445,22 @@ the machine reflects the desired setup. Then verify without upgrading:
 
 ```bash
 brew bundle check --file="$HOME/Brewfile" --no-upgrade
-chezmoi status
 day-one-mac optional --status --audit --check
 ```
 
-Commit the private dotfile source only after reviewing its diff for secrets.
+With chezmoi, also run `chezmoi status`. In private-Git mode, commit the source
+only after reviewing its diff for secrets. In local-only mode, maintain a
+tested encrypted backup of the source. With user-owned files, back up the
+Brewfile and configuration files directly. CLI checks do not verify backups;
+test restoration separately.
 Keep recovery material and exported credentials outside both the public project
 and the private dotfile repository.
 
 ## macOS workflow recommendations
 
-The project's required applications—1Password, Raycast, VS Code, Warp, and the
-Nerd Font—form a sensible baseline. Add optional tooling in small tiers:
+Choose applications through the selected preset, authentication mode, and IDE
+choice. 1Password, Raycast, VS Code, Warp, and the Nerd Font are not a universal
+installation requirement. Add optional tooling in small tiers:
 
 1. Navigation and inspection: `bat`, `eza`, `fd`, `fzf`, `tree`, and `zoxide`.
 2. Git workflow: `gh`, `ghq`, `git-delta`, `git-lfs`, `gitleaks`, and optionally
@@ -445,9 +472,10 @@ Nerd Font—form a sensible baseline. Add optional tooling in small tiers:
 6. Containers: choose OrbStack or another Docker-compatible engine, not several
    engines that compete for contexts and startup resources.
 
-Raycast should own repeatable GUI actions and shortcuts; Warp should remain a
-terminal rather than a second source of shell configuration; 1Password should
-own secrets and SSH approvals; chezmoi should own text configuration. Clear
+When selected, Raycast should own repeatable GUI actions and shortcuts; Warp
+should remain a terminal rather than a second source of shell configuration;
+1Password should own its secrets and SSH approvals. Text configuration remains
+user-owned or chezmoi-owned according to the selected mode. Clear
 ownership reduces the chance that the same setting is maintained in three
 places.
 
@@ -458,11 +486,14 @@ A new device is ready when all of the following are true:
 - `day-one-mac --status` shows required Phases 1–8 complete.
 - FileVault is confirmed directly and its recovery path is documented privately.
 - `brew bundle check --no-upgrade` succeeds for the intended Brewfile.
-- `chezmoi doctor` succeeds and `chezmoi status` shows only understood changes.
+- When chezmoi is selected, `chezmoi doctor` succeeds and `chezmoi status` shows
+  only understood changes; user-owned mode does not require either check.
+- The selected zsh starts correctly; Starship renders only if selected, and
+  optional ghq uses the selected layout's root.
 - PATH output has no accidental duplicates or unexpected Intel-first directory.
 - fnm owns Node and uv owns Python for the selected stack.
 - the selected hosting CLI is installed and authenticated.
-- VS Code opens the project with the intended profile and validation commands
+- The selected IDE opens the project with the intended configuration and validation commands
   run successfully.
 - the container engine responds to `docker info` if a container module was
   selected.
