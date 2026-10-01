@@ -86,9 +86,71 @@ check_required_phase 01
 GIT_EMAIL=invalid
 check_required_phase 01
 [[ "$CHECK_RESULT" == fail ]]
-json_value=$'quote" slash\\ tab\t line\n control\001'
-required_json_string "$json_value" > "$TEST_ROOT/string.json"
-node -e 'JSON.parse(require("fs").readFileSync(process.argv[1]))' "$TEST_ROOT/string.json"
+# Round-trip, not just parse: Bash 3.2 can treat UTF-8 bytes as negative
+# character codes in a byte locale, producing parseable but corrupted JSON.
+(
+  json_value=$'quote" slash\\ tab\t line\n control\001 ✓ — café 日本語 🔒'
+  for control in {1..31}; do
+    printf -v octal '%03o' "$control"
+    printf -v character '%b' "\\$octal"
+    json_value+="$character"
+  done
+  export EXPECTED_JSON_VALUE="$json_value"
+  for json_locale in C C.UTF-8 en_US.UTF-8; do
+    LC_ALL="$json_locale" required_json_string "$json_value" > "$TEST_ROOT/string.json"
+    node -e 'const actual=JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")); if(actual!==process.env.EXPECTED_JSON_VALUE) { console.error("JSON string did not round-trip"); process.exit(1); }' "$TEST_ROOT/string.json"
+  done
+)
+
+# These are the real read-only phase checks, with machine/account probes
+# stubbed. No sign-in, network access, key inspection or setup writes run.
+(
+  fdesetup() { printf 'FileVault is On.\n'; }
+  required_check_file() { :; }
+  required_check_command() { :; }
+  required_check_app() { :; }
+  keychain_key_protection() { printf encrypted; }
+  required_formulae() { :; }
+  required_application_ids() { :; }
+  folders_check() { printf '✓ Selected folders checked\n'; }
+  xcode-select() { printf '%s\n' "$TEST_ROOT"; }
+  git() { case "$*" in *user.name*) printf '%s' "$GIT_NAME" ;; *user.email*) printf '%s' "$GIT_EMAIL" ;; esac; }
+  GIT_EMAIL=fixture@example.com
+  for AUTH_MODE in https keychain 1password external; do
+    check_required_phase 03
+    [[ "$CHECK_RESULT" == manual && "$CHECK_DETAILS" == *'recovery-key custody'* ]]
+    if [[ "$AUTH_MODE" == https ]]; then
+      [[ "$CHECK_DETAILS" == *'SSH key and agent checks are not required'* && "$CHECK_DETAILS" != *'signing'* ]]
+      [[ "$(required_phase_impact 03)" == *'no SSH key or agent configuration for HTTPS'* ]]
+    else
+      [[ "$CHECK_DETAILS" == *'Agent access, provider registration, signing'* ]]
+    fi
+    check_required_phase 04
+    [[ "$CHECK_DETAILS" == *'no login or network probe ran'* ]]
+    if [[ "$AUTH_MODE" == https ]]; then
+      [[ "$CHECK_DETAILS" == *'HTTPS hosting sessions'* && "$CHECK_DETAILS" != *'SSH reachability'* ]]
+    else [[ "$CHECK_DETAILS" == *'SSH reachability'* ]]; fi
+  done
+  AUTH_MODE=https
+  fdesetup() { printf 'FileVault is Off.\n'; }
+  check_required_phase 03
+  [[ "$CHECK_RESULT" == fail && "$CHECK_DETAILS" == *'FileVault is not confirmed on'* ]]
+  fdesetup() { printf 'FileVault is On.\n'; }
+  for DOTFILES_VERSIONING in none local git; do
+    check_required_phase 08
+    final_note="${CHECK_DETAILS##*$'\n'}"
+    impact="$(required_phase_impact 08)"
+    [[ "$final_note" == manual:* && "$final_note" == *'no report or source was modified'* ]]
+    case "$DOTFILES_VERSIONING" in
+      none) [[ "$final_note" == *'user-owned configuration and Brewfile backup'* && "$final_note" != *'source secrets'* && "$final_note" != *'remote'* ]]
+        [[ "$impact" == *'without chezmoi adoption'* && "$impact" != *'signing'* ]] ;;
+      local) [[ "$final_note" == *'source secrets, local backup and Brewfile management'* && "$final_note" != *'remote'* ]]
+        [[ "$impact" == *'no remote required'* ]] ;;
+      git) [[ "$final_note" == *'source secrets, remote privacy/push state and Brewfile management'* ]]
+        [[ "$impact" == *'verify private remote and push state'* ]] ;;
+    esac
+  done
+)
 
 # Resume requires both a current marker AND a successful live check. It must
 # never skip on an old successful report, missing tools, or manual-only evidence.

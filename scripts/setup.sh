@@ -942,13 +942,22 @@ required_phase_impact() {
   case "$1" in
     01) printf 'Record track, stack and Git identity. Manual: confirm macOS update and verified backup or disposable data.' ;;
     02) printf 'Install/verify Apple developer tools and native Homebrew; update Homebrew. Manual: Apple installer, licence and administrator approval.' ;;
-    03) printf 'Require Installation Centre; configure selected %s authentication and SSH; require FileVault. Manual: account/key approval and recovery method.' "$AUTH_MODE" ;;
+    03) if [[ "$AUTH_MODE" == https ]]; then
+          printf 'Require Installation Centre and FileVault; no SSH key or agent configuration for HTTPS. Manual: FileVault recovery method; provider sign-in belongs to Phase 4.'
+        else printf 'Require Installation Centre; configure selected %s authentication and SSH; require FileVault. Manual: account/key approval and recovery method.' "$AUTH_MODE"; fi ;;
     04) printf 'Require Installation Centre; configure Git defaults and Developer layout %s; ghq %s. Missing choices require explicit review. Manual: provider sign-in and authentication tests.' "${FOLDER_LAYOUT:-unselected}" "${GHQ_CHOICE:-unselected}" ;;
     05) printf 'Require Installation Centre; configuration owner %s, shell %s, prompt %s. Preserve existing files; review ownership conflicts. Unselected choices block apply; none does not remove existing tools.' "${DOTFILES_VERSIONING:-unselected}" "${SHELL_CHOICE:-unselected}" "${PROMPT_CHOICE:-unselected}" ;;
     06) printf 'Require Installation Centre; install/update %s toolchains (Node LTS via fnm and/or Python via uv); configure pnpm when selected.' "$STACK" ;;
     07) if [[ "$PRESET" == core ]]; then printf 'Not required for core preset.'
         else printf 'Require Installation Centre; create missing VS Code settings; verify launcher and safe AI approval settings. Manual: GUI launcher installation.'; fi ;;
-    08) printf 'Require Installation Centre; run verification and WRITE verification.md; create/adopt a missing Brewfile. Manual: signing/GUI review and %s dotfiles recovery checks.' "$DOTFILES_VERSIONING" ;;
+    08)
+      printf 'Require Installation Centre; run selected machine checks and WRITE verification.md. '
+      case "$DOTFILES_VERSIONING" in
+        none) printf 'Create a missing user-owned Brewfile without chezmoi adoption. Manual: verify backups of user-owned configuration and Brewfile.' ;;
+        local) printf 'Create/manage a missing Brewfile with chezmoi; no remote required. Manual: review local source and verify its backup.' ;;
+        git) printf 'Create/manage a missing Brewfile with chezmoi; verify private remote and push state. Manual: review source and recovery.' ;;
+        *) printf 'Select configuration ownership before deciding Brewfile management and recovery checks.' ;;
+      esac ;;
   esac
 }
 
@@ -960,7 +969,9 @@ required_json_string() {
     case "$char" in
       '"') printf '%s' '\"' ;; \\) printf '%s' "\\\\" ;;
       *) printf -v number '%d' "'$char"
-         if (( number < 32 )); then printf '\\u%04x' "$number"; else printf '%s' "$char"; fi ;;
+         # Bash 3.2 may report high UTF-8 bytes as negative in byte locales.
+         # Only ASCII control characters need escaping; preserve UTF-8 bytes.
+         if (( number >= 0 && number < 32 )); then printf '\\u%04x' "$number"; else printf '%s' "$char"; fi ;;
     esac
   done
   printf '"'
@@ -1034,7 +1045,12 @@ check_required_phase() {
           done ;;
         1password) required_check_app 1password; required_check_command op ;;
       esac
-      required_check_note manual 'Agent access, provider registration, signing and recovery-key custody need interactive verification'
+      if [[ "$AUTH_MODE" == https ]]; then
+        required_check_note pass 'HTTPS selected; SSH key and agent checks are not required'
+        required_check_note manual 'FileVault recovery-key custody needs manual confirmation; HTTPS provider sessions are checked separately in Phase 4'
+      else
+        required_check_note manual 'Agent access, provider registration, signing and recovery-key custody need interactive verification'
+      fi
       ;;
     04)
       while IFS= read -r command_name; do
@@ -1054,7 +1070,11 @@ check_required_phase() {
       if details="$(folders_check 2>&1)"; then required_check_note pass "$details"
       else required_check_note fail "$details"; fi
       while IFS= read -r component; do required_check_app "$component"; done < <(required_application_ids)
-      required_check_note manual 'Hosting sessions, SSH reachability and full Git defaults require Phase 4; no login or network probe ran'
+      if [[ "$AUTH_MODE" == https ]]; then
+        required_check_note manual 'HTTPS hosting sessions and full Git defaults require Phase 4; no login or network probe ran'
+      else
+        required_check_note manual 'Hosting sessions, SSH reachability and full Git defaults require Phase 4; no login or network probe ran'
+      fi
       ;;
     05)
       if ! details="$(configuration_validate_choices 2>&1)"; then required_check_note fail "$details"; fi
@@ -1108,7 +1128,12 @@ check_required_phase() {
       if "$SCRIPT_DIR/verify.sh" >/dev/null 2>&1; then required_check_note pass 'Runtime verification passed'
       else required_check_note fail 'Runtime verification failed; run day-one-mac verify'; fi
       required_check_file "$HOME/Brewfile" 'Brewfile'
-      required_check_note manual 'Phase 8 must verify source secrets, remote privacy/push state or local backup, and Brewfile management; no report or source was modified'
+      case "$DOTFILES_VERSIONING" in
+        none) required_check_note manual 'Review user-owned configuration and Brewfile backup separately; no backup was verified and no report or source was modified' ;;
+        local) required_check_note manual 'Review source secrets, local backup and Brewfile management through Phase 8 and a separate backup check; no backup was verified and no report or source was modified' ;;
+        git) required_check_note manual 'Phase 8 must verify source secrets, remote privacy/push state and Brewfile management; no report or source was modified' ;;
+        *) required_check_note manual 'Select configuration ownership before Phase 8; no report or source was modified' ;;
+      esac
       ;;
   esac
   return 0
