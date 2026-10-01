@@ -5,6 +5,10 @@
 **Document type:** tutorial · **Audience:** first-time chezmoi users · **Time:** 35–60 minutes
 
 This tutorial explains where chezmoi fits into a complete Day One Mac setup.
+Use it only after choosing chezmoi ownership (`local` or `git`). If you chose
+user-owned files (`none`), skip this tutorial and follow
+[Manual 5](MANUAL-SETUP-GUIDE.md#manual-5--configure-chezmoi-zsh-and-starship).
+Choosing chezmoi does not also select Starship, Homebrew zsh, or ghq.
 It covers both supported routes:
 
 - **Script-assisted:** the `day-one-mac` runner creates or adopts the minimum
@@ -22,7 +26,8 @@ runner deliberately preserved.
 At the end:
 
 - chezmoi has a readable source directory at `~/.local/share/chezmoi`;
-- the required shell, Git, SSH, and Starship files are managed;
+- the required shell, Git, and SSH files are managed, plus Starship configuration
+  only if you selected Starship;
 - machine-specific choices remain in `~/.config/chezmoi/chezmoi.toml`;
 - the `day-one-mac` launcher remains outside chezmoi;
 - `~/Brewfile` records Homebrew desired state and is managed by chezmoi;
@@ -32,15 +37,15 @@ At the end:
 
 ## 1. Understand when chezmoi is used
 
-Chezmoi appears at several points in the required setup:
+When selected, chezmoi appears at these points in setup:
 
 | Setup point | What happens |
 |---|---|
-| Phase 1 | You choose an existing private source, a new private-Git source, or a local-only source. |
-| Phase 4 | Homebrew installs the `chezmoi` command. |
+| Phase 1 | Choose user-owned files (skip this tutorial), an existing private source, a new private-Git source, or a local-only source. Choose the shell and prompt independently. |
+| Installation Centre / Phase 4 | Install or verify `chezmoi` only when selected. |
 | Phase 5 | The source is initialized or adopted; required targets and machine data are configured. |
 | Phases 6–7 | Toolchain and editor work may depend on the managed shell files. |
-| Phase 8 | The Brewfile is added, the source is scanned, and its private-Git or encrypted-backup protection is verified. |
+| Phase 8 | The Brewfile is added and the source is scanned. Private-Git mode also checks the remote. Encrypted backup and restore testing remain manual; the CLI does not verify them. |
 | After setup | You use chezmoi whenever a managed configuration file changes. |
 
 Use the script-assisted route when you want Day One Mac to verify prerequisites,
@@ -77,7 +82,7 @@ Check saved progress and required tools:
 
 ```bash
 day-one-mac setup --status
-command -v brew git chezmoi starship day-one-mac
+command -v brew git chezmoi day-one-mac
 ```
 
 Complete Phases 1–4 if any required phase is incomplete:
@@ -88,13 +93,20 @@ day-one-mac setup --guided
 
 ### Manual route
 
-Confirm Homebrew and Git work, then install the required tools if necessary:
+Confirm Homebrew and Git work, then install chezmoi if necessary:
 
 ```bash
 command -v brew git
-brew install chezmoi starship zsh
+brew install chezmoi
 chezmoi --version
 ```
+
+On either route, check only the shell and prompt you chose. Apple zsh is already
+at `/bin/zsh`. Install Homebrew zsh with `brew install zsh` only if you selected
+it, and install Starship with `brew install starship` only if you selected that
+prompt. Missing unselected tools is not a setup failure. Follow
+[Phase 5](../01-required/05-dotfiles-and-shell.md) for shell switching and prompt
+configuration; installing a shell alone does not make it your login shell.
 
 The manual route assumes Git identity, hosting authentication, Homebrew, and
 the required Day One Mac applications have already been configured. Use the
@@ -110,8 +122,9 @@ Choose one mode before initializing chezmoi:
 | New private-Git source | You want version history and recovery on another Mac | Create a private remote during Phase 8 |
 | Local-only source | Policy or preference prohibits a dotfiles remote | Current encrypted backup of the complete source directory |
 
-Private Git is the recommended default. Local-only mode still uses chezmoi;
-it removes only the remote and Git completion requirement.
+Neither mode is preselected. Choose private Git when you want remote version
+history, or local-only when you will maintain a tested encrypted backup instead.
+Both use chezmoi; neither requires Starship or Homebrew zsh.
 
 ### Script-assisted route
 
@@ -120,6 +133,7 @@ Pass the intended choice explicitly when running Phase 5:
 ```bash
 # Adopt an existing private source.
 day-one-mac setup --phase 05 \
+  --dotfiles-versioning git \
   --dotfiles-repo "git@github.com:ACCOUNT/DOTFILES.git"
 
 # Create a new source that Phase 8 will require you to protect with private Git.
@@ -131,6 +145,10 @@ day-one-mac setup --phase 05 --local-dotfiles
 
 If the choice was already saved by the wizard, `day-one-mac setup --phase 05`
 uses it. Supplying the option again makes the intended mode clear.
+These examples assume the wizard has also saved your shell and prompt choices.
+For an unattended run, supply them explicitly, for example
+`--shell apple --prompt none`; do not substitute Homebrew zsh or Starship merely
+to satisfy a prerequisite check.
 
 ### Manual route
 
@@ -215,8 +233,11 @@ The minimum target set is:
 ~/.gitconfig
 ~/.gitignore_global
 ~/.ssh/config
-~/.config/starship.toml
 ```
+
+Add `~/.config/starship.toml` only when Starship is selected. With `--prompt none`,
+preserve your existing prompt; do not create or adopt a Starship file for this
+tutorial.
 
 ### Script-assisted route
 
@@ -248,7 +269,13 @@ chezmoi add "$HOME/.zprofile" "$HOME/.zshrc" \
   "$HOME/.config/zsh/path.zsh" \
   "$HOME/.config/zsh/aliases.zsh" \
   "$HOME/.gitconfig" "$HOME/.gitignore_global" \
-  "$HOME/.ssh/config" "$HOME/.config/starship.toml"
+  "$HOME/.ssh/config"
+```
+
+Only if you selected Starship and have reviewed its configuration:
+
+```bash
+chezmoi add "$HOME/.config/starship.toml"
 ```
 
 Then inspect what chezmoi owns:
@@ -272,11 +299,12 @@ Check the boundary:
 if chezmoi managed -p absolute | grep -Fx "$HOME/.local/bin/day-one-mac"; then
   printf 'REVIEW: the launcher is incorrectly managed\n'
 else
-  printf 'PASS: the launcher is runtime-owned\n'
+  printf 'PASS: chezmoi does not manage the launcher\n'
 fi
-
-day-one-mac runtime-status
 ```
+
+On the script-assisted route, also run `day-one-mac runtime-status`. The fully
+manual route does not install or require the Day One Mac launcher.
 
 If an older source manages the launcher, decline any broad apply and use the
 reviewed migration in [Upgrade notes](UPGRADE-NOTES.md). Do not add it again.
@@ -313,13 +341,26 @@ a broad `chezmoi apply` while resolving an unexpected change.
 
 ### Both routes
 
+Set the shell path to your selected executable before running these checks.
+For Apple zsh:
+
+```bash
+DAY_ONE_ZSH=/bin/zsh
+```
+
+For selected Homebrew zsh, use `DAY_ONE_ZSH=/opt/homebrew/bin/zsh` instead.
+For `--shell keep`, read the existing login-shell path with
+`dscl . -read "/Users/$(id -un)" UserShell` and set `DAY_ONE_ZSH` to that path.
+The supported keep-shell route requires an executable zsh; other shells need a
+separate manual setup. Do not install another shell just to run this tutorial.
+
 Validate syntax before starting a new shell:
 
 ```bash
-/opt/homebrew/bin/zsh -n "$HOME/.zprofile"
-/opt/homebrew/bin/zsh -n "$HOME/.zshrc"
-/opt/homebrew/bin/zsh -n "$HOME/.config/zsh/path.zsh"
-/opt/homebrew/bin/zsh -n "$HOME/.config/zsh/aliases.zsh"
+"$DAY_ONE_ZSH" -n "$HOME/.zprofile"
+"$DAY_ONE_ZSH" -n "$HOME/.zshrc"
+"$DAY_ONE_ZSH" -n "$HOME/.config/zsh/path.zsh"
+"$DAY_ONE_ZSH" -n "$HOME/.config/zsh/aliases.zsh"
 chezmoi doctor
 chezmoi verify
 chezmoi --use-builtin-diff diff --no-pager
@@ -328,10 +369,14 @@ chezmoi --use-builtin-diff diff --no-pager
 Then test both login and non-login shell behaviour:
 
 ```bash
-/opt/homebrew/bin/zsh -lic 'command -v brew git chezmoi starship day-one-mac'
-/opt/homebrew/bin/zsh -ic 'command -v brew starship'
-day-one-mac shell-status
+"$DAY_ONE_ZSH" -lic 'command -v brew git chezmoi'
+"$DAY_ONE_ZSH" -ic 'command -v brew git chezmoi'
 ```
+
+Only if Starship was selected, run `"$DAY_ONE_ZSH" -lic 'starship --version'`
+and confirm the prompt renders in a fresh terminal. Otherwise the existing
+prompt is valid. On the script-assisted route, also run
+`"$DAY_ONE_ZSH" -lic 'command -v day-one-mac'` and `day-one-mac shell-status`.
 
 For the script-assisted route, finish the phase gate:
 
@@ -354,7 +399,9 @@ day-one-mac setup --phase 08
 
 The runner creates `~/Brewfile` only when absent, pauses instead of overwriting
 an existing file, adds a newly created Brewfile to chezmoi, scans the source,
-and enforces the selected protection mode.
+and checks the selected configuration mode. Private-Git mode checks remote
+protection; local-only mode requires a separately tested encrypted backup.
+Passing Phase 8 does not verify that a backup exists or can be restored.
 
 ### Manual route
 
@@ -416,10 +463,12 @@ Change an alias through the source rather than editing only the live target:
 ```bash
 chezmoi edit "$HOME/.config/zsh/aliases.zsh"
 chezmoi diff "$HOME/.config/zsh/aliases.zsh"
-/opt/homebrew/bin/zsh -n "$(chezmoi source-path "$HOME/.config/zsh/aliases.zsh")"
+"$DAY_ONE_ZSH" -n "$(chezmoi source-path "$HOME/.config/zsh/aliases.zsh")"
 chezmoi apply "$HOME/.config/zsh/aliases.zsh"
-day-one-mac shell-status
 ```
+
+Reuse the selected `DAY_ONE_ZSH` path from section 9. Open a fresh terminal and
+check the alias. On the script-assisted route, also run `day-one-mac shell-status`.
 
 In private-Git mode, review, commit, and push the source change. In local-only
 mode, run the encrypted backup after the change. Continue with
@@ -429,10 +478,12 @@ adopt, remove, receive, or recover a managed file.
 ## Completion checklist
 
 - [ ] `chezmoi source-path` returns the intended source directory.
-- [ ] The required target set is present in `chezmoi managed -p absolute`.
+- [ ] The required target set is present in `chezmoi managed -p absolute`;
+      Starship configuration is included only when selected.
 - [ ] `~/.local/bin/day-one-mac` is not managed by chezmoi.
 - [ ] Machine data is local and contains no credentials.
-- [ ] Shell syntax, `chezmoi doctor`, `chezmoi verify`, and shell status pass.
+- [ ] Selected-shell syntax, `chezmoi doctor`, and `chezmoi verify` pass; the
+      script-assisted route also passes `day-one-mac shell-status`.
 - [ ] `chezmoi diff` is empty or every remaining change is understood.
 - [ ] `~/Brewfile` is reviewed and managed.
 - [ ] Private-Git mode has a private pushed remote, or local-only mode has a
