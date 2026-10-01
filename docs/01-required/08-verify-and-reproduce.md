@@ -7,8 +7,12 @@
 ## Outcome
 
 The Mac passes a track- and stack-aware audit, installed Homebrew state is
-recorded in a Brewfile, the Brewfile is managed by chezmoi, and the dotfiles
-source passes the selected protection gate: private Git or local-only. Optional databases, AI, MCP, editor
+recorded in a Brewfile, and configuration follows the selected owner. With
+chezmoi, the Brewfile is adopted and the source passes its private-Git or
+local-only checks. Without chezmoi, the Brewfile stays user-owned and source
+and remote checks are not selected; include configuration in a tested backup.
+Starship is checked only when selected, and the login shell must match the
+chosen zsh. Optional databases, AI, MCP, editor
 profiles, and the optional Warp Drive import do not affect this gate. The
 Raycast and Warp applications themselves are required, but Homebrew ownership
 is not: valid external installations satisfy the same gate.
@@ -33,6 +37,9 @@ private-Git, and local-only protection gates.
 writes the machine report, records the Brewfile, and checks the chosen dotfiles
 mode. Private-Git mode verifies the remote and pushed branch. Local-only mode
 secret-scans the source and records that remote recovery is intentionally absent.
+Unmanaged mode neither invokes chezmoi nor claims a verified backup. It reports
+unselected components separately from successful checks. In the steps below,
+skip chezmoi commands and source/remote sections when unmanaged mode is selected.
 
 ## Step 8.1 — Validate the project
 

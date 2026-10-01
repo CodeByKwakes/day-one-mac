@@ -72,7 +72,7 @@ try {
     .split('\n').filter(line => line && !line.startsWith('#')).map(line => line.split('\t'));
   assert.deepEqual(optionalRows.map(row => row.slice(0, 3)), optionalFormulae);
   const selectedFormulae = spawnSync('/bin/bash', ['-c',
-    'source "$1/scripts/setup.sh"; for GHQ_CHOICE in no yes; do for TRACK in 1 2 3; do for STACK in node python both; do required_formulae; done; done; done',
+    'source "$1/scripts/setup.sh"; DOTFILES_VERSIONING=git; SHELL_CHOICE=homebrew; PROMPT_CHOICE=starship; for GHQ_CHOICE in no yes; do for TRACK in 1 2 3; do for STACK in node python both; do required_formulae; done; done; done',
     'catalogue-fixture', fixture], {
     env: { HOME: home, PATH: '/usr/bin:/bin:/usr/sbin:/sbin',
       DAY_ONE_MAC_STATE_ROOT: path.join(home, '.day-one-mac'), DAY_ONE_MAC_DISABLE_BREW_DISCOVERY: '1' },

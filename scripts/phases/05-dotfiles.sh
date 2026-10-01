@@ -12,9 +12,14 @@ switch_login_shell_to_homebrew_zsh() {
   local target current verified prefix
   prefix="$(brew --prefix 2>/dev/null || printf '/opt/homebrew')"
   target="$prefix/bin/zsh"
+  [[ "${SHELL_CHOICE:-homebrew}" != apple ]] || target=/bin/zsh
+  if [[ "${SHELL_CHOICE:-homebrew}" == keep ]]; then
+    info 'Keeping the current login shell; no /etc/shells or chsh change requested.'
+    return 0
+  fi
 
   if [[ ! -x "$target" ]]; then
-    err "Homebrew zsh is not installed at $target; the required login-shell gate cannot pass."
+    err "Selected zsh is not installed at $target; the login-shell gate cannot pass."
     warn "Rerun the Installation Centre to install it, then rerun Phase 5."
     return "$EX_GATE"
   fi
@@ -32,7 +37,7 @@ switch_login_shell_to_homebrew_zsh() {
   [[ "$current" == "$target" ]] \
     && info "login shell is already $target" \
     || info "Current login shell: ${current:-unknown}"
-  info "Homebrew zsh: $target ($("$target" --version 2>/dev/null))"
+  info "Selected zsh: $target ($("$target" --version 2>/dev/null))"
   # State the recovery path before anything changes, not just before chsh:
   # the /etc/shells step can fail, and the user should already know the way out.
   warn "Changing your login shell affects every new terminal."
@@ -280,16 +285,36 @@ phase_05_shell_preflight() {
   return 0
 }
 
+phase_05_configuration_preflight() {
+  local target path
+  configuration_validate_choices || return $?
+  configuration_unmanaged_preflight || return $?
+  target="$(configuration_shell_target 2>/dev/null || true)"
+  if [[ "$SHELL_CHOICE" == keep && ( -z "$target" || "${target##*/}" != zsh || ! -x "$target" ) ]]; then
+    err 'Keep-shell requires a readable zsh login-shell setting. Other shells need a manual setup; no shell files were changed.'
+    return "$EX_MANUAL"
+  fi
+  # Reject redirects before even creating a missing sibling file. Other
+  # configuration managers commonly own startup files through symlinks.
+  for path in "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.config/zsh/path.zsh" "$HOME/.config/zsh/aliases.zsh"; do
+    day_one_safe_state_path "$path" || return "$EX_MANUAL"
+    [[ ! -e "$path" || -f "$path" ]] || { err "Not a regular shell file: $path"; return "$EX_MANUAL"; }
+  done
+  if uses_starship; then day_one_safe_state_path "$HOME/.config/starship.toml" || return "$EX_MANUAL"; fi
+  phase_05_shell_preflight
+}
+
 phase_05() {
   local chezmoi_config chezmoi_content escaped_email escaped_name managed_target
   local existing_managed_source=0 starship_config starship_content starship_created=0 chezmoi_source_dir
   local runner_wrapper applications_case optional_case remove_case shell_status_case legacy_runner legacy_runner_content
   local legacy_runner_updated=0 zprofile zshrc zsh_path zsh_aliases bootstrap_zsh_path global_ignore
   local zsh_config_dir zsh_path_file zsh_aliases_file ssh_config ssh_config_created=0 homebrew_zsh clean_shell_check compaudit_output
-  ui_title '5️⃣' 'Phase 05 — Dotfiles and Starship'
+  ui_title '5️⃣' 'Phase 05 — Configuration ownership, shell and prompt'
   info "Guide: $(phase_doc 05)"
   phase_next "existing shell compatibility" "Review custom Zsh startup redirection with its owner before adopting files."
-  phase_05_shell_preflight || return $?
+  phase_05_configuration_preflight || return $?
+  if uses_chezmoi; then
   phase_next "chezmoi command" "Complete Phase 4 so chezmoi is installed, then rerun Phase 5."
   if ! have chezmoi; then
     [[ "$DRY_RUN" == 1 ]] || { err "chezmoi is missing; complete Phase 4."; return "$EX_GATE"; }
@@ -306,11 +331,6 @@ phase_05() {
   # brand-new source. Test the directory itself.
   chezmoi_source_dir="$(chezmoi source-path 2>/dev/null || true)"
   if [[ -z "$chezmoi_source_dir" || ! -d "$chezmoi_source_dir" ]]; then
-    if [[ -z "$DOTFILES_REPO" && "$DOTFILES_EXPLICIT" != 1 && "$DRY_RUN" != 1 && -t 0 ]]; then
-      printf 'Existing private dotfiles repository URL (Enter for a new source protected by private Git): '
-      IFS= read -r DOTFILES_REPO
-      save_state_value dotfiles-repo "$DOTFILES_REPO"
-    fi
     if [[ -n "$DOTFILES_REPO" ]]; then run chezmoi init "$DOTFILES_REPO"
     else
       run chezmoi init
@@ -352,13 +372,17 @@ phase_05() {
     fi
   fi
   phase_step_done "chezmoi source initialised and any existing-source diff reviewed"
+  else
+    info 'Unmanaged configuration selected: no chezmoi initialization, apply, adoption or remote checks.'
+    runner_wrapper="$HOME/.local/bin/day-one-mac"
+  fi
   # An explicitly reviewed apply may have changed .zshenv; recheck before
   # creating or adopting the standard shell files as well.
-  phase_05_shell_preflight || return $?
-  phase_next "managed shell, Starship and portable command files" "Complete Steps 5.2–5.7 and merge any existing file instead of overwriting it blindly."
+  phase_05_configuration_preflight || return $?
+  phase_next "selected shell, prompt and portable command files" "Complete the selected branches in Steps 5.2–5.7 and merge any existing file instead of overwriting it blindly."
   starship_config="$HOME/.config/starship.toml"
   starship_content=$'add_newline = false\ncommand_timeout = 1000\n\n[character]\nsuccess_symbol = "[❯](bold green)"\nerror_symbol = "[❯](bold red)"\n'
-  if [[ ! -e "$starship_config" ]]; then
+  if uses_starship && [[ ! -e "$starship_config" ]]; then
     create_directory "$HOME/.config"
     write_text_file "$starship_config" "$starship_content"
     starship_created=1
@@ -392,7 +416,7 @@ phase_05() {
   # predictable ~/.ssh/config target in the dotfiles inventory. Create only a
   # comment when Phase 3 deliberately left the file absent; never replace an
   # existing personal or company SSH configuration.
-  if [[ "$AUTH_MODE" == https && ! -e "$ssh_config" ]]; then
+  if uses_chezmoi && [[ "$AUTH_MODE" == https && ! -e "$ssh_config" ]]; then
     create_directory "$HOME/.ssh"
     write_text_file "$ssh_config" $'# Day One Mac: HTTPS Git authentication selected; no SSH identity is configured.\n'
     [[ "$DRY_RUN" == 1 ]] || chmod 600 "$ssh_config"
@@ -425,9 +449,19 @@ phase_05() {
   if [[ "$existing_managed_source" == 0 ]]; then
     zprofile=$'[[ -r "$HOME/.config/zsh/path.zsh" ]] && source "$HOME/.config/zsh/path.zsh"\n'
     zshrc=$'[[ -r "$HOME/.config/zsh/path.zsh" ]] && source "$HOME/.config/zsh/path.zsh"\n\nHISTFILE="$HOME/.zsh_history"\nHISTSIZE=50000\nSAVEHIST=10000\nsetopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_REDUCE_BLANKS HIST_VERIFY\n\nfor completion_dir in /opt/homebrew/share/zsh/site-functions /opt/homebrew/share/zsh-completions; do\n  [[ -d "$completion_dir" ]] || continue\n  (( ${fpath[(Ie)$completion_dir]} )) || fpath=("$completion_dir" $fpath)\ndone\nunset completion_dir\nautoload -Uz compinit\ncompinit\n\nif command -v fnm >/dev/null 2>&1; then\n  eval "$(fnm env --use-on-cd --shell zsh)"\nfi\n\n[[ -r "$HOME/.config/zsh/aliases.zsh" ]] && source "$HOME/.config/zsh/aliases.zsh"\n\nif [[ -r /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then\n  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh\nfi\n\nif command -v starship >/dev/null 2>&1; then\n  eval "$(starship init zsh)"\nfi\n\n# Syntax highlighting must be the final shell integration.\nif [[ -r /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then\n  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh\nfi\n'
+    if ! uses_starship; then
+      local starship_init_block
+      starship_init_block=$'if command -v starship >/dev/null 2>&1; then\n  eval "$(starship init zsh)"\nfi\n'
+      zshrc="${zshrc/"$starship_init_block"/}"
+    fi
     [[ -e "$HOME/.zprofile" ]] || write_text_file "$HOME/.zprofile" "$zprofile"
     [[ -e "$HOME/.zshrc" ]] || write_text_file "$HOME/.zshrc" "$zshrc"
-    [[ "$DRY_RUN" == 1 ]] || run chezmoi add "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" "$global_ignore" "$HOME/.ssh/config" "$starship_config" "$zsh_path_file" "$zsh_aliases_file"
+    if uses_chezmoi && [[ "$DRY_RUN" != 1 ]]; then
+      info 'Review adoption: .zprofile, .zshrc, .gitconfig, .gitignore_global, .ssh/config, and .config/zsh/{path,aliases}.zsh.'
+      confirm 'Adopt these configuration files into the new chezmoi source?' || return "$EX_MANUAL"
+      run chezmoi add "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" "$global_ignore" "$HOME/.ssh/config" "$zsh_path_file" "$zsh_aliases_file"
+      if uses_starship; then run chezmoi add "$starship_config"; fi
+    fi
   elif [[ "$DRY_RUN" != 1 ]]; then
     [[ "$starship_created" == 1 ]] && run chezmoi add "$starship_config"
     [[ "$legacy_runner_updated" == 1 ]] && run chezmoi add "$legacy_runner"
@@ -437,36 +471,45 @@ phase_05() {
     chezmoi source-path "$zsh_aliases_file" >/dev/null 2>&1 || run chezmoi add "$zsh_aliases_file"
   fi
   [[ "$DRY_RUN" == 1 ]] && return 0
+  if uses_starship; then
   grep -Fq 'starship init zsh' "$HOME/.zshrc" || {
-    warn "Add 'eval \"\$(starship init zsh)\"' to ~/.zshrc through chezmoi, then rerun Phase 5."
+    warn "Add 'eval \"\$(starship init zsh)\"' to ~/.zshrc using the selected configuration owner, then rerun Phase 5."
     return "$EX_MANUAL"
   }
+  fi
   grep -Fq '.config/zsh/path.zsh' "$HOME/.zprofile" || {
-    err "~/.zprofile must source ~/.config/zsh/path.zsh; merge the Phase 5 block through chezmoi."
+    err "~/.zprofile must source ~/.config/zsh/path.zsh; merge the Phase 5 block using the selected configuration owner."
     return "$EX_MANUAL"
   }
   grep -Fq '.config/zsh/path.zsh' "$HOME/.zshrc" || {
-    err "~/.zshrc must source ~/.config/zsh/path.zsh; merge the Phase 5 block through chezmoi."
+    err "~/.zshrc must source ~/.config/zsh/path.zsh; merge the Phase 5 block using the selected configuration owner."
     return "$EX_MANUAL"
   }
   grep -Fq '.config/zsh/aliases.zsh' "$HOME/.zshrc" || {
-    err "~/.zshrc must source ~/.config/zsh/aliases.zsh; merge the Phase 5 block through chezmoi."
+    err "~/.zshrc must source ~/.config/zsh/aliases.zsh; merge the Phase 5 block using the selected configuration owner."
     return "$EX_MANUAL"
   }
+  if uses_chezmoi; then
   chezmoi doctor >/dev/null
-  for managed_target in "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" "$global_ignore" "$HOME/.ssh/config" "$starship_config" "$zsh_path_file" "$zsh_aliases_file"; do
+  for managed_target in "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.gitconfig" "$global_ignore" "$HOME/.ssh/config" "$zsh_path_file" "$zsh_aliases_file"; do
     chezmoi source-path "$managed_target" >/dev/null 2>&1 || {
       err "$managed_target is not managed by chezmoi."; return "$EX_MANUAL"; }
   done
+  if uses_starship; then
+    chezmoi source-path "$starship_config" >/dev/null 2>&1 || { err 'Starship configuration is not managed by chezmoi.'; return "$EX_MANUAL"; }
+  fi
   phase_step_done "required dotfiles are under chezmoi management"
+  else
+    phase_step_done 'configuration files remain user-owned; chezmoi not selected'
+  fi
   phase_next "new login-shell verification" "Apply the reviewed source, open a new login shell, and resolve the first missing command it reports."
-  STARSHIP_CONFIG="$starship_config" starship prompt >/dev/null
+  if uses_starship; then STARSHIP_CONFIG="$starship_config" starship prompt >/dev/null; fi
   [[ "$("$runner_wrapper" root 2>/dev/null)" == "$PROJECT_DIR" ]] || {
     err "$runner_wrapper does not resolve the current project root: $PROJECT_DIR"
     return "$EX_GATE"
   }
-  homebrew_zsh="/opt/homebrew/bin/zsh"
-  [[ -x "$homebrew_zsh" ]] || { err "Homebrew zsh is missing at $homebrew_zsh."; return "$EX_GATE"; }
+  homebrew_zsh="$(configuration_shell_target)"
+  [[ -x "$homebrew_zsh" ]] || { err "Selected zsh is missing at $homebrew_zsh."; return "$EX_GATE"; }
   compaudit_output="$("$homebrew_zsh" -fc 'for dir in /opt/homebrew/share/zsh/site-functions /opt/homebrew/share/zsh-completions; do [[ -d "$dir" ]] && fpath=("$dir" $fpath); done; autoload -Uz compaudit; compaudit' 2>/dev/null || true)"
   if [[ -n "$compaudit_output" ]]; then
     err "Zsh completion directories have unsafe permissions:"
@@ -477,12 +520,14 @@ phase_05() {
   # Keep the gate compatible with sources created before cmdifftext/cmmerge
   # were added. Those convenience aliases are in the current baseline, but a
   # visual-tool upgrade must not force-edit a user's versioned alias file.
-  clean_shell_check='command -v brew git chezmoi starship day-one-mac >/dev/null && [[ "$(command -v zsh)" == /opt/homebrew/bin/zsh ]] && alias cdayone gs gd gds gl gremotes cm cmstatus cmdiff cmverify cmdoctor brewcheck brewout brewcleanpreview brewautopreview >/dev/null && [[ ":$PATH:" == *":$HOME/.local/bin:"* ]]'
+  clean_shell_check='command -v brew git day-one-mac >/dev/null && alias cdayone gs gd gds gl gremotes brewcheck brewout brewcleanpreview brewautopreview >/dev/null && [[ ":$PATH:" == *":$HOME/.local/bin:"* ]]'
+  uses_chezmoi && clean_shell_check+=' && command -v chezmoi >/dev/null && alias cm cmstatus cmdiff cmverify cmdoctor >/dev/null'
+  uses_starship && clean_shell_check+=' && command -v starship >/dev/null'
   [[ "${GHQ_CHOICE:-}" != yes ]] || clean_shell_check+=' && command -v ghq >/dev/null'
   uses_node && clean_shell_check+=' && [[ "$PNPM_HOME" == "$HOME/Library/pnpm" && ":$PATH:" == *":$PNPM_HOME:"* ]]'
   env -i HOME="$HOME" USER="$(id -un)" LOGNAME="$(id -un)" TERM="${TERM:-xterm-256color}" PATH='/usr/bin:/bin:/usr/sbin:/sbin' SHELL="$homebrew_zsh" \
     "$homebrew_zsh" -lic "$clean_shell_check" || {
-      err "A clean Homebrew-zsh login shell did not load every required command and PATH entry."
+      err "A clean selected-zsh login shell did not load every required command and PATH entry."
       return "$EX_GATE"
     }
   # The same commands must resolve in a NON-login interactive shell too. That
@@ -491,12 +536,12 @@ phase_05() {
   # pane or typed `zsh`.
   env -i HOME="$HOME" USER="$(id -un)" LOGNAME="$(id -un)" TERM="${TERM:-xterm-256color}" PATH='/usr/bin:/bin:/usr/sbin:/sbin' SHELL="$homebrew_zsh" \
     "$homebrew_zsh" -ic "$clean_shell_check" || {
-    err "A non-login interactive shell cannot find Homebrew or Starship."
+    err "A non-login interactive shell cannot find every selected command."
     warn "~/.zshrc should re-apply the Homebrew environment when it is missing; see Phase 5 Step 5.3."
     return "$EX_GATE"
   }
-  phase_step_done "Starship and required commands work in login and non-login shells"
-  phase_next "Homebrew zsh as the login shell" "Confirm the /etc/shells and chsh prompts, then open a new terminal."
+  phase_step_done "selected prompt and required commands work in login and non-login shells"
+  phase_next "selected login shell" "Confirm any requested /etc/shells and chsh changes, then open a new terminal."
   switch_login_shell_to_homebrew_zsh || return $?
-  ok "chezmoi, managed Starship configuration and login shell verified"
+  ok "selected configuration ownership, prompt and login shell verified"
 }

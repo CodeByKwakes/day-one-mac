@@ -71,13 +71,13 @@ Do not run commands against real projects solely as a presence check.
 
 | Formula | Purpose | Selected when | Command | Configuration guide |
 |---|---|---|---|---|
-| `chezmoi` | Track and render portable dotfiles into the home directory | Always | `chezmoi` | [Learning path](../manual/chezmoi.md); review diffs before apply |
+| `chezmoi` | Track and render portable dotfiles into the home directory | Local or private-Git ownership only | `chezmoi` | [Learning path](../manual/chezmoi.md); review diffs before apply |
 | `ghq` | Locate and clone repositories beneath reviewed roots | Only when opted in | `ghq` | [Developer folders](../manual/developer-folders.md); independent of hosting track and chezmoi |
 | `git` | Version control for repositories and dotfiles | Always | `git` | [Phase 4](../01-required/04-core-tools-and-hosting.md); author identity and separate signing |
 | `jq` | Read and transform JSON | Always | `jq` | [Foundation](../01-required/02-command-line-foundation.md); no account needed |
 | `ripgrep` | Search file contents efficiently | Always | `rg` | [Core tools](../01-required/04-core-tools-and-hosting.md); no account needed |
-| `starship` | Configurable cross-shell prompt | Always | `starship` | [Phase 5](../01-required/05-dotfiles-and-shell.md); shell init and font |
-| `zsh` | Homebrew-managed interactive shell | Always | `zsh` | [Phase 5](../01-required/05-dotfiles-and-shell.md); inspect selected shell, not just PATH |
+| `starship` | Configurable cross-shell prompt | Only when selected | `starship` | [Phase 5](../01-required/05-dotfiles-and-shell.md); shell init and font |
+| `zsh` | Homebrew-managed interactive shell | Homebrew shell selection only | `zsh` | [Phase 5](../01-required/05-dotfiles-and-shell.md); Apple/current zsh does not require this formula |
 | `fnm` | Select and install Node.js versions | Node or both | `fnm` | [Phase 6](../01-required/06-language-toolchains.md); initialise shell, select Node |
 | `pnpm` | Node project package manager | Node or both | `pnpm` | [Phase 6](../01-required/06-language-toolchains.md); respect project manager/version |
 | `uv` | Manage Python versions, environments and dependencies | Python or both | `uv` | [Phase 6](../01-required/06-language-toolchains.md); use project environments |

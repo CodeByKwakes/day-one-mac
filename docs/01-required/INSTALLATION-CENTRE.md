@@ -59,7 +59,7 @@ owned by its original installer.
 Everyone receives:
 
 ```text
-chezmoi  git  jq  ripgrep  starship  zsh
+git  jq  ripgrep
 ```
 
 ghq is installed only when explicitly selected alongside the developer layout.
@@ -70,6 +70,9 @@ The saved choices add only the relevant tools:
 
 | Choice | Additional Homebrew formulae |
 |---|---|
+| Local-only or private-repository chezmoi | `chezmoi` |
+| Homebrew shell | `zsh`; Apple/keep choices do not request this formula |
+| Starship prompt | `starship` |
 | Node.js / JavaScript | `fnm`, `pnpm` |
 | Python | `uv` |
 | Track 1 or 3 (GitHub) | `gh` |

@@ -1,6 +1,6 @@
 [← Phase 4](04-core-tools-and-hosting.md) · **Phase 5** · [Phase 6 →](06-language-toolchains.md)
 
-# Phase 5 — chezmoi, the shell, and Starship
+# Phase 5 — Configuration ownership, shell, and prompt
 
 **Time:** 25–45 minutes · **Required:** everyone
 
@@ -12,10 +12,50 @@ and restored on another Mac. See [GLOSSARY.md](../20-reference/GLOSSARY.md) for 
 
 ## Outcome
 
-chezmoi owns a small, understandable set of dotfiles. Homebrew, pnpm, fnm, and
-Starship initialize predictably; a portable `day-one-mac` command can locate
-this project; machine-specific choices remain local; and no secret is copied
-into the source directory.
+Your selected owner maintains a small set of configuration files. Homebrew and
+selected toolchains initialize predictably; Starship runs only when selected
+for new configuration. The portable command remains installer-owned, and
+secrets stay outside any dotfiles source.
+
+## Choose ownership, shell, and prompt first
+
+These are independent choices, collected by the wizard before installation:
+
+| Choice | Values | Meaning |
+|---|---|---|
+| `--dotfiles-versioning` | `none`, `local`, `git` | User-owned files, local chezmoi, or chezmoi with a private repository |
+| `--shell` | `keep`, `apple`, `homebrew` | Preserve the current zsh login shell, select `/bin/zsh`, or install/select Homebrew zsh |
+| `--prompt` | `none`, `starship` | Leave existing prompt configuration alone, or install/configure Starship |
+
+Fresh direct runs must supply all three choices; `--yes` does not select them.
+Plan output may show missing choices, but apply stops until they are supplied.
+Previously saved setups retain the earlier Homebrew-zsh/Starship choices until
+you explicitly change them. Old completion markers are revalidated, not treated
+as evidence that the new choices passed.
+
+For example, with hosting, language, identity and folder choices already saved:
+
+```bash
+day-one-mac setup --phase 05 --plan --dotfiles-versioning none --shell apple --prompt none
+day-one-mac setup --phase 05 --apply --dotfiles-versioning none --shell apple --prompt none
+day-one-mac setup --phase 05 --check
+day-one-mac setup --phase 05 --resume
+```
+
+**Fully manual route:** follow the shared shell-file steps below, editing files
+directly for `none`. Skip every chezmoi initialization, adoption, apply, and
+remote command. For `local` or `git`, use the chezmoi sections. Choose the shell
+and Starship branches in [Manual 5](../20-reference/MANUAL-SETUP-GUIDE.md#manual-5--configure-chezmoi-zsh-and-starship).
+No Day One Mac command is required by that route.
+
+Declining a component does not uninstall it, remove its existing configuration,
+or disable an existing prompt. An unmanaged selection stops when an existing
+chezmoi source/configuration is detected: back up both source and targets, review
+all managed paths and custom source locations, and detach ownership manually
+before retrying. Do not delete a source to silence the check. If you intend to
+keep chezmoi ownership, retain `local` or `git` instead. A custom non-zsh shell or
+symlink-owned startup file also requires manual review; the runner does not
+replace it.
 
 ## How to use this phase
 
@@ -36,9 +76,11 @@ Phase 5 schema 12 introduces the shared `path.zsh` and `aliases.zsh` files and
 keeps a comment-only `~/.ssh/config` for HTTPS-only machines. A Mac completed
 under an older schema is revalidated. The runner creates missing shared files
 but does not overwrite an existing `.zprofile` or `.zshrc`; it stops with the
-exact source line that must be merged through chezmoi.
+exact source line that must be merged using the selected configuration owner.
 
 ## How chezmoi separates files
+
+This section and all source-management steps apply only to `local` or `git`.
 
 There are three distinct locations:
 
@@ -169,6 +211,10 @@ source `path.zsh`; its guards make repeated sourcing safe.
 
 ## Step 5.3 — Configure interactive zsh
 
+The full example includes Starship. When it is not selected, omit the entire
+`if command -v starship ... fi` block; command presence alone is not consent to
+enable it. Existing files are preserved rather than rewritten when choices change.
+
 `~/.zshrc` runs for **every** interactive shell. It loads the shared PATH,
 keeps persistent history, initializes completion exactly once, loads fnm and
 safe aliases, then starts Starship. Optional syntax highlighting remains last:
@@ -221,7 +267,7 @@ explain it. The same gap makes uv-installed Python invisible and is what
 prompts uv to suggest `uv python update-shell`.
 
 The shared file makes its work a no-op when the entries already exist. Phase 5
-starts Homebrew zsh with an almost empty environment and verifies both shell
+starts the selected zsh with an almost empty environment and verifies both shell
 kinds, so it cannot accidentally pass because the parent terminal already had
 Homebrew on PATH.
 
@@ -232,7 +278,7 @@ that an earlier run missed; review the failure before retrying rather than
 assuming the existing configuration needs replacing.
 
 `SHARE_HISTORY` makes commands entered in one Warp tab available in another.
-Remove only that option through `chezmoi edit ~/.zshrc` if separate per-tab
+Remove only that option using the selected configuration owner if separate per-tab
 history is preferred; the history file and the remaining safety options still
 work.
 
@@ -271,9 +317,11 @@ brewcleanpreview        cleanup preview only
 brewautopreview         autoremove preview only
 ```
 
-They are added during Phase 5, after their dependencies exist, and are managed
-by chezmoi. The `cdayone` alias uses the portable command that was installed at
-the start and adopted into chezmoi here. No alias performs a
+They are added during Phase 5 when their dependencies exist. The file is
+user-owned in unmanaged mode, or adopted into chezmoi when selected. The `cm*`
+aliases are required only with chezmoi. The `cdayone` alias uses the portable
+command installed at the start; that executable is never adopted into chezmoi.
+No alias performs a
 force push, cleanup, prune, publication, database deletion, or other
 destructive action. Raycast command aliases are separate and do not belong in
 this file.
@@ -303,6 +351,8 @@ own. Do not apply a recursive chmod to `/opt/homebrew` or `$HOME`.
 
 ## Step 5.4 — Configure Starship
 
+Skip this section when Starship is not selected; leave any existing prompt alone.
+
 The runner creates `~/.config/starship.toml` only when absent:
 
 ```toml
@@ -329,6 +379,8 @@ parsed correctly. A message mentioning an error or an unknown key is the
 failure case; fix the named line in `starship.toml` and run it again.
 
 ## Step 5.5 — Store machine-local data
+
+This section applies only when chezmoi is selected.
 
 When absent, the runner creates `~/.config/chezmoi/chezmoi.toml`. The editor,
 diff, and merge sections below are included only when VS Code is the selected
@@ -375,9 +427,13 @@ never stall its drift gate or make an empty stdout look like a clean source.
 
 ## Step 5.5a — Switch to the Homebrew zsh 🔴
 
-macOS ships zsh at `/bin/zsh`. Day One Mac installs Homebrew's zsh as well and
-makes it your login shell, so the shell tracks Homebrew updates rather than
-macOS releases.
+This walkthrough applies only to `--shell homebrew`. With `--shell keep`,
+skip account changes. With `--shell apple`, use `/bin/zsh` as the target; the
+runner verifies it and changes the account only if necessary. See
+[Manual 5](../20-reference/MANUAL-SETUP-GUIDE.md#manual-5--configure-chezmoi-zsh-and-starship)
+for the corresponding manual branches.
+
+Homebrew zsh tracks Homebrew updates; Apple's `/bin/zsh` tracks macOS releases.
 
 This is **the only step in Day One Mac that uses `sudo`**, and the only one
 that changes a macOS account setting. Phase 5 asks twice before doing anything:
@@ -504,7 +560,8 @@ rerunning the phase. Current phase fingerprints remain valid.
 
 ## Step 5.7 — Add and inspect new-source targets
 
-For a new source, the equivalent manual commands are:
+Only when chezmoi is selected: for a new source, the equivalent manual commands
+are below. Omit `~/.config/starship.toml` when Starship was not selected.
 
 ```bash
 chezmoi add ~/.zprofile ~/.zshrc ~/.gitconfig ~/.gitignore_global ~/.ssh/config \
@@ -879,6 +936,10 @@ Read every block. Do not publish until the source is secret-free.
 
 ## Step 5.8 — Verify a new login shell
 
+The examples below use Homebrew zsh with Node and Starship. Substitute `/bin/zsh`
+for the Apple choice, or the verified current zsh path for `keep`. Omit checks
+for unselected tools. Fully manual users also omit the `day-one-mac` commands.
+
 Open a new terminal or run:
 
 ```bash
@@ -900,7 +961,7 @@ Then verify:
 
 ```bash
 command -v brew git chezmoi starship day-one-mac
-command -v zsh # must print /opt/homebrew/bin/zsh
+dscl . -read "/Users/$(id -un)" UserShell # must match the selected account shell
 ghq root                 # only if selected; compare with the reviewed layout
 day-one-mac root
 chezmoi doctor
@@ -911,7 +972,9 @@ printf 'PNPM_HOME=%s\n' "${PNPM_HOME:-not-set}"
 day-one-mac shell-status
 ```
 
-`PNPM_HOME` is required only for Node selections.
+`PNPM_HOME` is required only for Node selections. `command -v zsh` reports PATH
+resolution, not the account's login shell; an installed Homebrew zsh can appear
+first on PATH even when the account deliberately uses Apple's zsh.
 
 ## If you make a mistake — rerun or recover Phase 5
 
@@ -1010,15 +1073,14 @@ only when the intended outcome is to undo broader setup work.
 
 ## Phase 5 completion checklist 🚦
 
-- [ ] `chezmoi source-path` returns a real directory.
-- [ ] The eight configuration targets, including both `~/.config/zsh` files, are managed.
+- [ ] If chezmoi is selected, `chezmoi source-path` returns a real directory.
+- [ ] Selected targets have one understood owner; Starship's file is required only when selected.
 - [ ] `~/.local/bin/day-one-mac` is executable and is not managed by chezmoi.
-- [ ] The machine-local config contains the correct track, stack, name, and email.
-- [ ] `chezmoi diff` is empty or every VS Code comparison is understood.
-- [ ] Starship renders without a configuration error.
-- [ ] A new login shell finds Homebrew, Git, chezmoi, and Starship.
-- [ ] Directory Services reports `/opt/homebrew/bin/zsh` as the login shell.
-- [ ] `day-one-mac shell-status` passes, including `compaudit`.
+- [ ] If chezmoi is selected, its machine-local config and reviewed diff are understood.
+- [ ] If Starship is selected, it renders without a configuration error.
+- [ ] New login and non-login interactive shells find Homebrew, Git, and selected tools.
+- [ ] Directory Services reports the selected shell; `keep` did not change it.
+- [ ] `day-one-mac shell-status` checks the saved shell/prompt choices and completion permissions pass `compaudit`.
 - [ ] `day-one-mac root` returns the current self-contained project directory.
 - [ ] `day-one-mac advanced --list` shows Modules 15–22.
 - [ ] Node selections expose `PNPM_HOME` on PATH.

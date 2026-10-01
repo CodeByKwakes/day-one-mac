@@ -12,7 +12,7 @@ Day One Mac turns a new or factory-reset Apple-silicon Mac into a working
 development computer. Intel Macs and terminals running under Rosetta are not
 supported. The eight required phases and one installation checkpoint prepare
 the base tools, connect the chosen code-hosting account, manage configuration
-files with chezmoi, set up the Starship Terminal prompt, install the selected
+files with your selected owner, optionally set up the Starship prompt, install the selected
 programming languages, prepare VS Code, and verify that the result can be
 rebuilt.
 
@@ -20,7 +20,11 @@ The developer-folder pilot now offers [four layouts with optional ghq](manual/de
 The wizard collects these choices separately; ghq is not preselected. Existing
 setups must review them before resuming affected phases. Non-interactive setup
 must supply `--layout none|repository|purpose|existing` and `--ghq no|yes`, or
-have saved choices. This pilot does not change the other base-tool defaults.
+have saved choices. Configuration ownership, shell, and prompt are also
+independent choices: see [Phase 5 choices](01-required/05-dotfiles-and-shell.md#choose-ownership-shell-and-prompt-first).
+Fresh direct runs must supply `--dotfiles-versioning none|local|git`,
+`--shell keep|apple|homebrew`, and `--prompt none|starship`. Preset, editor, and
+language defaults outside this slice are unchanged.
 
 The setup is resumable. A phase receives a ✓ only after its checks pass. If a
 phase stops, earlier completed phases stay saved and the screen explains what

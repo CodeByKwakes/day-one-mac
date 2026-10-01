@@ -10,6 +10,12 @@ These are **references, not an installer**. Do not copy the whole folder over
 your home directory. Existing shell files can contain reviewed company or
 personal configuration that should be merged rather than erased.
 
+These copies show the Node + Starship variant. Omit the Starship initialization
+block and `starship.toml` when Starship is not selected, and the `PNPM_HOME`
+block for a Python-only setup. With unmanaged configuration, edit the target
+files directly; do not initialize or adopt them into chezmoi. The shared file
+layout works with either Apple or Homebrew zsh.
+
 ## Reference tree
 
 ```text

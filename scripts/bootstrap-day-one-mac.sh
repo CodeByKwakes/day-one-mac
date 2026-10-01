@@ -12,6 +12,7 @@ source "$HERE/lib/platform.sh"
 source "$HERE/lib/state.sh"
 source "$HERE/lib/operation-lock.sh"
 source "$HERE/lib/developer-folders.sh"
+source "$HERE/lib/configuration-choices.sh"
 ORIGINAL_ARGS=("$@")
 
 STATE_ROOT="$(day_one_state_root)"
@@ -68,8 +69,10 @@ Direct setup:
   --primary-ide IDE           vscode or other; controls Git editor integration
   --dotfiles-repo URL         apply an existing private chezmoi source
   --new-dotfiles              create or keep a new chezmoi source
-  --dotfiles-versioning MODE  git (private remote) or local (no Git gate)
+  --dotfiles-versioning MODE  none (unmanaged), local (chezmoi), or git (private repo)
   --local-dotfiles            create a local-only chezmoi source
+  --shell MODE                keep the current zsh, apple zsh, or homebrew zsh
+  --prompt MODE               none (preserve existing prompt) or starship
   --macos-settings MODE       configure or skip the early optional settings wizard
   --skip-macos-settings       continue to Phase 2 without preference changes
   --app-install-policy MODE   prompt, homebrew, or check-only for missing apps
@@ -353,7 +356,7 @@ show_required_base() {
   printf '  📦 Installation Centre  Install every required app and command-line tool\n'
   printf '  🔒 Phase 3  Git authentication (%s) and FileVault\n' "${AUTH_MODE:-1password}"
   printf '  🔒 Phase 4  Core tools, preset applications and selected hosting services\n'
-  printf '  🔒 Phase 5  chezmoi-managed dotfiles and Starship\n'
+  printf '  🔒 Phase 5  Selected configuration ownership, shell and prompt\n'
   printf '  🔒 Phase 6  Selected language toolchains\n'
   printf '  🔒 Phase 7  Minimal VS Code base (skipped for core preset)\n'
   printf '  🔒 Phase 8  Verification, Brewfile and dotfiles protection\n'
@@ -384,11 +387,14 @@ print_review_body() {
   printf '  Auth:      %s\n' "$AUTH_MODE"
   if [[ -n "$DOTFILES_REPO" ]]; then
     printf '  Dotfiles:  existing private source — %s\n' "$DOTFILES_REPO"
+  elif [[ "$DOTFILES_VERSIONING" == none ]]; then
+    printf '  Dotfiles:  user-owned files — no chezmoi or remote required\n'
   elif [[ "$DOTFILES_VERSIONING" == local ]]; then
     printf '  Dotfiles:  local-only chezmoi source — no Git history or remote gate\n'
   else
     printf '  Dotfiles:  new chezmoi source — private Git required in Phase 8\n'
   fi
+  printf '  Shell:     %s; prompt: %s (none preserves existing configuration)\n' "$SHELL_CHOICE" "$PROMPT_CHOICE"
   show_required_base
   if [[ "$SHOW_OPTIONAL_REVIEW" == 1 ]]; then
     ui_section '🧩' 'Optional plan — available after Phase 8; not installed automatically'
@@ -473,11 +479,14 @@ write_wizard_report() {
     printf -- '- Early macOS settings: `%s`\n' "$MACOS_SETTINGS_PLAN"
     if [[ -n "$DOTFILES_REPO" ]]; then
       printf -- '- Dotfiles: existing private chezmoi source `%s`\n' "$DOTFILES_REPO"
+    elif [[ "$DOTFILES_VERSIONING" == none ]]; then
+      printf -- '- Dotfiles: user-owned files; no chezmoi or remote\n'
     elif [[ "$DOTFILES_VERSIONING" == local ]]; then
       printf -- '- Dotfiles: local-only chezmoi source; no Git history or remote gate\n'
     else
       printf -- '- Dotfiles: new chezmoi source with private Git required in Phase 8\n'
     fi
+    printf -- '- Shell: `%s`; prompt: `%s`\n' "$SHELL_CHOICE" "$PROMPT_CHOICE"
     printf '\n## Required base\n\nAll eight required phases are included. The Installation Centre runs after Phase 2 so all required software is ready before configuration. Track and stack choices control conditional work.\n'
     printf '\n## Optional plan\n\n'
     if [[ -n "$OPTIONAL_MODULES" ]]; then
@@ -514,6 +523,9 @@ save_wizard_choices() {
   save_state_value primary-ide "$PRIMARY_IDE"
   save_state_value dotfiles-repo "$DOTFILES_REPO"
   save_state_value dotfiles-versioning "$DOTFILES_VERSIONING"
+  save_state_value shell-choice "$SHELL_CHOICE"
+  save_state_value prompt-choice "$PROMPT_CHOICE"
+  save_state_value configuration-schema 1
   save_state_value auth-mode "$AUTH_MODE"
   save_state_value macos-settings-plan "$MACOS_SETTINGS_PLAN"
   save_state_value optional-modules "$OPTIONAL_MODULES"
@@ -633,14 +645,16 @@ choose_auth_mode() {
 choose_dotfiles() {
   local default_index=0
   [[ "$DOTFILES_VERSIONING" == local ]] && default_index=1
-  [[ -n "$DOTFILES_REPO" ]] && default_index=2
-  SINGLE_VALUES=(new-git new-local existing)
+  [[ "$DOTFILES_VERSIONING" == git ]] && default_index=2
+  [[ -n "$DOTFILES_REPO" ]] && default_index=3
+  SINGLE_VALUES=(none new-local new-git existing)
   SINGLE_LABELS=(
-    'Create a new chezmoi source and protect it with private Git (recommended)'
+    'Keep configuration user-owned — do not install or use chezmoi'
     'Create a local-only chezmoi source without Git version history'
+    'Create a new chezmoi source and protect it with private Git'
     'Use an existing private dotfiles repository'
   )
-  select_one 'Choose how chezmoi should store and protect your dotfiles:' "$default_index"
+  select_one 'Choose who manages your configuration files:' "$default_index"
   if [[ "$SINGLE_RESULT" == existing ]]; then
     while :; do
       prompt_value 'Private dotfiles repository URL' "$DOTFILES_REPO"
@@ -653,9 +667,26 @@ choose_dotfiles() {
     done
   fi
   DOTFILES_REPO=""
-  if [[ "$SINGLE_RESULT" == new-local ]]; then DOTFILES_VERSIONING=local
+  if [[ "$SINGLE_RESULT" == none ]]; then DOTFILES_VERSIONING=none
+  elif [[ "$SINGLE_RESULT" == new-local ]]; then DOTFILES_VERSIONING=local
   else DOTFILES_VERSIONING=git
   fi
+}
+
+choose_shell_and_prompt() {
+  local default_index=0
+  [[ "$SHELL_CHOICE" != apple ]] || default_index=1
+  [[ "$SHELL_CHOICE" != homebrew ]] || default_index=2
+  SINGLE_VALUES=(keep apple homebrew)
+  SINGLE_LABELS=('Keep my current zsh login shell (other shells need manual setup)' 'Use Apple /bin/zsh' 'Install and use Homebrew zsh')
+  select_one 'Choose the login shell; existing shell files are preserved for review:' "$default_index"
+  SHELL_CHOICE="$SINGLE_RESULT"
+  default_index=0
+  [[ "$PROMPT_CHOICE" != starship ]] || default_index=1
+  SINGLE_VALUES=(none starship)
+  SINGLE_LABELS=('Leave my existing prompt alone' 'Install and configure Starship')
+  select_one 'Choose the prompt independently of the shell and chezmoi:' "$default_index"
+  PROMPT_CHOICE="$SINGLE_RESULT"
 }
 
 choose_optional_plan() {
@@ -874,6 +905,7 @@ configure_wizard() {
   if [[ "$PRESET" == core ]]; then PRIMARY_IDE=other; else choose_primary_ide; fi
   choose_auth_mode
   choose_dotfiles
+  choose_shell_and_prompt
   # Keep the initial wizard focused on the required base. The runner asks
   # whether to configure optional macOS preferences immediately after Phase 1.
   MACOS_SETTINGS_PLAN=ask
@@ -885,7 +917,9 @@ has_saved_core_choices() {
     && [[ "$GHQ_CHOICE" =~ ^(yes|no)$ ]] \
     && [[ "$(state_value track)" =~ ^[123]$ ]] \
     && [[ "$(state_value stack)" =~ ^(node|python|both)$ ]] \
-    && [[ "$DOTFILES_VERSIONING" =~ ^(git|local)$ ]] \
+    && [[ "$DOTFILES_VERSIONING" =~ ^(none|git|local)$ ]] \
+    && [[ "$SHELL_CHOICE" =~ ^(keep|apple|homebrew)$ ]] \
+    && [[ "$PROMPT_CHOICE" =~ ^(none|starship)$ ]] \
     && valid_line "$(state_value git-name)" \
     && valid_email "$(state_value git-email)"
 }
@@ -904,7 +938,9 @@ load_saved_choices() {
   [[ "$PRESET" != core ]] || PRIMARY_IDE=other
   DOTFILES_REPO="$(state_value dotfiles-repo)"
   DOTFILES_VERSIONING="$(state_value dotfiles-versioning)"
-  [[ -n "$DOTFILES_VERSIONING" ]] || DOTFILES_VERSIONING=git
+  SHELL_CHOICE="$(state_value shell-choice)"
+  PROMPT_CHOICE="$(state_value prompt-choice)"
+  configuration_load_choices
   AUTH_MODE="$(state_value auth-mode)"
   # Setups saved before this choice existed all used the 1Password agent.
   [[ -n "$AUTH_MODE" ]] || AUTH_MODE=1password
@@ -996,6 +1032,7 @@ run_wizard() {
   fi
   setup_args+=(--preset "$PRESET" --auth-mode "$AUTH_MODE")
   setup_args+=(--dotfiles-versioning "$DOTFILES_VERSIONING")
+  setup_args+=(--shell "$SHELL_CHOICE" --prompt "$PROMPT_CHOICE")
   setup_args+=(--macos-settings "$MACOS_SETTINGS_PLAN")
   [[ "$DRY_RUN" == 1 ]] && setup_args+=(--dry-run)
   if bash "$HERE/setup.sh" "${setup_args[@]}"; then setup_rc=0; else setup_rc=$?; fi

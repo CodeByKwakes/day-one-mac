@@ -456,6 +456,8 @@ PY
 
   # Exercise the actual phase's stop/continue boundary with harmless callbacks.
   # No real packages, dotfiles, sessions or network are touched by this harness.
+  source "$SCRIPT_DIR/lib/configuration-choices.sh"
+  SHELL_CHOICE=apple PROMPT_CHOICE=none
   SCRIPT_DIR="$TEST_ROOT/phase8-runtime"
   PROJECT_DIR="$TEST_ROOT"
   STATE_DIR="$TEST_ROOT/phase8-state"

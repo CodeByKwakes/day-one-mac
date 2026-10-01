@@ -87,6 +87,7 @@ update_homebrew_1password_if_needed() {
 # provider blocks. Re-add the file so source and target stay in agreement.
 resync_managed_ssh_config() {
   local ssh_config="$1"
+  [[ "${DOTFILES_VERSIONING:-$(state_value dotfiles-versioning)}" != none ]] || return 0
   command -v chezmoi >/dev/null 2>&1 || return 0
   chezmoi source-path "$ssh_config" >/dev/null 2>&1 || return 0
   if chezmoi add "$ssh_config" >/dev/null 2>&1; then

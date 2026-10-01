@@ -71,7 +71,7 @@ updates and rollback.
 | `day-one-mac docs [TOPIC] [--open]` | `./runtime-manager.sh docs …` | List, locate, or open documentation inside the active runtime. Topics include `chezmoi`, `optional`, and `advanced`; use `--list` for all topics or `--folder --open` for the complete documentation folder. |
 | `day-one-mac docs [TOPIC] --browser` | `./runtime-manager.sh docs …` | Open a temporary offline HTML reader. Use `handbook` for manual tasks or `chezmoi-guide` for the learning path. No server or extra runtime is needed. |
 | `day-one-mac docs export --format html\|markdown --output NEW_DIRECTORY` | `./runtime-manager.sh docs export …` | Export bundled project guides and examples to a new directory. See [contents, printing and safety](DOCUMENTATION-COMMANDS.md). |
-| `day-one-mac shell-status` | `./shell-status.sh` | Run a read-only check of Homebrew zsh, startup files, clean-shell PATHs, completions and selected tools. |
+| `day-one-mac shell-status` | `./shell-status.sh` | Inspect the saved zsh/prompt choices, startup files, clean-shell PATHs, completions and selected tools. Executes shell startup files; never changes the account shell. |
 | `day-one-mac setup [options]` | `./bootstrap-day-one-mac.sh [options]` | Start, resume, inspect, or reset the required eight-phase setup. |
 | `day-one-mac folders --plan\|--apply\|--check\|--resume` | `/bin/bash ./configure-folders.sh [options]` | Choose `--layout none\|repository\|purpose\|existing` and `--ghq no\|yes`; independently create/check folders without other phases. See [folder choices, prerequisites and recovery](../manual/developer-folders.md). |
 | `day-one-mac install [options]` | `./bootstrap-day-one-mac.sh --install-centre [options]` | Install or revalidate required applications and command-line tools after Phase 2. |
@@ -151,8 +151,10 @@ Important setup selectors include:
 --primary-ide vscode|other
 --dotfiles-repo URL
 --new-dotfiles
---dotfiles-versioning git|local
+--dotfiles-versioning none|git|local
 --local-dotfiles
+--shell keep|apple|homebrew
+--prompt none|starship
 --macos-settings ask|configure|skip
 --app-install-policy prompt|homebrew|check-only
 --phase NN

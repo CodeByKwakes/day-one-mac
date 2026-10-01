@@ -50,6 +50,7 @@ def exercise(root, failure):
         f"source {shlex.quote(str(PHASE))}\n"
         'STATE_DIR="$HOME"\nVERIFY_FAILURES=0\nASSUME_YES=0\n'
         'uses_node(){ return 0; }\nphase_gate_failed(){ :; }\n'
+        'configuration_shell_target(){ printf "/bin/zsh\\n"; }\n'
         + probe.group(0) + '\n'
         + f'[[ "$VERIFY_FAILURES" == {1 if failure else 0} ]]\n'
         + f"grep -Fq '| Node, npm and pnpm | {'FAIL' if failure else 'PASS'} |' "

@@ -146,6 +146,13 @@ mkdir -p "$sw_bin" "$prefix/bin"
 printf '#!/bin/sh\n[ "$1" = --prefix ] && echo "%s"\n' "$prefix" > "$sw_bin/brew"
 chmod +x "$sw_bin/brew"
 
+# Keeping the shell must never call either account-mutating command, even
+# when a Homebrew zsh has not been installed.
+out="$(SHELL_CHOICE=keep PATH="$sw_bin:$PATH" bash "$sw_harness")"
+grep -Fq 'Keeping the current login shell' <<<"$out" || fail_test 'keep-shell choice was ignored'
+grep -Fq 'CHSH-CALLED' <<<"$out" && fail_test 'keep-shell choice called chsh'
+grep -Fq 'SUDO-CALLED' <<<"$out" && fail_test 'keep-shell choice called sudo'
+
 # No zsh in the prefix: decline, do not touch anything.
 rm -f "$prefix/bin/zsh"
 out="$(PATH="$sw_bin:$PATH" bash "$sw_harness" || true)"
@@ -191,6 +198,9 @@ check_body="$(sed -n "s/^  clean_shell_check='\\(.*\\)'$/\\1/p" "$SCRIPT_DIR/pha
 node_check="$(sed -n "s/^  uses_node && clean_shell_check+='\\(.*\\)'$/\\1/p" "$SCRIPT_DIR/phases/05-dotfiles.sh")"
 [[ -n "$check_body" && -n "$node_check" ]] || fail_test 'shell gate extraction failed'
 check_body="${check_body//\/opt\/homebrew/$prefix}"
+chezmoi_check="$(sed -n "s/^  uses_chezmoi && clean_shell_check+='\\(.*\\)'$/\\1/p" "$SCRIPT_DIR/phases/05-dotfiles.sh")"
+starship_check="$(sed -n "s/^  uses_starship && clean_shell_check+='\\(.*\\)'$/\\1/p" "$SCRIPT_DIR/phases/05-dotfiles.sh")"
+[[ -n "$chezmoi_check" && -n "$starship_check" ]] || fail_test 'selected configuration predicates missing'
 printf '#!/bin/sh\nexit 0\n' > "$prefix/bin/ghq"
 chmod +x "$prefix/bin/ghq"
 run_gate() {
@@ -200,12 +210,18 @@ run_gate() {
     _ "$home/.config/zsh/aliases.zsh" "$1" "${2:-}" >/dev/null 2>&1
 }
 run_gate "$check_body" || fail_test 'valid shell prerequisites were rejected'
-for missing in brew git chezmoi starship zsh day-one-mac; do
+for missing in brew git day-one-mac; do
   missing_path="$prefix/bin/$missing"
   [[ "$missing" != day-one-mac ]] || missing_path="$home/.local/bin/$missing"
   mv "$missing_path" "$TEST_ROOT/hidden-command"
   if run_gate "$check_body"; then fail_test "shell gate ignored missing $missing"; fi
   mv "$TEST_ROOT/hidden-command" "$missing_path"
+done
+for missing in chezmoi starship; do
+  mv "$prefix/bin/$missing" "$TEST_ROOT/hidden-command"
+  run_gate "$check_body" || fail_test "unselected $missing was required"
+  if run_gate "$check_body$chezmoi_check$starship_check"; then fail_test "selected $missing was not required"; fi
+  mv "$TEST_ROOT/hidden-command" "$prefix/bin/$missing"
 done
 ghq_check="$(sed -n "s/^  .* || clean_shell_check+='\\(.*\\)'$/\\1/p" "$SCRIPT_DIR/phases/05-dotfiles.sh")"
 [[ -n "$ghq_check" ]] || fail_test 'optional ghq predicate extraction failed'
@@ -227,6 +243,9 @@ preflight_harness="$TEST_ROOT/preflight.sh"
   printf 'set -euo pipefail\nEX_MANUAL=21\nDRY_RUN=0\n'
   printf 'source "%s/phases/05-dotfiles.sh"\n' "$SCRIPT_DIR"
   printf '%s\n' \
+    'configuration_validate_choices(){ :; }; configuration_unmanaged_preflight(){ :; }' \
+    'SHELL_CHOICE=apple; configuration_shell_target(){ echo /bin/zsh; }' \
+    'day_one_safe_state_path(){ :; }; uses_starship(){ return 1; }' \
     'ui_title(){ :; }; info(){ :; }; phase_doc(){ :; }; phase_next(){ :; }' \
     'have(){ return 0; }; err(){ :; }; warn(){ :; }' \
     'chezmoi(){ exit 98; }; write_text_file(){ exit 98; }; create_directory(){ exit 98; }' \

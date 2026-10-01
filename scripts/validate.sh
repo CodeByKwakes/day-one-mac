@@ -400,6 +400,8 @@ required_scripts=(
   configure-cli-tools.sh
   configure-folders.sh
   lib/developer-folders.sh
+  lib/configuration-choices.sh
+  tests/test-configuration-choices.sh
   tests/test-developer-folders.sh
   configure-macos-settings.sh
   workspace-manager.sh
@@ -474,7 +476,9 @@ if grep -Fq 'exec bash "$HERE/setup.sh" "$@"' "$SCRIPT_DIR/bootstrap-day-one-mac
    && grep -Fq 'day_one_require_apple_silicon' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq 'verify_apple_developer_tools' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq 'for phase in 01 02 03 04 05 06 07 08' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
-   && grep -Fq 'printf '\''%s\n'\'' chezmoi git jq ripgrep starship zsh' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'uses_chezmoi && printf' "$SCRIPT_DIR/setup.sh" \
+   && grep -Fq 'uses_starship && printf' "$SCRIPT_DIR/setup.sh" \
+   && grep -Fq 'configuration_validate_choices' "$SCRIPT_DIR/setup.sh" \
    && grep -Fq 'folders_apply' "$SCRIPT_DIR/phases/04-hosting.sh" \
    && grep -Fq 'git config --global push.autoSetupRemote true' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq 'git config --global core.excludesFile' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
@@ -516,8 +520,8 @@ if grep -Fq 'exec bash "$HERE/setup.sh" "$@"' "$SCRIPT_DIR/bootstrap-day-one-mac
    && grep -Fq 'save_state_value project-root "$PROJECT_DIR"' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq 'exec "$PROJECT_ROOT/scripts/advanced-setup.sh" "$@"' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'advanced-audit|audit) shift; exec' "$SCRIPT_DIR/day-one-mac" \
-   && grep -Fq 'PHASE_SCHEMA_05=15' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
-   && grep -Fq 'PHASE_SCHEMA_08=11' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'PHASE_SCHEMA_05=16' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
+   && grep -Fq 'PHASE_SCHEMA_08=12' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq 'PHASE_SCHEMA_01=5' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq '.config/zsh/path.zsh' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq '.config/zsh/aliases.zsh' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
@@ -531,7 +535,7 @@ if grep -Fq 'exec bash "$HERE/setup.sh" "$@"' "$SCRIPT_DIR/bootstrap-day-one-mac
    && grep -Fq 'Still required:' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq 'preview record compaction with: day-one-mac finalize' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    && grep -Fq 'Optional databases, AI, MCP and VS Code profiles are not run here.' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh; then
-  pass "wizard feeds the resumable eight-phase runner and keeps chezmoi, Starship and pnpm in the base"
+  pass "wizard feeds the resumable runner with independent configuration, shell and prompt choices"
 else
   fail "wizard, runner phase flow, or required base components are incomplete"
 fi
@@ -1020,6 +1024,10 @@ run_fixture "chezmoi preserves custom tools and uses VS Code only for human revi
 run_fixture "login and non-login shell PATH and the login-shell switch pass" \
   "shell PATH or login-shell switch fixture failed" \
   "$SCRIPT_DIR/tests/test-shell-environment.sh" || true
+
+run_fixture "configuration choices preserve ownership and do not reinstall declined tools" \
+  "configuration choice or preservation fixture failed" \
+  "$SCRIPT_DIR/tests/test-configuration-choices.sh" || true
 
 run_fixture "immutable projectless task creation, metadata, and boundaries pass" \
   "projectless workspace manager regression fixture failed" \
