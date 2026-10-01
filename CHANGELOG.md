@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/CodeByKwakes/day-one-mac/compare/v1.4.0...v1.5.0) (2026-10-01)
+
+
+### Features
+
+* **setup:** make configuration ownership, shell and prompt independent ([#11](https://github.com/CodeByKwakes/day-one-mac/issues/11)) ([ec572a7](https://github.com/CodeByKwakes/day-one-mac/commit/ec572a7cfcf623c2cfeb55875f063434a963432e))
+
 ## [1.4.0](https://github.com/CodeByKwakes/day-one-mac/compare/v1.3.0...v1.4.0) (2026-09-30)
 
 
