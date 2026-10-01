@@ -104,7 +104,7 @@ chezmoi --version
 On either route, check only the shell and prompt you chose. Apple zsh is already
 at `/bin/zsh`. Install Homebrew zsh with `brew install zsh` only if you selected
 it, and install Starship with `brew install starship` only if you selected that
-prompt. Missing unselected tools is not a setup failure. Follow
+prompt. The absence of unselected tools is not a setup failure. Follow
 [Phase 5](../01-required/05-dotfiles-and-shell.md) for shell switching and prompt
 configuration; installing a shell alone does not make it your login shell.
 
@@ -479,7 +479,8 @@ adopt, remove, receive, or recover a managed file.
 
 - [ ] `chezmoi source-path` returns the intended source directory.
 - [ ] The required target set is present in `chezmoi managed -p absolute`;
-      Starship configuration is included only when selected.
+      Starship configuration is required when selected. With `--prompt none`,
+      existing Starship configuration and chezmoi management may remain unchanged.
 - [ ] `~/.local/bin/day-one-mac` is not managed by chezmoi.
 - [ ] Machine data is local and contains no credentials.
 - [ ] Selected-shell syntax, `chezmoi doctor`, and `chezmoi verify` pass; the
