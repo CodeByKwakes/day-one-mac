@@ -92,6 +92,11 @@ It records pass/fail results for:
 - uv-managed Python when Python was selected.
 - GitHub authentication on Tracks 1 and 3.
 - Azure authentication on Tracks 2 and 3.
+- Git read access to the repository URLs selected in Phase 4, separately from
+  provider CLI login. Missing URLs or failed access prevent completion. The
+  bounded check cannot prompt or open a browser; complete authentication in
+  your terminal first. A private repository proves authenticated read access;
+  a public repository proves only reachability. Track 4 remains self-managed.
 - Brewfile management and a basic dotfiles secret-pattern scan.
 - In private-Git mode, a clean source, pushed upstream branch, and reachable
   private GitHub or Azure DevOps origin matching the selected track.

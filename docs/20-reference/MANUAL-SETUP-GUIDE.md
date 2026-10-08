@@ -500,6 +500,11 @@ az account show
 git config --global credential.https://dev.azure.com.useHttpPath true
 ```
 
+If ghq was selected, add the provider-specific Git backend settings from
+[Phase 4 Step 4.3](../01-required/04-core-tools-and-hosting.md#step-43--configure-global-git-defaults).
+For self-managed Track 4, use `ghq get --vcs git URL` with your chosen provider's
+Git clone URL, or configure only that provider's mapping manually.
+
 Do not run the SSH tests in HTTPS mode. Verify by cloning or fetching a small
 repository over an `https://` remote instead.
 

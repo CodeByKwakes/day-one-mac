@@ -1,6 +1,7 @@
 # id	scope	phase	name	homebrew_cask	kind	expected_path	bundle_id	command
 1password	required	03	1Password	1password	app	/Applications/1Password.app	com.1password.1password	-
 1password-cli	required	03	1Password CLI	1password-cli	cli	-	-	op
+git-credential-manager	required	04	Git Credential Manager	git-credential-manager	cli	/usr/local/bin/git-credential-manager	-	git-credential-manager
 jetbrains-mono-nerd-font	required	04	JetBrains Mono Nerd Font	font-jetbrains-mono-nerd-font	font	-	-	-
 raycast	required	04	Raycast	raycast	app	/Applications/Raycast.app	com.raycast.macos	-
 visual-studio-code	required	04	Visual Studio Code	visual-studio-code	app	/Applications/Visual Studio Code.app	com.microsoft.VSCode	-

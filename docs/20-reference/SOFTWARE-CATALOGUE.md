@@ -44,6 +44,7 @@ query. It does not prove successful login or application configuration.
 |---|---|---|---|---|
 | `1password` | 1Password — account secrets and vault-owned SSH keys | `1password` | `1password` auth / 03 | Unlock correct account, establish recovery, enable agent; [walkthrough](../manual/1password.md) |
 | `1password-cli` | 1Password CLI — authorised vault access from Terminal | `1password-cli` | `1password` auth / 03 | Enable integration; `op --version`, then approved account access; [walkthrough](../manual/1password.md) |
+| `git-credential-manager` | Git Credential Manager — HTTPS Git browser sign-in and secure credential storage | `git-credential-manager` | HTTPS helper `gcm`, including core / 04 | Existing external installation is preserved; executable, scoped helper and real Git access checks; [Phase 4](../01-required/04-core-tools-and-hosting.md#step-46--run-or-resume-the-phase) |
 | `jetbrains-mono-nerd-font` | JetBrains Mono Nerd Font — coding font with prompt glyphs | `font-jetbrains-mono-nerd-font` | Non-core productivity / 04 | Select font in terminal/editor; inspect glyphs; [font check](../10-app-guides/README.md#check-the-required-font) |
 | `raycast` | Raycast — launcher, capture and chosen workflow shortcuts | `raycast` | Non-core productivity / 04 | Choose shortcuts/permissions, test launch; [Raycast](../10-app-guides/RAYCAST.md) |
 | `visual-studio-code` | Visual Studio Code — editor, profiles and extensions | `visual-studio-code` | Non-core productivity / 04, configuration 07 | Check `code --version` after CLI integration; select profile; [VS Code](../10-app-guides/VSCODE.md) |
@@ -148,7 +149,7 @@ covers reviewed helper activation, not automatic trust of every shell plugin.
 | Node.js and npm | Node installed through `fnm` in Phase 6; npm comes with Node, not a second global installation |
 | Python | Managed through `uv` for the selected stack; do not replace macOS's system Python |
 | Azure DevOps CLI extension | Installed through `az extension`, not a separate brew formula |
-| Git Credential Manager | Optional/manual Azure HTTPS credential route; `git-credential-manager` cask is not a registered required application |
+| Git Credential Manager | Conditional required CLI cask when HTTPS with `--https-helper gcm` is selected, including the core preset; external approved installations are preserved |
 | Notion | Cloud account/workspace; browser/manual approved app route, not an automatically installed catalogue cask; [setup](../manual/second-brain.md) |
 | SSH, Keychain, FileVault | macOS facilities; use Apple's SSH tools for Keychain integration; [security](../manual/security.md) |
 | Database images and OmniRoute | Container payloads with separate versions/digests, volumes and startup policy; Modules 09/10A, not brew formulae |

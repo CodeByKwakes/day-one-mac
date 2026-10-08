@@ -14,7 +14,8 @@ the preset does not uninstall existing software. See [Start here](../START-HERE.
 
 The software prepared by the Installation Centre is verified, the development
 folder layout exists, Git has conservative global defaults, and every provider
-selected in Phase 1 passes both CLI and SSH authentication.
+selected in Phase 1 passes CLI verification and a real Git repository access
+check using the chosen HTTPS or SSH transport.
 
 ## How to use this phase
 
@@ -162,6 +163,33 @@ git config --global push.autoSetupRemote true
 git config --global core.excludesFile "$HOME/.gitignore_global"
 git config --global merge.conflictStyle zdiff3
 ```
+
+Provider defaults follow the saved track. When ghq is selected, Phase 4 sets
+explicit Git backends so Azure clone URLs do not fall back to `go-import`
+metadata detection. The equivalent manual settings are:
+
+```bash
+# Track 1 or 3, with ghq selected
+git config --global ghq.https://github.com.vcs git
+git config --global ghq.ssh://github.com.vcs git
+
+# Track 2 or 3, with ghq selected
+git config --global ghq.https://dev.azure.com.vcs git
+git config --global ghq.ssh://ssh.dev.azure.com.vcs git
+
+# Track 2 or 3, with HTTPS authentication
+git config --global credential.https://dev.azure.com.useHttpPath true
+```
+
+Azure credential paths distinguish organisations and repositories sharing the
+same host. These settings contain no credentials and do not rewrite clone
+URLs, choose a credential helper, or change repository locations. GitHub HTTPS
+uses `gh auth setup-git` on the existing-helper route; GCM uses the
+provider-specific helper configured below. Azure uses the selected helper.
+Conflicting existing default values stop Phase 4 for review
+through the selected configuration owner. Changing tracks preserves previous
+provider settings and installed tools. Track 4 leaves provider settings
+self-managed; use `ghq get --vcs git URL` for any known Git repository.
 
 Why these defaults:
 
@@ -413,6 +441,63 @@ which it never provides. A genuine failure says
 
 ## Step 4.6 — Run or resume the phase
 
+### HTTPS helper and repository verification
+
+**Script-assisted route:** select HTTPS and its helper in the wizard. GCM is
+recommended for browser-based Azure DevOps sign-in and is also available for
+GitHub. Choose `existing` when an approved company helper or PAT/Keychain
+workflow should remain in control. Existing saved selections keep that route
+until explicitly changed. To change only this phase, preview then apply:
+
+```bash
+day-one-mac setup --phase 04 --plan --auth-mode https --https-helper gcm \
+  --azure-repo 'https://dev.azure.com/ORG/PROJECT/_git/REPO'
+day-one-mac setup --phase 04 --apply --auth-mode https --https-helper gcm \
+  --azure-repo 'https://dev.azure.com/ORG/PROJECT/_git/REPO'
+```
+
+For Track 1 use `--github-repo 'https://github.com/OWNER/REPO.git'` instead.
+Track 3 needs both URLs. SSH users supply the matching SSH clone URLs. Track 4
+continues to own its provider checks manually.
+
+The Installation Centre prepares GCM through the ordinary cask/external-owner
+flow, including with the core preset. Phase 4 verifies its executable and
+configures an absolute helper for each selected HTTPS host, resetting only
+that host's previous helper chain. GitHub CLI authentication stays separate;
+the GCM route does not also run `gh auth setup-git`. Other hosts' helpers are
+preserved. Package installation may also perform the vendor's own configuration;
+the runner records the existing `.gitconfig` before its GCM install.
+
+**Shared manual action:** the first browser sign-in or PAT entry belongs in
+your interactive terminal. After Phase 4 configures the helper, authenticate:
+
+```bash
+GIT_TERMINAL_PROMPT=1 GCM_INTERACTIVE=true \
+  git -c credential.interactive=true ls-remote \
+  'https://dev.azure.com/ORG/PROJECT/_git/REPO' HEAD
+```
+
+Use your GitHub URL instead for that provider, then rerun
+`day-one-mac setup --phase 04 --resume`. Neither the wizard nor setup state
+collects your PAT or password. The manual route installs GCM with
+`brew install --cask git-credential-manager`, configures it according to the
+[GCM instructions](https://github.com/git-ecosystem/git-credential-manager/blob/main/docs/install.md),
+and performs the same terminal Git access test without invoking Day One Mac.
+
+Phase 4 and Phase 8 require `git ls-remote` to succeed against each selected
+repository, with terminal/browser prompts disabled and a 60-second deadline.
+They never clone a working tree or print remote refs or authentication output
+in their reports. A missing URL, denied access, unavailable network or expired
+credential leaves the phase incomplete. CLI login alone cannot pass this gate.
+Read-only `--check` remains local and reports the live network check as manual.
+
+Choose a private repository if you want the test to prove authenticated access.
+A public repository proves reachability/read access but can succeed anonymously.
+The clone URLs are retained only in private mode-600 selection files under
+`~/.day-one-mac`, not in public reports or repository defaults; never embed a
+token in a URL. Replace the saved URL using the same `--plan`/`--apply` flags
+if the selected repository changes.
+
 ```bash
 day-one-mac setup --phase 04
 ```
@@ -450,11 +535,13 @@ to the Installation Centre instead of starting another installer here.
 - [ ] `uv` exists for `python` or `both`.
 - [ ] Only provider folders required by the selected track were created.
 - [ ] Git name, email, and defaults are correct.
-- [ ] `gh auth status` and GitHub SSH pass on Tracks 1 and 3.
+- [ ] The selected HTTPS helper works; GCM is installed only when selected.
+- [ ] Git can read one chosen repository for every selected provider without prompting; CLI login alone is insufficient.
+- [ ] `gh auth status` and the chosen Git transport pass on Tracks 1 and 3.
 - [ ] `gh` did not create a key of its own. In every mode except `keychain`,
       `ls ~/.ssh/id_*` still finds no private key; in `keychain` mode the one
       key Phase 3 created is expected and is passphrase-protected.
-- [ ] `az account show`, the Azure extension, and Azure SSH pass on Tracks 2 and 3.
+- [ ] `az account show`, the Azure extension, and the chosen Git transport pass on Tracks 2 and 3.
 - [ ] The application setup hub is bookmarked for Raycast, Warp, and VS Code first launch.
 
 ---

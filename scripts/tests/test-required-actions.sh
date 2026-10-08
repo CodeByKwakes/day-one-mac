@@ -74,11 +74,78 @@ cp "$TEST_ROOT/output" "$TEST_ROOT/dashboard-check"
 expect_exit 0 "$SCRIPT_DIR/day-one-mac" optional --status --check
 cmp "$TEST_ROOT/output" "$TEST_ROOT/dashboard-check"
 
+# Resetting progress must not reset the track or discard ownership evidence.
+printf '2\n' > "$DAY_ONE_MAC_STATE_ROOT/track"
+printf '2\n' > "$DAY_ONE_MAC_STATE_ROOT/track-schema-version"
+printf 'phase fixture\n' > "$DAY_ONE_MAC_STATE_ROOT/completed/04"
+printf 'owned fixture\n' > "$DAY_ONE_MAC_STATE_ROOT/path-manifest.tsv"
+expect_exit 0 /bin/bash "$SCRIPT_DIR/setup.sh" --reset-progress --dry-run
+[[ -f "$DAY_ONE_MAC_STATE_ROOT/completed/04" ]]
+expect_exit 0 /bin/bash "$SCRIPT_DIR/setup.sh" --reset-progress
+[[ ! -f "$DAY_ONE_MAC_STATE_ROOT/completed/04" ]]
+[[ "$(cat "$DAY_ONE_MAC_STATE_ROOT/track")" == 2 ]]
+grep -Fqx 'owned fixture' "$DAY_ONE_MAC_STATE_ROOT/path-manifest.tsv"
+find "$DAY_ONE_MAC_STATE_ROOT" -path '*/completed-*/04' -type f | grep -q .
+rm "$DAY_ONE_MAC_STATE_ROOT/track" "$DAY_ONE_MAC_STATE_ROOT/track-schema-version" "$DAY_ONE_MAC_STATE_ROOT/path-manifest.tsv"
+
 # Source the real runner: fail immediately if inspection touches a write hook.
 source "$SCRIPT_DIR/setup.sh"
 ensure_state() { printf 'unexpected write\n' >&2; exit 99; }
 run() { printf 'unexpected mutation\n' >&2; exit 99; }
 save_state_value() { printf 'unexpected state write\n' >&2; exit 99; }
+# Real Git URL matching, isolated from the user's configuration and network.
+(
+  export GIT_CONFIG_NOSYSTEM=1
+  DRY_RUN=0 GHQ_CHOICE=yes AUTH_MODE=https
+  run() { "$@"; }
+  record_path_before_write() { printf '%s\n' "$1" >> "$TEST_ROOT/git-recorded"; }
+  for TRACK in 1 2 3 4; do
+    rm -f "$HOME/.gitconfig" "$TEST_ROOT/git-recorded"
+    : > "$HOME/.gitconfig"
+    configure_track_git_settings
+    case "$TRACK" in 1) expected=2 ;; 2) expected=3 ;; 3) expected=5 ;; 4) expected=0 ;; esac
+    actual="$(git config --global --list 2>/dev/null | wc -l | tr -d ' ')"
+    [[ "$actual" == "$expected" ]]
+    if uses_github; then
+      [[ "$(git config --global --get-urlmatch ghq.vcs https://github.com/OWNER/REPO)" == git ]]
+      [[ "$(git config --global --get-urlmatch ghq.vcs ssh://git@github.com/OWNER/REPO)" == git ]]
+    fi
+    if uses_azure; then
+      [[ "$(git config --global --get-urlmatch ghq.vcs https://ORG@dev.azure.com/ORG/PROJECT/_git/REPO)" == git ]]
+      [[ "$(git config --global --get-urlmatch ghq.vcs ssh://git@ssh.dev.azure.com/v3/ORG/PROJECT/REPO)" == git ]]
+      [[ "$(git config --global --get-urlmatch credential.useHttpPath https://dev.azure.com/ORG/PROJECT/_git/REPO)" == true ]]
+    fi
+    before="$(cat "$HOME/.gitconfig" 2>/dev/null || true)"
+    rm -f "$TEST_ROOT/git-recorded"
+    configure_track_git_settings
+    [[ ! -e "$TEST_ROOT/git-recorded" && "$before" == "$(cat "$HOME/.gitconfig" 2>/dev/null || true)" ]]
+  done
+  TRACK=3 GHQ_CHOICE=no AUTH_MODE=keychain
+  [[ -z "$(track_git_settings)" ]]
+  GHQ_CHOICE=yes
+  [[ "$(track_git_settings | wc -l | tr -d ' ')" == 4 ]]
+  # A later conflict must stop before writing an earlier missing setting.
+  git config --global ghq.https://dev.azure.com.vcs svn
+  before="$(cat "$HOME/.gitconfig")"
+  result=0
+  configure_track_git_settings > "$TEST_ROOT/git-conflict" 2>&1 || result=$?
+  [[ "$result" == "$EX_MANUAL" && "$before" == "$(cat "$HOME/.gitconfig")" ]]
+  grep -Fq 'configuration owner' "$TEST_ROOT/git-conflict"
+  # Changing tracks preserves settings belonging to the previous provider.
+  git config --global --unset ghq.https://dev.azure.com.vcs
+  TRACK=2 AUTH_MODE=https
+  configure_track_git_settings
+  TRACK=1
+  configure_track_git_settings
+  [[ "$(git config --global --get ghq.https://dev.azure.com.vcs)" == git ]]
+  DRY_RUN=1
+  run() { printf '%s\n' "$*"; }
+  before="$(cat "$HOME/.gitconfig")"
+  configure_track_git_settings > "$TEST_ROOT/git-plan"
+  grep -Fq 'ghq.https://github.com.vcs git' "$TEST_ROOT/git-plan"
+  [[ "$before" == "$(cat "$HOME/.gitconfig")" ]]
+  rm -f "$HOME/.gitconfig"
+)
 # The same Azure package probe must accept casks and legacy formulae in the
 # Centre and Phase 4, without adopting an existing package as runner-owned.
 (

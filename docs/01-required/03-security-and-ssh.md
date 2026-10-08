@@ -875,7 +875,10 @@ gh repo clone OWNER/REPO
 `gh repo clone` delegates to Git. It can use SSH instead when `gh` is configured
 for SSH, but you must first register the key as described below.
 
-**Git Credential Manager:** install `brew install --cask git-credential-manager`,
+**Git Credential Manager:** the guided HTTPS route offers `--https-helper gcm`
+in [Phase 4](04-core-tools-and-hosting.md#step-46--run-or-resume-the-phase),
+with provider-scoped helpers and a separate Git repository access gate. For a
+manual setup, install `brew install --cask git-credential-manager`,
 run `git-credential-manager configure`, then run the HTTPS clone. Follow its
 browser sign-in. Select one intended helper for this host; review existing
 helpers with `git config --show-origin --get-all credential.helper` before
@@ -961,9 +964,12 @@ and [Azure SSH authentication](https://learn.microsoft.com/en-us/azure/devops/re
 
 No additional managed hosting provider exists in this codebase. For other
 hosts, use their supplied HTTPS or SSH clone URL and approved authentication.
-`ghq get URL` and VS Code's **Git: Clone** use the same Git transport and helper;
+`ghq get --vcs git URL` and VS Code's **Git: Clone** use the same Git transport and helper;
 they do not provide another authentication method. Choose ghq only when you
-want its repository folder layout. Test one real clone or fetch before calling
+want its repository folder layout. Explicit `--vcs git` avoids ghq metadata
+detection failures for Azure URLs. For persistent per-provider defaults, see
+[Step 4.3](04-core-tools-and-hosting.md#step-43--configure-global-git-defaults).
+Test one real clone or fetch before calling
 your self-managed access complete, then continue to FileVault in Step 3.8.
 
 ## Step 3.7 — Pin provider keys when needed

@@ -471,6 +471,7 @@ PY
   phase_next() { :; }; phase_step_done() { :; }; ensure_state() { :; }
   track_name() { printf 'fixture\n'; }; report_check() { :; }
   required_application_ids() { :; }; uses_node() { return 1; }; uses_python() { return 1; }
+  hosting_provider_ids() { printf 'github\n'; }
   chezmoi() { return 0; }
   report_ssh_key_storage() { VERIFY_FAILURES="$TEST_FAILURES"; VERIFY_REVIEWS="$TEST_REVIEWS"; }
   verify_local_dotfiles_source() { touch "$TEST_ROOT/phase8-completed"; }

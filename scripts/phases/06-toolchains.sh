@@ -40,6 +40,10 @@ phase_06() {
         warn "Merge the Phase 5 PNPM_HOME block through the selected configuration owner, then rerun Phase 6."
         return "$EX_MANUAL"
       fi
+      if ! "$selected_zsh" +m -lic 'node --version && npm --version && pnpm --version'; then
+        warn "Node, npm and pnpm must work in a new interactive login shell. Merge the Phase 5 fnm initialization into ~/.zshrc using the selected configuration owner, then rerun Phase 6."
+        return "$EX_MANUAL"
+      fi
     fi
     phase_step_done "Node LTS, npm and Homebrew-owned pnpm verified"
   fi

@@ -267,6 +267,54 @@ for directive in 'export ZDOTDIR="$HOME/custom-zsh"' 'unsetopt RCS'; do
     || fail_test 'preflight changed user configuration'
 done
 
+# Phase 6 must not accept runtimes visible only in its own fnm-initialized
+# process. Mock package operations and the selected shell; never install tools.
+(
+  export HOME="$home"
+  source "$SCRIPT_DIR/phases/06-toolchains.sh"
+  DRY_RUN=0 EX_MANUAL=21
+  uses_node() { return 0; }
+  uses_python() { return 1; }
+  ui_title() { :; }
+  info() { :; }
+  phase_doc() { :; }
+  phase_next() { :; }
+  have() { return 0; }
+  record_path_before_write() { :; }
+  create_directory() { mkdir -p "$1"; }
+  run() { "$@"; }
+  warn() { printf '%s\n' "$*"; }
+  ok() { :; }
+  fnm() {
+    case "$1" in env) printf ':\n' ;; current) printf 'v24\n' ;; esac
+  }
+  node() { :; }
+  npm() { :; }
+  pnpm() { :; }
+  phase_step_done() { printf '%s\n' "$*" >> "$TEST_ROOT/node-completed"; }
+  configuration_shell_target() { printf 'fixture_shell\n'; }
+  # Invoked indirectly through configuration_shell_target by phase_06.
+  # shellcheck disable=SC2329
+  fixture_shell() {
+    if [[ "$1" == +m ]]; then
+      [[ "$2" == -lic && "$3" == 'node --version && npm --version && pnpm --version' ]]
+      return "$FRESH_NODE_RESULT"
+    fi
+    if [[ "$2" == 'printf %s '* ]]; then printf '%s' "$HOME/Library/pnpm"; fi
+  }
+  FRESH_NODE_RESULT=1
+  result=0
+  phase_06 > "$TEST_ROOT/node-gate-output" || result=$?
+  [[ "$result" == 21 && ! -e "$TEST_ROOT/node-completed" ]] \
+    || fail_test 'Phase 6 accepted Node visible only in the setup process'
+  grep -Fq 'fnm initialization' "$TEST_ROOT/node-gate-output" \
+    || fail_test 'Phase 6 did not explain the missing shell integration'
+  FRESH_NODE_RESULT=0
+  phase_06 >/dev/null || fail_test 'Phase 6 rejected working fresh-shell runtimes'
+  grep -Fq 'Node LTS' "$TEST_ROOT/node-completed" \
+    || fail_test 'Phase 6 did not record a verified Node branch'
+)
+
 printf 'PASS: managed shell files, clean PATHs, aliases and required login-shell gate work\n'
 
 # This fixture creates its own bounded PTY; redirected CI stdin is intentional.

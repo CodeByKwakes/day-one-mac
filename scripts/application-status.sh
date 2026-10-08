@@ -180,6 +180,7 @@ if [[ "${#REQUESTED_IDS[@]}" -eq 0 ]]; then
     < <(if [[ "$SCOPE" == required ]]; then
       saved_preset="$(sed -n '1p' "$STATE_DIR/preset" 2>/dev/null || true)"
       saved_auth="$(sed -n '1p' "$STATE_DIR/auth-mode" 2>/dev/null || true)"
+      HTTPS_HELPER="$(sed -n '1p' "$STATE_DIR/https-helper" 2>/dev/null || true)"
       day_one_required_application_ids "${saved_preset:-recommended-productivity}" "${saved_auth:-1password}"
     else day_one_app_catalog_ids "$SCOPE"; fi)
 fi

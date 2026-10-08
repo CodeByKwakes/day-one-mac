@@ -117,6 +117,15 @@ the wizard continues to Phase 3 configuration.
 
 ## Run only this checkpoint
 
+HTTPS users can select `--https-helper gcm` to include the
+`git-credential-manager` cask. The wizard recommends this browser sign-in route
+for Azure DevOps; `--https-helper existing` keeps an approved existing helper
+or PAT/Keychain workflow. Earlier saved HTTPS setups default to `existing`
+until you explicitly change the selection. GCM is included even with the core
+preset, and approved external installations are reused rather than adopted.
+Phase 4 configures the selected providers and checks Git repository access;
+installing the helper alone does not prove authentication.
+
 Use this after a company installer finishes, after changing track or stack, or
 when the status report says the checkpoint needs revalidation:
 

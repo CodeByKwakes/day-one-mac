@@ -1,6 +1,44 @@
 #!/usr/bin/env bash
 # Sourced phase implementation; shared runner context is supplied by setup.sh.
 
+track_git_settings() {
+  if [[ "$GHQ_CHOICE" == yes ]]; then
+    if uses_github; then
+      printf 'ghq.https://github.com.vcs\tgit\nghq.ssh://github.com.vcs\tgit\n'
+    fi
+    if uses_azure; then
+      printf 'ghq.https://dev.azure.com.vcs\tgit\nghq.ssh://ssh.dev.azure.com.vcs\tgit\n'
+    fi
+  fi
+  if uses_azure && [[ "$AUTH_MODE" == https ]]; then
+    printf 'credential.https://dev.azure.com.useHttpPath\ttrue\n'
+  fi
+}
+
+configure_track_git_settings() {
+  local key value existing
+  # Inspect all selected keys before writing any; preserve conflicting choices.
+  if [[ "$DRY_RUN" != 1 ]]; then
+    while IFS=$'\t' read -r key value; do
+      existing="$(git config --global --get-all "$key" 2>/dev/null || true)"
+      if [[ -n "$existing" && "$existing" != "$value" ]]; then
+        warn "Existing Git $key differs from the selected track default ($value). Review it through your configuration owner, then rerun Phase 4."
+        return "$EX_MANUAL"
+      fi
+    done < <(track_git_settings)
+  fi
+  while IFS=$'\t' read -r key value; do
+    if [[ "$DRY_RUN" != 1 ]]; then
+      [[ "$(git config --global --get "$key" 2>/dev/null || true)" != "$value" ]] || continue
+      record_path_before_write "$HOME/.gitconfig"
+    fi
+    run git config --global "$key" "$value"
+    if [[ "$DRY_RUN" != 1 && "$(git config --global --get "$key" 2>/dev/null || true)" != "$value" ]]; then
+      err "Git $key was not configured successfully."; return "$EX_GATE"
+    fi
+  done < <(track_git_settings)
+}
+
 phase_04() {
   local global_ignore global_ignore_content vscode_cli vscode_command
   local app_id formula ssh_output
@@ -49,6 +87,8 @@ phase_04() {
 
   phase_next "development folders and Git defaults" "Review Steps 4.2–4.3 and correct the Git identity or ghq root."
   folders_apply || return $?
+  configure_track_git_settings || return $?
+  hosting_configure_helper || return $?
 
   if [[ "$DRY_RUN" != 1 ]]; then record_path_before_write "$HOME/.gitconfig"; fi
   run git config --global user.name "$GIT_NAME"
@@ -107,7 +147,7 @@ phase_04() {
     run gh config set git_protocol "$(git_protocol_for_mode)"
     # In HTTPS mode gh itself becomes the credential helper, so no token is
     # ever typed or stored by hand.
-    [[ "$AUTH_MODE" != https ]] || run gh auth setup-git
+    [[ "$AUTH_MODE" != https || "$HTTPS_HELPER" == gcm ]] || run gh auth setup-git
   fi
   if uses_azure; then
     record_path_before_write "$HOME/.azure"
@@ -120,12 +160,10 @@ phase_04() {
     run az extension add --name azure-devops
   fi
   if [[ "$AUTH_MODE" == https ]]; then
-    # Nothing to reach over SSH; the CLI sign-in above is the authentication.
+    # CLI sessions and Git transport are separate gates.
     info "Auth mode 'https': skipping the SSH reachability tests."
     if uses_azure; then
-      have git-credential-manager \
-        || warn "Azure DevOps over HTTPS needs Git Credential Manager: brew install --cask git-credential-manager"
-      warn "Azure DevOps HTTPS uses a Microsoft Entra ID token or a personal access token that you create and Git stores."
+      info 'Azure CLI sign-in does not authenticate Git. The selected helper must grant repository access.'
     fi
   else
     if uses_github; then
@@ -139,6 +177,13 @@ phase_04() {
         err "Azure DevOps did not accept the SSH identity: $ssh_output"; return "$EX_MANUAL"; }
     fi
   fi
-  phase_step_done "selected hosting CLI and Git authentication passed"
-  ok "Git and selected hosting services verified"
+  if [[ "$TRACK" == 4 ]]; then
+    phase_step_done 'self-managed hosting selected; no provider access claimed'
+  else
+    phase_step_done "selected hosting CLI sessions verified"
+    phase_next 'selected Git repository access' 'Authenticate once with git ls-remote in your terminal, then rerun Phase 4 with a verification clone URL for each selected provider.'
+    hosting_verify_selected_repos || return $?
+    phase_step_done 'selected Git repositories accessible without prompts'
+  fi
+  ok "Git defaults and selected hosting gates verified"
 }

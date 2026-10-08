@@ -219,6 +219,10 @@ print_plan() {
     printf '  KEEP: recorded configuration rollback was not selected\n'
   elif [[ -s "$PATH_MANIFEST" ]]; then
     while IFS=$'\t' read -r action target backup; do
+      if [[ "$action" == created || "$action" == modified ]] && ! safe_home_target "$target"; then
+        printf '  KEEP: protected or external recorded path: %s (manual review required)\n' "$target"
+        continue
+      fi
       case "$action" in
         created) printf '  archive created file: %s\n' "$target" ;;
         modified) printf '  archive current + restore original: %s\n' "$target" ;;
@@ -277,6 +281,7 @@ FOLLOW_UP_FILE="$ARCHIVE_DIR/manual-follow-up.md"
   printf -- '- Disable the 1Password SSH agent/CLI integration in 1Password if no longer wanted; account and key data was not deleted.\n'
   printf -- '- Remove database/container volumes only from the owning project after checking their backups.\n'
   printf -- '- Non-empty directories under `~/Developer` were preserved.\n'
+  printf -- '- Restore the login shell and review `/etc/shells` manually; system paths were preserved.\n'
 } > "$FOLLOW_UP_FILE"
 chmod 600 "$FOLLOW_UP_FILE"
 cp "$INSTALL_MANIFEST" "$ARCHIVE_DIR/install-manifest.tsv" 2>/dev/null || true

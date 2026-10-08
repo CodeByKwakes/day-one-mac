@@ -13,6 +13,7 @@ source "$HERE/lib/state.sh"
 source "$HERE/lib/operation-lock.sh"
 source "$HERE/lib/developer-folders.sh"
 source "$HERE/lib/configuration-choices.sh"
+source "$HERE/lib/hosting-auth.sh"
 ORIGINAL_ARGS=("$@")
 
 STATE_ROOT="$(day_one_state_root)"
@@ -77,6 +78,9 @@ Direct setup:
   --macos-settings MODE       configure or skip the early optional settings wizard
   --skip-macos-settings       continue to Phase 2 without preference changes
   --app-install-policy MODE   prompt, homebrew, or check-only for missing apps
+  --https-helper MODE         gcm or existing HTTPS credential helper
+  --github-repo URL           repository used to verify GitHub Git access
+  --azure-repo URL            repository used to verify Azure Git access
   --status                    show recorded completion, not live machine health
   --reset-progress            archive completion markers; keep installed files
   --yes                       accept ordinary setup confirmations
@@ -387,6 +391,7 @@ print_review_body() {
     printf '  macOS:     run the optional Settings Wizard after Phase 1\n'
   fi
   printf '  Auth:      %s\n' "$AUTH_MODE"
+  [[ "$AUTH_MODE" != https ]] || printf '  HTTPS:     %s credential helper\n' "$HTTPS_HELPER"
   if [[ -n "$DOTFILES_REPO" ]]; then
     printf '  Dotfiles:  existing private source — %s\n' "$DOTFILES_REPO"
   elif [[ "$DOTFILES_VERSIONING" == none ]]; then
@@ -482,6 +487,7 @@ write_wizard_report() {
     printf -- '- Git email: `%s`\n' "$GIT_EMAIL"
     printf -- '- Primary IDE: `%s`\n' "$PRIMARY_IDE"
     printf -- '- Early macOS settings: `%s`\n' "$MACOS_SETTINGS_PLAN"
+    printf -- '- Git authentication: `%s`; HTTPS helper: `%s`\n' "$AUTH_MODE" "$HTTPS_HELPER"
     if [[ -n "$DOTFILES_REPO" ]]; then
       printf -- '- Dotfiles: existing private chezmoi source `%s`\n' "$DOTFILES_REPO"
     elif [[ "$DOTFILES_VERSIONING" == none ]]; then
@@ -533,6 +539,9 @@ save_wizard_choices() {
   save_state_value prompt-choice "$PROMPT_CHOICE"
   save_state_value configuration-schema 1
   save_state_value auth-mode "$AUTH_MODE"
+  save_state_value https-helper "$HTTPS_HELPER"
+  save_state_value github-verification-repo "$GITHUB_REPO"
+  save_state_value azure-verification-repo "$AZURE_REPO"
   save_state_value macos-settings-plan "$MACOS_SETTINGS_PLAN"
   save_state_value optional-modules "$OPTIONAL_MODULES"
   save_state_value database-services "$DATABASE_SERVICES"
@@ -646,8 +655,29 @@ choose_auth_mode() {
   case "$AUTH_MODE" in
     keychain) printf '\nA private key will be created in ~/.ssh and protected by a passphrase you choose.\n\n' ;;
     external) printf '\nDay One Mac will not create a key; it only checks that your agent offers one.\n\n' ;;
-    https)    printf '\nNo SSH key is set up. Azure DevOps over HTTPS also needs Git Credential Manager.\n\n' ;;
+    https)    printf '\nNo SSH key is set up. Choose a credential helper for Git access.\n\n' ;;
   esac
+  HTTPS_HELPER=existing
+  if [[ "$AUTH_MODE" == https ]]; then
+    SINGLE_VALUES=(gcm existing)
+    SINGLE_LABELS=('Git Credential Manager — browser sign-in (recommended for Azure)' 'Keep my existing helper — company-managed or PAT/Keychain')
+    select_one 'Choose the HTTPS Git credential helper:' 0
+    HTTPS_HELPER="$SINGLE_RESULT"
+  fi
+}
+
+choose_verification_repos() {
+  local provider url
+  printf '\nChoose one repository you can read for each provider. Prefer a private repository to verify authenticated access. No clone is created.\n'
+  while IFS= read -r provider; do
+    while :; do
+      prompt_value "$provider $AUTH_MODE clone URL" "$(hosting_repo_url "$provider")"
+      url="$PROMPT_RESULT"
+      if hosting_repo_valid "$provider" "$url" "$AUTH_MODE"; then break; fi
+      warn 'Use the exact provider clone URL for the selected transport, without tokens.'
+    done
+    case "$provider" in github) GITHUB_REPO="$url" ;; azure) AZURE_REPO="$url" ;; esac
+  done < <(hosting_provider_ids)
 }
 
 choose_dotfiles() {
@@ -920,6 +950,7 @@ configure_wizard() {
   choose_preset
   if [[ "$PRESET" == core ]]; then PRIMARY_IDE=other; else choose_primary_ide; fi
   choose_auth_mode
+  choose_verification_repos
   choose_dotfiles
   choose_shell_and_prompt
   # Keep the initial wizard focused on the required base. The runner asks
@@ -960,6 +991,7 @@ load_saved_choices() {
   AUTH_MODE="$(state_value auth-mode)"
   # Setups saved before this choice existed all used the 1Password agent.
   [[ -n "$AUTH_MODE" ]] || AUTH_MODE=1password
+  hosting_load_choices
   MACOS_SETTINGS_PLAN="$(state_value macos-settings-plan)"
   [[ -n "$MACOS_SETTINGS_PLAN" ]] || MACOS_SETTINGS_PLAN=ask
   OPTIONAL_MODULES="$(state_value optional-modules)"
@@ -1017,6 +1049,9 @@ run_wizard() {
     configure_wizard
   fi
 
+  if [[ "$TRACK" != 4 ]] && { [[ "$TRACK" != 2 && -z "$GITHUB_REPO" ]] || [[ "$TRACK" != 1 && -z "$AZURE_REPO" ]]; }; then
+    choose_verification_repos
+  fi
   build_application_review_cache 0
 
   while :; do
@@ -1049,6 +1084,9 @@ run_wizard() {
   else setup_args+=(--new-dotfiles)
   fi
   setup_args+=(--preset "$PRESET" --auth-mode "$AUTH_MODE")
+  setup_args+=(--https-helper "$HTTPS_HELPER")
+  [[ -z "$GITHUB_REPO" ]] || setup_args+=(--github-repo "$GITHUB_REPO")
+  [[ -z "$AZURE_REPO" ]] || setup_args+=(--azure-repo "$AZURE_REPO")
   setup_args+=(--dotfiles-versioning "$DOTFILES_VERSIONING")
   setup_args+=(--shell "$SHELL_CHOICE" --prompt "$PROMPT_CHOICE")
   setup_args+=(--macos-settings "$MACOS_SETTINGS_PLAN")

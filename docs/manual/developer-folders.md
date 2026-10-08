@@ -163,7 +163,11 @@ destination. Never use `ghq migrate` as part of this setup: it moves repositorie
 
 For Azure Repos Git, use the [clone and update walkthrough](../03-advanced/18-hosting-identities-azure-and-worktrees.md#clone-one-azure-repository-and-update-it-later),
 which covers both optional ghq and ordinary Git. Folder setup does not clone
-repositories or prove provider access. Keep notes separate and use
+repositories or prove provider access. For Azure HTTPS URLs, use
+`ghq get --vcs git 'https://dev.azure.com/ORG/PROJECT/_git/REPO'` to bypass VCS
+detection. The track-aware persistent defaults are configured separately in
+[Phase 4](../01-required/04-core-tools-and-hosting.md#step-43--configure-global-git-defaults).
+Keep notes separate and use
 [manual Second Brain links](second-brain.md#link-a-repository-without-syncing-its-contents).
 
 ## CLI-assisted equivalent

@@ -945,6 +945,10 @@ run_fixture "required phase actions preserve read-only and resume boundaries" \
   "required phase action regressions failed" \
   "$SCRIPT_DIR/tests/test-required-actions.sh" || true
 
+run_fixture "HTTPS helpers and Git access gates preserve authentication boundaries" \
+  "hosting authentication regression fixture failed" \
+  "$SCRIPT_DIR/tests/test-hosting-auth.sh" || true
+
 run_fixture "developer folders preserve existing layouts and make ghq optional" \
   "developer folder regressions failed" \
   /bin/bash "$SCRIPT_DIR/tests/test-developer-folders.sh" || true

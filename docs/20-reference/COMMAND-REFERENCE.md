@@ -140,6 +140,33 @@ Use `bootstrap-day-one-mac.sh` for the normal choice-first experience. Use the
 lower-level `setup.sh` only when following a phase guide or troubleshooting the
 eight-phase engine directly.
 
+### Change or reset the hosting track
+
+Track 1 selects GitHub, Track 2 Azure DevOps, Track 3 both, and Track 4
+self-managed hosting. On the script-assisted route, preview and then apply a
+new choice, keeping the other saved selections:
+
+```bash
+# Example: change to both providers
+day-one-mac setup --plan --track 3
+day-one-mac setup --apply --track 3
+day-one-mac setup --status
+```
+
+Apply saves the new track and runs the required setup with that selection,
+including installation of newly required provider tools. Complete any displayed
+manual authentication or configuration gates. Plan does not save the choice.
+`--resume` reuses saved choices and cannot be combined with `--track`.
+
+There is no separate track-only factory reset. Reapplying the same track repairs
+its configuration. Switching to Track 4 removes automatic provider requirements
+but keeps existing Git settings, keys, CLI sessions and installed packages.
+To undo recorded configuration or remove packages, preview the relevant
+sections in [Removal and reset](../04-operations/REMOVE-DAY-ONE-MAC.md).
+`setup --reset-progress` archives completion markers only; it keeps the saved
+track, other choices, configuration and software. Do not delete ownership
+manifests to change tracks.
+
 Important setup selectors include:
 
 ```text
@@ -152,6 +179,10 @@ Important setup selectors include:
 --email ADDRESS
 --preset core|recommended-productivity
 --primary-ide vscode|other
+--auth-mode 1password|keychain|external|https
+--https-helper existing|gcm
+--github-repo HTTPS_OR_SSH_CLONE_URL
+--azure-repo HTTPS_OR_SSH_CLONE_URL
 --dotfiles-repo URL
 --new-dotfiles
 --dotfiles-versioning none|git|local
@@ -169,6 +200,14 @@ Important setup selectors include:
 Run `day-one-mac setup --help` or `./bootstrap-day-one-mac.sh --help` before
 using unattended flags. `--yes` accepts ordinary confirmations; it does not
 bypass typed destructive confirmations or select an application owner.
+
+For HTTPS, `existing` preserves your credential helper; `gcm` installs or reuses
+Git Credential Manager and configures the selected provider hosts. Older saved
+setups default to `existing`. Tracks 1–3 require one repository URL for each
+selected provider: Phase 4 and Phase 8 check Git read access separately from CLI
+login. Choose a private repository to prove authentication. URLs are saved in
+private selection files; never include a PAT in them. See
+[Phase 4](../01-required/04-core-tools-and-hosting.md#step-46--run-or-resume-the-phase).
 
 ### Required-phase action contract
 

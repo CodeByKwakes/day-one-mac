@@ -20,6 +20,7 @@ day_one_required_application_ids() {
   while IFS= read -r app_id; do
     case "$app_id" in
       1password|1password-cli) [[ "$auth" == 1password ]] || continue ;;
+      git-credential-manager) [[ "$auth" == https && "${HTTPS_HELPER:-existing}" == gcm ]] || continue ;;
       *) [[ "$preset" != core ]] || continue ;;
     esac
     printf '%s\n' "$app_id"
@@ -230,11 +231,15 @@ day_one_app_detect() {
       fi
       ;;
     cli)
-      if [[ "${DAY_ONE_MAC_APPLICATION_COMMAND_LOOKUP:-enabled}" != disabled ]] \
-         && command -v "$DAY_ONE_APP_COMMAND" >/dev/null 2>&1; then
-        DAY_ONE_APP_COMMAND_PATH="$(command -v "$DAY_ONE_APP_COMMAND")"
-        DAY_ONE_APP_FOUND_PATH="$DAY_ONE_APP_COMMAND_PATH"
-        payload_present=1
+      if [[ "${DAY_ONE_MAC_APPLICATION_COMMAND_LOOKUP:-enabled}" != disabled ]]; then
+        DAY_ONE_APP_COMMAND_PATH="$(command -v "$DAY_ONE_APP_COMMAND" 2>/dev/null || true)"
+        if [[ ! -x "$DAY_ONE_APP_COMMAND_PATH" && "$DAY_ONE_APP_EXPECTED_PATH" != - && -x "$DAY_ONE_APP_EXPECTED_PATH" ]]; then
+          DAY_ONE_APP_COMMAND_PATH="$DAY_ONE_APP_EXPECTED_PATH"
+        fi
+        if [[ -x "$DAY_ONE_APP_COMMAND_PATH" ]]; then
+          DAY_ONE_APP_FOUND_PATH="$DAY_ONE_APP_COMMAND_PATH"
+          payload_present=1
+        fi
       fi
       ;;
     font)

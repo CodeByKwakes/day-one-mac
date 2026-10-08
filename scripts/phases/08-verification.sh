@@ -426,6 +426,10 @@ phase_08() {
   uses_python && report_check "Python via uv" uv python find
   uses_github && report_check "GitHub CLI" gh auth status
   uses_azure && report_check "Azure CLI" az account show
+  local hosting_provider
+  while IFS= read -r hosting_provider; do
+    report_check "$hosting_provider Git repository access" hosting_verify_repo "$hosting_provider"
+  done < <(hosting_provider_ids)
   printf '| Git authentication mode | %s |\n' "$AUTH_MODE" >> "$report"
   # Ask the agent this mode actually uses. In 1password mode the agent is
   # reached through the IdentityAgent socket in ~/.ssh/config, not through

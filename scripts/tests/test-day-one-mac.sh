@@ -160,11 +160,30 @@ remove_state="$remove_home/.day-one-mac"
 mkdir -p "$remove_state" "$remove_home/Developer"
 printf 'brew-formula\tfixture\n' > "$remove_state/install-manifest.tsv"
 printf 'created\t%s/.fixture\t-\n' "$remove_home" > "$remove_state/path-manifest.tsv"
+printf 'modified\t/etc/shells\t%s/originals/shells\n' "$remove_state" >> "$remove_state/path-manifest.tsv"
 HOME="$remove_home" DAY_ONE_MAC_STATE_ROOT="$remove_state" \
   "$SCRIPT_DIR/remove-day-one-mac.sh" --mode preview > "$TEST_ROOT/remove-preview.txt"
 grep -Fq 'Mode: preview' "$TEST_ROOT/remove-preview.txt"
 grep -Fq 'Applications not owned by Homebrew are preserved.' "$TEST_ROOT/remove-preview.txt"
 [[ -s "$remove_state/install-manifest.tsv" ]]
+printf 'current configuration\n' > "$remove_home/.fixture"
+HOME="$remove_home" DAY_ONE_MAC_STATE_ROOT="$remove_state" \
+  "$SCRIPT_DIR/remove-day-one-mac.sh" --mode sections --sections config \
+    > "$TEST_ROOT/remove-config-preview.txt"
+grep -Fq "archive created file: $remove_home/.fixture" "$TEST_ROOT/remove-config-preview.txt"
+grep -Fq 'KEEP: protected or external recorded path: /etc/shells' "$TEST_ROOT/remove-config-preview.txt"
+! grep -Fq 'restore original: /etc/shells' "$TEST_ROOT/remove-config-preview.txt"
+grep -Fq 'KEEP: package removal was not selected' "$TEST_ROOT/remove-config-preview.txt"
+! grep -Fq 'uninstall formula: fixture' "$TEST_ROOT/remove-config-preview.txt"
+grep -Fqx 'current configuration' "$remove_home/.fixture"
+[[ -s "$remove_state/path-manifest.tsv" ]]
+HOME="$remove_home" DAY_ONE_MAC_STATE_ROOT="$remove_state" \
+  "$SCRIPT_DIR/remove-day-one-mac.sh" --mode sections --sections packages \
+    > "$TEST_ROOT/remove-packages-preview.txt"
+grep -Fq 'uninstall formula: fixture' "$TEST_ROOT/remove-packages-preview.txt"
+grep -Fq 'KEEP: recorded configuration rollback was not selected' "$TEST_ROOT/remove-packages-preview.txt"
+! grep -Fq 'archive created file:' "$TEST_ROOT/remove-packages-preview.txt"
+[[ "$(find "$remove_home" -maxdepth 1 -name 'Day-One-Mac-*' | wc -l | tr -d ' ')" == 0 ]]
 HOME="$remove_home" DAY_ONE_MAC_STATE_ROOT="$remove_state" \
   "$SCRIPT_DIR/remove-day-one-mac.sh" --mode sections \
     --sections developer --developer keep > "$TEST_ROOT/remove-developer-keep.txt"

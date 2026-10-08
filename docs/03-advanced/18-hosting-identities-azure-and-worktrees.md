@@ -129,9 +129,16 @@ in Step 18.4. Replace the placeholders with the exact provider clone URL:
 
 ```bash
 ghq get 'git@github.com:OWNER/REPOSITORY.git'
-ghq get 'git@ssh.dev.azure.com:v3/ORGANISATION/PROJECT/REPOSITORY'
+ghq get --vcs git 'git@ssh.dev.azure.com:v3/ORGANISATION/PROJECT/REPOSITORY'
+# HTTPS alternative for Azure; uses the selected Git credential helper:
+ghq get --vcs git 'https://dev.azure.com/ORGANISATION/PROJECT/_git/REPOSITORY'
 ghq list -p
 ```
+
+Use only the URL for your selected authentication mode. Phase 4 installs
+provider-specific ghq Git mappings for Tracks 1–3 when ghq is selected.
+Explicit `--vcs git` also works for self-managed Track 4 and existing setups
+without those mappings; it does not authenticate the clone.
 
 Provider and owner components appear below the selected root. These are examples,
 not paths to create or assume; inspect the actual output of `ghq list -p`:

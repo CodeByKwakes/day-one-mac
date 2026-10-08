@@ -15,6 +15,7 @@ source "$SCRIPT_DIR/lib/operation-lock.sh"
 source "$SCRIPT_DIR/lib/deadline.sh"
 source "$SCRIPT_DIR/lib/developer-folders.sh"
 source "$SCRIPT_DIR/lib/configuration-choices.sh"
+source "$SCRIPT_DIR/lib/hosting-auth.sh"
 ORIGINAL_ARGS=("$@")
 STATE_ROOT="$(day_one_state_root)"
 STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
@@ -53,6 +54,9 @@ DOTFILES_VERSIONING=""
 SHELL_CHOICE=""
 PROMPT_CHOICE=""
 AUTH_MODE=""
+HTTPS_HELPER=""
+GITHUB_REPO=""
+AZURE_REPO=""
 MACOS_SETTINGS_PLAN=""
 OPTIONAL_MODULES=""
 APP_INSTALL_POLICY=""
@@ -102,6 +106,9 @@ Usage: ./setup.sh [options]
   --ghq no|yes                optional ghq; yes approves installation in the Centre
   --ghq-root PATH             confirmed primary root for existing layout + ghq yes
   --auth-mode MODE            1password (default), keychain, external, or https
+  --https-helper MODE         gcm (browser sign-in) or existing (keep your helper)
+  --github-repo URL           GitHub clone URL for the required Git access check
+  --azure-repo URL            Azure clone URL for the required Git access check
   --name "Full Name"          Git author name
   --email ADDRESS             primary Git author email
   --preset PRESET            core or recommended-productivity (default)
@@ -300,6 +307,8 @@ load_or_choose_selections() {
   [[ "$MACOS_SETTINGS_PLAN" =~ ^(ask|configure|skip)$ ]] || { err "macOS settings choice must be ask, configure, or skip"; exit 2; }
   [[ "$AUTH_MODE" =~ ^(1password|keychain|external|https)$ ]] || {
     err "auth mode must be 1password, keychain, external, or https"; exit 2; }
+  hosting_load_choices
+  hosting_validate_choices || exit $?
   if [[ -n "$DOTFILES_REPO" && "$DOTFILES_VERSIONING" != git ]]; then
     err "--dotfiles-repo requires --dotfiles-versioning git"
     exit 2
@@ -355,6 +364,7 @@ phase_fingerprint() {
     07) inputs="vscode-base|primary-ide=$PRIMARY_IDE|applications=$application_catalog_hash" ;;
     08) inputs="$TRACK|$STACK|$GIT_NAME|$GIT_EMAIL|$PRIMARY_IDE|$AUTH_MODE|$DOTFILES_REPO|$DOTFILES_VERSIONING|applications=$application_catalog_hash" ;;
   esac
+  case "$1" in 04|08) inputs+="|https-helper=${HTTPS_HELPER:-existing}|github-repo=${GITHUB_REPO:-}|azure-repo=${AZURE_REPO:-}" ;; esac
   { printf 'phase-schema=%s\n' "$schema"; printf 'implementation=%s\n' "$implementation";
     printf 'inputs=%s\n' "$inputs|preset=${PRESET:-recommended-productivity}|layout=${FOLDER_LAYOUT:-}|ghq=${GHQ_CHOICE:-}|root=${FOLDER_GHQ_ROOT:-}|dotfiles=$DOTFILES_VERSIONING|shell=$SHELL_CHOICE|prompt=$PROMPT_CHOICE"; } \
     | shasum -a 256 | awk '{print $1}'
@@ -522,6 +532,7 @@ install_cask() {
   if [[ "$DRY_RUN" == 1 ]]; then print_command brew install --cask "$token"; return 0; fi
   if load_brew && brew list --cask "$token" >/dev/null 2>&1; then info "cask $token already installed"; return 0; fi
   before_formulae="$(brew_formula_snapshot)" || baseline=0
+  [[ "$token" != git-credential-manager ]] || record_path_before_write "$HOME/.gitconfig"
   run brew install --cask "$token"
   record_package brew-cask "$token"
   [[ "$baseline" == 1 ]] || { warn_unknown_dependency_baseline "$token"; return 0; }
@@ -919,6 +930,7 @@ show_status() {
   printf '  Preset: %s\n' "${PRESET:-recommended-productivity}"
   printf '  Primary IDE: %s\n' "${PRIMARY_IDE:-not selected}"
   printf '  Git authentication: %s\n' "${AUTH_MODE:-1password}"
+  [[ "$AUTH_MODE" != https ]] || printf '  HTTPS helper: %s\n' "${HTTPS_HELPER:-existing}"
   printf '  Dotfiles: %s\n' "${DOTFILES_VERSIONING:-not selected}"
   printf '  Shell: %s | Prompt: %s\n' "${SHELL_CHOICE:-not selected}" "${PROMPT_CHOICE:-not selected}"
   printf '  Early macOS settings: %s\n' "${MACOS_SETTINGS_PLAN:-not selected}"
@@ -977,7 +989,7 @@ required_phase_impact() {
     03) if [[ "$AUTH_MODE" == https ]]; then
           printf 'Require Installation Centre and FileVault; no SSH key or agent configuration for HTTPS. Manual: FileVault recovery method; provider sign-in belongs to Phase 4.'
         else printf 'Require Installation Centre; configure selected %s authentication and SSH; require FileVault. Manual: account/key approval and recovery method.' "$AUTH_MODE"; fi ;;
-    04) printf 'Require Installation Centre; configure Git defaults and Developer layout %s; ghq %s. Missing choices require explicit review. Manual: provider sign-in and authentication tests.' "${FOLDER_LAYOUT:-unselected}" "${GHQ_CHOICE:-unselected}" ;;
+    04) printf 'Require Installation Centre; configure shared and track-aware provider Git defaults and Developer layout %s; ghq %s; HTTPS helper %s. Verify selected repositories with bounded, noninteractive Git read checks. Manual: first provider sign-in.' "${FOLDER_LAYOUT:-unselected}" "${GHQ_CHOICE:-unselected}" "${HTTPS_HELPER:-existing}" ;;
     05) printf 'Require Installation Centre; configuration owner %s, shell %s, prompt %s. Preserve existing files; review ownership conflicts. Unselected choices block apply; none does not remove existing tools.' "${DOTFILES_VERSIONING:-unselected}" "${SHELL_CHOICE:-unselected}" "${PROMPT_CHOICE:-unselected}" ;;
     06) printf 'Require Installation Centre; install/update %s toolchains (Node LTS via fnm and/or Python via uv); configure pnpm when selected.' "$STACK" ;;
     07) if [[ "$PRESET" == core ]]; then printf 'Not required for core preset.'
@@ -1098,6 +1110,11 @@ check_required_phase() {
             required_check_note pass "Git $key matches selection"
           else required_check_note fail "Git $key is missing or differs from selection"; fi
         done
+        while IFS=$'\t' read -r key target; do
+          if [[ "$(git config --global --get "$key" 2>/dev/null || true)" == "$target" ]]; then
+            required_check_note pass "Git $key matches the selected track"
+          else required_check_note fail "Git $key is missing or differs from the selected track"; fi
+        done < <(track_git_settings)
       else required_check_note fail 'Git configuration cannot be checked until developer tools are ready'; fi
       if details="$(folders_check 2>&1)"; then required_check_note pass "$details"
       else required_check_note fail "$details"; fi
@@ -1107,6 +1124,11 @@ check_required_phase() {
       else
         required_check_note manual 'Hosting sessions, SSH reachability and full Git defaults require Phase 4; no login or network probe ran'
       fi
+      while IFS= read -r component; do
+        target="$(hosting_repo_url "$component")"
+        if [[ -n "$target" ]]; then required_check_note manual "$component Git access needs Phase 4's live repository check"
+        else required_check_note fail "$component verification repository is missing (--$component-repo)"; fi
+      done < <(hosting_provider_ids)
       ;;
     05)
       if ! details="$(configuration_validate_choices 2>&1)"; then required_check_note fail "$details"; fi
@@ -1184,6 +1206,7 @@ inspect_required_actions() {
     printf ',"ghq_root":'; required_json_string "${FOLDER_GHQ_ROOT:-}"
     printf ',"preset":'; required_json_string "$PRESET"
     printf ',"auth_mode":'; required_json_string "$AUTH_MODE"
+    printf ',"https_helper":'; required_json_string "${HTTPS_HELPER:-existing}"
     printf ',"primary_ide":'; required_json_string "$PRIMARY_IDE"
     printf ',"macos_settings":'; required_json_string "$MACOS_SETTINGS_PLAN"
     printf ',"dotfiles_versioning":'; required_json_string "$DOTFILES_VERSIONING"
@@ -1328,6 +1351,9 @@ while [[ $# -gt 0 ]]; do
     --shell) shift; [[ $# -gt 0 ]] || exit 2; SHELL_CHOICE="$1" ;;
     --prompt) shift; [[ $# -gt 0 ]] || exit 2; PROMPT_CHOICE="$1" ;;
     --auth-mode) shift; [[ $# -gt 0 ]] || { err "--auth-mode needs 1password, keychain, external, or https"; exit 2; }; AUTH_MODE="$1" ;;
+    --https-helper) shift; [[ $# -gt 0 ]] || { err '--https-helper needs gcm or existing'; exit 2; }; HTTPS_HELPER="$1" ;;
+    --github-repo) shift; [[ $# -gt 0 ]] || { err '--github-repo needs a clone URL'; exit 2; }; GITHUB_REPO="$1" ;;
+    --azure-repo) shift; [[ $# -gt 0 ]] || { err '--azure-repo needs a clone URL'; exit 2; }; AZURE_REPO="$1" ;;
     --macos-settings) shift; [[ $# -gt 0 ]] || { err "--macos-settings needs ask, configure, or skip"; exit 2; }; MACOS_SETTINGS_PLAN="$1" ;;
     --skip-macos-settings) MACOS_SETTINGS_PLAN=skip ;;
     --app-install-policy) shift; [[ $# -gt 0 ]] || { err "--app-install-policy needs prompt, homebrew, or check-only"; exit 2; }; APP_INSTALL_POLICY="$1" ;;
@@ -1374,7 +1400,7 @@ fi
 if [[ "$SETUP_ACTION" == resume ]]; then
   for option in "${ORIGINAL_ARGS[@]}"; do
     case "$option" in
-      --shell|--prompt|--layout|--ghq|--ghq-root|--track|--stack|--name|--email|--preset|--primary-ide|--dotfiles-repo|--new-dotfiles|--dotfiles-versioning|--local-dotfiles|--auth-mode|--macos-settings|--skip-macos-settings)
+      --shell|--prompt|--layout|--ghq|--ghq-root|--track|--stack|--name|--email|--preset|--primary-ide|--dotfiles-repo|--new-dotfiles|--dotfiles-versioning|--local-dotfiles|--auth-mode|--https-helper|--github-repo|--azure-repo|--macos-settings|--skip-macos-settings)
         err '--resume reuses saved choices; use --plan and --apply to change them.'; exit 2 ;;
     esac
   done
@@ -1475,6 +1501,7 @@ if [[ "$SHOW_STATUS" == 1 ]]; then
   MACOS_SETTINGS_PLAN="${MACOS_SETTINGS_PLAN:-$(state_value macos-settings-plan)}"
   AUTH_MODE="${AUTH_MODE:-$(state_value auth-mode)}"
   [[ -n "$AUTH_MODE" ]] || AUTH_MODE=1password
+  hosting_load_choices
   OPTIONAL_MODULES="$(state_value optional-modules)"
   if [[ -n "$TRACK" && "$(state_value track-schema-version)" != "$TRACK_SCHEMA_VERSION" && "$TRACK_EXPLICIT" != 1 ]]; then
     warn "Saved track uses the retired numbering; rerun with --track 1, 2, 3, or 4." >&2
@@ -1505,6 +1532,9 @@ save_state_value stack "$STACK"
 [[ -n "$GIT_EMAIL" ]] && save_state_value git-email "$GIT_EMAIL"
 save_state_value preset "$PRESET"
 save_state_value auth-mode "$AUTH_MODE"
+save_state_value https-helper "$HTTPS_HELPER"
+save_state_value github-verification-repo "$GITHUB_REPO"
+save_state_value azure-verification-repo "$AZURE_REPO"
 save_state_value primary-ide "$PRIMARY_IDE"
 if [[ "$DOTFILES_EXPLICIT" == 1 || -n "$DOTFILES_REPO" ]]; then
   save_state_value dotfiles-repo "$DOTFILES_REPO"

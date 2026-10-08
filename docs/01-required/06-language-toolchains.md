@@ -63,8 +63,11 @@ eval "$(fnm env --shell zsh)"
 fnm --version
 ```
 
-Phase 5 already added the automatic interactive-shell initialization to
-`.zshrc`.
+For a newly created `.zshrc`, Phase 5 adds automatic interactive-shell
+initialization. Existing user-owned files are preserved: merge the fnm block
+from [Step 5.3](05-dotfiles-and-shell.md#step-53--configure-interactive-zsh)
+after the shared PATH source and before Starship. Phase 6 checks Node, npm and
+pnpm in a fresh interactive login shell before marking the Node branch complete.
 
 ## Node stack — Step 6.2: install current LTS
 

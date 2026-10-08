@@ -409,6 +409,20 @@ archive_portable_commands() {
   done
 }
 
+prepare_recorded_rollback() {
+  rollback_needed=0
+  rollback_args=("$@")
+  if [[ "$MODE" == recorded ]]; then
+    rollback_args+=(--all-recorded)
+    rollback_needed=1
+  elif [[ "$MODE" == sections ]]; then
+    if contains_csv "$SECTIONS" packages; then rollback_needed=1; else rollback_args+=(--skip-packages); fi
+    if contains_csv "$SECTIONS" config; then rollback_needed=1; else rollback_args+=(--skip-paths); fi
+    if contains_csv "$SECTIONS" dotfiles; then rollback_args+=(--include-dotfiles-source); rollback_needed=1; fi
+    if contains_csv "$SECTIONS" state; then rollback_args+=(--purge-state); rollback_needed=1; fi
+  fi
+}
+
 print_plan() {
   ui_title '🧭' 'Day One Mac removal plan'
   printf '  Mode: %s\n' "$MODE"
@@ -425,6 +439,14 @@ print_plan() {
   printf '  • cloud vaults and macOS Keychain contents are never silently deleted\n'
   printf '  • removal archives configuration and selected user data before moving it off the active paths\n'
   print_inventory
+  prepare_recorded_rollback --archive-root "$ARCHIVE_ROOT"
+  if [[ "$rollback_needed" == 1 ]]; then
+    if [[ -f "$INSTALL_MANIFEST" || -f "$PATH_MANIFEST" ]]; then
+      "$ROLLBACK_SCRIPT" "${rollback_args[@]}"
+    else
+      warn 'Recorded rollback needs an ownership manifest; it will refuse to guess which files or packages to remove.'
+    fi
+  fi
 }
 
 confirm_execute() {
@@ -535,17 +557,7 @@ fi
 
 if [[ "$MODE" == sections ]] && contains_csv "$SECTIONS" containers; then archive_container_data; fi
 
-rollback_needed=0
-rollback_args=(--execute --yes --archive-root "$SESSION_ROOT")
-if [[ "$MODE" == recorded ]]; then
-  rollback_args+=(--all-recorded)
-  rollback_needed=1
-else
-  if contains_csv "$SECTIONS" packages; then rollback_needed=1; else rollback_args+=(--skip-packages); fi
-  if contains_csv "$SECTIONS" config; then rollback_needed=1; else rollback_args+=(--skip-paths); fi
-  if contains_csv "$SECTIONS" dotfiles; then rollback_args+=(--include-dotfiles-source); rollback_needed=1; fi
-  if contains_csv "$SECTIONS" state; then rollback_args+=(--purge-state); rollback_needed=1; fi
-fi
+prepare_recorded_rollback --execute --yes --archive-root "$SESSION_ROOT"
 if [[ "$rollback_needed" == 1 ]]; then "$ROLLBACK_SCRIPT" "${rollback_args[@]}"; fi
 if [[ "$MODE" == recorded ]] \
    || { [[ "$MODE" == sections ]] && contains_csv "$SECTIONS" state; }; then
