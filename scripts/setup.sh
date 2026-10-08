@@ -407,6 +407,14 @@ installation_centre_fingerprint() {
   } | shasum -a 256 | awk '{print $1}'
 }
 
+# Azure CLI migrated to a Homebrew cask. Preserve working legacy formula
+# installs, and use the same package check in installation and later gates.
+required_package_installed() {
+  local token="$1"
+  brew list --formula "$token" >/dev/null 2>&1 && return 0
+  [[ "$token" == azure-cli ]] && brew list --cask "$token" >/dev/null 2>&1
+}
+
 installation_centre_components_ready() {
   local app_id formula application_list formula_list
   load_brew || return 1
@@ -422,7 +430,10 @@ installation_centre_components_ready() {
   while IFS= read -r formula; do
     [[ -n "$formula" ]] || continue
     if [[ "$formula" == ghq ]] && have ghq; then continue; fi
-    brew list --formula "$formula" >/dev/null 2>&1 || return 1
+    required_package_installed "$formula" || {
+      err "Required command-line package is unavailable: $formula (Azure CLI may be a formula or cask)."
+      return 1
+    }
   done <<<"$formula_list"
 }
 
@@ -489,8 +500,13 @@ warn_unknown_dependency_baseline() {
 
 install_formula() {
   local token="$1" before_formulae formula baseline=1
-  if [[ "$DRY_RUN" == 1 ]]; then print_command brew install "$token"; return 0; fi
-  if load_brew && brew list --formula "$token" >/dev/null 2>&1; then info "formula $token already installed"; return 0; fi
+  if [[ "$DRY_RUN" == 1 ]]; then
+    if [[ "$token" == azure-cli ]]; then print_command brew install --cask "$token"
+    else print_command brew install "$token"; fi
+    return 0
+  fi
+  if load_brew && required_package_installed "$token"; then info "package $token already installed"; return 0; fi
+  if [[ "$token" == azure-cli ]]; then install_cask "$token"; return $?; fi
   before_formulae="$(brew_formula_snapshot)" || baseline=0
   run brew install "$token"
   record_package brew-formula "$token"

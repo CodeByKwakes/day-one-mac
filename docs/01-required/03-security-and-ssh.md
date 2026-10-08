@@ -929,7 +929,7 @@ git config --global credential.https://dev.azure.com.helper osxkeychain
 Do not use `credential.helper store`, embed tokens in URLs, or paste them into
 tracked configuration. Expired/revoked tokens must be replaced in the helper.
 
-**Azure CLI:** install `brew install azure-cli` if missing, then:
+**Azure CLI:** install `brew install --cask azure-cli` if missing, then:
 
 ```bash
 az login

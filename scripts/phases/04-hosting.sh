@@ -39,8 +39,8 @@ phase_04() {
     while IFS= read -r formula; do
       [[ -n "$formula" ]] || continue
       if [[ "$formula" == ghq ]] && have ghq; then continue; fi
-      brew list --formula "$formula" >/dev/null 2>&1 || {
-        err "required formula is missing: $formula"
+      required_package_installed "$formula" || {
+        err "required command-line package is missing: $formula"
         return "$EX_GATE"
       }
     done < <(required_formulae)

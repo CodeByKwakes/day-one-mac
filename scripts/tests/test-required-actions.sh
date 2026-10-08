@@ -79,6 +79,43 @@ source "$SCRIPT_DIR/setup.sh"
 ensure_state() { printf 'unexpected write\n' >&2; exit 99; }
 run() { printf 'unexpected mutation\n' >&2; exit 99; }
 save_state_value() { printf 'unexpected state write\n' >&2; exit 99; }
+# The same Azure package probe must accept casks and legacy formulae in the
+# Centre and Phase 4, without adopting an existing package as runner-owned.
+(
+  DRY_RUN=0
+  FIXTURE_AZURE_PACKAGE=cask
+  load_brew() { return 0; }
+  required_application_ids() { :; }
+  required_formulae() { printf 'azure-cli\n'; }
+  brew() {
+    case "$*" in
+      'list --formula azure-cli') [[ "$FIXTURE_AZURE_PACKAGE" == formula ]] ;;
+      'list --cask azure-cli') [[ "$FIXTURE_AZURE_PACKAGE" == cask ]] ;;
+      'list --formula') printf 'git\n' ;;
+      'install --cask azure-cli') FIXTURE_AZURE_PACKAGE=cask ;;
+      *) printf 'Unexpected brew probe: %s\n' "$*" >&2; return 99 ;;
+    esac
+  }
+  record_package() { printf '%s\t%s\n' "$1" "$2" >> "$TEST_ROOT/azure-ownership"; }
+  run() { printf '%s\n' "$*" >> "$TEST_ROOT/azure-commands"; "$@"; }
+  installation_centre_components_ready
+  install_formula azure-cli
+  [[ ! -e "$TEST_ROOT/azure-ownership" && ! -e "$TEST_ROOT/azure-commands" ]]
+  FIXTURE_AZURE_PACKAGE=formula
+  installation_centre_components_ready
+  install_formula azure-cli
+  [[ ! -e "$TEST_ROOT/azure-ownership" && ! -e "$TEST_ROOT/azure-commands" ]]
+  FIXTURE_AZURE_PACKAGE=missing
+  if installation_centre_components_ready; then
+    printf 'Missing Azure package was accepted\n' >&2; exit 1
+  fi
+  install_formula azure-cli
+  installation_centre_components_ready
+  grep -Fxq 'brew install --cask azure-cli' "$TEST_ROOT/azure-commands"
+  grep -Fxq $'brew-cask\tazure-cli' "$TEST_ROOT/azure-ownership"
+  ! grep -Fq brew-formula "$TEST_ROOT/azure-ownership"
+)
+
 TRACK=1 STACK=both PRESET=core PRIMARY_IDE=other AUTH_MODE=keychain
 DOTFILES_VERSIONING=local GIT_NAME='Fixture' GIT_EMAIL='fixture@example.com'
 check_required_phase 07

@@ -76,10 +76,21 @@ The saved choices add only the relevant tools:
 | Node.js / JavaScript | `fnm`, `pnpm` |
 | Python | `uv` |
 | Track 1 or 3 (GitHub) | `gh` |
-| Track 2 or 3 (Azure DevOps) | `azure-cli` |
+| Track 2 or 3 (Azure DevOps) | `azure-cli` (cask; existing formula installs are accepted) |
 
 A Homebrew command-line package is called a **formula**. A Homebrew macOS app
 or font is called a **cask**. See [Glossary](../20-reference/GLOSSARY.md) for more terms.
+
+Azure CLI is now distributed as a Homebrew **cask**, even though it is a
+command-line tool. Install a missing copy with `brew install --cask azure-cli`;
+keep a working existing formula or cask installation. The runner checks both
+package types. See the [Homebrew Azure CLI cask](https://formulae.brew.sh/cask/azure-cli).
+
+If version 1.5.0 says Azure CLI is already installed but the Installation Centre
+still fails, its formula-only check may be rejecting the cask. Confirm with
+`brew list --cask --versions azure-cli` and `az --version`, then update the
+Day One Mac runtime to a release containing the fix. Reinstalling the cask
+alone cannot repair version 1.5.0's incorrect package-type check.
 
 ## Manual route — install and verify each item
 

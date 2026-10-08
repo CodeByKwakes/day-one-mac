@@ -417,7 +417,7 @@ Install provider-specific tools:
 brew install gh
 
 # Track 2 or 3
-brew install azure-cli
+brew install --cask azure-cli
 ```
 
 Check required desktop applications before using Homebrew:

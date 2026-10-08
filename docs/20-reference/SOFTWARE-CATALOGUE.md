@@ -83,7 +83,7 @@ Do not run commands against real projects solely as a presence check.
 | `pnpm` | Node project package manager | Node or both | `pnpm` | [Phase 6](../01-required/06-language-toolchains.md); respect project manager/version |
 | `uv` | Manage Python versions, environments and dependencies | Python or both | `uv` | [Phase 6](../01-required/06-language-toolchains.md); use project environments |
 | `gh` | GitHub account and repository CLI | GitHub or both | `gh` | [Phase 4](../01-required/04-core-tools-and-hosting.md); interactive login |
-| `azure-cli` | Azure account and service CLI | Azure or both | `az` | [Phase 4](../01-required/04-core-tools-and-hosting.md); account/tenant and DevOps extension |
+| `azure-cli` | Azure account and service CLI (cask; legacy formula accepted) | Azure or both | `az` | `brew list --cask --versions azure-cli`; [Phase 4](../01-required/04-core-tools-and-hosting.md), account/tenant and DevOps extension |
 
 ## Optional formulae
 

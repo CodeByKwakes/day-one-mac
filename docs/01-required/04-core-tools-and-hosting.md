@@ -41,7 +41,7 @@ clear instruction if something has been removed or changed owner.
 
 | Type | Everyone | Conditional |
 |---|---|---|
-| Formulae | `git`, `jq`, `ripgrep` | Selected `chezmoi`, Homebrew `zsh`, `starship`, and `ghq`; `fnm`, `pnpm` for Node; `uv` for Python; `gh` for Tracks 1 and 3; `azure-cli` for Tracks 2 and 3 |
+| Formulae | `git`, `jq`, `ripgrep` | Selected `chezmoi`, Homebrew `zsh`, `starship`, and `ghq`; `fnm`, `pnpm` for Node; `uv` for Python; `gh` for Tracks 1 and 3; Azure CLI is a cask for Tracks 2 and 3 (existing formula installs are accepted) |
 | Applications/font | JetBrains Mono Nerd Font, Raycast, Visual Studio Code, Warp | Their preferred casks are `font-jetbrains-mono-nerd-font`, `raycast`, `visual-studio-code`, and `warp`; a valid external installation also passes |
 
 1Password and its CLI were prepared in the Installation Centre and configured
@@ -112,7 +112,7 @@ brew install uv
 brew install gh
 
 # Tracks 2 and 3
-brew install azure-cli
+brew install --cask azure-cli
 ```
 
 Homebrew is the only global owner of `pnpm`. Do not also install the Homebrew
