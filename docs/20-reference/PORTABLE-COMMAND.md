@@ -25,6 +25,9 @@ INSTALLER="$HOME/Downloads/install-day-one-mac"
 curl --proto '=https' --tlsv1.2 -fsSL \
   https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac \
   -o "$INSTALLER"
+# Or, if GNU wget with HTTPS support is already installed:
+# wget --https-only --secure-protocol=TLSv1_2 -O "$INSTALLER" \
+#   https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac
 chmod 700 "$INSTALLER"
 less "$INSTALLER"
 ```
@@ -302,3 +305,7 @@ to reverse setup changes rather than merely remove the runtime.
 ---
 
 [Continue with Start here →](../START-HERE.md)
+
+Installer downloads use `curl` when available, otherwise GNU `wget` with HTTPS
+support. Local `--archive` and `--source` installs need neither download tool.
+See the [GNU Wget HTTPS options](https://www.gnu.org/software/wget/manual/html_node/HTTPS-_0028SSL_002fTLS_0029-Options.html).

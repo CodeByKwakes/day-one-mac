@@ -23,7 +23,7 @@ cat > "$MOCK_BIN/docker" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
 case "${1:-}" in
-  info) exit 0 ;;
+  --version|info) exit 0 ;;
   inspect)
     if [[ "$2" == *Config.Image* ]]; then
       printf 'postgres:17-alpine|127.0.0.1:5432|dev-pgdata:/var/lib/postgresql/data;|dev-net\n'
@@ -74,6 +74,21 @@ grep -Eq 'not selected +10A — OmniRoute AI gateway' "$TEST_ROOT/status.txt"
 grep -Eq 'ready +13 — Enhanced CLI tools' "$TEST_ROOT/status.txt"
 grep -Eq 'ready +15 — Full dotfiles and bootstrap' "$TEST_ROOT/status.txt"
 grep -Eq 'pending +16 — Brewfile, applications, and editor inventory' "$TEST_ROOT/status.txt"
+
+grep -Fq 'Optional phase: partially complete' "$TEST_ROOT/status.txt"
+grep -Fq 'Advanced phase: partially complete' "$TEST_ROOT/status.txt"
+grep -Fq 'postgres: healthy' "$TEST_ROOT/status.txt"
+grep -Fq 'redis: not selected / not verified' "$TEST_ROOT/status.txt"
+grep -Fq 'claude: installed' "$TEST_ROOT/status.txt"
+grep -Fq 'codex: not selected / not verified' "$TEST_ROOT/status.txt"
+! grep -Fq 'fully complete' "$TEST_ROOT/status.txt"
+
+printf 'bat,fd\n' > "$TEST_STATE/optional-cli-packages"
+run_status > "$TEST_ROOT/cli-breakdown.txt"
+grep -Fq 'bat: installed' "$TEST_ROOT/cli-breakdown.txt"
+grep -Fq 'fd: not installed' "$TEST_ROOT/cli-breakdown.txt"
+grep -Eq 'partial +13 — Enhanced CLI tools' "$TEST_ROOT/cli-breakdown.txt"
+rm "$TEST_STATE/optional-cli-packages"
 
 run_public_status > "$TEST_ROOT/public-status.txt"
 grep -Eq 'ready +09 — Local databases' "$TEST_ROOT/public-status.txt"

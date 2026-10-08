@@ -135,4 +135,8 @@ if grep -Eq '(^| )(rm|remove|exec|context use|prune)( |$)' "$MOCK_ROOT/calls"; t
 printf 'context\torbstack\nimage\tdiegosouzapw/omniroute:latest\nport\t20128\n' > "$TEST_ROOT/invalid.tsv"
 expect_failure 2 run --plan --manifest "$TEST_ROOT/invalid.tsv"
 [[ ! -e "$TEST_STATE.operation.lock" ]] || fail 'lock leaked'
+sed 's/orbstack/desktop-linux/' "$TEST_ROOT/gateway.tsv" > "$TEST_ROOT/docker-desktop.tsv"
+"$SCRIPT_DIR/configure-omniroute.sh" --plan --manifest "$TEST_ROOT/docker-desktop.tsv" > "$TEST_ROOT/docker-plan.txt"
+grep -Fq desktop-linux "$TEST_ROOT/docker-plan.txt" || fail 'Docker Desktop context rejected'
+
 printf 'PASS: pinned gateway, explicit local context, ownership/spec refusal, partial failure and resume\n'

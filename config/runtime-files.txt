@@ -131,6 +131,7 @@ scripts/install-portable-command.sh
 scripts/lib/apfs-volume.sh
 scripts/lib/application-ownership.sh
 scripts/lib/container-data-paths.sh
+scripts/lib/container-runtime.sh
 scripts/lib/deadline.sh
 scripts/lib/operation-lock.sh
 scripts/lib/platform.sh

@@ -49,15 +49,15 @@ Choose the authentication mode in Step 3.0 before following a branch.
 | 3.1 | Confirm 1Password and its CLI are installed | Terminal |
 | 3.2 | Turn on the CLI integration and the SSH agent | 1Password |
 | 3.3 | Set the SSH approval policy | 1Password |
-| 3.4 | Create (or import) your SSH key | 1Password |
-| 3.5 | Confirm the agent can see the key | Terminal |
-| 3.6 | Register the **public** key with your provider | Browser *or* Terminal |
+| 3.4 | Set up GitHub authentication | 1Password, Browser or Terminal |
+| 3.5 | Set up Azure DevOps authentication | 1Password, Browser or Terminal |
+| 3.6 | Track 4: choose repository access methods | Browser or Terminal |
 | 3.7 | Pin the intended provider key (required by the 1Password runner) | Terminal |
 | 3.8 | Turn on FileVault | System Settings |
 | 3.9 | Run the phase | Terminal |
 
-Step 3.6 can be done in a browser or with the `gh` CLI; both methods are
-documented and give the same result.
+GitHub registration can use a browser or `gh`; Azure SSH registration uses
+the browser. Both provider sections explain their complete path.
 
 The Installation Centre already installed or accepted 1Password and its CLI.
 Phase 3 configures them; it does not install anything. If a component is
@@ -70,18 +70,14 @@ An **SSH agent** is a local service that proves your identity to Git without
 copying the private key into `~/.ssh`. A **socket** is the local connection file
 used to reach that service. More terms are defined in [GLOSSARY.md](../20-reference/GLOSSARY.md).
 
-### The worked example used below
+### Choose your provider path
 
-Steps 3.1–3.9 are written as one continuous walkthrough for the most common
-case: **Track 1 (GitHub only), creating a brand-new key.** Every command shows
-the output you should expect.
-
-If you are on another track or reusing a key, follow the same spine and take
-the marked branch when you reach it:
-
-- **🏢 Azure DevOps** — take Step 3.4b instead of 3.4a, and Step 3.6c instead of 3.6a.
-- **Track 3 (both)** — do 3.4a *and* 3.4b, then 3.6a (or 3.6b) *and* 3.6c, and Step 3.7.
-- **Reusing an existing key** — take Step 3.4c instead of 3.4a/3.4b.
+Complete the shared authentication preparation, then follow **Step 3.4 for
+GitHub**, **Step 3.5 for Azure DevOps**, or both for Track 3. Each provider
+section includes key creation/import, agent checks, registration, pinning and
+verification. **Step 3.6 is Track 4: none of the above**, with independent
+repository access methods grouped by provider. Finish FileVault and the
+script-assisted phase gate after your chosen path.
 
 ## Step 3.0 — Choose how Git authenticates
 
@@ -120,13 +116,14 @@ Changing the mode later reopens Phases 3 and 4, because both depend on it.
 - **`keychain`** — skip Steps 3.1–3.3. Phase 3 runs `ssh-keygen` for you, which
   prompts for a non-empty passphrase; the runner never sees it. It then adds the key to
   the macOS Keychain and writes `UseKeychain yes` into `~/.ssh/config`. You
-  still register the public key with your provider (Step 3.6), using
+  still register the public key with your provider (Step 3.4 or 3.5), using
   `~/.ssh/id_ed25519.pub` or `~/.ssh/id_rsa_azure.pub`.
-- **`external`** — skip Steps 3.1–3.4 and 3.7. Load a key into your own agent so
-  `ssh-add -l` lists it, then do Step 3.6. Day One Mac creates nothing and only
+- **`external`** — skip shared Steps 3.1–3.3 and the 1Password generation/pin steps. Load a key into your own agent so
+  `ssh-add -l` lists it, then follow the registration steps in Step 3.4 or 3.5. Day One Mac creates nothing and only
   checks an identity is available.
-- **`https`** — skip all of Steps 3.1–3.7. Go straight to Step 3.8 (FileVault),
-  then Phase 4 configures the credential helper.
+- **`https`** — skip the SSH setup. Follow the HTTPS methods in Step 3.6,
+  then complete Step 3.8 (FileVault); Phase 4 configures the selected
+  provider helper on Tracks 1–3.
 
 **FileVault (Step 3.8) is required in every mode.**
 
@@ -298,28 +295,15 @@ and how to change the policy later are in
 [the 1Password SSH approval guide](../10-app-guides/1PASSWORD-SSH-APPROVAL.md). You do
 not need it to finish this phase.
 
-## Step 3.4 — Create your SSH key
+## Step 3.4 — GitHub setup
 
-An SSH key has a **private** part, which never leaves 1Password, and a **public**
-part, which you give to your hosting provider.
+Complete shared Steps 3.0–3.3 first when using 1Password. Follow only this
+provider section for Track 1; Track 3 also completes Step 3.5. For HTTPS
+methods, use the GitHub choices in Step 3.6 instead of creating a key.
 
-Pick the key type your track needs:
+### Create or import a GitHub key — Create a new Ed25519 key for GitHub
 
-| Track | Create | Why |
-|---|---|---|
-| **1 — GitHub** | One **Ed25519** key (Step 3.4a) | GitHub supports Ed25519 and 1Password recommends it for modern services |
-| **2 — Azure DevOps** 🏢 | One **RSA 3072-bit** key (Step 3.4b) | Azure DevOps accepts only RSA, and negotiates RSA-SHA2 signatures |
-| **3 — both** | Both of the above | A compromise or account change stays contained to one provider |
-
-If Track 3 uses one identity and one trust boundary for both services, a single
-RSA 3072-bit key can be registered with both. Separate keys are recommended when
-GitHub is personal and Azure DevOps is work-managed. Never import an
-employer-owned private key into a personal vault without explicit approval.
-
-### Step 3.4a — Create a new Ed25519 key for GitHub
-
-This is the spine of the walkthrough. Use it for Track 1, and for the GitHub
-half of Track 3.
+Use this path for Track 1 or the GitHub account on Track 3.
 
 1. Open and unlock 1Password.
 2. Select the vault for that GitHub identity.
@@ -336,7 +320,7 @@ The item now shows a public key beginning `ssh-ed25519`, like this:
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleExampleExampleExampleExampleExa
 ```
 
-You will paste that value — and only that value — into GitHub in Step 3.6.
+You will paste that value — and only that value — into GitHub in the registration steps below.
 
 The equivalent optional CLI command is:
 
@@ -349,42 +333,9 @@ op item create \
 
 Use the desktop path when the vault or account choice is not obvious.
 
-### Step 3.4b — Create a new RSA key for Azure DevOps 🏢
+### Import a trusted existing key
 
-Take this branch for Track 2, and for the Azure half of Track 3.
-
-1. Open and unlock 1Password.
-2. Select the approved work or development vault.
-3. Choose **New Item → SSH Key**.
-4. Choose **Add Private Key → Generate a New Key**.
-5. Select **RSA** and **3072 bits**. Do not select Ed25519 — Azure DevOps will
-   reject it.
-6. Name it, for example `Azure DevOps — Work — Authentication`.
-7. Save it.
-
-Its public key begins `ssh-rsa`:
-
-```text
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQExampleExampleExampleExampleExampleEx
-```
-
-The equivalent optional CLI command is:
-
-```bash
-op item create \
-  --category ssh \
-  --ssh-generate-key rsa3072 \
-  --title "Azure DevOps — Work — Authentication"
-```
-
-`ssh-rsa` at the start describes the key *format*, not the signature algorithm.
-Modern OpenSSH and Azure DevOps negotiate RSA-SHA2 signatures automatically. Do
-not add `HostkeyAlgorithms +ssh-rsa` or `PubkeyAcceptedAlgorithms +ssh-rsa`
-overrides for Azure DevOps Services — they weaken the connection.
-
-### Step 3.4c — Import an existing GitHub or Azure key
-
-Take this branch instead of 3.4a/3.4b only when the key is trusted, still
+Import instead of generating only when the key is trusted, still
 authorized, and must keep the same fingerprint. You import the **private**-key
 file, not its `.pub` companion.
 
@@ -409,7 +360,7 @@ file, not its `.pub` companion.
    ssh-keygen -l -E sha256 -f "$HOME/.ssh/<existing-key>.pub"
    ```
 
-   For a GitHub key stored as `~/.ssh/id_ed25519.pub`:
+   For an existing key:
 
    ```bash
    ssh-keygen -l -E sha256 -f "$HOME/.ssh/id_ed25519.pub"
@@ -417,16 +368,6 @@ file, not its `.pub` companion.
 
    ```text
    256 SHA256:AbCdEf123456ExampleFingerprint you@example.com (ED25519)
-   ```
-
-   For an Azure key stored as `~/.ssh/id_rsa_azure.pub`:
-
-   ```bash
-   ssh-keygen -l -E sha256 -f "$HOME/.ssh/id_rsa_azure.pub"
-   ```
-
-   ```text
-   3072 SHA256:ZyXwVu987654ExampleFingerprint work@example.com (RSA)
    ```
 
    The first number is the key size, the `SHA256:` value is the fingerprint to
@@ -438,8 +379,6 @@ file, not its `.pub` companion.
 
 4. Confirm the key is acceptable:
    - **GitHub** — Ed25519 or a modern RSA key.
-   - **Azure DevOps** — RSA only. Replace a DSA, ECDSA, or sub-2048-bit RSA key
-     with a new RSA 3072-bit key from Step 3.4b instead of importing it.
    - **1Password** supports Ed25519 and RSA 2048/3072/4096 private keys in
      OpenSSH, PKCS#1, or PKCS#8 format. It cannot import `.ppk` directly.
 5. In 1Password choose **New Item → SSH Key → Add Private Key → Import a Key
@@ -451,8 +390,8 @@ file, not its `.pub` companion.
    if they differ** — the private key and public key are not the same pair.
 
 Because importing preserves the public key, a correct existing registration at
-GitHub or Azure DevOps normally does not need replacing. Confirm the fingerprint
-and account in Step 3.6 rather than adding a duplicate.
+The provider normally does not need replacing. Confirm the fingerprint
+and account in the registration instructions below rather than adding a duplicate.
 
 Do not delete the original files yet. Finish the phase, confirm the provider
 accepts the key in Phase 4, and keep a temporary encrypted backup first. Then
@@ -463,7 +402,7 @@ are resolved. Importing the same key into 1Password does not create a new
 identity: revoking that public key at the provider also revokes its vault-backed
 use. This playbook deliberately provides no automatic `rm` for private keys.
 
-## Step 3.5 — Confirm the agent can see your key
+### Confirm the agent can see your key
 
 Before telling a provider about the key, prove the agent is actually serving it.
 
@@ -477,8 +416,7 @@ ssh-add -l
 ```
 
 One line per key the agent holds: size, fingerprint, the 1Password item title,
-and the type. At least one line must appear, and on Track 2 or 3 at least one
-must say `(RSA)`.
+and the type. At least one line must appear, and Azure DevOps requires an `(RSA)` identity.
 
 That `export` affects **this terminal tab only**. It is not the permanent setup —
 that is the `IdentityAgent` line the runner adds to `~/.ssh/config` in Step 3.9.
@@ -495,24 +433,10 @@ If you see `The agent has no identities`:
 Keep this fingerprint visible — you compare it against the provider in the next
 step.
 
-## Step 3.6 — Register the public key with your provider
-
-Creating the key put it in 1Password. This step tells your hosting provider
-about it, so it will accept you. Only the **public** key is ever sent.
-
-There are two routes. They produce exactly the same result, so pick one:
-
-| Route | Use it when |
-|---|---|
-| **Manual** (3.6a / 3.6c) | The normal choice. Works for every provider, needs nothing installed |
-| **GitHub CLI** (3.6b) | GitHub only, and you would rather not leave the terminal |
-
-Azure DevOps has no script-assisted registration route — see 3.6c.
-
 ### First: copy the public key
 
 Both routes start the same way. In 1Password, open the SSH Key item you made in
-Step 3.4 and choose **Copy Public Key**. That puts the whole `ssh-ed25519 …` or
+this provider section and choose **Copy Public Key**. That puts the whole `ssh-ed25519 …` or
 `ssh-rsa …` line on your clipboard.
 
 To check what you copied before pasting it anywhere:
@@ -539,7 +463,7 @@ Replace `<vault>` with your vault name and the title with your item's. If
 that field name does not resolve on your version, list the item's actual field
 labels with `op item get "GitHub — Personal — Authentication"`.
 
-### Step 3.6a — Add the key to GitHub manually
+### Add the key to GitHub manually
 
 Use this for Tracks 1 and 3. Skip it entirely on Track 2.
 
@@ -561,18 +485,18 @@ Use this for Tracks 1 and 3. Skip it entirely on Track 2.
    Added on 20 Sep 2026
    ```
 
-   **Confirm that fingerprint matches the one from Step 3.5.** If it does not,
+   **Confirm that fingerprint matches the one from the agent check above.** If it does not,
    you pasted a different key.
 7. If your organization uses SSO, choose **Configure SSO** next to the key and
    authorize it for that organization. Without this, pushes to that
    organization fail even though the key is valid everywhere else.
 
-If you imported a key in Step 3.4c and it is already listed, compare
+If you imported a key in the import instructions above and it is already listed, compare
 fingerprints rather than adding a duplicate.
 
-### Step 3.6b — Add the key to GitHub with a script
+### Add the key to GitHub with a script
 
-Same outcome as 3.6a, from the terminal. GitHub only.
+Same outcome as browser registration, from the terminal. GitHub only.
 
 `gh` is already installed by the Installation Centre, but it is not signed in
 until Phase 4. The script-assisted route therefore needs two one-off preparations.
@@ -630,9 +554,211 @@ MacBook Pro — Day One Mac    12345678  ssh-ed25519 AAAAC3NzaC1...   authentica
 ```
 
 SSO still has to be authorized in the browser — `gh` cannot do that for you. If
-your organization uses SSO, follow step 7 of 3.6a.
+your organization uses SSO, follow step 7 of the browser instructions above.
 
-### Step 3.6c — Add the key to Azure DevOps 🏢
+### Pin and test the github key
+
+For the script-assisted 1Password route, run:
+
+```bash
+day-one-mac ssh-pin github
+```
+
+For the manual route, copy this item's **public** key, then run:
+
+```bash
+mkdir -p ~/.ssh
+pbpaste > ~/.ssh/github-auth.pub
+chmod 700 ~/.ssh
+chmod 644 ~/.ssh/github-auth.pub
+ssh-keygen -l -E sha256 -f ~/.ssh/github-auth.pub
+```
+
+The fingerprint must match the agent and provider registration. Use this
+public file as `IdentityFile`, the 1Password socket as `IdentityAgent`, and
+`IdentitiesOnly yes` in the matching Host block in `~/.ssh/config`. The
+script-assisted runner writes that block in Step 3.9. Keychain and external
+users use their selected key or agent instead of a 1Password pin.
+
+After that configuration, test:
+
+```bash
+ssh -T git@github.com
+```
+
+GitHub replies with `successfully authenticated`; it does not provide a shell.
+
+## Step 3.5 — Azure DevOps setup 🏢
+
+Complete shared Steps 3.0–3.3 first when using 1Password. Follow only this
+provider section for Track 2; Track 3 also completes Step 3.4. For HTTPS
+methods, use the Azure choices in Step 3.6 instead of creating a key.
+
+### Create or import an Azure DevOps key — Create a new RSA key for Azure DevOps 🏢
+
+Take this branch for Track 2, and for the Azure half of Track 3.
+
+1. Open and unlock 1Password.
+2. Select the approved work or development vault.
+3. Choose **New Item → SSH Key**.
+4. Choose **Add Private Key → Generate a New Key**.
+5. Select **RSA** and **3072 bits**. Do not select Ed25519 — Azure DevOps will
+   reject it.
+6. Name it, for example `Azure DevOps — Work — Authentication`.
+7. Save it.
+
+Its public key begins `ssh-rsa`:
+
+```text
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQExampleExampleExampleExampleExampleEx
+```
+
+The equivalent optional CLI command is:
+
+```bash
+op item create \
+  --category ssh \
+  --ssh-generate-key rsa3072 \
+  --title "Azure DevOps — Work — Authentication"
+```
+
+`ssh-rsa` at the start describes the key *format*, not the signature algorithm.
+Modern OpenSSH and Azure DevOps negotiate RSA-SHA2 signatures automatically. Do
+not add `HostkeyAlgorithms +ssh-rsa` or `PubkeyAcceptedAlgorithms +ssh-rsa`
+overrides for Azure DevOps Services — they weaken the connection.
+
+### Import a trusted existing key
+
+Import instead of generating only when the key is trusted, still
+authorized, and must keep the same fingerprint. You import the **private**-key
+file, not its `.pub` companion.
+
+1. Find the existing private key and its matching public key. Do not print,
+   copy, paste, or upload the private-key contents.
+2. List the public-key files. Files ending in `.pub` are public and safe to
+   fingerprint; the same name without `.pub` is the private key:
+
+   ```bash
+   find "$HOME/.ssh" -maxdepth 1 -type f -name '*.pub' -print
+   ```
+
+   ```text
+   /Users/your-name/.ssh/id_ed25519.pub
+   /Users/your-name/.ssh/id_rsa_azure.pub
+   ```
+
+3. Read the fingerprint of the key you intend to import. Replace the whole
+   `<existing-key>` placeholder, angle brackets included:
+
+   ```bash
+   ssh-keygen -l -E sha256 -f "$HOME/.ssh/<existing-key>.pub"
+   ```
+
+   For an Azure key stored as `~/.ssh/id_rsa_azure.pub`:
+
+   ```bash
+   ssh-keygen -l -E sha256 -f "$HOME/.ssh/id_rsa_azure.pub"
+   ```
+
+   ```text
+   3072 SHA256:ZyXwVu987654ExampleFingerprint work@example.com (RSA)
+   ```
+
+   The first number is the key size, the `SHA256:` value is the fingerprint to
+   compare later, and the type is in parentheses. Write the fingerprint down —
+   you check it again in step 8.
+
+   If no `.pub` file exists, do not guess or expose the private key. Import the
+   private key and use the public key 1Password derives from it.
+
+4. Confirm the key is acceptable:
+   - **Azure DevOps** — RSA only. Replace a DSA, ECDSA, or sub-2048-bit RSA key
+     with a new RSA 3072-bit key from the generation instructions above instead of importing it.
+   - **1Password** supports Ed25519 and RSA 2048/3072/4096 private keys in
+     OpenSSH, PKCS#1, or PKCS#8 format. It cannot import `.ppk` directly.
+5. In 1Password choose **New Item → SSH Key → Add Private Key → Import a Key
+   File**, then select the private-key file. Drag-and-drop also works.
+6. If prompted, enter the old key's passphrase once so 1Password can decrypt and
+   re-protect it.
+7. Save the item in the correct personal or work vault.
+8. Compare the fingerprint 1Password displays with the one from step 3. **Stop
+   if they differ** — the private key and public key are not the same pair.
+
+Because importing preserves the public key, a correct existing registration at
+The provider normally does not need replacing. Confirm the fingerprint
+and account in the registration instructions below rather than adding a duplicate.
+
+Do not delete the original files yet. Finish the phase, confirm the provider
+accepts the key in Phase 4, and keep a temporary encrypted backup first. Then
+review whether other hosts, signing identities or recovery procedures still
+depend on the disk copy. Retain it explicitly if needed, or use the approved
+owner-specific retirement procedure once its dependencies and recovery plan
+are resolved. Importing the same key into 1Password does not create a new
+identity: revoking that public key at the provider also revokes its vault-backed
+use. This playbook deliberately provides no automatic `rm` for private keys.
+
+### Confirm the agent can see your key
+
+Before telling a provider about the key, prove the agent is actually serving it.
+
+```bash
+export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+ssh-add -l
+```
+
+```text
+3072 SHA256:AbCdEf123456ExampleFingerprint Azure DevOps — Work — Authentication (RSA)
+```
+
+One line per key the agent holds: size, fingerprint, the 1Password item title,
+and the type. At least one line must appear, and Azure DevOps requires an `(RSA)` identity.
+
+That `export` affects **this terminal tab only**. It is not the permanent setup —
+that is the `IdentityAgent` line the runner adds to `~/.ssh/config` in Step 3.9.
+You never need to add this export to a shell file.
+
+If you see `The agent has no identities`:
+
+1. Unlock 1Password.
+2. Confirm **Use the SSH agent** is still on.
+3. Confirm the item's type is **SSH Key**, not a secure note.
+4. Confirm the key's vault is allowed by the agent.
+5. Quit 1Password, reopen it, and run `ssh-add -l` again.
+
+Keep this fingerprint visible — you compare it against the provider in the next
+step.
+
+### First: copy the public key
+
+Both routes start the same way. In 1Password, open the SSH Key item you made in
+this provider section and choose **Copy Public Key**. That puts the whole `ssh-ed25519 …` or
+`ssh-rsa …` line on your clipboard.
+
+To check what you copied before pasting it anywhere:
+
+```bash
+pbpaste
+```
+
+```text
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQExampleExampleExampleExampleExampleEx
+```
+
+It must be **one line** starting with `ssh-ed25519` or `ssh-rsa`. If you see
+`-----BEGIN OPENSSH PRIVATE KEY-----`, you copied the private key by mistake —
+stop, clear your clipboard, and copy the public key instead.
+
+You can also read it from the command line, which is useful in a script:
+
+```bash
+op read "op://<vault>/Azure DevOps — Work — Authentication/public key"
+```
+
+Replace `<vault>` with your vault name and the title with your item's. If
+that field name does not resolve on your version, list the item's actual field
+labels with `op item get "Azure DevOps — Work — Authentication"`.
+
+### Add the key to Azure DevOps 🏢
 
 Use this for Tracks 2 and 3. Skip it entirely on Track 1.
 
@@ -648,25 +774,197 @@ this one is manual whichever track you are on.
    - **Public Key Data** — paste the `ssh-rsa …` value.
 5. Paste carefully: **no added line breaks and no trailing spaces.** Azure
    rejects a key that has been wrapped by an editor.
-6. Choose **Add**, then confirm the listed SHA256 fingerprint matches Step 3.5.
+6. Choose **Add**, then confirm the listed SHA256 fingerprint matches the agent check above.
 7. Note any organization-enforced expiry and diary its rotation date.
 
 One profile key normally works across every organization using the same Azure
 identity, so you rarely need to repeat this per organization.
 
-### Confirm the registration
+### Pin and test the azure key
 
-Provider authentication is tested properly in Phase 4, but you can sanity-check
-GitHub now if `gh` is signed in:
+For the script-assisted 1Password route, run:
 
 ```bash
-gh ssh-key list
+day-one-mac ssh-pin azure
 ```
 
-For either provider, the check that matters is that the fingerprint shown in the
-provider's web UI matches the one `ssh-add -l` printed in Step 3.5. A mismatch
-means the key the agent offers is not the key the provider trusts, and Phase 4
-will fail with `Permission denied (publickey)`.
+For the manual route, copy this item's **public** key, then run:
+
+```bash
+mkdir -p ~/.ssh
+pbpaste > ~/.ssh/azure-devops-auth.pub
+chmod 700 ~/.ssh
+chmod 644 ~/.ssh/azure-devops-auth.pub
+ssh-keygen -l -E sha256 -f ~/.ssh/azure-devops-auth.pub
+```
+
+The fingerprint must match the agent and provider registration. Use this
+public file as `IdentityFile`, the 1Password socket as `IdentityAgent`, and
+`IdentitiesOnly yes` in the matching Host block in `~/.ssh/config`. The
+script-assisted runner writes that block in Step 3.9. Keychain and external
+users use their selected key or agent instead of a 1Password pin.
+
+After that configuration, test:
+
+```bash
+ssh -T git@ssh.dev.azure.com
+```
+
+Azure replies with `Shell access is not supported`; that response confirms authentication.
+
+## Step 3.6 — Track 4: none of the above
+
+Choose Track 4 when your account, company policy, or mixed authentication needs
+do not fit the three managed provider tracks. It keeps provider CLI sign-in
+and SSH registration under your control. The required foundation still checks
+FileVault and the chosen authentication mode. Use `--auth-mode https` when
+you need no managed SSH agent. Choose local dotfiles protection unless you
+also install the provider CLI needed to verify a private Git dotfiles remote.
+
+Script-assisted selection:
+
+```bash
+day-one-mac setup --track 4 --auth-mode https
+```
+
+The manual route records Track 4 in your own notes. Pick one method per
+repository below. Replace the example owner, organization, project and repo
+names with the clone URL from the provider. For an existing clone, use
+`git -C /path/to/repo pull --ff-only`; it uses the same transport and credentials
+as `git clone`. Check `git remote -v` before changing authentication.
+
+### GitHub repository access
+
+| Method | Better choice when |
+|---|---|
+| Anonymous HTTPS | You only read public repositories |
+| HTTPS with a PAT | Browser sign-in is unavailable or policy requires a scoped, expiring token |
+| GitHub CLI over HTTPS | You want browser sign-in and an automatically configured credential helper |
+| Git Credential Manager | You prefer browser authentication shared with other Git clients |
+| SSH with 1Password | You already use its agent and want keys kept in the vault |
+| SSH with Keychain | You want a passphrase-protected local key without a password manager |
+| SSH with an external agent | Your company or hardware device owns the key |
+
+**Public HTTPS:** no login is needed to clone public code; writing still needs
+permission and authentication.
+
+```bash
+git clone https://github.com/OWNER/REPO.git
+```
+
+**HTTPS with a PAT:** create a fine-grained token with access to the repository
+and the minimum Contents permission needed (read for pulling, write for
+pushing). Complete organization approval/SSO when required. Run the HTTPS clone
+above and enter your username and the PAT at Git's password prompt. Never put
+the token in a URL, shell history or a repository file. To store it in the Mac
+Keychain for GitHub only:
+
+```bash
+git config --global credential.https://github.com.helper osxkeychain
+```
+
+**GitHub CLI:** on the manual route install it with `brew install gh`; Track 4
+also needs this explicit installation because it does not select provider tools.
+
+```bash
+gh auth login --hostname github.com --git-protocol https --web
+gh auth setup-git
+gh repo clone OWNER/REPO
+```
+
+`gh repo clone` delegates to Git. It can use SSH instead when `gh` is configured
+for SSH, but you must first register the key as described below.
+
+**Git Credential Manager:** install `brew install --cask git-credential-manager`,
+run `git-credential-manager configure`, then run the HTTPS clone. Follow its
+browser sign-in. Select one intended helper for this host; review existing
+helpers with `git config --show-origin --get-all credential.helper` before
+changing a company configuration.
+
+**SSH:** use the complete GitHub key registration and test in Step 3.4. For
+1Password, create/import the Ed25519 key there. For a local key with Keychain,
+follow [Keychain SSH](../manual/keychain-ssh.md), including its passphrase and
+`UseKeychain` setup. For an external agent, load its public identity and confirm
+`ssh-add -l`; register that public key in GitHub Settings → SSH and GPG keys.
+Confirm the fingerprint and SSO authorization, then clone:
+
+```bash
+git clone git@github.com:OWNER/REPO.git
+```
+
+See [GitHub HTTPS authentication](https://docs.github.com/en/get-started/git-basics/about-remote-repositories)
+and [GitHub CLI authentication](https://cli.github.com/manual/gh_auth_login).
+
+### Azure DevOps repository access 🏢
+
+| Method | Better choice when |
+|---|---|
+| Anonymous HTTPS | You read an accessible public project |
+| Git Credential Manager with Microsoft Entra ID | You want the preferred browser/MFA route without maintaining a PAT |
+| HTTPS with a PAT | Policy permits tokens and browser/Entra authentication is unsuitable |
+| Azure CLI with Entra authentication | You already use `az` to discover repos or obtain short-lived access |
+| SSH with 1Password, Keychain or an external agent | You prefer keys or your company supplies an approved agent |
+
+Copy the HTTPS URL from **Repos → Files → Clone**. For a public repository,
+try it directly. For private code choose one of the methods below:
+
+```bash
+git clone https://dev.azure.com/ORG/PROJECT/_git/REPO
+```
+
+**Git Credential Manager:** install `brew install --cask git-credential-manager`
+and run `git-credential-manager configure`. Clone with the HTTPS URL and follow
+Microsoft browser authentication. GCM can obtain Microsoft Entra tokens and
+store credentials securely; ordinary `az login` alone does not authenticate Git.
+
+**PAT:** create a scoped, expiring token in **User settings → Personal access
+tokens**, with Code read permission for pulling (read/write only if needed).
+At Git's HTTPS password prompt enter the PAT; use a nonempty username. A
+host-specific Keychain helper can retain it:
+
+```bash
+git config --global credential.https://dev.azure.com.helper osxkeychain
+```
+
+Do not use `credential.helper store`, embed tokens in URLs, or paste them into
+tracked configuration. Expired/revoked tokens must be replaced in the helper.
+
+**Azure CLI:** install `brew install azure-cli` if missing, then:
+
+```bash
+az login
+az extension add --name azure-devops
+az repos show --organization https://dev.azure.com/ORG \
+  --project PROJECT --repository REPO --query remoteUrl -o tsv
+```
+
+Clone the returned URL with GCM or the PAT prompt above. `az devops login`
+authenticates the DevOps CLI with a PAT; it does not install a Git credential
+helper. For direct short-lived Entra Git authentication, follow Microsoft's
+[Azure CLI token procedure](https://learn.microsoft.com/en-us/azure/devops/repos/git/auth-overview?view=azure-devops).
+Keep those tokens out of saved configuration and shell history.
+
+**SSH:** Azure requires RSA. Follow the complete generation/import, registration,
+pinning and test in Step 3.5 for 1Password. For Keychain use the RSA path in
+[Keychain SSH](../manual/keychain-ssh.md). For an external agent, ensure
+`ssh-add -l` lists the intended RSA identity, then add its public key in
+**User settings → SSH public keys** and confirm the fingerprint. Clone:
+
+```bash
+git clone git@ssh.dev.azure.com:v3/ORG/PROJECT/REPO
+```
+
+See [Azure credential managers](https://learn.microsoft.com/en-us/azure/devops/repos/git/set-up-credential-managers?view=azure-devops)
+and [Azure SSH authentication](https://learn.microsoft.com/en-us/azure/devops/repos/git/use-ssh-keys-to-authenticate?view=azure-devops).
+
+### Other hosts and repository tools
+
+No additional managed hosting provider exists in this codebase. For other
+hosts, use their supplied HTTPS or SSH clone URL and approved authentication.
+`ghq get URL` and VS Code's **Git: Clone** use the same Git transport and helper;
+they do not provide another authentication method. Choose ghq only when you
+want its repository folder layout. Test one real clone or fetch before calling
+your self-managed access complete, then continue to FileVault in Step 3.8.
 
 ## Step 3.7 — Pin provider keys when needed
 
@@ -734,7 +1032,7 @@ shell normally uses. Azure pins must themselves be RSA keys.
 
 Before saving, review the item title, ID, fingerprint and destination in the
 confirmation prompt. Confirm that this is the intended key from Step 3.4 and
-that its fingerprint matches the provider registration from Step 3.6. A match
+that its fingerprint matches the provider registration in Step 3.4 or 3.5. A match
 with the local agent alone does not prove access to your provider account.
 
 If a key is not offered by the agent, the command stops:
@@ -799,7 +1097,7 @@ On Track 3:
 3072 SHA256:ZyXwVu987654ExampleFingerprint Azure DevOps — Work — Authentication (RSA)
 ```
 
-Every fingerprint must match the intended line from Step 3.5 and the provider
+Every fingerprint must match the intended line from your provider’s agent check and the provider
 registration. If an existing pin differs, preserve a copy, review the correct
 item in 1Password, then explicitly rerun `day-one-mac ssh-pin github` (or
 `azure`) to replace it, or repeat the manual public-key copy. Do not broaden
@@ -925,17 +1223,17 @@ use `sudo` on files your own account owns.
 | `op: command not found` | Run `day-one-mac applications --id 1password-cli`; if it is missing add `--install-missing`, then open a new terminal |
 | `op account list` reports `connecting to desktop app` | Turn on **Integrate with 1Password CLI** in Settings → Developer and unlock the app (Step 3.2) |
 | The runner says `op account list` did not finish in 20 seconds | A 1Password prompt is waiting; approve or dismiss it, keep the app unlocked, then rerun Phase 3 |
-| `ssh-add -l` cannot connect to an agent | Confirm `SSH_AUTH_SOCK` exactly matches the Group Containers socket in Step 3.5 |
-| `The agent has no identities` | Work through the five checks in Step 3.5 |
-| The runner says the agent offers no RSA identity | Azure DevOps needs RSA; create or import one with Step 3.4b or 3.4c |
+| `ssh-add -l` cannot connect to an agent | Confirm `SSH_AUTH_SOCK` exactly matches the Group Containers socket in your provider section |
+| `The agent has no identities` | Work through the five agent checks in your provider section |
+| The runner says the agent offers no RSA identity | Azure DevOps needs RSA; create or import one with Step 3.5 |
 | The selected pin is not offered by the 1Password agent | Unlock 1Password; compare the pin, intended item and agent fingerprints. Review the agent allow-list for that intended key. If the pin is wrong, preserve it and explicitly replace it using Step 3.7. SSH configuration remains unchanged on this refusal. |
 | Several SSH items match, even though one says “Authentication” | Choose the intended item number interactively and confirm its fingerprint. `--yes` cannot resolve this choice; duplicate titles are distinguished by item ID. |
 | Azure rejects an Ed25519 key | Same cause — Azure accepts RSA only |
 | Azure fails while several agent keys are visible | Pin the Azure key with Step 3.7; Azure accepts the first key offered |
 | An imported key shows a different fingerprint | Stop; the private key and expected public key are not the same pair |
-| `gh ssh-key add` reports `HTTP 404` or a missing scope | Run `gh auth refresh --hostname github.com --scopes write:public_key`, then retry (Step 3.6b) |
+| `gh ssh-key add` reports `HTTP 404` or a missing scope | Run `gh auth refresh --hostname github.com --scopes write:public_key`, then retry (Step 3.4) |
 | `gh ssh-key add` reports `key is already in use` | The key is already registered — list it with `gh ssh-key list` and compare fingerprints instead of adding it twice |
-| Azure DevOps rejects a pasted key | Re-copy it as one line; an editor-wrapped key with line breaks is invalid (Step 3.6c) |
+| Azure DevOps rejects a pasted key | Re-copy it as one line; an editor-wrapped key with line breaks is invalid (Step 3.5) |
 | Provider later reports `Permission denied (publickey)` | Confirm the exact public key is registered on that account, and that SSO is authorized for the organization |
 | FileVault cannot be enabled | Confirm this is an administrator account and finish pending macOS updates |
 

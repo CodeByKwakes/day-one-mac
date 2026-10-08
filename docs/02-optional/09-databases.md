@@ -44,15 +44,23 @@ network match the expected configuration, waits for its health check, and writes
 day-one-mac databases --saved --status
 ```
 
-When the Docker command or server is unavailable, the installer checks
-OrbStack ownership, installs it through the selected approved route when
-needed, starts it, adds its bundled `~/.orbstack/bin` tools to the current
-process when available, and waits up to 60 seconds for `docker info` to report
-a server. OrbStack includes the Docker CLI, Compose, and Buildx; do not install
-a second Docker engine or a separate Docker formula for this module.
+Choose **Docker Desktop** or **OrbStack** in the optional wizard, or explicitly:
+
+```bash
+day-one-mac databases --services postgres,redis --container-runtime docker
+# Alternative:
+day-one-mac databases --services postgres,redis --container-runtime orbstack
+```
+
+`auto` reuses a working Docker context, then detects an installed engine. When
+neither exists it asks you to choose; unattended runs must supply the choice.
+The selected engine is saved for resume. The installer checks application
+ownership, starts the selected application, locates its bundled CLI and waits
+up to 60 seconds for `docker info`. Both engines supply the Docker CLI; a
+separate `brew install docker` supplies no engine and is unnecessary here.
 
 That startup/install behaviour is apply-only. Preview works before Phase 8,
-does not start OrbStack, and labels proposed creates as conditional when the
+does not start either engine, and labels proposed creates as conditional when the
 engine cannot be inspected. Apply still requires Phase 8. A running container
 without a passing health check is not considered verified.
 
@@ -62,9 +70,9 @@ by `--apply`, `--check`, or `--resume`. See the
 [module execution reference](../20-reference/MODULE-EXECUTION.md) for
 saved selections, private run journals and recovery.
 
-OrbStack can display first-run permission or licence prompts that automation
+Either application can display first-run permission or licence prompts that automation
 must not approve for you. Complete any visible prompt. If the readiness wait
-expires, confirm that OrbStack reports Docker as running, verify that
+expires, confirm that the selected application reports Docker as running, verify that
 `docker info` shows a **Server** section, and rerun the same command. Do not run
 Docker with `sudo`.
 
@@ -89,30 +97,52 @@ Do not start all services “just in case.” A repository-owned `compose.yaml` 
 preferable when the service belongs to one project. The commands below provide
 a simple machine-level development service without requiring Docker Compose.
 
-## Step 9.2 — Manual path: install and start OrbStack
+## Step 9.2 — Manual path: choose Docker Desktop or OrbStack
+
+Keep an approved existing installation. If neither is installed, choose one:
 
 ```bash
-day-one-mac applications --id orbstack --install-missing
+# Docker Desktop:
+brew install --cask docker-desktop
+open -a Docker
+# Or OrbStack:
+brew install --cask orbstack
 open -a OrbStack
 ```
 
-The first command checks ownership before changing anything. When OrbStack is
-missing, choose Homebrew or select another approved installer and return to the
-terminal for a live recheck. If Company Portal or a
-manual installer already supplied `/Applications/OrbStack.app`, it reports an
-external installation and leaves it unchanged. Deselecting Databases later
-does not uninstall OrbStack.
+Company Portal or the provider's signed installer is also suitable. Finish
+first-run permission/licence prompts and wait for the engine to start. Installing
+an app bundle alone does not prove the CLI or server works.
 
-Wait until OrbStack reports that Docker is running, then verify:
+If `docker` is missing from PATH, use the matching bundled location for this
+Terminal window:
 
 ```bash
+# Docker Desktop user CLI install:
+export PATH="$HOME/.docker/bin:$PATH"
+# Or OrbStack:
+export PATH="$HOME/.orbstack/bin:$PATH"
+```
+
+Docker Desktop also bundles its CLI in
+`/Applications/Docker.app/Contents/Resources/bin`. In its settings choose the
+system or user CLI installation location. Save the matching PATH export via
+your Phase 5 configuration owner if your login shell does not already load it.
+Day One Mac discovers these locations for its own container commands without
+creating competing CLI symlinks. See [Docker's Mac CLI installation guidance](https://docs.docker.com/desktop/setup/install/mac-permission-requirements/).
+
+Verify the command and the engine separately:
+
+```bash
+docker --version
 docker version
 docker info
 docker context show
 ```
 
-The server section must be present. If only the client appears, open OrbStack
-and wait for its Linux environment to start.
+Both **Client** and **Server** must appear. An installed CLI with no server is
+incomplete. Continue with the same chosen context for all commands below;
+containers and named volumes belong to that engine.
 
 ## Step 9.3 — Manual path: create a shared development network
 
@@ -302,7 +332,7 @@ existing automation still uses an earlier flag name.
 ## Optional completion checklist 🚦
 
 - [ ] Only required services were installed.
-- [ ] The application ownership report identifies who manages OrbStack.
+- [ ] The application ownership report identifies who manages the chosen container application.
 - [ ] `docker version` includes a server.
 - [ ] Every selected container is healthy or responds to its ping query.
 - [ ] Ports are bound to localhost and do not conflict with another service.

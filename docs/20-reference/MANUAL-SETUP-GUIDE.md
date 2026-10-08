@@ -109,6 +109,9 @@ INSTALLER="$HOME/Downloads/install-day-one-mac"
 curl --proto '=https' --tlsv1.2 -fsSL \
   https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac \
   -o "$INSTALLER"
+# Or, if GNU wget with HTTPS support is already installed:
+# wget --https-only --secure-protocol=TLSv1_2 -O "$INSTALLER" \
+#   https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac
 chmod 700 "$INSTALLER"
 less "$INSTALLER"
 "$INSTALLER"
@@ -137,6 +140,9 @@ Complete this worksheet before choosing either route.
 - [ ] **Track 1 — GitHub:** install `gh`; require GitHub browser and SSH checks.
 - [ ] **Track 2 — Azure DevOps:** install `az`; require Azure browser and SSH checks.
 - [ ] **Track 3 — GitHub + Azure DevOps:** install and verify both.
+- [ ] **Track 4 — None of the above:** choose the provider-specific
+      [repository access methods](../01-required/03-security-and-ssh.md#step-36--track-4-none-of-the-above)
+      yourself; provider tools and sign-in are optional.
 
 ### Development stack
 

@@ -22,8 +22,9 @@ day-one-mac advanced --guided
 day-one-mac advanced --module 15
 ```
 
-To combine this progress with Optional Modules 09–14 and machine-verifiable
-evidence, run:
+Both status commands show Optional and Advanced groups with live evidence
+and per-module breakdowns. A group is fully complete only when every module
+is ready; skipped modules keep it partial. To add the deeper audit, run:
 
 ```bash
 day-one-mac optional --status

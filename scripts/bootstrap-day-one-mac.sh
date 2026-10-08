@@ -26,6 +26,7 @@ ORIGINAL_ARG_COUNT="$#"
 PASSTHROUGH_ARGS=()
 APPLICATION_REVIEW_CACHE=""
 SHOW_OPTIONAL_REVIEW=0
+CONTAINER_RUNTIME=auto
 
 usage() {
   cat <<'EOF'
@@ -58,7 +59,7 @@ Direct setup:
   --ssh-pin [PROVIDER]        save 1Password public keys to ~/.ssh, then exit
                               PROVIDER is github, azure, or both (default: the saved track)
   --phase NN                   run one required phase; repeatable
-  --track 1|2|3               1 GitHub; 2 Azure DevOps; 3 both
+  --track 1|2|3|4             1 GitHub; 2 Azure DevOps; 3 both; 4 none of the above
   --stack node|python|both    language toolchain selection
   --layout LAYOUT             none, repository, purpose, or existing
   --ghq no|yes                optional ghq (not preselected)
@@ -335,6 +336,7 @@ track_label() {
     1) printf 'GitHub' ;;
     2) printf 'Azure DevOps' ;;
     3) printf 'GitHub + Azure DevOps' ;;
+    4) printf 'None of the above' ;;
     *) printf 'Not selected' ;;
   esac
 }
@@ -437,7 +439,10 @@ build_application_review_cache() {
 
   if [[ "$include_optional" == 1 ]] \
      && { contains_csv "$OPTIONAL_MODULES" databases || contains_csv "$OPTIONAL_MODULES" omniroute; }; then
-    optional_ids="${optional_ids}${optional_ids:+ }orbstack"
+    case "$CONTAINER_RUNTIME" in
+      docker) optional_ids="${optional_ids}${optional_ids:+ }docker-desktop" ;;
+      orbstack) optional_ids="${optional_ids}${optional_ids:+ }orbstack" ;;
+    esac
   fi
   if [[ "$include_optional" == 1 ]] && contains_csv "$AI_CLIENTS" claude; then optional_ids="${optional_ids}${optional_ids:+ }claude-code"; fi
   if [[ "$include_optional" == 1 ]] && contains_csv "$AI_CLIENTS" codex; then optional_ids="${optional_ids}${optional_ids:+ }codex"; fi
@@ -505,6 +510,7 @@ write_wizard_report() {
     if [[ -n "$APPLICATION_REVIEW_CACHE" ]]; then
       printf '\n## Application ownership at review time\n\n```text\n%s\n```\n' "$APPLICATION_REVIEW_CACHE"
     fi
+    printf -- '- Container engine: `%s`\n' "$CONTAINER_RUNTIME"
     printf '\nOptional selections are planning records. Complete them only after Phase 8 using the linked guides.\n'
   } > "$tmp"
   chmod 600 "$tmp"
@@ -530,6 +536,7 @@ save_wizard_choices() {
   save_state_value macos-settings-plan "$MACOS_SETTINGS_PLAN"
   save_state_value optional-modules "$OPTIONAL_MODULES"
   save_state_value database-services "$DATABASE_SERVICES"
+  save_state_value container-runtime "$CONTAINER_RUNTIME"
   save_state_value ai-clients "$AI_CLIENTS"
   save_state_value mcp-servers "$MCP_SERVERS"
   write_wizard_report
@@ -538,9 +545,9 @@ save_wizard_choices() {
 
 choose_track() {
   local default_index=0
-  case "$TRACK" in 2) default_index=1 ;; 3) default_index=2 ;; esac
-  SINGLE_VALUES=(1 2 3)
-  SINGLE_LABELS=('Track 1 — GitHub' 'Track 2 — Azure DevOps' 'Track 3 — GitHub + Azure DevOps')
+  case "$TRACK" in 2) default_index=1 ;; 3) default_index=2 ;; 4) default_index=3 ;; esac
+  SINGLE_VALUES=(1 2 3 4)
+  SINGLE_LABELS=('Track 1 — GitHub' 'Track 2 — Azure DevOps' 'Track 3 — GitHub + Azure DevOps' 'Track 4 — None of the above; manage repository access yourself')
   select_one 'Choose the hosting services this Mac will use:' "$default_index"
   TRACK="$SINGLE_RESULT"
 }
@@ -618,6 +625,7 @@ choose_primary_ide() {
 
 choose_auth_mode() {
   local default_index=0
+  [[ "$TRACK" != 4 || -n "$AUTH_MODE" ]] || default_index=3
   case "$AUTH_MODE" in
     keychain) default_index=1 ;;
     external) default_index=2 ;;
@@ -734,6 +742,13 @@ choose_optional_plan() {
     fi
   fi
 
+  if contains_csv "$OPTIONAL_MODULES" databases || contains_csv "$OPTIONAL_MODULES" omniroute; then
+    SINGLE_VALUES=(auto docker orbstack)
+    SINGLE_LABELS=('Use the installed engine (detect Docker Desktop or OrbStack)' 'Docker Desktop' 'OrbStack')
+    select_one 'Choose a container engine:' 0
+    CONTAINER_RUNTIME="$SINGLE_RESULT"
+  fi
+
   AI_CLIENTS=""
   if contains_csv "$OPTIONAL_MODULES" ai-clients; then
     MENU_VALUES=(claude codex copilot-app copilot-vscode copilot-cli raycast-ai)
@@ -772,6 +787,7 @@ choose_optional_plan() {
 save_optional_choices() {
   save_state_value optional-modules "$OPTIONAL_MODULES"
   save_state_value database-services "$DATABASE_SERVICES"
+  save_state_value container-runtime "$CONTAINER_RUNTIME"
   save_state_value ai-clients "$AI_CLIENTS"
   save_state_value mcp-servers "$MCP_SERVERS"
   write_wizard_report
@@ -915,7 +931,7 @@ has_saved_core_choices() {
   [[ "$(state_value track-schema-version)" == 2 ]] \
     && [[ "$FOLDER_LAYOUT" =~ ^(none|repository|purpose|existing)$ ]] \
     && [[ "$GHQ_CHOICE" =~ ^(yes|no)$ ]] \
-    && [[ "$(state_value track)" =~ ^[123]$ ]] \
+    && [[ "$(state_value track)" =~ ^[1234]$ ]] \
     && [[ "$(state_value stack)" =~ ^(node|python|both)$ ]] \
     && [[ "$DOTFILES_VERSIONING" =~ ^(none|git|local)$ ]] \
     && [[ "$SHELL_CHOICE" =~ ^(keep|apple|homebrew)$ ]] \
@@ -950,6 +966,8 @@ load_saved_choices() {
   DATABASE_SERVICES="$(state_value database-services)"
   AI_CLIENTS="$(state_value ai-clients)"
   MCP_SERVERS="$(state_value mcp-servers)"
+  CONTAINER_RUNTIME="$(state_value container-runtime)"
+  [[ -n "$CONTAINER_RUNTIME" ]] || CONTAINER_RUNTIME=auto
 }
 
 choose_machine_state() {

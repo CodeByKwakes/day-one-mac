@@ -36,6 +36,10 @@ expect_exit 2 /bin/bash "$SCRIPT_DIR/setup.sh" --check
 expect_exit 10 /bin/bash "$SCRIPT_DIR/setup.sh" --apply --yes --track 1 --stack both
 [[ ! -e "$DAY_ONE_MAC_STATE_ROOT" ]]
 
+expect_exit 0 /bin/bash "$SCRIPT_DIR/setup.sh" --plan --track 4 --stack both --json
+node -e 'const r=JSON.parse(require("fs").readFileSync(process.argv[1])); if(r.selection.track!=="4" || r.selection.auth_mode!=="https") process.exit(1)' "$TEST_ROOT/output"
+[[ ! -e "$DAY_ONE_MAC_STATE_ROOT" ]]
+
 expect_exit 0 /bin/bash "$SCRIPT_DIR/setup.sh" --plan --track 1 --stack both --json
 node -e 'const r=JSON.parse(require("fs").readFileSync(process.argv[1])); if(r.schema_version!==1 || r.action!=="plan" || r.phases.length!==8 || r.phases[7].live!=="not-checked") process.exit(1)' "$TEST_ROOT/output"
 [[ ! -e "$DAY_ONE_MAC_STATE_ROOT" ]]

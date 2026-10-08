@@ -310,8 +310,8 @@ Write down the inputs a different clean Mac needs:
 Rehearsal sequence:
 
 ```bash
-day-one-mac setup --dry-run --track <1|2|3> --stack <node|python|both>
-day-one-mac setup --track <1|2|3> --stack <node|python|both> \
+day-one-mac setup --dry-run --track <1|2|3|4> --stack <node|python|both>
+day-one-mac setup --track <1|2|3|4> --stack <node|python|both> \
   --dotfiles-repo <private-url>
 day-one-mac validate
 day-one-mac advanced-audit

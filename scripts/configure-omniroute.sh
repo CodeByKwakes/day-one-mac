@@ -3,6 +3,8 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/project-paths.sh"
+source "$SCRIPT_DIR/lib/container-runtime.sh"
+day_one_container_cli_path
 source "$SCRIPT_DIR/lib/module-execution.sh"
 ORIGINAL_ARGS=("$@")
 STATE_ROOT="$(day_one_state_root)"
@@ -15,8 +17,8 @@ die() { printf '%s\n' "$1" >&2; exit "${2:-1}"; }
 usage() {
   cat <<'EOF'
 Usage: configure-omniroute.sh --plan|--apply|--check|--resume [--manifest PATH] [--yes]
-Manifest: context<TAB>orbstack, image<TAB>diegosouzapw/omniroute@sha256:<64 hex>,
-port<TAB>1024..65535. No credentials. Apply requires Phase 8 and local OrbStack.
+Manifest: context<TAB>orbstack|desktop-linux, image<TAB>diegosouzapw/omniroute@sha256:<64 hex>,
+port<TAB>1024..65535. No credentials. Apply requires Phase 8 and a local Docker Desktop or OrbStack engine.
 Plan prints the proposal only; apply/check inspect ownership and exact spec.
 Creates only omniroute and omniroute-data; never adopts, replaces or deletes.
 Provider credentials, accounts, billing, dashboard setup and client routing are manual.
@@ -54,7 +56,7 @@ while IFS= read -r row || [[ -n "$row" ]]; do
   key="${row%%$'\t'*}"; value="${row#*$'\t'}"
   [[ -n "$value" && "$value" != *$'\t'* ]] || die 'Expected exactly two nonempty fields.' 2
   case "$key" in
-    context) [[ -z "$CONTEXT" && "$value" == orbstack ]] || die 'Only explicit local orbstack context is supported.' 2; CONTEXT="$value" ;;
+    context) [[ -z "$CONTEXT" && ( "$value" == orbstack || "$value" == desktop-linux ) ]] || die 'Choose explicit local orbstack or desktop-linux context.' 2; CONTEXT="$value" ;;
     image) [[ -z "$IMAGE" && "$value" =~ ^diegosouzapw/omniroute@sha256:[a-f0-9]{64}$ ]] || die 'Use one reviewed OmniRoute sha256 image digest, never a tag.' 2; IMAGE="$value" ;;
     port) [[ -z "$PORT" && "$value" =~ ^[1-9][0-9]{3,4}$ ]] && (( value >= 1024 && value <= 65535 )) || die 'Use one port from 1024 through 65535.' 2; PORT="$value" ;;
     *) die 'Unsupported OmniRoute manifest key.' 2 ;;
@@ -72,7 +74,7 @@ if [[ "$ACTION" == plan ]]; then
   exit 0
 fi
 [[ ! -d "$HOME/.orbstack/bin" ]] || export PATH="$PATH:$HOME/.orbstack/bin"
-command -v docker >/dev/null 2>&1 || die 'Docker CLI unavailable. Install/start OrbStack manually.' 10
+command -v docker >/dev/null 2>&1 || die 'Docker CLI unavailable. Install/start Docker Desktop or OrbStack manually.' 10
 endpoint="$(docker context inspect --format '{{.Endpoints.docker.Host}}' "$CONTEXT")" || die 'Cannot inspect Docker context.'
 [[ "$endpoint" == unix:///* && "$endpoint" != *$'\n'* ]] || die 'Refusing a non-local Docker context.'
 dock() { docker --context "$CONTEXT" "$@"; }

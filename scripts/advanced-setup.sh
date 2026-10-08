@@ -123,16 +123,7 @@ print_list() {
 }
 
 print_status() {
-  local number state marker
-  ui_title '📊' 'Advanced optional progress'
-  for number in 15 16 17 18 19 20 21 22; do
-    state="$(module_state "$number")"
-    case "$state" in
-      current) marker='✓ current'; ui_status success "$(printf '%-9s  %s — %s' "$marker" "$number" "$(module_title "$number")")" ;;
-      review) marker='⚠ review'; ui_status warning "$(printf '%-9s  %s — %s' "$marker" "$number" "$(module_title "$number")")" ;;
-      *) marker='○ pending'; ui_status pending "$(printf '%-9s  %s — %s' "$marker" "$number" "$(module_title "$number")")" ;;
-    esac
-  done
+  "$SCRIPT_DIR/optional-status.sh"
 }
 
 read_module() {

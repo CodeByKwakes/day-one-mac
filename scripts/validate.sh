@@ -708,7 +708,7 @@ if ! grep -Fq 'Create a new GitHub Ed25519 key' "$SCRIPT_DIR/setup.sh" "$SCRIPT_
    || ! grep -Fq 'Host ssh.dev.azure.com' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    || ! grep -Fq 'configure_onepassword_ssh' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
    || ! grep -Fq 'update_homebrew_1password_if_needed' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \
-   || ! grep -Fq 'Step 3.4c — Import an existing GitHub or Azure key' "$PROJECT_DIR/docs/01-required/03-security-and-ssh.md" \
+   || ! grep -Fq 'Import a trusted existing key' "$PROJECT_DIR/docs/01-required/03-security-and-ssh.md" \
    || ! grep -Fq 'Step 3.7 — Pin provider keys when needed' "$PROJECT_DIR/docs/01-required/03-security-and-ssh.md" \
    || ! grep -Fq 'Azure DevOps does not accept Ed25519' "$PROJECT_DIR/docs/20-reference/MANUAL-SETUP-GUIDE.md" \
    || ! grep -Fq -- '--web --skip-ssh-key' "$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/phases/*.sh \

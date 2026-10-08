@@ -133,18 +133,18 @@ grep -Fq 'build_application_review_cache' "$SCRIPT_DIR/bootstrap-day-one-mac.sh"
 grep -Fq '22  Shared AI skills and MCP operations' "$TEST_ROOT/advanced-list.txt"
 HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE_ROOT" \
   "$SCRIPT_DIR/advanced-setup.sh" --status > "$TEST_ROOT/advanced-status.txt"
-grep -Fq '○ pending  15' "$TEST_ROOT/advanced-status.txt"
+grep -Eq 'not selected +15 —' "$TEST_ROOT/advanced-status.txt"
 mkdir -p "$TEST_STATE_ROOT/completed"
 : > "$TEST_STATE_ROOT/completed/08"
 HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE_ROOT" \
   "$SCRIPT_DIR/advanced-setup.sh" --complete 15 --yes >/dev/null
 HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE_ROOT" \
   "$SCRIPT_DIR/advanced-setup.sh" --status > "$TEST_ROOT/advanced-current.txt"
-grep -Fq '✓ current  15' "$TEST_ROOT/advanced-current.txt"
+grep -Eq 'ready +15 —' "$TEST_ROOT/advanced-current.txt"
 printf 'outdated-guide-fingerprint\n' > "$TEST_STATE_ROOT/advanced/completed/15"
 HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE_ROOT" \
   "$SCRIPT_DIR/advanced-setup.sh" --status > "$TEST_ROOT/advanced-review.txt"
-grep -Fq '⚠ review  15' "$TEST_ROOT/advanced-review.txt"
+grep -Eq 'review +15 —' "$TEST_ROOT/advanced-review.txt"
 HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE_ROOT" \
   "$SCRIPT_DIR/advanced-setup.sh" --reset 15 --yes >/dev/null
 [[ ! -e "$TEST_STATE_ROOT/advanced/completed/15" ]]

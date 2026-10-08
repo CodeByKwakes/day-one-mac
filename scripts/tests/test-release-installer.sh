@@ -70,6 +70,38 @@ HOME="$TEST_ROOT/installed-home" "$TEST_ROOT/installed-home/.local/bin/day-one-m
      && ! -e "$SECOND_BRAIN_NOTION_RAYCAST_DIR" ]] || fail 'manager preview persisted user assets'
 )
 
+# Run the real public download path with wget only, using local fixture bytes.
+mkdir -p "$TEST_ROOT/wget-bin"
+for executable in /usr/bin/* /bin/*; do
+  [[ -f "$executable" && -x "$executable" && "${executable##*/}" != curl ]] || continue
+  [[ -e "$TEST_ROOT/wget-bin/${executable##*/}" ]] || ln -s "$executable" "$TEST_ROOT/wget-bin/${executable##*/}"
+done
+cat > "$TEST_ROOT/wget-bin/wget" <<'FIXTURE'
+#!/bin/bash
+set -euo pipefail
+[[ "${TEST_WGET_FAIL:-0}" != 1 ]] || exit 7
+[[ "$1" == --https-only && "$2" == --secure-protocol=TLSv1_2 && "$3" == -O ]]
+printf '%s\n' "$5" >> "$TEST_WGET_LOG"
+case "$5" in
+  *.sha256) cp "$TEST_RELEASE_ARCHIVE.sha256" "$4" ;;
+  *.tar.gz) cp "$TEST_RELEASE_ARCHIVE" "$4" ;;
+  *) exit 2 ;;
+esac
+FIXTURE
+chmod +x "$TEST_ROOT/wget-bin/wget"
+cp "$PROJECT_ROOT/install-day-one-mac" "$TEST_ROOT/public-installer"
+HOME="$TEST_ROOT/wget-home" PATH="$TEST_ROOT/wget-bin" TEST_WGET_LOG="$TEST_ROOT/wget.log" \
+  TEST_RELEASE_ARCHIVE="$archive" "$TEST_ROOT/public-installer" --release fixture >/dev/null
+[[ -x "$TEST_ROOT/wget-home/.local/bin/day-one-mac" ]] || fail 'wget fallback failed to install'
+[[ "$(wc -l < "$TEST_ROOT/wget.log" | tr -d ' ')" == 2 ]] || fail 'wget did not fetch archive and checksum'
+
+if HOME="$TEST_ROOT/wget-failed-home" PATH="$TEST_ROOT/wget-bin" TEST_WGET_FAIL=1 \
+  TEST_WGET_LOG="$TEST_ROOT/wget.log" TEST_RELEASE_ARCHIVE="$archive" \
+  "$TEST_ROOT/public-installer" --release fixture >/dev/null 2>&1; then
+  fail 'wget failure was ignored'
+fi
+[[ ! -e "$TEST_ROOT/wget-failed-home/.local/bin/day-one-mac" ]] || fail 'failed download installed a launcher'
+
 # Explicit archive must win over the checkout autodetection.
 printf 'corrupted\n' >> "$archive"
 if HOME="$TEST_ROOT/corrupt-home" "$PROJECT_ROOT/install-day-one-mac" --archive "$archive" >"$TEST_ROOT/result" 2>&1; then

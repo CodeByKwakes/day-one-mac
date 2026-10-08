@@ -111,7 +111,7 @@ verify_dotfiles_remote() {
       provider=github
       repo_slug="$(printf '%s\n' "$remote_url" \
         | sed -E 's#^(ssh://)?git@github\.com[:/]##; s#^https://github\.com/##; s#\.git$##')"
-      [[ "$TRACK" == 1 || "$TRACK" == 3 ]] || {
+      [[ "$TRACK" == 1 || "$TRACK" == 3 || "$TRACK" == 4 ]] || {
         err "A GitHub dotfiles remote does not match Track $TRACK."
         return "$EX_GATE"
       }
@@ -124,7 +124,7 @@ verify_dotfiles_remote() {
       ;;
     *ssh.dev.azure.com*|*dev.azure.com/*/_git/*)
       provider=azure
-      [[ "$TRACK" == 2 || "$TRACK" == 3 ]] || {
+      [[ "$TRACK" == 2 || "$TRACK" == 3 || "$TRACK" == 4 ]] || {
         err "An Azure DevOps dotfiles remote does not match Track $TRACK."
         return "$EX_GATE"
       }

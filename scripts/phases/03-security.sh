@@ -542,6 +542,7 @@ phase_03_onepassword() {
   verify_onepassword_cli_integration || return "$EX_MANUAL"
   phase_step_done "1Password CLI integration answers 'op account list'"
   case "$TRACK" in
+    4) key_guidance="Expose a trusted identity through your selected agent; provider registration is self-managed (Phase 3 Track 4)." ;;
     1) key_guidance="Create a new GitHub Ed25519 key or import the trusted existing GitHub key; then allow its vault." ;;
     2) key_guidance="Create a new Azure DevOps RSA 3072-bit key or import the trusted existing RSA key; then allow its vault." ;;
     3) key_guidance="Create/import the GitHub and Azure DevOps keys in Step 3.4; use RSA for Azure and pin separate keys to each provider." ;;

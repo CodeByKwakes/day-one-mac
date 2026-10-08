@@ -5,6 +5,7 @@ jetbrains-mono-nerd-font	required	04	JetBrains Mono Nerd Font	font-jetbrains-mon
 raycast	required	04	Raycast	raycast	app	/Applications/Raycast.app	com.raycast.macos	-
 visual-studio-code	required	04	Visual Studio Code	visual-studio-code	app	/Applications/Visual Studio Code.app	com.microsoft.VSCode	-
 warp	required	04	Warp	warp	app	/Applications/Warp.app	dev.warp.Warp-Stable	-
+docker-desktop	optional	09	Docker Desktop	docker-desktop	app	/Applications/Docker.app	com.docker.docker	docker
 orbstack	optional	09	OrbStack	orbstack	app	/Applications/OrbStack.app	-	docker
 dbeaver-community	optional	09	DBeaver Community	dbeaver-community	app	/Applications/DBeaver.app	org.jkiss.dbeaver.core.product	dbeaver
 claude-code	optional	10	Claude Code	claude-code	cli	-	-	claude

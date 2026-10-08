@@ -336,7 +336,7 @@ meet them if you rerun it by hand, so they are worth recognising:
 
 **On passphrases generally:** the Day One Mac flow has no SSH passphrase to
 choose. 1Password holds the private key and your Mac login plus Touch ID is what
-unlocks it. The only time you type an SSH passphrase is Phase 3 Step 3.4c, when
+unlocks it. The only time you type an SSH passphrase is Phase 3’s provider-specific import step, when
 importing an *existing* protected key — and you type the old key's existing
 passphrase once, so 1Password can decrypt and re-protect it.
 

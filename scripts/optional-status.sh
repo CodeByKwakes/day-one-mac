@@ -6,6 +6,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/lib/project-paths.sh"
+source "$SCRIPT_DIR/lib/container-runtime.sh"
+day_one_container_cli_path
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
 source "$SCRIPT_DIR/lib/application-ownership.sh"
 
@@ -422,6 +424,74 @@ print_module() {
   esac
 }
 
+print_group_status() {
+  local label="$1" start="$2" end="$3" i ready=0 evidence=0 total
+  total=$((end - start + 1))
+  for ((i=start; i<=end; i++)); do
+    [[ "${STATUSES[$i]}" != ready ]] || ready=$((ready + 1))
+    case "${STATUSES[$i]}" in ready|partial|review) evidence=$((evidence + 1)) ;; esac
+  done
+  if [[ "$ready" == "$total" ]]; then
+    printf '%s: fully complete (%s/%s modules ready)\n' "$label" "$ready" "$total"
+  elif [[ "$evidence" -gt 0 ]]; then
+    printf '%s: partially complete (%s/%s modules ready; skipped modules remain incomplete)\n' "$label" "$ready" "$total"
+  else
+    printf '%s: not complete (0/%s modules ready)\n' "$label" "$total"
+  fi
+}
+
+print_payload_breakdown() {
+  local id="$1" token services state installed report kind version owner
+  case "$id" in
+    09)
+      services="$(state_value database-services)"
+      for token in postgres redis mongodb; do
+        state='not selected / not verified'
+        if contains_csv "$services" "$token"; then
+          if docker_ready; then
+            case "$token" in postgres) kind=dev-postgres ;; redis) kind=dev-redis ;; mongodb) kind=dev-mongo ;; esac
+            state="$(container_state "$kind")"
+          else state='not available (engine unreachable)'; fi
+        fi
+        printf '      %s: %s\n' "$token" "$state"
+      done ;;
+    10|16)
+      if [[ -s "$STATE_DIR/software-$id.tsv" ]]; then
+        report="$("$SCRIPT_DIR/configure-software.sh" --module "$id" --check 2>/dev/null || true)"
+        while IFS=$'\t' read -r kind token state version owner; do
+          case "$kind" in app|formula|extension)
+            case "$state" in ready) state=installed ;; missing) state='not installed' ;; esac
+            printf '      %s %s: %s\n' "$kind" "$token" "$state" ;;
+          esac
+        done <<< "$report"
+      elif [[ "$id" == 10 ]]; then
+        installed="$(state_value ai-clients)"
+        for token in claude codex copilot-app copilot-cli raycast-ai copilot-vscode; do
+          state='not selected / not verified'
+          if contains_csv "$installed" "$token"; then
+            state='not installed'
+            if kind="$(ai_app_id "$token" 2>/dev/null)" && day_one_app_detect "$kind"; then
+              [[ "$DAY_ONE_APP_STATUS" != ready ]] || state=installed
+            elif [[ "$token" == copilot-vscode ]] && command -v code >/dev/null 2>&1; then
+              code --list-extensions 2>/dev/null | grep -Eiq '^github\.copilot($|-chat$)' && state=installed
+            fi
+          fi
+          printf '      %s: %s\n' "$token" "$state"
+        done
+      fi ;;
+    13)
+      installed="$(brew list --formula 2>/dev/null || true)"
+      if [[ -s "$STATE_DIR/optional-cli-packages" ]]; then
+        while IFS= read -r token; do
+          [[ -n "$token" ]] || continue
+          state='not installed'
+          grep -Fxq "$token" <<< "$installed" && state=installed
+          printf '      %s: %s\n' "$token" "$state"
+        done < <(tr ',' '\n' < "$STATE_DIR/optional-cli-packages")
+      fi ;;
+  esac
+}
+
 escape_table() {
   printf '%s' "$1" | tr '\n' ' ' | sed 's/|/\\|/g'
 }
@@ -445,6 +515,9 @@ write_report() {
         "$id" "$(module_title "$id")" "${STATUSES[$i]}" \
         "$(escape_table "${DETAILS[$i]}")" "$(escape_table "${ACTIONS[$i]}")"
     done
+    printf '\n'
+    print_group_status 'Optional phase' 0 6
+    print_group_status 'Advanced phase' 7 14
     printf '\n## Status meanings\n\n'
     printf -- '- **ready:** the module has sufficient machine-verifiable evidence, or an Advanced guide fingerprint is current.\n'
     printf -- '- **partial:** automated evidence exists, but a manual/UI/security checklist still needs human verification.\n'
@@ -484,6 +557,8 @@ for id in "${MODULE_IDS[@]}"; do
   DETAILS+=("$RESULT_DETAIL")
   ACTIONS+=("$RESULT_ACTION")
   print_module "$id"
+  printf '      %s\n' "$RESULT_DETAIL"
+  [[ "$RESULT_STATUS" == 'not selected' ]] || print_payload_breakdown "$id"
   case "$RESULT_STATUS" in
     partial) PARTIALS=$((PARTIALS + 1)) ;;
     pending) PENDING=$((PENDING + 1)) ;;
@@ -491,6 +566,9 @@ for id in "${MODULE_IDS[@]}"; do
     blocked) FAILURES=$((FAILURES + 1)) ;;
   esac
 done
+
+print_group_status 'Optional phase' 0 6
+print_group_status 'Advanced phase' 7 14
 
 printf '\nSelected-module attention: %s blocked · %s review · %s partial · %s pending\n' \
   "$FAILURES" "$REVIEWS" "$PARTIALS" "$PENDING"

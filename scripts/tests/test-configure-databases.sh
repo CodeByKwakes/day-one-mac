@@ -20,13 +20,14 @@ cat > "$MOCK_BIN/docker" <<'EOF'
 set -euo pipefail
 printf '%s\n' "$*" >> "$MOCK_DOCKER_LOG"
 case "${1:-}" in
+  --version) [[ "${MOCK_DOCKER_CLI_FAIL:-0}" != 1 ]]; exit $? ;;
   info)
     [[ "${MOCK_DOCKER_INFO_FAIL:-0}" != 1 ]] || exit 1
     if [[ "${MOCK_DOCKER_REQUIRE_ORB_START:-0}" == 1 ]]; then
       [[ -f "$MOCK_DOCKER_STATE/orbstack-started" ]] || exit 1
     fi
     ;;
-  context) [[ "$2" == show ]]; printf 'fixture-context\n' ;;
+  context) [[ "$2" == show ]]; printf '%s\n' "${MOCK_DOCKER_CONTEXT:-orbstack}" ;;
   network)
     if [[ "$2" == inspect ]]; then [[ -f "$MOCK_DOCKER_STATE/network-$3" ]]
     else touch "$MOCK_DOCKER_STATE/network-$3"; printf '%s\n' "$3"; fi
@@ -84,6 +85,7 @@ chmod +x "$MOCK_BIN/orb"
 
 run_databases() {
   HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE" \
+    DAY_ONE_MAC_APPLICATIONS_ROOT="$TEST_ROOT/no-applications" \
     MOCK_DOCKER_STATE="$MOCK_STATE" MOCK_DOCKER_LOG="$MOCK_LOG" \
     PATH="$MOCK_BIN:/usr/bin:/bin:/usr/sbin:/sbin" \
     "$SCRIPT_DIR/configure-databases.sh" "$@"
@@ -155,6 +157,7 @@ grep -Fq 'dry run complete' "$TEST_ROOT/dry-run.txt"
 [[ ! -e "$dry_state/database-services" ]]
 
 if HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE" \
+    DAY_ONE_MAC_APPLICATIONS_ROOT="$TEST_ROOT/no-applications" \
   MOCK_DOCKER_INFO_FAIL=1 MOCK_DOCKER_STATE="$MOCK_STATE" MOCK_DOCKER_LOG="$MOCK_LOG" \
   DAY_ONE_MAC_DOCKER_WAIT_SECONDS=1 \
   PATH="$MOCK_BIN:/usr/bin:/bin:/usr/sbin:/sbin" \
@@ -198,5 +201,45 @@ env DAY_ONE_MAC_STATE_ROOT="$TEST_ROOT/no-phase" DAY_ONE_MAC_STATE_DIR="$TEST_RO
   > "$TEST_ROOT/no-phase-preview.txt"
 [[ ! -e "$TEST_ROOT/no-phase" && ! -e "$TEST_ROOT/no-phase.operation.lock" ]]
 grep -Fq 'conditional on absence' "$TEST_ROOT/no-phase-preview.txt"
+
+# A healthy engine must not hide a broken client executable.
+if MOCK_DOCKER_CLI_FAIL=1 DAY_ONE_MAC_DOCKER_WAIT_SECONDS=1 run_databases --saved --yes > "$TEST_ROOT/broken-cli.txt" 2>&1; then
+  printf 'FAIL: broken Docker CLI counted as success\n' >&2; exit 1
+fi
+grep -Fq 'Docker CLI is present but cannot run' "$TEST_ROOT/broken-cli.txt"
+
+# Docker Desktop may have a bundle but no CLI symlink on the inherited PATH.
+mkdir -p "$TEST_ROOT/apps/Docker.app/Contents/Resources/bin"
+mv "$MOCK_BIN/docker" "$TEST_ROOT/apps/Docker.app/Contents/Resources/bin/docker"
+cat > "$MOCK_BIN/open" <<'EOF'
+#!/usr/bin/env bash
+[[ "$*" == '-a Docker' ]] || exit 1
+touch "$MOCK_DOCKER_STATE/orbstack-started"
+EOF
+chmod +x "$MOCK_BIN/open"
+rm -f "$MOCK_STATE/orbstack-started"
+HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE" \
+  DAY_ONE_MAC_APPLICATIONS_ROOT="$TEST_ROOT/apps" \
+  MOCK_DOCKER_CONTEXT=desktop-linux MOCK_DOCKER_REQUIRE_ORB_START=1 MOCK_DOCKER_STATE="$MOCK_STATE" MOCK_DOCKER_LOG="$MOCK_LOG" \
+  DAY_ONE_MAC_DOCKER_WAIT_SECONDS=2 PATH="$MOCK_BIN:/usr/bin:/bin:/usr/sbin:/sbin" \
+  "$SCRIPT_DIR/configure-databases.sh" --saved --container-runtime docker --yes \
+  > "$TEST_ROOT/docker-desktop.txt"
+grep -Fq 'Starting Docker Desktop' "$TEST_ROOT/docker-desktop.txt"
+grep -Fqx docker "$TEST_STATE/container-runtime"
+# Read-only status must discover the same bundled executable.
+HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE" \
+  DAY_ONE_MAC_APPLICATIONS_ROOT="$TEST_ROOT/apps" \
+  MOCK_DOCKER_CONTEXT=desktop-linux MOCK_DOCKER_STATE="$MOCK_STATE" MOCK_DOCKER_LOG="$MOCK_LOG" \
+  PATH="$MOCK_BIN:/usr/bin:/bin:/usr/sbin:/sbin" \
+  "$SCRIPT_DIR/configure-databases.sh" --saved --check >/dev/null
+
+if HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE" \
+  DAY_ONE_MAC_APPLICATIONS_ROOT="$TEST_ROOT/apps" \
+  MOCK_DOCKER_CONTEXT=orbstack MOCK_DOCKER_STATE="$MOCK_STATE" MOCK_DOCKER_LOG="$MOCK_LOG" \
+  PATH="$MOCK_BIN:/usr/bin:/bin:/usr/sbin:/sbin" \
+  "$SCRIPT_DIR/configure-databases.sh" --saved --check > "$TEST_ROOT/wrong-context.txt" 2>&1; then
+  printf 'FAIL: saved Docker Desktop choice accepted a different engine\n' >&2; exit 1
+fi
+grep -Fq 'active Docker context is orbstack' "$TEST_ROOT/wrong-context.txt"
 
 printf 'PASS: optional database install, resume, dry-run, status, and Docker diagnostics\n'

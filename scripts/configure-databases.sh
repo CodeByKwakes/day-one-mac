@@ -7,6 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/project-paths.sh"
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
 source "$SCRIPT_DIR/lib/module-execution.sh"
+source "$SCRIPT_DIR/lib/container-runtime.sh"
 ORIGINAL_ARGS=("$@")
 
 STATE_ROOT="$(day_one_state_root)"
@@ -15,6 +16,7 @@ COMPLETED_DIR="$STATE_DIR/optional-completed"
 REPORT="$STATE_DIR/database-status.md"
 SERVICES=""
 ACTION=install
+CONTAINER_RUNTIME=auto
 DRY_RUN=0
 ASSUME_YES=0
 USE_SAVED=0
@@ -29,6 +31,8 @@ Usage: ./configure-databases.sh [options]
 Install or resume selected local development databases in Docker containers.
 
   --services CSV   postgres, redis, mongodb, or a comma-separated selection
+  --container-runtime auto|docker|orbstack
+                   reuse an existing engine or choose Docker Desktop / OrbStack
   --saved          use the services saved by `day-one-mac optional`
   --status         show selected container state without changing anything
   --check          verify every selected service; exit non-zero if not ready
@@ -111,11 +115,7 @@ docker_server_ready() {
 }
 
 refresh_orbstack_cli_path() {
-  if [[ -d "$ORBSTACK_CLI_DIR" && ":$PATH:" != *":$ORBSTACK_CLI_DIR:"* ]]; then
-    PATH="$ORBSTACK_CLI_DIR:$PATH"
-    export PATH
-  fi
-  hash -r 2>/dev/null || true
+  day_one_container_cli_path
 }
 
 orbstack_available() {
@@ -136,11 +136,11 @@ wait_for_docker_ready() {
   deadline=$((SECONDS + DOCKER_WAIT_SECONDS))
   while (( SECONDS < deadline )); do
     refresh_orbstack_cli_path
-    if command -v docker >/dev/null 2>&1 && docker_server_ready; then return 0; fi
+    if command -v docker >/dev/null 2>&1 && docker --version >/dev/null 2>&1 && docker_server_ready; then return 0; fi
     sleep 2
   done
   refresh_orbstack_cli_path
-  command -v docker >/dev/null 2>&1 && docker_server_ready
+  command -v docker >/dev/null 2>&1 && docker --version >/dev/null 2>&1 && docker_server_ready
 }
 
 start_orbstack_and_wait() {
@@ -157,6 +157,18 @@ start_orbstack_and_wait() {
   return 1
 }
 
+verify_selected_context() {
+  local expected context
+  [[ "$CONTAINER_RUNTIME" != auto ]] || return 0
+  case "$CONTAINER_RUNTIME" in docker) expected=desktop-linux ;; orbstack) expected=orbstack ;; esac
+  context="$(docker context show 2>/dev/null || true)"
+  [[ "$context" == "$expected" ]] || {
+    err "Selected $CONTAINER_RUNTIME, but the active Docker context is $context."
+    warn "Review docker context ls, then deliberately run: docker context use $expected"
+    return 10
+  }
+}
+
 ensure_docker() {
   local context orbstack_attempted=0
   [[ "$DOCKER_WAIT_SECONDS" =~ ^[0-9]+$ && "$DOCKER_WAIT_SECONDS" -gt 0 ]] || {
@@ -168,33 +180,53 @@ ensure_docker() {
     if command -v docker >/dev/null 2>&1 && docker_server_ready; then
       DOCKER_INSPECTABLE=1
     else
-      info 'Docker is unavailable or stopped. Apply may install/start OrbStack after approval.'
+      info 'Docker is unavailable or stopped. Apply uses the selected Docker Desktop or OrbStack engine after approval.'
       info 'Resource state is unknown; the following creates are conditional on absence.'
     fi
     return 0
   fi
-  if ! command -v docker >/dev/null 2>&1; then
-    if orbstack_available; then
-      orbstack_attempted=1
-      start_orbstack_and_wait || true
+  if command -v docker >/dev/null 2>&1 && docker --version >/dev/null 2>&1 && docker_server_ready; then
+    verify_selected_context || return $?
+    DOCKER_INSPECTABLE=1
+    return 0
+  fi
+  if [[ "$CONTAINER_RUNTIME" == auto ]]; then
+    if [[ -d "${DAY_ONE_MAC_APPLICATIONS_ROOT:-/Applications}/Docker.app" || -d "$HOME/Applications/Docker.app" ]]; then
+      CONTAINER_RUNTIME=docker
+    elif orbstack_available; then CONTAINER_RUNTIME=orbstack
+    elif [[ -t 0 ]]; then
+      printf 'Container engine: [1] Docker Desktop  [2] OrbStack: '
+      IFS= read -r answer
+      case "$answer" in 1) CONTAINER_RUNTIME=docker ;; 2) CONTAINER_RUNTIME=orbstack ;; *) err 'Choose Docker Desktop or OrbStack.'; return 10 ;; esac
+    else
+      err 'Choose --container-runtime docker or --container-runtime orbstack; no existing engine was detected.'
+      return 10
     fi
   fi
-  if ! command -v docker >/dev/null 2>&1; then
-    "$SCRIPT_DIR/application-status.sh" --id orbstack --install-missing
-    refresh_orbstack_cli_path
-  fi
-  if orbstack_available \
-     && { ! command -v docker >/dev/null 2>&1 || ! docker_server_ready; } \
-     && [[ "$orbstack_attempted" == 0 ]]; then
+  day_one_write_state "$STATE_DIR/container-runtime" "$CONTAINER_RUNTIME"
+  if [[ "$CONTAINER_RUNTIME" == docker ]]; then
+    if [[ ! -d "${DAY_ONE_MAC_APPLICATIONS_ROOT:-/Applications}/Docker.app" && ! -d "$HOME/Applications/Docker.app" ]]; then
+      "$SCRIPT_DIR/application-status.sh" --id docker-desktop --install-missing
+    fi
+    info 'Starting Docker Desktop; complete its first-run prompts.'
+    if ! open -a Docker || ! wait_for_docker_ready; then
+      warn 'Docker Desktop did not become ready; finish its setup and rerun.'
+    fi
+  else
+    if ! orbstack_available; then
+      "$SCRIPT_DIR/application-status.sh" --id orbstack --install-missing
+    fi
     orbstack_attempted=1
     start_orbstack_and_wait || true
   fi
+  refresh_orbstack_cli_path
   command -v docker >/dev/null 2>&1 || {
-    err 'Docker is unavailable after installing or checking OrbStack.'
-    warn 'Open OrbStack, finish its first-run setup, and wait until Docker is running.'
-    warn "OrbStack bundles Docker and normally exposes it through $ORBSTACK_CLI_DIR; do not install a second Docker engine."
+    err 'Docker CLI is unavailable after installing or checking the selected engine.'
+    warn 'Open the selected container application, finish its first-run setup, and wait until Docker is running.'
+    warn 'Verify the bundled CLI location and PATH described in Optional 9 Step 9.2; installing a second engine does not repair PATH.'
     return 1
   }
+  docker --version >/dev/null 2>&1 || { err 'Docker CLI is present but cannot run; repair the selected application installation.'; return 1; }
   if ! docker_server_ready; then
     context="$(docker context show 2>/dev/null || printf unknown)"
     err "Docker is installed, but its server is not reachable (context: $context)."
@@ -206,6 +238,7 @@ ensure_docker() {
     warn 'Use `docker info` to confirm the Server section is available. Do not run Docker with sudo.'
     return 1
   fi
+  verify_selected_context || return $?
   DOCKER_INSPECTABLE=1
 }
 
@@ -381,10 +414,12 @@ show_status() {
     err 'Docker command is missing'
     return 1
   fi
+  docker --version >/dev/null 2>&1 || { err 'Docker CLI is present but cannot run.'; return 1; }
   if ! docker_server_ready; then
     err 'Docker server is not reachable'
     return 1
   fi
+  verify_selected_context || return $?
   for service in postgres redis mongodb; do
     contains_csv "$SERVICES" "$service" || continue
     container="$(service_container "$service")"
@@ -405,6 +440,7 @@ show_status() {
 
 while (( $# )); do
   case "$1" in
+    --container-runtime) [[ "$#" -ge 2 ]] || { err '--container-runtime needs auto, docker, or orbstack'; exit 2; }; CONTAINER_RUNTIME="$2"; shift 2 ;;
     --services) [[ "$#" -ge 2 ]] || { err '--services needs a comma-separated value'; exit 2; }; SERVICES="$2"; shift 2 ;;
     --saved) USE_SAVED=1; shift ;;
     --status) ACTION=status; shift ;;
@@ -415,6 +451,9 @@ while (( $# )); do
     *) err "unknown option: $1"; usage >&2; exit 2 ;;
   esac
 done
+
+[[ "$CONTAINER_RUNTIME" != auto || ! -s "$STATE_DIR/container-runtime" ]] || CONTAINER_RUNTIME="$(sed -n '1p' "$STATE_DIR/container-runtime")"
+case "$CONTAINER_RUNTIME" in auto|docker|orbstack) ;; *) err 'invalid container runtime'; exit 2 ;; esac
 
 if [[ "$ACTION" == install && "$DRY_RUN" == 0 ]]; then
   day_one_serialize databases "$0" "${ORIGINAL_ARGS[@]}"

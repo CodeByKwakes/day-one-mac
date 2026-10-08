@@ -96,7 +96,7 @@ Usage: ./setup.sh [options]
                               required with --yes when explicit actions run Phase 1
   --guided                    run the eight required phases (default)
   --phase NN                  run one required phase; repeatable
-  --track 1|2|3               1 GitHub; 2 Azure DevOps; 3 both
+  --track 1|2|3|4             1 GitHub; 2 Azure DevOps; 3 both; 4 none of the above
   --stack node|python|both    language toolchain selection
   --layout LAYOUT             none, repository, purpose, or existing
   --ghq no|yes                optional ghq; yes approves installation in the Centre
@@ -223,6 +223,7 @@ track_name() {
     1) printf 'GitHub only\n' ;;
     2) printf 'Azure DevOps only\n' ;;
     3) printf 'GitHub + Azure DevOps\n' ;;
+    4) printf 'None of the above (self-managed authentication)\n' ;;
   esac
 }
 
@@ -231,6 +232,7 @@ track_value() {
     1) printf 'github\n' ;;
     2) printf 'azure\n' ;;
     3) printf 'github+azure\n' ;;
+    4) printf 'custom\n' ;;
   esac
 }
 
@@ -254,7 +256,7 @@ load_or_choose_selections() {
     saved_track_schema="$(state_value track-schema-version)"
     if [[ -n "$saved_track" && "$saved_track_schema" != "$TRACK_SCHEMA_VERSION" ]]; then
       err "The saved track predates the current track numbering and cannot be reinterpreted safely."
-      err "Choose it again explicitly: --track 1 (GitHub), 2 (Azure), or 3 (both)."
+      err "Choose it again explicitly: --track 1 (GitHub), 2 (Azure), 3 (both), or 4 (custom)."
       exit 2
     fi
     TRACK="$saved_track"
@@ -274,9 +276,10 @@ load_or_choose_selections() {
   [[ -n "$MACOS_SETTINGS_PLAN" ]] || MACOS_SETTINGS_PLAN="$(state_value macos-settings-plan)"
   [[ -n "$AUTH_MODE" ]] || AUTH_MODE="$(state_value auth-mode)"
   # Setups saved before this choice existed all used the 1Password agent.
-  [[ -n "$AUTH_MODE" ]] || AUTH_MODE=1password
-
-  [[ -n "$TRACK" ]] || TRACK="$(ask 'Hosting track: 1 GitHub, 2 Azure, 3 both' 1 '^[123]$')"
+  [[ -n "$TRACK" ]] || TRACK="$(ask 'Hosting track: 1 GitHub, 2 Azure, 3 both, 4 none of the above' 1 '^[1234]$')"
+  if [[ -z "$AUTH_MODE" ]]; then
+    if [[ "$TRACK" == 4 ]]; then AUTH_MODE=https; else AUTH_MODE=1password; fi
+  fi
   [[ -n "$STACK" ]] || STACK="$(ask 'Stack: node, python, or both' both '^(node|python|both)$')"
   if [[ -z "$PRIMARY_IDE" ]]; then
     if [[ "$DRY_RUN" == 1 || ! -t 0 ]]; then PRIMARY_IDE=vscode
@@ -288,7 +291,7 @@ load_or_choose_selections() {
     else MACOS_SETTINGS_PLAN="$(ask 'Early macOS settings: configure or skip' configure '^(configure|skip)$')"
     fi
   fi
-  [[ "$TRACK" =~ ^[123]$ ]] || { err "track must be 1, 2, or 3"; exit 2; }
+  [[ "$TRACK" =~ ^[1234]$ ]] || { err "track must be 1, 2, 3, or 4"; exit 2; }
   [[ "$STACK" =~ ^(node|python|both)$ ]] || { err "stack must be node, python, or both"; exit 2; }
   [[ "$PRIMARY_IDE" =~ ^(vscode|other)$ ]] || { err "primary IDE must be vscode or other"; exit 2; }
   [[ -z "$DOTFILES_VERSIONING" || "$DOTFILES_VERSIONING" =~ ^(none|git|local)$ ]] || { err "dotfiles versioning must be none, git or local"; exit 2; }
@@ -1293,7 +1296,7 @@ while [[ $# -gt 0 ]]; do
       REQUESTED_PHASES="$REQUESTED_PHASES ${1#0}"
       GUIDED=0
       ;;
-    --track) shift; [[ $# -gt 0 ]] || { err "--track needs 1, 2, or 3"; exit 2; }; TRACK="$1"; TRACK_EXPLICIT=1 ;;
+    --track) shift; [[ $# -gt 0 ]] || { err "--track needs 1, 2, 3, or 4"; exit 2; }; TRACK="$1"; TRACK_EXPLICIT=1 ;;
     --stack) shift; [[ $# -gt 0 ]] || { err "--stack needs node, python, or both"; exit 2; }; STACK="$1" ;;
     --layout) shift; [[ $# -gt 0 ]] || exit 2; FOLDER_LAYOUT="$1"; FOLDER_CHOICES_EXPLICIT=1 ;;
     --ghq) shift; [[ $# -gt 0 ]] || exit 2; GHQ_CHOICE="$1"; FOLDER_CHOICES_EXPLICIT=1 ;;
@@ -1427,7 +1430,7 @@ if [[ -n "$SSH_PIN_PROVIDER" ]]; then
     github) export_provider_public_key github || ssh_pin_failures=1 ;;
     azure)  export_provider_public_key azure || ssh_pin_failures=1 ;;
     both)
-      [[ "$TRACK" =~ ^[123]$ ]] || {
+      [[ "$TRACK" =~ ^[1234]$ ]] || {
         err "No saved hosting track, so 'both' cannot decide which keys to pin."
         err "Name the provider instead: --ssh-pin github, or --ssh-pin azure."
         exit 2
@@ -1458,7 +1461,7 @@ if [[ "$SHOW_STATUS" == 1 ]]; then
   [[ -n "$AUTH_MODE" ]] || AUTH_MODE=1password
   OPTIONAL_MODULES="$(state_value optional-modules)"
   if [[ -n "$TRACK" && "$(state_value track-schema-version)" != "$TRACK_SCHEMA_VERSION" && "$TRACK_EXPLICIT" != 1 ]]; then
-    warn "Saved track uses the retired numbering; rerun with --track 1, 2, or 3." >&2
+    warn "Saved track uses the retired numbering; rerun with --track 1, 2, 3, or 4." >&2
   fi
   if [[ "$JSON_OUTPUT" == 1 ]]; then inspect_required_actions status; else show_status; fi
   exit 0

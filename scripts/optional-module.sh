@@ -8,6 +8,7 @@ STATE_ROOT="$(day_one_state_root)"
 STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
 MODULE="" ACTION="" SELECTION="" SELECTOR="" ASSUME_YES=0 LIST=0
 APP_POLICY=""
+CONTAINER_RUNTIME=""
 
 usage() {
   cat <<'EOF'
@@ -22,6 +23,8 @@ Usage: day-one-mac optional --module ID --plan|--apply|--check|--resume [selecti
   --apply            apply selected work after confirmation
   --check            read-only verification; nonzero if missing/unhealthy
   --resume           apply the last saved selection; cannot change selection
+  --container-runtime auto|docker|orbstack
+                     Module 09 engine selection
   --services CSV     Module 09 services; otherwise use saved database selection
   --packages CSV     Module 13 formulae; otherwise use saved CLI selection
   --clients CSV      Module 10 client IDs; otherwise use saved AI selection
@@ -47,6 +50,9 @@ while (( $# )); do
     --services|--packages|--clients|--manifest)
       [[ $# -ge 2 && -z "$SELECTOR" && -n "$2" ]] || die 'choose one nonempty selection'
       SELECTOR="$1"; SELECTION="$2"; shift 2 ;;
+    --container-runtime)
+      [[ $# -ge 2 && -z "$CONTAINER_RUNTIME" ]] || die '--container-runtime needs one value'
+      CONTAINER_RUNTIME="$2"; shift 2 ;;
     --app-install-policy)
       [[ $# -ge 2 && -z "$APP_POLICY" ]] || die '--app-install-policy needs one value'
       APP_POLICY="$2"; shift 2 ;;
@@ -57,7 +63,7 @@ while (( $# )); do
   esac
 done
 if [[ "$LIST" == 1 ]]; then
-  [[ -z "$MODULE$ACTION$SELECTOR$APP_POLICY" && "$ASSUME_YES" == 0 ]] || die '--list cannot be combined with a module action'
+  [[ -z "$MODULE$ACTION$SELECTOR$APP_POLICY$CONTAINER_RUNTIME" && "$ASSUME_YES" == 0 ]] || die '--list cannot be combined with a module action'
   printf 'ID\tLayer\tExecution\tPrerequisite\tModule\n'
   awk -F '\t' 'BEGIN {OFS="\t"} !/^#/ {print $1,$2,$3,$4,$5}' "$PROJECT_DIR/config/modules.tsv"
   exit 0
@@ -72,6 +78,7 @@ if [[ "$mode" != executable ]]; then
 fi
 if [[ "$ACTION" == resume && -n "$SELECTOR" ]]; then die '--resume uses saved choices; use --apply to change them'; fi
 if [[ "$ASSUME_YES" == 1 && "$ACTION" != apply && "$ACTION" != resume ]]; then die '--yes is only valid with --apply or --resume'; fi
+[[ -z "$CONTAINER_RUNTIME" || "$MODULE" == 09 ]] || die 'container runtime is only supported for 09'
 [[ -z "$APP_POLICY" || "$MODULE" == 10 || "$MODULE" == 16 ]] || die 'application policy is only supported for 10 and 16'
 [[ "$ACTION" != inventory || ( "$MODULE" == 16 && -z "$SELECTOR$APP_POLICY" ) ]] || die '--inventory is only supported for Module 16 without other selections'
 if [[ "$MODULE" =~ ^(11|12|14|15|17|18|21|22)$ ]]; then
@@ -120,6 +127,7 @@ if [[ "$ACTION" == apply || "$ACTION" == resume ]]; then
 fi
 # Underlying installers read saved selections after acquiring the apply lock.
 args=()
+[[ -z "$CONTAINER_RUNTIME" ]] || args+=(--container-runtime "$CONTAINER_RUNTIME")
 if [[ -n "$SELECTION" ]]; then args+=("$SELECTOR" "$SELECTION"); else args+=(--saved); fi
 case "$ACTION" in
   plan) args+=(--dry-run) ;;

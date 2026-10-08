@@ -18,6 +18,9 @@ INSTALLER="$HOME/Downloads/install-day-one-mac"
 curl --proto '=https' --tlsv1.2 -fsSL \
   https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac \
   -o "$INSTALLER"
+# Or, if GNU wget with HTTPS support is already installed:
+# wget --https-only --secure-protocol=TLSv1_2 -O "$INSTALLER" \
+#   https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac
 chmod 700 "$INSTALLER"
 less "$INSTALLER"
 "$INSTALLER"
@@ -140,7 +143,7 @@ eight-phase engine directly.
 Important setup selectors include:
 
 ```text
---track 1|2|3
+--track 1|2|3|4
 --stack node|python|both
 --layout none|repository|purpose|existing
 --ghq no|yes

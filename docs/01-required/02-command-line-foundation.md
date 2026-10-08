@@ -259,3 +259,7 @@ Reference: [Homebrew installation](https://brew.sh/) and
 ---
 
 [← Early macOS settings](MACOS-SETTINGS.md) · [Continue to the Installation Centre →](INSTALLATION-CENTRE.md)
+
+The Homebrew bootstrap above requires macOS’s bundled `curl`; the Day One Mac
+release installer separately supports either `curl` or GNU `wget` with HTTPS.
+Keep the system download tool available for Homebrew’s own installer.

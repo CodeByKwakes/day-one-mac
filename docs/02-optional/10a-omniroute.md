@@ -3,7 +3,7 @@
 # Optional 10A — OmniRoute AI gateway in Docker
 
 **Time:** 40–75 minutes · **Required:** no · **Prerequisites:** Phase 8, one
-selected AI client from Optional 10, and OrbStack running its Docker engine
+selected AI client from Optional 10, and Docker Desktop or OrbStack running its Docker engine
 
 ## Outcome
 
@@ -37,8 +37,8 @@ alter a client automatically.
 ## Executable digest-pinned container route
 
 Module 10A can create and resume one owned local gateway. It does not install
-or start OrbStack, set up providers, supply keys, change billing or route any
-client. Start OrbStack yourself and complete Phase 8 before applying.
+or start the container engine, set up providers, supply keys, change billing or route any
+client. Start your chosen engine yourself and complete Phase 8 before applying.
 
 Choose a reviewed release from the [upstream Docker guide](https://github.com/diegosouzapw/OmniRoute/blob/release/v3.8.51/docs/guides/DOCKER_GUIDE.md)
 and obtain its image digest from the publisher's registry metadata. A digest
@@ -98,7 +98,7 @@ performed automatically.
 
 For the shortest successful setup, complete one client before adding the rest:
 
-1. Start OrbStack and select its Docker context.
+1. Start Docker Desktop or OrbStack and select its Docker context.
 2. Start OmniRoute on the loopback address so it is reachable only from this Mac.
 3. Add one approved model provider.
 4. Create one endpoint key for local clients.
@@ -128,7 +128,7 @@ Raycast or a Claude/Codex/Copilot CLI command started in Warp
              approved AI provider
 ```
 
-OrbStack is the container engine. OmniRoute does not connect to a separate
+Docker Desktop or OrbStack is the container engine. OmniRoute does not connect to a separate
 OrbStack service, and the `docker run` command does not need an OrbStack-only
 flag. The Docker command sends work to whichever Docker **context** is active;
 Step 10A.2 makes the OrbStack context explicit before anything is created.
@@ -165,49 +165,35 @@ Complete only the matching sections below:
 Do not configure an unselected client just because it appears in the
 dashboard.
 
-## Step 10A.2 — Start OrbStack and select its Docker context
+## Step 10A.2 — Start Docker Desktop or OrbStack and select its Docker context
 
-This module needs Docker commands but does not need Docker Compose or a
-database. If OrbStack was not installed for Optional 9, install and open it:
+This module needs a local Docker engine. Choose and start **Docker Desktop** or
+**OrbStack** using [Optional 9 Step 9.2](09-databases.md#step-92--manual-path-choose-docker-desktop-or-orbstack).
+For the script-assisted route, the ownership-aware application check is:
 
 ```bash
+day-one-mac applications --id docker-desktop --install-missing
+# Or:
 day-one-mac applications --id orbstack --install-missing
-open -a OrbStack
 ```
 
-The check accepts a valid Company Portal or manual installation and does not
-add a second Homebrew-owned copy. If OrbStack is missing, choose Homebrew or an
-approved external installer; after the external installer finishes, press Enter
-so Day One Mac verifies it before you continue.
-
-Wait until OrbStack says Docker is running. Now list Docker's available
-contexts and show the active one:
+After first-run setup, list contexts and deliberately choose your engine:
 
 ```bash
 docker context ls
 docker context show
-```
-
-The active context must be `orbstack`. If `orbstack` appears in the list but is
-not active, switch deliberately:
-
-```bash
-docker context use orbstack
-```
-
-If `orbstack` is missing, quit and reopen OrbStack. Do not create the container
-under `desktop-linux`, `colima`, or another context and then switch: containers,
-images, and named volumes belong to the engine in which they were created.
-
-Finally, check both halves of Docker:
-
-```bash
+docker context use desktop-linux   # Docker Desktop
+# Or: docker context use orbstack
 docker version
+docker info
 ```
 
-The output must contain both **Client** and **Server** sections and should show
-`Context: orbstack`. If only the Client appears, the Docker engine is not ready.
-Open OrbStack and retry.
+The output must contain both **Client** and **Server**. Use `desktop-linux` for
+Docker Desktop or `orbstack` for OrbStack in the reviewed manifest and every
+explicit `--context` command below. The OrbStack examples remain valid by
+substituting `desktop-linux` when you chose Docker Desktop. Do not create a
+container in one engine and then switch; containers, images and named volumes
+belong to their original engine.
 
 Check whether port 20128 is already in use:
 

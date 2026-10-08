@@ -74,6 +74,9 @@ INSTALLER="$HOME/Downloads/install-day-one-mac"
 curl --proto '=https' --tlsv1.2 -fsSL \
   https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac \
   -o "$INSTALLER"
+# Or, if GNU wget with HTTPS support is already installed:
+# wget --https-only --secure-protocol=TLSv1_2 -O "$INSTALLER" \
+#   https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac
 chmod 700 "$INSTALLER"
 less "$INSTALLER"
 "$INSTALLER"
@@ -164,6 +167,7 @@ Choose exactly one:
 | **1 — GitHub** | Repositories are hosted only on GitHub | Install `gh` and verify GitHub SSH |
 | **2 — Azure DevOps 🏢** | Work is hosted only in Azure DevOps | Install `az` and omit every GitHub gate |
 | **3 — GitHub + Azure DevOps 🏢** | This Mac uses both providers | Install `gh` and `az` and verify both |
+| **4 — None of the above** | You manage repository access yourself | No mandatory provider CLI or sign-in; compare Phase 3 methods |
 
 Choose the [developer layout and optional ghq](../manual/developer-folders.md)
 separately. Four layouts are available; no ghq installation is preselected.
@@ -326,3 +330,8 @@ Do not advance while any item above is uncertain.
 ---
 
 [← Project home](../README.md) · [Continue to early macOS settings →](MACOS-SETTINGS.md)
+
+Track 4 (**none of the above**) leaves provider sign-in under your control.
+Use the provider-grouped [repository access methods](03-security-and-ssh.md#step-36--track-4-none-of-the-above)
+for public HTTPS, PATs, SSH agents, provider CLIs and credential helpers.
+Choose `--auth-mode https` if you need no managed SSH agent.

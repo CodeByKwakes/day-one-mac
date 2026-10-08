@@ -170,3 +170,9 @@ current checklist passes.
 ---
 
 [← Command reference](COMMAND-REFERENCE.md) · [Optional modules](../02-optional/README.md) · [Advanced modules](../03-advanced/README.md)
+
+The Optional and Advanced phase summaries are fully complete only when every
+module in the group is ready. A skipped module stays visible and prevents that
+group from appearing finished. Partial groups show each module’s evidence;
+database, AI/software and saved CLI selections also show individual payload
+installation or availability. Advanced `--status` uses this same live dashboard.

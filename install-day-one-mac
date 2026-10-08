@@ -50,7 +50,16 @@ if [[ -n "$SOURCE" ]]; then
   exec "$SOURCE/scripts/install-portable-command.sh" --source "$SOURCE" --standalone
 fi
 
-command -v curl >/dev/null 2>&1 || { printf 'curl is required.\n' >&2; exit 1; }
+download() {
+  if command -v curl >/dev/null 2>&1; then
+    curl --proto '=https' --tlsv1.2 -fL "$1" -o "$2"
+  elif command -v wget >/dev/null 2>&1; then
+    wget --https-only --secure-protocol=TLSv1_2 -O "$2" "$1"
+  else
+    printf 'curl or GNU wget with HTTPS support is required for downloads.\n' >&2
+    return 1
+  fi
+}
 command -v shasum >/dev/null 2>&1 || { printf 'shasum is required.\n' >&2; exit 1; }
 
 temporary="$(mktemp -d "${TMPDIR:-/tmp}/day-one-mac-install.XXXXXX")"
@@ -67,8 +76,8 @@ if [[ -z "$ARCHIVE" ]]; then
   ARCHIVE="$temporary/day-one-mac-runtime.tar.gz"
   checksum="$temporary/day-one-mac-runtime.tar.gz.sha256"
   printf 'Downloading Day One Mac runtime from %s\n' "$base"
-  curl --proto '=https' --tlsv1.2 -fL "$base/day-one-mac-runtime.tar.gz" -o "$ARCHIVE"
-  curl --proto '=https' --tlsv1.2 -fL "$base/day-one-mac-runtime.tar.gz.sha256" -o "$checksum"
+  download "$base/day-one-mac-runtime.tar.gz" "$ARCHIVE"
+  download "$base/day-one-mac-runtime.tar.gz.sha256" "$checksum"
 else
   ARCHIVE="$(cd "$(dirname "$ARCHIVE")" && pwd)/$(basename "$ARCHIVE")"
   checksum="$ARCHIVE.sha256"

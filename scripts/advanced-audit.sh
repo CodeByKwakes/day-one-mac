@@ -5,6 +5,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/project-paths.sh"
+source "$SCRIPT_DIR/lib/container-runtime.sh"
+day_one_container_cli_path
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
 source "$SCRIPT_DIR/lib/state.sh"
 source "$SCRIPT_DIR/lib/developer-folders.sh"
@@ -87,7 +89,7 @@ STACK="$(sed -n '1p' "$STATE_ROOT/stack" 2>/dev/null || true)"
   printf '|---|---|---|\n'
 } > "$REPORT"
 
-case "$TRACK" in 1|2|3) pass_gate "Track state" "Track $TRACK is recorded" ;; *) fail_gate "Track state" "Choose Track 1, 2, or 3 in required Phase 1" ;; esac
+case "$TRACK" in 1|2|3|4) pass_gate "Track state" "Track $TRACK is recorded" ;; *) fail_gate "Track state" "Choose Track 1, 2, 3, or 4 in required Phase 1" ;; esac
 case "$STACK" in node|python|both) pass_gate "Stack state" "$STACK is recorded" ;; *) fail_gate "Stack state" "Choose node, python, or both in required Phase 1" ;; esac
 
 for command_name in brew git chezmoi starship day-one-mac code; do

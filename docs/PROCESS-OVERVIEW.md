@@ -38,6 +38,9 @@ INSTALLER="$HOME/Downloads/install-day-one-mac"
 curl --proto '=https' --tlsv1.2 -fsSL \
   https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac \
   -o "$INSTALLER"
+# Or, if GNU wget with HTTPS support is already installed:
+# wget --https-only --secure-protocol=TLSv1_2 -O "$INSTALLER" \
+#   https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac
 chmod 700 "$INSTALLER"
 less "$INSTALLER"
 "$INSTALLER"
@@ -96,6 +99,7 @@ remove VS Code from the required compatibility base.
 | **1** | GitHub | GitHub browser login plus the selected SSH or HTTPS mode |
 | **2** | Azure DevOps 🏢 | Azure login plus the selected SSH or HTTPS mode |
 | **3** | GitHub and Azure DevOps 🏢 | Both provider logins plus the selected SSH or HTTPS mode |
+| **4** | None of the above | Self-managed repository access; compare all methods in [Phase 3](01-required/03-security-and-ssh.md#step-36--track-4-none-of-the-above) |
 
 The track controls provider folders, command-line tools, account gates, and
 provider tests. The authentication mode independently controls whether Git
