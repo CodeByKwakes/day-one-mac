@@ -75,14 +75,19 @@ legacy folders are retained; new purpose-oriented layouts use plain names.
 └── _archive/                          inactive projects kept for reference
 
 ~/Brewfile                             reviewed Homebrew software list
-~/.zprofile and ~/.zshrc               small shell entry points managed by chezmoi
+~/.zprofile and ~/.zshrc               shell entry points; user-owned or chezmoi-managed
 ~/.config/zsh/                         shared PATH and safe aliases
-~/.config/starship.toml                Terminal prompt appearance
+~/.config/starship.toml                Terminal prompt appearance, only if Starship selected
 ~/Library/Application Support/Code/    VS Code user settings
 ```
 
 The remaining paths below are internal evidence or application-owned data.
 Users normally inspect them only for troubleshooting, auditing, or rollback.
+
+When HTTPS with GCM is selected, its macOS package may place the executable
+at `/usr/local/bin/git-credential-manager`. That is a valid package location
+on Apple silicon. The provider helper uses its absolute path, so it is not
+dependent on Homebrew's formula prefix.
 
 ## Technical ownership tree
 

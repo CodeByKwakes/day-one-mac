@@ -123,7 +123,7 @@ Changing the mode later reopens Phases 3 and 4, because both depend on it.
   checks an identity is available.
 - **`https`** — skip the SSH setup. Follow the HTTPS methods in Step 3.6,
   then complete Step 3.8 (FileVault); Phase 4 configures the selected
-  provider helper on Tracks 1–3.
+  GCM or GitHub CLI helper, or reuses the existing Azure helper, on Tracks 1–3.
 
 **FileVault (Step 3.8) is required in every mode.**
 
@@ -299,7 +299,8 @@ not need it to finish this phase.
 
 Complete shared Steps 3.0–3.3 first when using 1Password. Follow only this
 provider section for Track 1; Track 3 also completes Step 3.5. For HTTPS
-methods, use the GitHub choices in Step 3.6 instead of creating a key.
+methods, go directly to [GitHub repository access](#github-repository-access)
+instead of creating a key; then complete FileVault and continue to Phase 4.
 
 ### Create or import a GitHub key — Create a new Ed25519 key for GitHub
 
@@ -592,7 +593,8 @@ GitHub replies with `successfully authenticated`; it does not provide a shell.
 
 Complete shared Steps 3.0–3.3 first when using 1Password. Follow only this
 provider section for Track 2; Track 3 also completes Step 3.4. For HTTPS
-methods, use the Azure choices in Step 3.6 instead of creating a key.
+methods, go directly to [Azure repository access](#azure-devops-repository-access-)
+instead of creating a key; then complete FileVault and continue to Phase 4.
 
 ### Create or import an Azure DevOps key — Create a new RSA key for Azure DevOps 🏢
 

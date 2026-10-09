@@ -81,6 +81,8 @@ Direct setup:
   --https-helper MODE         gcm or existing HTTPS credential helper
   --github-repo URL           repository used to verify GitHub Git access
   --azure-repo URL            repository used to verify Azure Git access
+  --github-clone-dir PATH     optionally clone after verification; none disables
+  --azure-clone-dir PATH      optionally clone after verification; none disables
   --status                    show recorded completion, not live machine health
   --reset-progress            archive completion markers; keep installed files
   --yes                       accept ordinary setup confirmations
@@ -392,6 +394,7 @@ print_review_body() {
   fi
   printf '  Auth:      %s\n' "$AUTH_MODE"
   [[ "$AUTH_MODE" != https ]] || printf '  HTTPS:     %s credential helper\n' "$HTTPS_HELPER"
+  printf '  Clones:    GitHub: %s; Azure: %s (none means verify only)\n' "${GITHUB_CLONE_DIR:-none}" "${AZURE_CLONE_DIR:-none}"
   if [[ -n "$DOTFILES_REPO" ]]; then
     printf '  Dotfiles:  existing private source — %s\n' "$DOTFILES_REPO"
   elif [[ "$DOTFILES_VERSIONING" == none ]]; then
@@ -542,6 +545,8 @@ save_wizard_choices() {
   save_state_value https-helper "$HTTPS_HELPER"
   save_state_value github-verification-repo "$GITHUB_REPO"
   save_state_value azure-verification-repo "$AZURE_REPO"
+  save_state_value github-clone-dir "$GITHUB_CLONE_DIR"
+  save_state_value azure-clone-dir "$AZURE_CLONE_DIR"
   save_state_value macos-settings-plan "$MACOS_SETTINGS_PLAN"
   save_state_value optional-modules "$OPTIONAL_MODULES"
   save_state_value database-services "$DATABASE_SERVICES"
@@ -660,24 +665,56 @@ choose_auth_mode() {
   HTTPS_HELPER=existing
   if [[ "$AUTH_MODE" == https ]]; then
     SINGLE_VALUES=(gcm existing)
-    SINGLE_LABELS=('Git Credential Manager — browser sign-in (recommended for Azure)' 'Keep my existing helper — company-managed or PAT/Keychain')
+    SINGLE_LABELS=('Git Credential Manager — browser sign-in (recommended for Azure)' 'GitHub CLI / existing Azure helper — company-managed or PAT/Keychain')
     select_one 'Choose the HTTPS Git credential helper:' 0
     HTTPS_HELPER="$SINGLE_RESULT"
   fi
 }
 
 choose_verification_repos() {
-  local provider url
-  printf '\nChoose one repository you can read for each provider. Prefer a private repository to verify authenticated access. No clone is created.\n'
-  while IFS= read -r provider; do
+  local provider provider_label url destination name action
+  case "$TRACK" in
+    1) AZURE_CLONE_DIR=none ;;
+    2) GITHUB_CLONE_DIR=none ;;
+    4) GITHUB_CLONE_DIR=none; AZURE_CLONE_DIR=none ;;
+  esac
+  # Keep the provider list on its own descriptor: menus and URL prompts must
+  # continue reading the person's terminal, not this process substitution.
+  while IFS= read -r provider <&3; do
+    case "$provider" in github) provider_label=GitHub ;; azure) provider_label='Azure DevOps' ;; esac
+    SINGLE_VALUES=(none clone)
+    SINGLE_LABELS=('No — verify access without downloading a repository (default)' 'Yes — clone a repository to verify access')
+    select_one "Would you like to clone a repository from $provider_label to verify access?" 0
+    action="$SINGLE_RESULT"
+    printf '\nBoth options need a repository you can read. Prefer a private repository to check authenticated access.\n'
+    if [[ "$action" == clone ]]; then
+      printf 'Phase 4 will check access, then clone into the folder you choose.\n'
+    else
+      printf 'Only remote access will be checked; no clone will be created.\n'
+    fi
     while :; do
-      prompt_value "$provider $AUTH_MODE clone URL" "$(hosting_repo_url "$provider")"
+      prompt_value "$provider repository URL ($AUTH_MODE)" "$(hosting_repo_url "$provider")"
       url="$PROMPT_RESULT"
       if hosting_repo_valid "$provider" "$url" "$AUTH_MODE"; then break; fi
       warn 'Use the exact provider clone URL for the selected transport, without tokens.'
     done
     case "$provider" in github) GITHUB_REPO="$url" ;; azure) AZURE_REPO="$url" ;; esac
-  done < <(hosting_provider_ids)
+    destination=none
+    if [[ "$action" == clone ]]; then
+      destination="$(hosting_clone_dir "$provider")"
+      if [[ "$destination" == none ]]; then
+        name="${url%/}"; name="${name##*/}"; name="${name%.git}"
+        destination="$(folders_target_root)/$name"
+      fi
+      while :; do
+        prompt_value "$provider clone destination (absolute path; existing files are preserved)" "$destination"
+        destination="$PROMPT_RESULT"
+        hosting_clone_dir_valid "$destination" && break
+        warn 'Choose an absolute folder path without symlinks, parent traversal or a trailing slash.'
+      done
+    fi
+    case "$provider" in github) GITHUB_CLONE_DIR="$destination" ;; azure) AZURE_CLONE_DIR="$destination" ;; esac
+  done 3< <(hosting_provider_ids)
 }
 
 choose_dotfiles() {
@@ -1087,6 +1124,7 @@ run_wizard() {
   setup_args+=(--https-helper "$HTTPS_HELPER")
   [[ -z "$GITHUB_REPO" ]] || setup_args+=(--github-repo "$GITHUB_REPO")
   [[ -z "$AZURE_REPO" ]] || setup_args+=(--azure-repo "$AZURE_REPO")
+  setup_args+=(--github-clone-dir "${GITHUB_CLONE_DIR:-none}" --azure-clone-dir "${AZURE_CLONE_DIR:-none}")
   setup_args+=(--dotfiles-versioning "$DOTFILES_VERSIONING")
   setup_args+=(--shell "$SHELL_CHOICE" --prompt "$PROMPT_CHOICE")
   setup_args+=(--macos-settings "$MACOS_SETTINGS_PLAN")

@@ -24,7 +24,9 @@ explicit when moving functions between modules.
 ## Selection contract
 
 Saved scalar files include `track`, `stack`, `auth-mode`, `preset`,
-`primary-ide`, Git identity, and dotfiles choices. Older installations without a
+`primary-ide`, Git identity, and dotfiles choices. HTTPS additionally records
+`https-helper`; repository gates use `github-verification-repo` and
+`azure-verification-repo`. Older installations without a
 preset retain `recommended-productivity`. The explicit `core` preset skips
 Raycast, Warp, the Nerd Font, and VS Code; it does not uninstall them.
 
@@ -33,6 +35,18 @@ The `primary-ide` option controls Git and chezmoi integration, not the desktop
 application catalogue. Core uses `other` so it does not introduce an editor
 dependency. Optional modules remain separate and may have their own application
 requirements.
+
+Older saved HTTPS setups default to `existing`: GitHub CLI supplies the
+GitHub helper, while Azure retains its existing helper. Selecting `gcm`
+adds the conditional GCM cask to the Installation Centre, including for core.
+The URL selection files are private, mode 600, and must contain no tokens.
+Changing the helper or verification URL changes the Phase 4 and 8 fingerprints.
+
+The Git access gate runs bounded `git ls-remote URL HEAD` checks with interactive
+prompts disabled. It neither clones nor records remote refs or raw Git
+diagnostics in reports. CLI login is a separate gate. Track 4 claims no managed
+provider access. Local `--check` reports live access as manual; Phase 4 and 8
+apply perform the network checks.
 
 ## Completion and migration
 

@@ -410,12 +410,14 @@ locations with `brew --prefix`, `chezmoi source-path`, `pnpm store path`, and
 | Symptom | Resolution |
 |---|---|
 | The verification report contains one failure | Return to the named owning phase; do not mark Phase 8 complete manually |
+| Node, npm and pnpm fail together | Return to Phase 6 and verify fnm initialization in a fresh login shell. Installed packages alone do not prove shell startup works. |
+| Git repository access fails while the provider CLI passes | Return to Phase 4 Step 4.6. Check the saved clone URL and selected helper, authenticate interactively, then resume Phases 4 and 8. |
 | Encrypted legacy key remains REVIEW | Complete the per-file review above; rerun interactively without `--yes`. Do not delete or rename it just to pass |
 | Provider SSH check fails after an agent check passes | Review the selected public pin, effective host configuration and provider trust; agent presence alone is insufficient |
 | A required app passes but is absent from the Brewfile | Check `application-provenance.md`; external applications correctly remain outside Homebrew desired state |
 | `brew bundle dump` says the Brewfile exists | Review and preserve it; the runner intentionally refuses overwrite |
 | `chezmoi add ~/Brewfile` includes unexpected edits | Inspect `chezmoi diff` and apply only reviewed targets |
-| Git push reports `Permission denied (publickey)` | Unlock 1Password, verify `ssh-add -l`, then repeat the provider SSH test from Phase 4 |
+| Git push reports `Permission denied (publickey)` | Unlock or load the selected SSH owner (1Password, Keychain or external agent), verify its identity, then repeat the provider test from Phase 4 |
 | The dotfiles repository is public | Change repository visibility before pushing machine configuration |
 | Local-only mode reports no remote | This is expected; verify the chezmoi source is included in an encrypted backup |
 | Secret scanning finds a credential | Remove it from source and Git history, then rotate the credential before pushing |

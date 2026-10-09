@@ -31,10 +31,17 @@ expect_exit 2 /bin/bash "$SCRIPT_DIR/setup.sh" --check --yes
 expect_exit 2 /bin/bash "$SCRIPT_DIR/setup.sh" --plan --install-centre
 expect_exit 2 /bin/bash "$SCRIPT_DIR/setup.sh" --apply --json
 expect_exit 2 /bin/bash "$SCRIPT_DIR/setup.sh" --resume --stack node
+expect_exit 2 /bin/bash "$SCRIPT_DIR/setup.sh" --resume --azure-clone-dir none
 expect_exit 2 /bin/bash "$SCRIPT_DIR/setup.sh" --resume
 expect_exit 2 /bin/bash "$SCRIPT_DIR/setup.sh" --check
 expect_exit 10 /bin/bash "$SCRIPT_DIR/setup.sh" --apply --yes --track 1 --stack both
 [[ ! -e "$DAY_ONE_MAC_STATE_ROOT" ]]
+
+expect_exit 0 /bin/bash "$SCRIPT_DIR/setup.sh" --plan --phase 04 --track 2 --stack both --auth-mode https \
+  --azure-repo 'https://dev.azure.com/ORG/PROJECT/_git/REPO' \
+  --azure-clone-dir "$HOME/clone with spaces" --json
+node -e 'const r=JSON.parse(require("fs").readFileSync(process.argv[1])); if(!JSON.stringify(r.phases[0]).includes("clone with spaces")) process.exit(1)' "$TEST_ROOT/output"
+[[ ! -e "$HOME/clone with spaces" && ! -e "$DAY_ONE_MAC_STATE_ROOT" ]]
 
 expect_exit 0 /bin/bash "$SCRIPT_DIR/setup.sh" --plan --track 4 --stack both --json
 node -e 'const r=JSON.parse(require("fs").readFileSync(process.argv[1])); if(r.selection.track!=="4" || r.selection.auth_mode!=="https") process.exit(1)' "$TEST_ROOT/output"

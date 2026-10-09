@@ -156,6 +156,10 @@ day-one-mac setup --status
 Apply saves the new track and runs the required setup with that selection,
 including installation of newly required provider tools. Complete any displayed
 manual authentication or configuration gates. Plan does not save the choice.
+If adding a provider on Tracks 1–3, also supply its `--github-repo` or
+`--azure-repo` clone URL using the saved authentication mode. Previously saved
+URLs remain available. The wizard asks for missing URLs; direct apply stops
+at the repository gate until they are supplied.
 `--resume` reuses saved choices and cannot be combined with `--track`.
 
 There is no separate track-only factory reset. Reapplying the same track repairs
@@ -183,6 +187,8 @@ Important setup selectors include:
 --https-helper existing|gcm
 --github-repo HTTPS_OR_SSH_CLONE_URL
 --azure-repo HTTPS_OR_SSH_CLONE_URL
+--github-clone-dir /absolute/destination|none
+--azure-clone-dir /absolute/destination|none
 --dotfiles-repo URL
 --new-dotfiles
 --dotfiles-versioning none|git|local
@@ -201,13 +207,27 @@ Run `day-one-mac setup --help` or `./bootstrap-day-one-mac.sh --help` before
 using unattended flags. `--yes` accepts ordinary confirmations; it does not
 bypass typed destructive confirmations or select an application owner.
 
-For HTTPS, `existing` preserves your credential helper; `gcm` installs or reuses
-Git Credential Manager and configures the selected provider hosts. Older saved
+For HTTPS, `existing` uses the GitHub CLI helper for GitHub and preserves the
+existing Azure helper. `gcm` installs or reuses Git Credential Manager and
+configures the selected provider hosts after CLI login. Older saved
 setups default to `existing`. Tracks 1–3 require one repository URL for each
 selected provider: Phase 4 and Phase 8 check Git read access separately from CLI
 login. Choose a private repository to prove authentication. URLs are saved in
 private selection files; never include a PAT in them. See
 [Phase 4](../01-required/04-core-tools-and-hosting.md#step-46--run-or-resume-the-phase).
+
+Verification URLs must match the selected transport. Accepted hosts are
+`github.com` for GitHub HTTPS/SSH, `dev.azure.com` for Azure HTTPS, and
+`ssh.dev.azure.com` for Azure SSH. Use the provider's canonical clone URL:
+SSH host aliases, legacy Azure hostnames, query strings and embedded tokens
+are not accepted. Tracks 1 and 2 need their provider's URL; Track 3 needs both.
+
+Optional clone directories default to `none`. Phase 4 clones into the chosen
+absolute path only after all selected repository-access checks pass. Existing
+matching clones are preserved, occupied destinations stop for review, and
+Phase 8 never clones. The choice is saved; use `--plan` and `--apply` with
+`--github-clone-dir none` or `--azure-clone-dir none` to disable it. Neither
+configuration rollback nor changing the choice deletes a clone.
 
 ### Required-phase action contract
 
@@ -254,11 +274,11 @@ approval and GUI operations can still need your participation.
 | 1 | Populated author identity | Current updates and verified backup/disposable-data assertion |
 | 2 | Selected developer-tools directory and native Homebrew executable | Tool compatibility, licence, update and Homebrew health |
 | 3 | FileVault, SSH configuration, selected encrypted key or 1Password payload/CLI | Agent access, registration, signing, recovery-method custody |
-| 4 | Command availability, selected Git identity, ghq root, required app payloads | Hosting sessions, SSH reachability, complete Git defaults |
+| 4 | Command availability, Git identity and track defaults, selected folders/ghq root, required app payloads, verification URLs and selected clone payloads | CLI sessions, live SSH/HTTPS repository access, complete Git defaults |
 | 5 | Required dotfile paths, commands and launcher | chezmoi ownership/drift, template effects, clean-shell behaviour |
 | 6 | Current-PATH tool commands and Node-mode pnpm directory | Node LTS selection and working uv-managed Python |
 | 7 | VS Code payload, command and settings file; not required for core | Effective safety settings and GUI launch |
-| 8 | Aggregate local checks, runtime verification and Brewfile presence | Source secret scan, remote privacy/push or local backup, Brewfile management |
+| 8 | Aggregate local checks, runtime verification and Brewfile presence | Live provider repository access, source secret scan, remote privacy/push or local backup, Brewfile management |
 
 Presence is not configuration correctness. `manual` results remain even after a
 successful earlier acceptance run. At present, only Phase 7 with the core preset

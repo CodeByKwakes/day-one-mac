@@ -13,6 +13,14 @@ Day One Mac ownership records, and Advanced completion fingerprints. It never
 installs software, starts a container, edits configuration, or marks a manual
 checklist complete.
 
+The Optional and Advanced group summaries count every module in their group,
+including skipped modules. A group is fully complete only when all its modules
+are `ready`; otherwise the summary shows incomplete or partially complete.
+Each module still shows its own state, and payload details identify installed
+and missing selections where the module has an installation catalogue.
+Skipping optional modules does not block the eight-phase required setup or
+mean that you should install every extra.
+
 Saved database and CLI selections made through the executable module interface
 also count as selected, without requiring the interactive selector. CLI checks
 include selected pre-existing formulae without treating them as Day One-owned.
@@ -68,7 +76,7 @@ health or successful application import.
 | Status | Meaning | What to do |
 |---|---|---|
 | `ready` | The result has sufficient machine-verifiable evidence, or an Advanced guide fingerprint is current. | No action is required. |
-| `partial` | Some evidence exists, but a sign-in, application UI, security, or trust checklist still needs human verification. | Open the module guide and complete its checklist. |
+| `partial` | Some payloads or evidence exist, but other selections are missing or a manual checklist remains. | Read the per-module details, then install missing selections or complete the guide checklist. |
 | `pending` | The module is selected, but the dashboard found no completion evidence. | Start or resume the module guide. |
 | `review` | A recorded guide changed, or detected ownership needs review. | Recheck the named evidence before recording completion again. |
 | `blocked` | A selected prerequisite or runtime is unavailable. | Resolve the printed blocker, then rerun the dashboard. |
@@ -133,10 +141,12 @@ day-one-mac optional --status --audit --check
 
 ### Database is blocked
 
-The database installer starts an installed OrbStack instance and waits for its
-bundled Docker CLI and server. If OrbStack displays a first-run prompt,
-complete it and wait until Docker is running. Do not install a separate Docker
-engine merely because the first readiness check timed out.
+The database installer accepts Docker Desktop or OrbStack. With automatic
+selection it detects and reuses an installed runtime; you can also choose
+explicitly. Start the selected app and finish its first-run prompts, then wait
+for Docker's client and server to respond. A cask receipt alone is not a working
+Docker CLI. Do not install a second engine because startup timed out; see
+[container selection and recovery](../02-optional/09-databases.md).
 
 Confirm `docker info` displays a Server section, then run:
 

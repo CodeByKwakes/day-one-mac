@@ -26,7 +26,7 @@ check using the chosen HTTPS or SSH transport.
 applications and command-line tools prepared by the
 [Installation Centre](INSTALLATION-CENTRE.md). It does not install them here.
 The phase creates the selected developer layout, sets Git defaults, opens
-provider login when required, and verifies SSH. If software is missing, rerun
+provider login when required, and verifies the chosen Git transport. If software is missing, rerun
 the Installation Centre and then return to Phase 4.
 
 Homebrew calls a command-line package a **formula** and a macOS app or font a
@@ -44,9 +44,10 @@ clear instruction if something has been removed or changed owner.
 |---|---|---|
 | Formulae | `git`, `jq`, `ripgrep` | Selected `chezmoi`, Homebrew `zsh`, `starship`, and `ghq`; `fnm`, `pnpm` for Node; `uv` for Python; `gh` for Tracks 1 and 3; Azure CLI is a cask for Tracks 2 and 3 (existing formula installs are accepted) |
 | Applications/font | JetBrains Mono Nerd Font, Raycast, Visual Studio Code, Warp | Their preferred casks are `font-jetbrains-mono-nerd-font`, `raycast`, `visual-studio-code`, and `warp`; a valid external installation also passes |
+| CLI cask | Selected authentication tools | `git-credential-manager` when HTTPS helper `gcm` is selected, including core; `1password-cli` only with 1Password authentication |
 
-1Password and its CLI were prepared in the Installation Centre and configured
-in Phase 3. Databases, Docker, AI tools,
+If selected, 1Password and its CLI were prepared in the Installation Centre and
+configured in Phase 3. Databases, Docker, AI tools,
 MCP servers, large extension catalogues, browsers, and other opinionated macOS
 applications are not required. Raycast and Warp are intentionally part of the
 base desktop workflow; their optional integrations are configured later.
@@ -281,36 +282,37 @@ gh auth status
 
 ### 🌐 If you chose `https` mode
 
-Phase 3's `https` mode skips SSH entirely, so this step differs:
+Phase 3's `https` mode skips SSH entirely. The GitHub CLI still needs its own
+login. On the manual route, sign in first:
 
 ```bash
 gh auth login --git-protocol https --web --skip-ssh-key
-gh auth setup-git
+gh auth status
 ```
 
-`gh auth setup-git` makes the GitHub CLI act as Git's credential helper, so
-pushes over HTTPS reuse the token you just obtained. You never create or paste
-a personal access token. The runner does both of these for you.
+Then choose the Git helper. `gh auth setup-git` uses the CLI's token for GitHub
+HTTPS operations. GCM provides its own browser sign-in instead. Do not run
+`gh auth setup-git` after choosing GCM: it can replace the selected helper.
+On the script-assisted route, Phase 4 configures GCM after CLI login, or runs
+`gh auth setup-git` on the `existing` route. See
+[helper selection and recovery](#step-46--run-or-resume-the-phase).
 
 The SSH reachability tests below are skipped in this mode — there is no SSH
 identity to test.
 
-🏢 **Azure DevOps over HTTPS is not equivalent.** It needs Git Credential
-Manager, which is not part of the base install:
-
-```bash
-brew install --cask git-credential-manager
-```
-
-Git then prompts for a Microsoft Entra ID sign-in, or a personal access token
-that you create in Azure DevOps and Git stores in the Keychain. Day One Mac
-cannot create that credential for you, and PATs expire — SSH avoids both
-problems, which is why it remains the default.
+🏢 **Azure CLI login and Azure Git access are separate.** For Git, choose GCM
+for Microsoft browser sign-in, an approved company helper, or a scoped PAT
+stored through Keychain. GCM is included in the Installation Centre only when
+selected. Compare the [Azure HTTPS methods](03-security-and-ssh.md#azure-devops-repository-access-).
+The first sign-in or PAT entry remains manual; `az account show` alone never
+proves repository access.
 
 ### Why `--skip-ssh-key` 🔴
 
-Your private key lives in 1Password and your public key was already registered
-in Phase 3 Step 3.6, so `gh` has no key work left to do.
+In SSH mode, your selected agent or Keychain owns the key and its public part
+was registered in [Phase 3's GitHub section](03-security-and-ssh.md#step-34--github-setup).
+In HTTPS mode, there is no SSH key to generate. `gh` should not create another
+identity in either case.
 
 Without this flag, `gh` inspects `~/.ssh` for `.pub` files and — finding none,
 because this project deliberately never writes keys there — offers:
@@ -447,7 +449,10 @@ which it never provides. A genuine failure says
 recommended for browser-based Azure DevOps sign-in and is also available for
 GitHub. Choose `existing` when an approved company helper or PAT/Keychain
 workflow should remain in control. Existing saved selections keep that route
-until explicitly changed. To change only this phase, preview then apply:
+until explicitly changed. On GitHub, `existing` uses `gh auth setup-git`; on
+Azure, it leaves the existing helper unchanged. A company GitHub helper that
+must remain untouched belongs on the manual route. To change only this phase,
+preview then apply:
 
 ```bash
 day-one-mac setup --phase 04 --plan --auth-mode https --https-helper gcm \
@@ -464,8 +469,10 @@ The Installation Centre prepares GCM through the ordinary cask/external-owner
 flow, including with the core preset. Phase 4 verifies its executable and
 configures an absolute helper for each selected HTTPS host, resetting only
 that host's previous helper chain. GitHub CLI authentication stays separate;
-the GCM route does not also run `gh auth setup-git`. Other hosts' helpers are
-preserved. Package installation may also perform the vendor's own configuration;
+the GCM route does not also run `gh auth setup-git`. Its helper is applied after
+CLI login, which can otherwise configure a different helper. GCM configuration
+is limited to the selected provider hosts. Package installation and CLI login
+may also perform their vendor's own configuration;
 the runner records the existing `.gitconfig` before its GCM install.
 
 **Shared manual action:** the first browser sign-in or PAT entry belongs in
@@ -486,8 +493,8 @@ and performs the same terminal Git access test without invoking Day One Mac.
 
 Phase 4 and Phase 8 require `git ls-remote` to succeed against each selected
 repository, with terminal/browser prompts disabled and a 60-second deadline.
-They never clone a working tree or print remote refs or authentication output
-in their reports. A missing URL, denied access, unavailable network or expired
+The access checks do not clone a working tree or print remote refs or
+authentication output in their reports. A missing URL, denied access, unavailable network or expired
 credential leaves the phase incomplete. CLI login alone cannot pass this gate.
 Read-only `--check` remains local and reports the live network check as manual.
 
@@ -497,6 +504,44 @@ The clone URLs are retained only in private mode-600 selection files under
 `~/.day-one-mac`, not in public reports or repository defaults; never embed a
 token in a URL. Replace the saved URL using the same `--plan`/`--apply` flags
 if the selected repository changes.
+
+### Optional clone after verification
+
+**Script-assisted route:** the wizard first asks **Would you like to clone a
+repository to verify access?** for each selected provider. Choose **No** to
+verify remote access without downloading it (the default), or **Yes** to verify
+access and clone. Both choices then ask for the repository URL; cloning also
+asks for an absolute destination. The review screen shows the choice before
+setup starts. Phase 4 clones only after every selected provider passes its
+access check; Phase 8 never clones.
+
+To change the Azure choice directly, preview and apply:
+
+```bash
+day-one-mac setup --phase 04 --plan \
+  --azure-repo 'https://dev.azure.com/ORG/PROJECT/_git/REPO' \
+  --azure-clone-dir "$HOME/Developer/Projects/scaffold"
+day-one-mac setup --phase 04 --apply \
+  --azure-repo 'https://dev.azure.com/ORG/PROJECT/_git/REPO' \
+  --azure-clone-dir "$HOME/Developer/Projects/scaffold"
+```
+
+For GitHub, use `--github-repo` and `--github-clone-dir`. Track 3 can choose
+either or both, with different destinations. Set a provider's clone directory
+to `none` to disable future cloning without deleting an existing repository.
+The destination must not contain symlinks or `..` components.
+
+Cloning uses plain Git, with the same non-interactive authentication settings
+as verification and a five-minute deadline. A matching existing repository is
+left unchanged; another occupied destination stops the phase. A failed clone
+preserves any partial directory for review. No pull, submodule setup or package
+installation is performed. Clones remain user-owned and are not removed by
+configuration rollback.
+
+You may choose a destination beneath your ghq root. Custom paths are not
+automatically reused by a later `ghq get URL`, which derives its own path from
+the URL. The [developer folder guide](../manual/developer-folders.md) explains
+the root choices.
 
 ```bash
 day-one-mac setup --phase 04
@@ -514,12 +559,14 @@ to the Installation Centre instead of starting another installer here.
 | `GitHub did not accept the 1Password SSH identity` | Unlock 1Password, run `ssh-add -l`, and compare the listed public key with GitHub |
 | `Permission denied (publickey)` on Azure | Confirm the key is registered in the correct Azure DevOps user profile and organization |
 | Azure rejects the selected key or reports an unsupported key type | Azure DevOps requires RSA; create/import the RSA 3072-bit item in Phase 3 rather than using the GitHub Ed25519 key |
-| Azure fails when several 1Password identities are available | Azure accepts the first offered key; use the provider-specific public `IdentityFile` block from Phase 3 Step 3.7 |
+| Azure fails when several 1Password identities are available | Azure accepts the first offered key; review the public pin in Phase 3 Step 3.7 and the provider-specific `IdentityFile` block in Step 3.5 |
 | Azure SSH worked before and now fails | Azure DevOps requires a full web sign-in roughly every 30 days. Open the Azure DevOps portal, complete the sign-in prompt, then retry. If it still fails, check whether the key hit an organization-enforced expiry |
 | Azure Git LFS files fail to pull over SSH | Azure DevOps does not support Git LFS over SSH; use an HTTPS remote for repositories with LFS-tracked files |
 | Two Azure DevOps organizations need different keys | All Azure URLs share `ssh.dev.azure.com`, so add a `Host` alias per organization with its own `IdentityFile` and `IdentitiesOnly yes`, then use the alias in the remote URL |
 | `gh auth status` reports the wrong account | Run `gh auth logout`, then repeat the browser login |
 | `az account show` reports the wrong tenant | Run `az logout`, then `az login --tenant <tenant-id>` |
+| Azure CLI passes, but Git reports `terminal prompts disabled` | CLI login did not establish Git credentials. Choose GCM or your approved helper, authenticate with interactive `git ls-remote`, then resume Phase 4. |
+| Phase 4 needs `--github-repo` or `--azure-repo` | Use the selected provider's clone URL without a token; preview and apply it as shown in Step 4.6. Do not add selection flags to `--resume`. |
 | `pnpm` conflicts with a Corepack shim | Do not enable Corepack; inspect `command -v -a pnpm` and retain the Homebrew executable |
 | An app exists but Homebrew does not list its cask | This is accepted as an external installation when its bundle identity is valid; the app is left unchanged |
 | An app is marked **Needs review** | Read the displayed identity or receipt conflict and use the company support process before reinstalling it |

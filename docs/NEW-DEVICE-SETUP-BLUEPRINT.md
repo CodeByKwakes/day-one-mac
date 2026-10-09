@@ -68,7 +68,7 @@ ahead of `origin/main`.
 | P0 | Configuration ownership, folder layout, shell, and prompt choices need to be recorded. | Choose the folder layout and optional ghq, user-owned files or chezmoi, the zsh executable, and an optional Starship prompt independently. Install the portable `day-one-mac` command only for the script-assisted route. | User-owned files need a separate backup. Chezmoi can use a local-only source or private Git; it does not require a remote, ghq, Starship, or Homebrew zsh. |
 | P0 | FileVault could not be confirmed in the sandbox. | Run `fdesetup status` directly in Terminal and complete the recovery-key checklist in Phase 3. | Disk encryption is a security gate. The recovery key must be stored outside the Mac, not in this repository. |
 | P1 | The Brewfile is missing five casks and 13 installed items are outdated. | Review `brew bundle check --verbose` and `brew outdated --greedy`; install or remove desired entries before upgrading in batches. | Reconciliation restores declared state. Blindly installing or upgrading everything can introduce app conflicts, so review ownership first. |
-| P1 | The shell has repeated Homebrew, NVM, Docker, JetBrains, OrbStack, and `/usr/local/bin` PATH entries. | Make `~/.config/zsh/path.zsh` the single PATH authority and source it once. Keep `/usr/local/bin` only for a known Intel-only dependency. | Deterministic ordering avoids shadowed binaries and slow startup. Removing a legacy path can expose tools that were installed outside Homebrew. |
+| P1 | The shell has repeated Homebrew, NVM, Docker, JetBrains, OrbStack, and `/usr/local/bin` PATH entries. | Make `~/.config/zsh/path.zsh` the single PATH authority and source it once. Keep paths needed by approved installers, including `/usr/local/bin` for the macOS GCM package when selected. | Deterministic ordering avoids shadowed binaries and slow startup. Removing a path can hide tools installed outside Homebrew's formula prefix. |
 | P1 | `uv`, `gh`, and `ghq` were absent from the audited command path; Azure CLI status was not safely testable in the sandbox. | Install only tools required by the chosen stack, hosting track, and explicit ghq choice, then authenticate the selected providers interactively. | Missing unselected tools do not need remediation. Authentication remains a manual security boundary. |
 | P1 | There is no repository `.editorconfig` or shared VS Code recommendation/task file. | Add a minimal `.editorconfig` and consider `.vscode/extensions.json` plus validation tasks. Keep personal settings out of the repo. | This reduces whitespace and task-discovery drift. Shared recommendations require maintenance and should remain intentionally small. |
 | P1 | GitHub Actions use version tags such as `actions/checkout@v5`. | Pin third-party actions to reviewed commit SHAs and enable automated update proposals for Actions. | SHA pinning reduces supply-chain risk. It makes updates less readable and shifts maintenance into dependency-update pull requests. |
@@ -310,10 +310,12 @@ day-one-mac docs
 
 Run the wizard and record:
 
-- hosting track: GitHub, Azure, or both;
+- hosting track: GitHub, Azure, both, or self-managed Track 4;
 - language stack: Node, Python, or both;
 - primary editor;
 - Git authentication;
+- HTTPS helper when selected, and one verification repository URL per provider
+  on Tracks 1–3;
 - folder layout and whether to use ghq;
 - configuration ownership: user-owned (`none`), local-only chezmoi, or private Git;
 - shell: keep compatible zsh, Apple zsh, or Homebrew zsh;

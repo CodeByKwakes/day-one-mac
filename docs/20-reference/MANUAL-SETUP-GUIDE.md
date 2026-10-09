@@ -488,7 +488,7 @@ For `https` mode:
 
 ```bash
 # Track 1 or 3
-gh auth login --git-protocol https --web
+gh auth login --git-protocol https --web --skip-ssh-key
 gh config set git_protocol https
 gh auth setup-git
 gh auth status
@@ -508,6 +508,26 @@ Git clone URL, or configure only that provider's mapping manually.
 Do not run the SSH tests in HTTPS mode. Verify by cloning or fetching a small
 repository over an `https://` remote instead.
 
+Azure CLI login does not supply Git credentials. For Azure HTTPS, choose GCM,
+your approved company helper, or a scoped PAT stored through Keychain. Follow
+the [Azure methods](../01-required/03-security-and-ssh.md#azure-devops-repository-access-).
+For GitHub, the block above selects the GitHub CLI helper; to use GCM instead,
+skip `gh auth setup-git` and follow the
+[GitHub GCM method](../01-required/03-security-and-ssh.md#github-repository-access)
+after CLI login. A later `gh auth setup-git` can replace GCM.
+
+For either transport, prove repository read access without creating a clone:
+
+```bash
+# Replace this with the chosen provider's HTTPS or SSH clone URL.
+git ls-remote 'https://dev.azure.com/ORG/PROJECT/_git/REPO' HEAD
+```
+
+Use a private repository to verify authentication. A public repository can
+succeed anonymously. On Track 3, repeat the test for both providers. Record
+the chosen helper and successful check in your own setup notes; this manual
+route creates no Day One Mac phase markers.
+
 GitHub may return a non-zero shell status while printing “successfully
 authenticated”; Azure may print “Shell access is not supported.” Those messages
 are expected because neither service provides an interactive SSH shell.
@@ -518,7 +538,8 @@ are expected because neither service provides an interactive SSH shell.
 - [ ] Selected folders exist; selected ghq reports the root(s) reviewed in the folder guide.
 - [ ] Required applications open and retain their intended installation owner.
 - [ ] Only selected provider folders and CLIs were installed.
-- [ ] Browser and SSH authentication pass for the selected track.
+- [ ] Provider CLI login and repository read access pass for the selected track;
+      SSH checks apply only to SSH modes. Track 4 records its own provider checks.
 
 ### Manual 5 — configure chezmoi, zsh, and Starship
 

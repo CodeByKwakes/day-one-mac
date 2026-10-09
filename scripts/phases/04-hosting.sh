@@ -88,7 +88,8 @@ phase_04() {
   phase_next "development folders and Git defaults" "Review Steps 4.2–4.3 and correct the Git identity or ghq root."
   folders_apply || return $?
   configure_track_git_settings || return $?
-  hosting_configure_helper || return $?
+  # The preview returns before account login; show its helper writes here.
+  [[ "$DRY_RUN" != 1 ]] || hosting_configure_helper || return $?
 
   if [[ "$DRY_RUN" != 1 ]]; then record_path_before_write "$HOME/.gitconfig"; fi
   run git config --global user.name "$GIT_NAME"
@@ -128,6 +129,7 @@ phase_04() {
     uses_github && print_command gh auth login --git-protocol "$(git_protocol_for_mode)" --web --skip-ssh-key
     uses_azure && print_command az login
     [[ "$GHQ_CHOICE" != yes ]] || print_command ghq root
+    hosting_clone_selected_repos || return $?
     return 0
   fi
   folders_check || return $?
@@ -159,6 +161,9 @@ phase_04() {
   if uses_azure && ! az extension show --name azure-devops >/dev/null 2>&1; then
     run az extension add --name azure-devops
   fi
+  # gh's first HTTPS login can configure its own helper. Apply the selected
+  # GCM chain after CLI login so Git's access gate uses the user's choice.
+  hosting_configure_helper || return $?
   if [[ "$AUTH_MODE" == https ]]; then
     # CLI sessions and Git transport are separate gates.
     info "Auth mode 'https': skipping the SSH reachability tests."
@@ -184,6 +189,9 @@ phase_04() {
     phase_next 'selected Git repository access' 'Authenticate once with git ls-remote in your terminal, then rerun Phase 4 with a verification clone URL for each selected provider.'
     hosting_verify_selected_repos || return $?
     phase_step_done 'selected Git repositories accessible without prompts'
+    phase_next 'optional repository clones' 'Review the selected clone destination or choose none; existing repositories are never overwritten.'
+    hosting_clone_selected_repos || return $?
+    phase_step_done 'optional repository clone choices completed'
   fi
   ok "Git defaults and selected hosting gates verified"
 }

@@ -11,6 +11,35 @@ other package managers, and CI authentication need their own instructions.
 Neither the Day One Mac CLI nor chezmoi is required. The CLI does not collect
 the PAT described here; do not put it in setup state, logs, or acceptance evidence.
 
+## Quick workflow: configure or refresh access
+
+Use this workflow for any Azure DevOps organisation. Your user `.npmrc` can
+contain authentication blocks for several feeds; each block must match its
+feed's exact URL. It is not one global credential for every Azure organisation.
+
+1. In **Artifacts → your feed → Connect to feed → npm**, copy the appropriate
+   macOS configuration. Keep registry routing in the project `.npmrc` and
+   credentials in your user file; see [file ownership](#1-understand-which-file-stores-what)
+   and [feed configuration](#2-get-the-correct-feed-configuration).
+2. Open `https://dev.azure.com/YOUR_ORGANISATION/_usersSettings/tokens`, replacing
+   the placeholder, or use **User settings → Personal access tokens** in Azure
+   DevOps. Create a dedicated token with the required organisation, expiry and
+   permissions; see [PAT creation](#3-create-a-dedicated-pat).
+3. [Encode the PAT locally](#4-encode-the-pat-locally). Base64 is not encryption;
+   keep both the original and encoded values private.
+4. Run `npm config get userconfig` to find your user file. Replace only the
+   relevant feed's `_password` values, including both `/npm/registry/` and
+   `/npm/` entries supplied by Microsoft. Preserve other feeds and settings;
+   see [editing the user file](#5-update-your-user-npmrc).
+5. From the project directory, [verify a known private package](#6-verify-access-from-your-project).
+   Listing npm configuration alone does not prove authentication works.
+6. For rotation, [retire the old token](#replace-an-expired-or-expiring-token)
+   after checking its other consumers. Regenerating it invalidates the old value.
+
+You do not need to delete and regenerate either file or run `npm login` for
+this method. npm reads both configuration files itself. These credentials are
+for Azure Artifacts packages; they do not configure Git repository access.
+
 ## Before you begin
 
 You need:
@@ -151,10 +180,44 @@ preserving its URL prefixes and accompanying fields. Replace each relevant
 - Credentials must stay scoped to the correct registry host and path.
 - Microsoft's example includes `/npm/registry/` and `/npm/` entries; update
   both matching placeholders.
+- Use the accompanying non-empty `username` and `email` fields from the feed
+  instructions. The username does not have to be your organisation's name.
 - Keep the encoded value on one line and preserve unrelated feed settings.
 - Do not put this block in the project repository.
 
 A separate `npm login` is not required for this configuration method.
+
+### Example: project-scoped feed
+
+These examples use placeholders. Replace `ORGANISATION`, `PROJECT`, `FEED`,
+`YOUR_SCOPE` and the credential values with your feed's exact instructions.
+
+Project `.npmrc`, beside `package.json` (no credentials):
+
+```ini
+@YOUR_SCOPE:registry=https://pkgs.dev.azure.com/ORGANISATION/PROJECT/_packaging/FEED/npm/registry/
+```
+
+Use a scope mapping when only that scope belongs to this feed. If your project
+routes all packages through the feed, use the `registry=` line supplied by
+**Connect to feed** instead.
+
+User `.npmrc`, at the path returned by `npm config get userconfig`:
+
+```ini
+; Azure Artifacts credentials: never commit this block
+//pkgs.dev.azure.com/ORGANISATION/PROJECT/_packaging/FEED/npm/registry/:username=azure
+//pkgs.dev.azure.com/ORGANISATION/PROJECT/_packaging/FEED/npm/registry/:_password=BASE64_ENCODED_PAT
+//pkgs.dev.azure.com/ORGANISATION/PROJECT/_packaging/FEED/npm/registry/:email=YOUR_EMAIL
+//pkgs.dev.azure.com/ORGANISATION/PROJECT/_packaging/FEED/npm/:username=azure
+//pkgs.dev.azure.com/ORGANISATION/PROJECT/_packaging/FEED/npm/:_password=BASE64_ENCODED_PAT
+//pkgs.dev.azure.com/ORGANISATION/PROJECT/_packaging/FEED/npm/:email=YOUR_EMAIL
+```
+
+`azure` is an example non-empty username. Replace **both** encoded PAT
+placeholders. For an organisation-scoped feed, omit the `PROJECT/` segment
+from the registry URL and every credential prefix. Keep separate matching
+blocks for other feeds; do not replace unrelated configuration.
 
 After saving, restrict the file's permissions. If its confirmed location is the
 usual `~/.npmrc`, run:

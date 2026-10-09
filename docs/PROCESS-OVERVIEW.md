@@ -119,6 +119,13 @@ asking for it in the other modes.
 [Phase 3 Step 3.0](01-required/03-security-and-ssh.md) compares them, and
 `day-one-mac --status` shows the saved choice.
 
+HTTPS has a separate helper choice: `gcm` uses Git Credential Manager for the
+selected provider hosts; `existing` uses GitHub CLI for GitHub and retains the
+existing Azure helper. GCM is recommended for Azure browser sign-in. Tracks
+1–3 also choose a repository URL per provider. Phase 4 and Phase 8 use those
+URLs to verify Git read access separately from CLI login. A private repository
+proves authenticated access; a public one proves reachability only.
+
 ### Development stack
 
 | Stack | Base tools | Intended use |
@@ -135,8 +142,10 @@ such as `.node-version`, `packageManager`, lockfiles, and `pyproject.toml`.
 Both routes record:
 
 - the Git author name and primary email;
-- whether chezmoi should use an existing private source, create a new source
-  protected by private Git, or create a local-only source with no Git gate.
+- whether configuration stays user-owned (`none`) or uses chezmoi with
+  private Git (`git`) or local-only protection (`local`);
+- the selected zsh and whether to use Starship;
+- the HTTPS helper and provider verification URLs when applicable.
 
 On the script-assisted route, the wizard saves these choices. On the manual
 route, keep them with your setup record so later steps use the same track,
@@ -161,7 +170,7 @@ the required setup. Security gates remain in their required phases.
 | [**2 — Command-line foundation**](01-required/02-command-line-foundation.md) | Verify Apple Command Line Tools, detect and reuse an existing native Homebrew installation, or install it only when missing. |
 | [**📦 Required Installation Centre**](01-required/INSTALLATION-CENTRE.md) | On the script-assisted route, install or accept every required app, font, and command-line tool in one pass. The manual route installs the same mode-aware set in Manual 2. |
 | [**3 — Security and SSH**](01-required/03-security-and-ssh.md) | Set up the chosen authentication mode — by default 1Password, its CLI and SSH agent — register provider keys, and verify FileVault. |
-| [**4 — Core tools and hosting**](01-required/04-core-tools-and-hosting.md) | Verify the prepared tools, create the `~/Developer` structure, configure Git, and authenticate the selected providers. |
+| [**4 — Core tools and hosting**](01-required/04-core-tools-and-hosting.md) | Verify prepared tools, create the selected developer layout, configure Git and its selected helper, and verify both CLI login and repository access for the chosen providers. |
 | [**5 — Configuration ownership, shell and prompt**](01-required/05-dotfiles-and-shell.md) | Keep files user-owned or establish the selected chezmoi source, verify the selected zsh and optional Starship, and keep the launcher owned by the standalone runtime. |
 | [**6 — Language toolchains**](01-required/06-language-toolchains.md) | Configure Node with npm/pnpm, Python with uv, or both in a new login shell. |
 | [**7 — VS Code base**](01-required/07-vscode-base.md) | Apply a small portable editor baseline with zsh, the Nerd Font, and safe approval defaults. |
@@ -237,6 +246,9 @@ The `1password` authentication mode additionally requires 1Password and the
 1Password CLI. The `keychain`, `external`, and `https` modes do not install or
 gate progress on either component.
 
+HTTPS with the `gcm` helper requires the Git Credential Manager cask, even with
+the core preset. Existing approved installations are reused.
+
 On the script-assisted route, the Installation Centre checks ownership before
 installing anything. Manual-route readers use the same ownership decision
 before running the approved installer themselves:
@@ -259,7 +271,7 @@ import, export, and later changes.
 
 ## 6. Understand the chezmoi boundary
 
-The required setup keeps the managed source deliberately small and clear:
+When chezmoi is selected, the required setup keeps its managed source small:
 
 - `~/.zprofile`, `~/.zshrc`, and the managed files under `~/.config/zsh`;
 - `~/.gitconfig`;
@@ -326,7 +338,7 @@ repeatedly stop for unrelated choices.
 
 | Module | Adds |
 |---|---|
-| [**9 — Databases**](02-optional/09-databases.md) | PostgreSQL, Redis, or MongoDB through OrbStack containers, with optional DBeaver Community |
+| [**9 — Databases**](02-optional/09-databases.md) | PostgreSQL, Redis, or MongoDB through Docker Desktop or OrbStack containers, with optional DBeaver Community |
 | [**10 — AI clients**](02-optional/10-ai-agents.md) | Claude Code, Codex, GitHub Copilot app, Copilot in VS Code, Copilot CLI, or Raycast AI |
 | [**10A — OmniRoute**](02-optional/10a-omniroute.md) | A local Docker AI gateway for selected compatible clients |
 | [**11 — MCP servers**](02-optional/11-mcp-servers.md) | Reviewed external tools and data sources for selected AI clients |
@@ -415,7 +427,7 @@ day-one-mac setup --phase 03
 day-one-mac runtime-status
 day-one-mac shell-status
 
-# Validate the installed Day One Mac project and its regression fixtures.
+# Verify the installed runtime's checksums and file inventory.
 day-one-mac verify
 ```
 
@@ -457,14 +469,17 @@ After Phase 8, the Mac has:
 
 - a current, FileVault-protected macOS installation;
 - Apple Command Line Tools and Homebrew;
-- GitHub, Azure DevOps, or both authenticated;
+- GitHub, Azure DevOps, or both authenticated with repository read access on
+  Tracks 1–3; self-managed provider access on Track 4;
 - the selected Git authentication mode;
 - an explicitly chosen developer layout, with ghq only if selected;
-- chezmoi-managed dotfiles and a Starship-enabled zsh shell;
+- user-owned or chezmoi-managed configuration, the selected zsh, and Starship
+  only if selected;
 - Node with npm/pnpm, Python with uv, or both;
 - Raycast, Warp, and VS Code when a non-core productivity preset was selected;
-- a reviewed Brewfile and either a private dotfiles remote or a protected
-  local-only source; and
+- a reviewed Brewfile and the chosen configuration protection method: private
+  Git, local-only chezmoi with a separately verified backup, or your own backup
+  of user-owned files; and
 - on the script-assisted route, application provenance, audit evidence, and
   precise rollback records; or on the manual route, the verification and
   recovery records you maintained yourself.

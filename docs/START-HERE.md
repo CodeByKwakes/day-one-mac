@@ -16,15 +16,14 @@ files with your selected owner, optionally set up the Starship prompt, install t
 programming languages, prepare VS Code, and verify that the result can be
 rebuilt.
 
-The developer-folder pilot now offers [four layouts with optional ghq](manual/developer-folders.md).
+Choose from [four developer layouts with optional ghq](manual/developer-folders.md).
 The wizard collects these choices separately; ghq is not preselected. Existing
 setups must review them before resuming affected phases. Non-interactive setup
 must supply `--layout none|repository|purpose|existing` and `--ghq no|yes`, or
 have saved choices. Configuration ownership, shell, and prompt are also
 independent choices: see [Phase 5 choices](01-required/05-dotfiles-and-shell.md#choose-ownership-shell-and-prompt-first).
 Fresh direct runs must supply `--dotfiles-versioning none|local|git`,
-`--shell keep|apple|homebrew`, and `--prompt none|starship`. Preset, editor, and
-language defaults outside this slice are unchanged.
+`--shell keep|apple|homebrew`, and `--prompt none|starship`.
 
 The setup is resumable. A phase receives a ✓ only after its checks pass. If a
 phase stops, earlier completed phases stay saved and the screen explains what
@@ -46,6 +45,8 @@ You need:
 - credentials and recovery information for the selected Git authentication
   mode; 1Password details are needed only in `1password` mode;
 - a GitHub account, an Azure DevOps account, or both, depending on your track;
+- one repository clone URL for each provider on Tracks 1–3, preferably a
+  private repository you can read; Track 4 keeps repository access self-managed;
 - a half day for the first complete pass, plus download and macOS-update time.
 
 Stop if the Mac still contains the only copy of an important file. This setup
@@ -141,6 +142,10 @@ not independently prove who published the download. See
 The `export` affects only this Terminal
 window; future login shells load the saved path automatically.
 
+Downloads use `curl` when available, otherwise GNU `wget` with HTTPS support.
+Choose one download command above. Local `--archive` and `--source` installs
+need neither tool; see [portable installation](20-reference/PORTABLE-COMMAND.md).
+
 The Git clone route remains available for contributors. See
 [Install and manage the standalone runtime](20-reference/PORTABLE-COMMAND.md).
 
@@ -172,6 +177,12 @@ Choose your hosting account, language stack, Git identity, authentication mode,
 and dotfiles protection. Private Git provides a remote copy; local-only
 chezmoi needs an encrypted backup. Compare authentication modes in
 [Phase 3](01-required/03-security-and-ssh.md).
+
+For HTTPS, the wizard also asks which credential helper to use. GCM is
+recommended for Azure browser sign-in. CLI login and Git access are separate:
+Phase 4 reads your selected repository without cloning it, and Phase 8 repeats
+the check. Complete the first browser sign-in or PAT entry in your own terminal
+when prompted; see [HTTPS setup and recovery](01-required/04-core-tools-and-hosting.md#step-46--run-or-resume-the-phase).
 
 Follow this sequence:
 
@@ -218,11 +229,14 @@ need to learn them.
 
 ## One change that needs your password
 
-Phase 5 installs Homebrew's zsh and offers to make it your login shell. This
-step asks twice — once to add the shell to `/etc/shells`, once
+If you select Homebrew zsh, the Installation Centre installs it and Phase 5
+offers to make it your login shell. This step asks twice — once to add the shell to `/etc/shells`, once
 to switch. Declining leaves your shell untouched and stops Phase 5 safely as
 incomplete; the phase passes only when Directory Services confirms Homebrew
 zsh.
+
+Selecting Apple zsh uses `/bin/zsh`; selecting `keep` preserves and verifies
+your existing zsh login shell. Those choices do not switch to Homebrew zsh.
 
 If it is ever broken, recover from any working shell with:
 
@@ -311,7 +325,3 @@ ownership manifests, captured originals, and settings-restore evidence.
 ---
 
 [Command reference](20-reference/COMMAND-REFERENCE.md) · [Glossary](20-reference/GLOSSARY.md) · [Start Phase 1 →](01-required/01-first-boot-and-decisions.md)
-
-Installer downloads use `curl` when available, otherwise GNU `wget` with HTTPS
-support. Local `--archive` and `--source` installs need neither download tool.
-See the [GNU Wget HTTPS options](https://www.gnu.org/software/wget/manual/html_node/HTTPS-_0028SSL_002fTLS_0029-Options.html).

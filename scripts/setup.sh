@@ -57,6 +57,8 @@ AUTH_MODE=""
 HTTPS_HELPER=""
 GITHUB_REPO=""
 AZURE_REPO=""
+GITHUB_CLONE_DIR=""
+AZURE_CLONE_DIR=""
 MACOS_SETTINGS_PLAN=""
 OPTIONAL_MODULES=""
 APP_INSTALL_POLICY=""
@@ -106,9 +108,11 @@ Usage: ./setup.sh [options]
   --ghq no|yes                optional ghq; yes approves installation in the Centre
   --ghq-root PATH             confirmed primary root for existing layout + ghq yes
   --auth-mode MODE            1password (default), keychain, external, or https
-  --https-helper MODE         gcm (browser sign-in) or existing (keep your helper)
+  --https-helper MODE         gcm, or existing (GitHub CLI / existing Azure helper)
   --github-repo URL           GitHub clone URL for the required Git access check
   --azure-repo URL            Azure clone URL for the required Git access check
+  --github-clone-dir PATH     optionally clone after Git access passes; none disables
+  --azure-clone-dir PATH      optionally clone after Git access passes; none disables
   --name "Full Name"          Git author name
   --email ADDRESS             primary Git author email
   --preset PRESET            core or recommended-productivity (default)
@@ -365,6 +369,7 @@ phase_fingerprint() {
     08) inputs="$TRACK|$STACK|$GIT_NAME|$GIT_EMAIL|$PRIMARY_IDE|$AUTH_MODE|$DOTFILES_REPO|$DOTFILES_VERSIONING|applications=$application_catalog_hash" ;;
   esac
   case "$1" in 04|08) inputs+="|https-helper=${HTTPS_HELPER:-existing}|github-repo=${GITHUB_REPO:-}|azure-repo=${AZURE_REPO:-}" ;; esac
+  [[ "$1" != 04 ]] || inputs+="|github-clone-dir=${GITHUB_CLONE_DIR:-none}|azure-clone-dir=${AZURE_CLONE_DIR:-none}"
   { printf 'phase-schema=%s\n' "$schema"; printf 'implementation=%s\n' "$implementation";
     printf 'inputs=%s\n' "$inputs|preset=${PRESET:-recommended-productivity}|layout=${FOLDER_LAYOUT:-}|ghq=${GHQ_CHOICE:-}|root=${FOLDER_GHQ_ROOT:-}|dotfiles=$DOTFILES_VERSIONING|shell=$SHELL_CHOICE|prompt=$PROMPT_CHOICE"; } \
     | shasum -a 256 | awk '{print $1}'
@@ -989,7 +994,7 @@ required_phase_impact() {
     03) if [[ "$AUTH_MODE" == https ]]; then
           printf 'Require Installation Centre and FileVault; no SSH key or agent configuration for HTTPS. Manual: FileVault recovery method; provider sign-in belongs to Phase 4.'
         else printf 'Require Installation Centre; configure selected %s authentication and SSH; require FileVault. Manual: account/key approval and recovery method.' "$AUTH_MODE"; fi ;;
-    04) printf 'Require Installation Centre; configure shared and track-aware provider Git defaults and Developer layout %s; ghq %s; HTTPS helper %s. Verify selected repositories with bounded, noninteractive Git read checks. Manual: first provider sign-in.' "${FOLDER_LAYOUT:-unselected}" "${GHQ_CHOICE:-unselected}" "${HTTPS_HELPER:-existing}" ;;
+    04) printf 'Require Installation Centre; configure shared and track-aware provider Git defaults and Developer layout %s; ghq %s; HTTPS helper %s. Verify selected repositories with bounded, noninteractive Git read checks. Optional clone destinations: GitHub %s; Azure %s (none means verify only). Manual: first provider sign-in.' "${FOLDER_LAYOUT:-unselected}" "${GHQ_CHOICE:-unselected}" "${HTTPS_HELPER:-existing}" "${GITHUB_CLONE_DIR:-none}" "${AZURE_CLONE_DIR:-none}" ;;
     05) printf 'Require Installation Centre; configuration owner %s, shell %s, prompt %s. Preserve existing files; review ownership conflicts. Unselected choices block apply; none does not remove existing tools.' "${DOTFILES_VERSIONING:-unselected}" "${SHELL_CHOICE:-unselected}" "${PROMPT_CHOICE:-unselected}" ;;
     06) printf 'Require Installation Centre; install/update %s toolchains (Node LTS via fnm and/or Python via uv); configure pnpm when selected.' "$STACK" ;;
     07) if [[ "$PRESET" == core ]]; then printf 'Not required for core preset.'
@@ -1128,6 +1133,15 @@ check_required_phase() {
         target="$(hosting_repo_url "$component")"
         if [[ -n "$target" ]]; then required_check_note manual "$component Git access needs Phase 4's live repository check"
         else required_check_note fail "$component verification repository is missing (--$component-repo)"; fi
+      done < <(hosting_provider_ids)
+      while IFS= read -r component; do
+        target="$(hosting_clone_dir "$component")"
+        [[ "$target" != none ]] || continue
+        if [[ -n "$selected" && -d "$selected" ]] && have git && hosting_clone_matches "$target" "$(hosting_repo_url "$component")"; then
+          required_check_note pass "$component selected clone exists with the expected origin"
+        else
+          required_check_note fail "$component selected clone is missing or does not match; rerun Phase 4 or choose none"
+        fi
       done < <(hosting_provider_ids)
       ;;
     05)
@@ -1354,6 +1368,8 @@ while [[ $# -gt 0 ]]; do
     --https-helper) shift; [[ $# -gt 0 ]] || { err '--https-helper needs gcm or existing'; exit 2; }; HTTPS_HELPER="$1" ;;
     --github-repo) shift; [[ $# -gt 0 ]] || { err '--github-repo needs a clone URL'; exit 2; }; GITHUB_REPO="$1" ;;
     --azure-repo) shift; [[ $# -gt 0 ]] || { err '--azure-repo needs a clone URL'; exit 2; }; AZURE_REPO="$1" ;;
+    --github-clone-dir) shift; [[ $# -gt 0 ]] || exit 2; GITHUB_CLONE_DIR="$1" ;;
+    --azure-clone-dir) shift; [[ $# -gt 0 ]] || exit 2; AZURE_CLONE_DIR="$1" ;;
     --macos-settings) shift; [[ $# -gt 0 ]] || { err "--macos-settings needs ask, configure, or skip"; exit 2; }; MACOS_SETTINGS_PLAN="$1" ;;
     --skip-macos-settings) MACOS_SETTINGS_PLAN=skip ;;
     --app-install-policy) shift; [[ $# -gt 0 ]] || { err "--app-install-policy needs prompt, homebrew, or check-only"; exit 2; }; APP_INSTALL_POLICY="$1" ;;
@@ -1400,7 +1416,7 @@ fi
 if [[ "$SETUP_ACTION" == resume ]]; then
   for option in "${ORIGINAL_ARGS[@]}"; do
     case "$option" in
-      --shell|--prompt|--layout|--ghq|--ghq-root|--track|--stack|--name|--email|--preset|--primary-ide|--dotfiles-repo|--new-dotfiles|--dotfiles-versioning|--local-dotfiles|--auth-mode|--https-helper|--github-repo|--azure-repo|--macos-settings|--skip-macos-settings)
+      --shell|--prompt|--layout|--ghq|--ghq-root|--track|--stack|--name|--email|--preset|--primary-ide|--dotfiles-repo|--new-dotfiles|--dotfiles-versioning|--local-dotfiles|--auth-mode|--https-helper|--github-repo|--azure-repo|--github-clone-dir|--azure-clone-dir|--macos-settings|--skip-macos-settings)
         err '--resume reuses saved choices; use --plan and --apply to change them.'; exit 2 ;;
     esac
   done
@@ -1535,6 +1551,8 @@ save_state_value auth-mode "$AUTH_MODE"
 save_state_value https-helper "$HTTPS_HELPER"
 save_state_value github-verification-repo "$GITHUB_REPO"
 save_state_value azure-verification-repo "$AZURE_REPO"
+save_state_value github-clone-dir "$GITHUB_CLONE_DIR"
+save_state_value azure-clone-dir "$AZURE_CLONE_DIR"
 save_state_value primary-ide "$PRIMARY_IDE"
 if [[ "$DOTFILES_EXPLICIT" == 1 || -n "$DOTFILES_REPO" ]]; then
   save_state_value dotfiles-repo "$DOTFILES_REPO"
