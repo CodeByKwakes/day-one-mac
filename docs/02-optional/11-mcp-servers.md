@@ -60,6 +60,11 @@ These destinations use the documented [Claude MCP schema](https://code.claude.co
 and [VS Code MCP configuration](https://code.visualstudio.com/docs/agents/reference/mcp-configuration).
 Never overwrite an existing configuration with a whole generated file.
 
+The generated VS Code file uses its compatibility `servers` format. For a new
+portable Copilot configuration, follow Step 11.5 instead. Do not rename this
+file to `.mcp.json`: that destination requires a `mcpServers` wrapper, and
+credential variable syntax must be checked for every client that reads it.
+
 The dedicated `DAY_ONE_MCP_` name is a placeholder, not a secret value.
 Supply the actual token securely to the intended client's environment yourself;
 GUI apps do not necessarily inherit terminal environment variables. A `-`
@@ -81,10 +86,13 @@ Start with one server and add another only when a real workflow needs it.
 | Context7 | Current library documentation | Sends queries to a hosted service | User |
 | Apify | Web extraction and hosted Actors | Actors may cost money or change remote state | User, disabled when unused |
 | Tavily | Web search, extraction, maps and crawls | Consumes account quota | User, disabled when unused |
-| Filesystem | Reading or editing local files | Broad paths expose personal data | Workspace or `~/Developer` only |
+| Filesystem | Reading or editing local files | Broad paths expose personal data | One explicitly selected repository |
 | Playwright | Browser-driven UI tests | Can interact with signed-in websites | Workspace only |
 
-Never grant a filesystem server `$HOME` or `/`. Never point a database MCP at
+Workspace scope controls where a definition is loaded; it does not restrict
+the server's filesystem permissions. Configure the server's own allowed paths
+to the repository you intend to expose. Never grant it all of `~/Developer`,
+`$HOME` or `/`. Never point a database MCP at
 production while learning the tool. Do not enable global auto-approval.
 
 The hosted endpoints used in this guide are:
@@ -145,6 +153,10 @@ put everything executed by the server after `--`:
 claude mcp add --scope project playwright -- pnpm dlx @playwright/mcp@latest
 ```
 
+This example downloads and runs the current package when the server starts.
+Review the publisher first. For a reproducible team setup, replace `@latest`
+with an explicitly reviewed version; apply the same rule to `npx` examples.
+
 Remove a definition cleanly with its matching scope:
 
 ```bash
@@ -155,6 +167,11 @@ claude mcp remove context7 --scope user
 ## Step 11.4 — Add servers to Codex CLI
 
 Skip this section if Codex was not selected.
+
+The `codex mcp add` commands below write user configuration. For workspace-only
+servers, use the reviewed `.codex/config.toml` snippet route above instead.
+Codex loads project configuration only for trusted projects. Removing a
+user-scoped definition affects other repositories that use it.
 
 For remote OAuth-capable servers:
 
@@ -193,15 +210,19 @@ and that is safer than hand-editing JSON for a first setup.
 2. Run **MCP: Add Server**.
 3. Choose **HTTP** for a hosted endpoint or **Command (stdio)** for a local
    process.
-4. Choose **User** for a general server or **Workspace** for the current repo.
+4. Prefer **Copilot Global** for a general server or **.mcp.json** for the
+   current repository. Older releases offer **User** or **Workspace** instead.
 5. Review the generated configuration before starting the server.
 6. Accept the first-use trust prompt only when the URL, command, arguments,
    and scope match what you intended.
 7. Run **MCP: List Servers** and use **Show Output** on any failure.
 
-VS Code workspace configuration lives at `.vscode/mcp.json`. User
-configuration should be opened with **MCP: Open User Configuration**, because
-profiles can have separate user data. A minimal workspace example is:
+For new servers, current VS Code guidance prefers portable workspace
+`.mcp.json` (`mcpServers`) or user `${COPILOT_HOME:-$HOME/.copilot}/mcp-config.json`.
+The VS Code compatibility format uses `.vscode/mcp.json` (`servers`). Open
+profile-specific compatibility settings with **MCP: Open User Configuration**.
+The following example uses that compatibility format, matching Module 11's
+generated snippet:
 
 ```jsonc
 {
@@ -219,9 +240,10 @@ profiles can have separate user data. A minimal workspace example is:
 }
 ```
 
-For Copilot Agent Host portability, use workspace `.mcp.json` or user
-`~/.copilot/mcp-config.json` when the current VS Code documentation directs
-you there. Do not maintain equivalent copies in all three locations.
+For a new portable workspace definition, use the `mcpServers` structure in
+Step 11.6 at `.mcp.json`. Check client-specific authentication and local-command
+fields before sharing a definition across clients. Do not maintain equivalent
+copies in all three locations.
 
 In Chat, choose **Configure Tools** and enable only the tool groups required by
 the current request. Keep automatic approval off. Disable an unused server
@@ -234,14 +256,21 @@ neither the Copilot CLI nor the GitHub Copilot app was selected.
 
 ### GitHub Copilot CLI
 
-The CLI uses
-`~/.copilot/mcp-config.json`. Back up an existing file before editing it:
+The CLI uses `${COPILOT_HOME:-$HOME/.copilot}/mcp-config.json`.
+Back up an existing file before editing it. This creates a private, unique
+backup and reports any copy failure; stop if the backup fails:
 
 ```bash
-mkdir -p "$HOME/.day-one-mac/manual-backups"
-cp "$HOME/.copilot/mcp-config.json" \
-  "$HOME/.day-one-mac/manual-backups/mcp-config.json.before-edit" \
-  2>/dev/null || true
+(
+  umask 077
+  config="${COPILOT_HOME:-$HOME/.copilot}/mcp-config.json"
+  if [ -e "$config" ]; then
+    mkdir -p "$HOME/.day-one-mac/manual-backups" || exit 1
+    backup_dir="$(mktemp -d "$HOME/.day-one-mac/manual-backups/mcp.XXXXXX")" || exit 1
+    cp "$config" "$backup_dir/mcp-config.json" || exit 1
+    printf 'Backup: %s\n' "$backup_dir/mcp-config.json"
+  fi
+)
 ```
 
 A remote-server structure is:
@@ -261,13 +290,15 @@ A remote-server structure is:
 Validate the JSON before opening the client:
 
 ```bash
-jq . "$HOME/.copilot/mcp-config.json" >/dev/null
+jq . "${COPILOT_HOME:-$HOME/.copilot}/mcp-config.json" >/dev/null
 copilot
 ```
 
 Inside Copilot CLI, use `/mcp list`, authenticate the selected server if
 requested, and inspect it before invoking a tool. A discovered tool is not the
 same as an approved tool call.
+The `tools: ["*"]` example exposes every tool from this server; it does not
+approve calls. Review the tool list and restrict it to what you need.
 
 ### GitHub Copilot app
 
@@ -293,7 +324,7 @@ paid Raycast plan.
    from Step 11.1, and complete OAuth when the service offers it.
 4. For a local server, choose **Standard Input/Output**, enter the executable
    and arguments separately, and restrict any filesystem path to the intended
-   project or `~/Developer`.
+   repository.
 5. Add credentials through the server's OAuth flow or Raycast's Environment or
    HTTP Headers field. Never place one inside the command or URL.
 6. Save the server, inspect the tools Raycast discovers, and keep tool
@@ -314,16 +345,29 @@ Use the first supported option in this order:
 3. A named environment variable injected only when launching the client.
 4. A project-local untracked `.env` as a last resort for development only.
 
+An `.env` file is not automatically loaded by these clients. Use an explicitly
+supported loader or credential input, and ensure the file is ignored and
+untracked before storing anything. `${VAR}`, `${env:VAR}` and Codex's
+`bearer_token_env_var` are different client-specific mechanisms; do not copy
+credential placeholders between formats unchanged.
+
 Do not place a token in a URL, committed JSON, shell profile, screenshot, or
 terminal transcript. Before committing a workspace definition, run:
 
 ```bash
 git check-ignore -v .env 2>/dev/null || true
-rg -n 'Bearer |API_KEY[" ]*[:=][" ]*[A-Za-z0-9]' .mcp.json .vscode 2>/dev/null || true
-git diff -- .mcp.json .vscode/mcp.json
+# Print filenames only, so a potential credential is not echoed.
+git ls-files -z -- .mcp.json .vscode/mcp.json .codex/config.toml |
+  xargs -0 rg -l 'Bearer |API_KEY|TOKEN|password|secret'
+git diff --stat -- .mcp.json .vscode/mcp.json .codex/config.toml
+git diff --cached --stat -- .mcp.json .vscode/mcp.json .codex/config.toml
 ```
 
-Any real token match must be removed and rotated.
+Inspect flagged files privately, including staged changes. Variable names can
+match without containing secrets; no matches are not proof of safety. The scan
+covers tracked workspace files only; inspect new files and other destinations
+separately. Resolve scan errors before committing. Any real token committed or
+exposed must be removed and rotated.
 
 ## Step 11.9 — Prove the connection with a read-only task
 
@@ -334,7 +378,10 @@ Use Context7 to find the current documented command for installing the latest
 Node LTS with fnm. Cite the page used and do not change any files.
 ```
 
-Confirm that the client names the expected MCP tool and asks for approval.
+Confirm that the client invokes the expected MCP tool and returns a successful
+result. Check its approval settings separately: some clients, including
+Raycast, approve read-only tools by default, so a missing prompt alone does not
+prove connection failure. Keep confirmation enabled for tools that change data.
 Do not begin with an Apify Actor, browser login, repository write, or database
 mutation.
 
@@ -343,7 +390,8 @@ mutation.
 | Symptom | Resolution |
 |---|---|
 | Server says authentication is required | Run the client's login/auth action and complete the browser flow |
-| Local server command is not found | Open a new shell; verify `node`, `npx`, or `pnpm` before debugging MCP |
+| Local server command is not found | Verify `node`, `npx`, or `pnpm` in Terminal. For GUI clients, restart the app after PATH changes or configure a verified absolute executable path; a new shell alone does not update the app |
+| Token variable is unavailable | Supply it to the client process using its supported credential mechanism; do not assume a GUI app reads shell exports or `.env` |
 | Project server is pending | Open the client inside the trusted repository and approve that exact definition |
 | Same server appears twice | Remove either the user or workspace definition; keep one authoritative scope |
 | VS Code server fails | Run **MCP: List Servers** → server → **Show Output** |
@@ -365,6 +413,7 @@ Official references: [Codex MCP](https://learn.chatgpt.com/docs/extend/mcp?surfa
 [Claude Code MCP](https://code.claude.com/docs/en/mcp),
 [VS Code MCP](https://code.visualstudio.com/docs/agent-customization/mcp-servers),
 [GitHub Copilot app](https://docs.github.com/en/copilot/get-started/quickstart-copilot-app),
+[Copilot CLI MCP](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers),
 and [Raycast MCP](https://manual.raycast.com/ai/model-context-protocol).
 Provider setup references: [Context7](https://context7.com/docs/resources/all-clients),
 [Apify](https://docs.apify.com/integrations/mcp), and

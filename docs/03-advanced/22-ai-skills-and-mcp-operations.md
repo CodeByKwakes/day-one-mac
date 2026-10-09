@@ -224,6 +224,11 @@ Order of preference:
 3. 1Password-injected environment variable at launch.
 4. Untracked project-local environment file as a last resort.
 
+Environment files are not loaded automatically by every client. Follow the
+client-specific credential and launch instructions in
+[Optional 11](../02-optional/11-mcp-servers.md#step-118--handle-secrets-safely),
+including the separate PATH and environment requirements for GUI apps.
+
 Never place a literal token in:
 
 - `SKILL.md` or agent instructions;
