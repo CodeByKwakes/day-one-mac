@@ -11,8 +11,9 @@ formulae.
 ## What the selector does
 
 The catalogue lives in `config/optional-formulae.tsv`, sorted by group and
-formula. The selector shows required base tools separately so they cannot be
-toggled off. It checks every optional formula before installation and records
+formula. The selector shows one category at a time, starting with Navigation.
+Required setup tools stay under Phases 2–8 and cannot be toggled here.
+It checks every optional formula before installation and records
 only newly installed formulae and dependencies in the normal day-one-mac
 manifest.
 
@@ -63,9 +64,17 @@ day-one-mac cli-tools --packages eza,zsh-autosuggestions,lazydocker --dry-run
 day-one-mac cli-tools --packages eza,zsh-autosuggestions,lazydocker
 ```
 
-In the selector, use Up/Down (or `j`/`k`) to move, Space to toggle, `a` for all,
-`n` for none, and Enter to review the checked items before installation. The
-required formulae appear with 🔒 and cannot be toggled. `--check` returns a
+In the selector, use Left/Right (or `h`/`l`) to change category, Up/Down (or
+`j`/`k`) to move between tools, and Space to toggle. `a` selects all tools in
+the current category; `n` clears only that category. Selections stay checked
+when you move between categories. Enter reviews all selected tools before
+installation. The total selected count stays visible. Nothing is preselected.
+
+Browse Navigation, Shell, Git, Containers, Content, Development and System
+as needed. `--list` prints the complete catalogue with descriptions and
+installation status. Explicit `--packages`, `--saved`, `--all` and `--check`
+runs show only the selection summary, avoiding the full catalogue first.
+`--check` returns a
 non-zero status when a selected tool is missing, which is useful in an audit:
 
 ```bash
@@ -204,7 +213,7 @@ also knows about optional formulae that this selector added.
 ## Optional completion checklist 🚦
 
 - [ ] Every installed formula was deliberately selected.
-- [ ] Required base formulae remained visible and could not be toggled off.
+- [ ] Required setup tools remained under their owning phases.
 - [ ] Any newly selected formula is declared once in the managed Brewfile.
 - [ ] `brew bundle check --file="$HOME/Brewfile" --no-upgrade` succeeds.
 - [ ] Only selected shell integrations were added, and a new login shell opens

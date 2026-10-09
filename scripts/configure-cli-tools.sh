@@ -107,7 +107,7 @@ is_installed() { grep -Fqx "$1" <<<"$INSTALLED_FORMULAE"; }
 print_catalogue() {
   local i last_group="" state
   ui_title '🧰' 'Optional command-line tools'
-  printf 'Required and not toggleable here: chezmoi, git, jq, ripgrep, starship, zsh\n'
+  printf 'Required setup tools are managed by Phases 2–8 and are not toggled here.\n'
   printf 'Optional ghq has its own selection: day-one-mac folders --help\n'
   for ((i=0; i<${#FORMULAE[@]}; i++)); do
     if [[ "${TOOL_GROUPS[$i]}" != "$last_group" ]]; then
@@ -132,22 +132,35 @@ set_csv_selection() {
 }
 
 interactive_select() {
-  local cursor=0 key rest i check pointer state last_group
+  local cursor=0 group_cursor=0 key rest i check pointer state group selected_count
+  local groups=() visible=()
+  for group in "${TOOL_GROUPS[@]}"; do
+    if [[ "${#groups[@]}" == 0 || "$group" != "${groups[${#groups[@]} - 1]}" ]]; then
+      groups+=("$group")
+      [[ "$group" != Navigation ]] || group_cursor=$((${#groups[@]} - 1))
+    fi
+  done
   [[ -t 0 ]] || { err "interactive selection needs a terminal; use --all or --packages"; exit 2; }
   while :; do
     printf '\033[2J\033[H'
     ui_banner '🎛️' 'Toggle selection — installation only'
-    printf '  Up/Down or j/k: move   Space: toggle   a: all   n: none\n'
-    printf '  Enter: review          q: quit\n\n'
-    printf 'Required base — locked and not toggleable\n'
-    printf '  🔒 chezmoi  🔒 git  🔒 jq  🔒 ripgrep  🔒 starship  🔒 zsh\n'
-    last_group=""
+    printf '  Left/Right or h/l: category   Up/Down or j/k: tool\n'
+    printf '  Space: toggle   a/n: all/none in this category\n'
+    printf '  Enter: review all selections   q: quit\n\n'
+    printf '  Required setup tools are managed by Phases 2–8.\n'
+    selected_count=0
+    for i in "${SELECTED[@]}"; do selected_count=$((selected_count + i)); done
+    printf '  Selected across all categories: %s\n\n' "$selected_count"
+    group="${groups[$group_cursor]}"
+    printf '  %s (%s/%s)\n' "$group" "$((group_cursor + 1))" "${#groups[@]}"
+    visible=()
     for ((i=0; i<${#FORMULAE[@]}; i++)); do
-      if [[ "${TOOL_GROUPS[$i]}" != "$last_group" ]]; then printf '\n%s\n' "${TOOL_GROUPS[$i]}"; last_group="${TOOL_GROUPS[$i]}"; fi
+      [[ "${TOOL_GROUPS[$i]}" == "$group" ]] || continue
+      visible+=("$i")
       if is_installed "${FORMULAE[$i]}"; then state='installed'; else state='missing'; fi
       if [[ "${SELECTED[$i]}" == 1 ]]; then check='[x]'; else check='[ ]'; fi
-      if [[ "$i" == "$cursor" ]]; then pointer='>'; else pointer=' '; fi
-      if [[ "$i" == "$cursor" ]]; then
+      if [[ "$((${#visible[@]} - 1))" == "$cursor" ]]; then pointer='>'; else pointer=' '; fi
+      if [[ "$pointer" == '>' ]]; then
         printf ' %s%s%s %s %-25s %-11s %s%s\n' "$DAY_ONE_UI_BOLD" "$DAY_ONE_UI_CYAN" "$pointer" "$check" "${FORMULAE[$i]}" "[$state]" "${PURPOSES[$i]}" "$DAY_ONE_UI_RESET"
       else
         printf ' %s %s %-25s %-11s %s\n' "$pointer" "$check" "${FORMULAE[$i]}" "[$state]" "${PURPOSES[$i]}"
@@ -159,19 +172,20 @@ interactive_select() {
       key="$key$rest"
     fi
     case "$key" in
-      $'\033[A'|k|K) cursor=$((cursor - 1)); [[ "$cursor" -ge 0 ]] || cursor=$((${#FORMULAE[@]} - 1)) ;;
-      $'\033[B'|j|J) cursor=$((cursor + 1)); [[ "$cursor" -lt "${#FORMULAE[@]}" ]] || cursor=0 ;;
-      ' ') if [[ "${SELECTED[$cursor]}" == 1 ]]; then SELECTED[$cursor]=0; else SELECTED[$cursor]=1; fi ;;
+      $'\033[A'|k|K) cursor=$((cursor - 1)); [[ "$cursor" -ge 0 ]] || cursor=$((${#visible[@]} - 1)) ;;
+      $'\033[B'|j|J) cursor=$((cursor + 1)); [[ "$cursor" -lt "${#visible[@]}" ]] || cursor=0 ;;
+      $'\033[D'|h|H) group_cursor=$((group_cursor - 1)); [[ "$group_cursor" -ge 0 ]] || group_cursor=$((${#groups[@]} - 1)); cursor=0 ;;
+      $'\033[C'|l|L) group_cursor=$((group_cursor + 1)); [[ "$group_cursor" -lt "${#groups[@]}" ]] || group_cursor=0; cursor=0 ;;
+      ' ') i="${visible[$cursor]}"; if [[ "${SELECTED[$i]}" == 1 ]]; then SELECTED[$i]=0; else SELECTED[$i]=1; fi ;;
       q|Q) exit 10 ;;
-      a|A) for ((i=0; i<${#SELECTED[@]}; i++)); do SELECTED[$i]=1; done ;;
-      n|N) for ((i=0; i<${#SELECTED[@]}; i++)); do SELECTED[$i]=0; done ;;
+      a|A) for i in "${visible[@]}"; do SELECTED[$i]=1; done ;;
+      n|N) for i in "${visible[@]}"; do SELECTED[$i]=0; done ;;
       '') printf '\033[2J\033[H'; return 0 ;;
     esac
   done
 }
 
-print_catalogue
-[[ "$LIST_ONLY" == 1 ]] && exit 0
+if [[ "$LIST_ONLY" == 1 ]]; then print_catalogue; exit 0; fi
 if [[ "$SELECT_ALL" == 1 ]]; then
   for ((i=0; i<${#SELECTED[@]}; i++)); do SELECTED[$i]=1; done
 elif [[ -n "$PACKAGE_CSV" ]]; then

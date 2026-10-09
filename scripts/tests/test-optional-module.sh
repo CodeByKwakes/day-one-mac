@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
+
+python3 "$(dirname "${BASH_SOURCE[0]}")/test-cli-tools-terminal.py"
 exec </dev/null
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
