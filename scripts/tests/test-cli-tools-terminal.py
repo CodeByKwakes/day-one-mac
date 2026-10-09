@@ -15,10 +15,11 @@ import time
 SCRIPT = Path(__file__).resolve().parents[1] / "configure-cli-tools.sh"
 
 
-def exercise(env, keys, expected, status=0):
+def exercise(env, keys, expected, status=0, args=("--dry-run",)):
     pid, master = pty.fork()
     if pid == 0:
-        os.execve("/bin/bash", ["/bin/bash", str(SCRIPT), "--dry-run"], env)
+        command = SCRIPT.parent / "day-one-mac"
+        os.execve("/bin/bash", ["/bin/bash", str(command), "cli-tools", *args], env)
     output = bytearray()
     sent = False
     finished = False
@@ -82,5 +83,17 @@ with tempfile.TemporaryDirectory(prefix="day-one-cli-", dir="/private/tmp") as r
                              env=env, check=True, capture_output=True, text=True).stdout
     assert "Selected: eza direnv" in preview and "lazydocker" not in preview
     assert not (home / "state").exists(), "read-only selector wrote state"
+    # Exercise the real no-argument command, including lock supervision. The
+    # preview tests above deliberately skip that path and cannot catch an
+    # empty ORIGINAL_ARGS expansion under macOS Bash 3.2 nounset.
+    exercise(env, b"q", "Navigation (5/7)", status=10, args=())
+    exercise(env, b"\r", "nothing selected; no changes made", args=())
+    exercise(env, b"j \rn\n", "Selected: eza", status=10, args=())
+    assert not (home / "state").exists(), "cancelled selector saved state"
+    assert not (home / "state.operation.lock").exists(), "cancelled selector leaked lock"
+    subprocess.run(["/bin/bash", str(SCRIPT), "--packages", "eza", "--yes"],
+                   env=env, check=True, capture_output=True, text=True)
+    assert (home / "state/optional-cli-packages").read_text().strip() == "eza"
+    assert not (home / "state.operation.lock").exists(), "applied selection leaked lock"
 
 print("PASS: compact CLI categories, retained selections, category toggles, wrapping and read-only previews")

@@ -68,7 +68,8 @@ done
   err '--saved cannot be combined with a new selection'; exit 2;
 }
 if [[ "$DRY_RUN" == 0 && "$CHECK_ONLY" == 0 && "$LIST_ONLY" == 0 ]]; then
-  day_one_serialize cli-tools "$0" "${ORIGINAL_ARGS[@]}"
+  # Bash 3.2 treats an empty array as unbound under set -u.
+  day_one_serialize cli-tools "$0" ${ORIGINAL_ARGS[@]+"${ORIGINAL_ARGS[@]}"}
 fi
 if [[ "$USE_SAVED" == 1 ]]; then
   PACKAGE_CSV="$(sed -n '1p' "$SELECTION_FILE" 2>/dev/null || true)"
