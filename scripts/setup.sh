@@ -8,6 +8,7 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 DOC_DIR="$PROJECT_DIR/docs"
 source "$SCRIPT_DIR/lib/project-paths.sh"
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
+source "$SCRIPT_DIR/lib/required-phase-catalog.sh"
 source "$SCRIPT_DIR/lib/application-ownership.sh"
 source "$SCRIPT_DIR/lib/platform.sh"
 source "$SCRIPT_DIR/lib/state.sh"
@@ -317,32 +318,6 @@ load_or_choose_selections() {
     err "--dotfiles-repo requires --dotfiles-versioning git"
     exit 2
   fi
-}
-
-phase_doc() {
-  case "$1" in
-    01) printf '%s/01-required/01-first-boot-and-decisions.md\n' "$DOC_DIR" ;;
-    02) printf '%s/01-required/02-command-line-foundation.md\n' "$DOC_DIR" ;;
-    03) printf '%s/01-required/03-security-and-ssh.md\n' "$DOC_DIR" ;;
-    04) printf '%s/01-required/04-core-tools-and-hosting.md\n' "$DOC_DIR" ;;
-    05) printf '%s/01-required/05-dotfiles-and-shell.md\n' "$DOC_DIR" ;;
-    06) printf '%s/01-required/06-language-toolchains.md\n' "$DOC_DIR" ;;
-    07) printf '%s/01-required/07-vscode-base.md\n' "$DOC_DIR" ;;
-    08) printf '%s/01-required/08-verify-and-reproduce.md\n' "$DOC_DIR" ;;
-  esac
-}
-
-phase_title() {
-  case "$1" in
-    01) printf 'First boot and decisions\n' ;;
-    02) printf 'Command-line foundation\n' ;;
-    03) printf 'Security and SSH\n' ;;
-    04) printf 'Core tools and hosting\n' ;;
-    05) printf 'Configuration ownership, shell and prompt\n' ;;
-    06) printf 'Language toolchains and pnpm\n' ;;
-    07) printf 'VS Code base\n' ;;
-    08) printf 'Verify and reproduce\n' ;;
-  esac
 }
 
 phase_fingerprint() {
@@ -884,7 +859,7 @@ phase_exit_report() {
   local rc="$1" item
   [[ "$rc" -eq 0 ]] && return 0
   printf '\n%s%s⛔ Phase %s is incomplete%s\n' "$DAY_ONE_UI_BOLD" "$DAY_ONE_UI_RED" "$CURRENT_PHASE" "$DAY_ONE_UI_RESET" >&2
-  printf '%s━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━%s\n' "$DAY_ONE_UI_DIM" "$DAY_ONE_UI_RESET" >&2
+  ui_rule >&2
   if [[ -n "$PHASE_COMPLETED_ITEMS" ]]; then
     printf 'Completed in this attempt:\n' >&2
     while IFS= read -r item; do [[ -n "$item" ]] && printf '  %s✓%s %s\n' "$DAY_ONE_UI_GREEN" "$DAY_ONE_UI_RESET" "$item" >&2; done <<<"$PHASE_COMPLETED_ITEMS"

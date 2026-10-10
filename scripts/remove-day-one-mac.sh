@@ -83,23 +83,25 @@ append_csv() {
   printf '%s%s%s' "$current" "${current:+,}" "$value"
 }
 
-clear_screen() { [[ -t 1 ]] && printf '\033[2J\033[H'; }
+clear_screen() { ui_clear_screen; }
 
 SINGLE_VALUES=()
 SINGLE_LABELS=()
 SINGLE_RESULT=""
 select_one() {
-  local heading="$1" cursor="${2:-0}" key rest item marker radio
+  local heading="$1" cursor="${2:-0}" key rest item radio
   while :; do
     clear_screen
     ui_banner '🧹' 'Day One Mac removal wizard'
-    printf '%s\n\n' "$heading"
-    printf '  Up/Down or j/k: move   Space or Enter: accept   q: quit\n\n'
-    for ((item=0; item<${#SINGLE_VALUES[@]}; item++)); do
-      marker=' '; radio='( )'
-      [[ "$item" == "$cursor" ]] && marker='>' && radio='(●)'
-      printf ' %s %s %s\n' "$marker" "$radio" "${SINGLE_LABELS[$item]}"
+    ui_text "$heading"
+    ui_menu_window "${#SINGLE_VALUES[@]}" "$cursor" 11
+    for ((item=DAY_ONE_UI_MENU_START; item<DAY_ONE_UI_MENU_END; item++)); do
+      radio='( )'
+      [[ "$item" != "$cursor" ]] || radio='(*)'
+      ui_menu_item "$item" "$cursor" "$radio" "${SINGLE_LABELS[$item]}"
     done
+    ui_menu_position "${#SINGLE_VALUES[@]}" "$cursor"
+    ui_menu_help single
     IFS= read -rsn1 key
     if [[ "$key" == $'\033' ]]; then IFS= read -rsn2 rest || true; key="$key$rest"; fi
     case "$key" in
@@ -116,19 +118,19 @@ MENU_LABELS=()
 MENU_SELECTED=()
 MENU_RESULT=""
 select_toggles() {
-  local heading="$1" cursor=0 key rest item marker check
+  local heading="$1" cursor=0 key rest item check
   while :; do
     clear_screen
     ui_banner '🧹' 'Day One Mac removal wizard'
-    printf '%s\n\n' "$heading"
-    printf '  Up/Down or j/k: move   Space: toggle   a: all   n: none\n'
-    printf '  Enter: accept          q: quit\n\n'
-    for ((item=0; item<${#MENU_VALUES[@]}; item++)); do
-      marker=' '; check='[ ]'
-      [[ "$item" == "$cursor" ]] && marker='>'
-      [[ "${MENU_SELECTED[$item]}" == 1 ]] && check='[x]'
-      printf ' %s %s %s\n' "$marker" "$check" "${MENU_LABELS[$item]}"
+    ui_text "$heading"
+    ui_menu_window "${#MENU_VALUES[@]}" "$cursor" 11
+    for ((item=DAY_ONE_UI_MENU_START; item<DAY_ONE_UI_MENU_END; item++)); do
+      check='[ ]'
+      [[ "${MENU_SELECTED[$item]}" != 1 ]] || check='[x]'
+      ui_menu_item "$item" "$cursor" "$check" "${MENU_LABELS[$item]}"
     done
+    ui_menu_position "${#MENU_VALUES[@]}" "$cursor"
+    ui_menu_help toggle
     IFS= read -rsn1 key
     if [[ "$key" == $'\033' ]]; then IFS= read -rsn2 rest || true; key="$key$rest"; fi
     case "$key" in

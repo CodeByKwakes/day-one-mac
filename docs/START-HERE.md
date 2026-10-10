@@ -69,7 +69,7 @@ resumable phases, saved verification, and recorded ownership.
 1. Finish macOS Setup Assistant and install every Software Update.
 2. Install the standalone command as shown below. A repository checkout is not
    required.
-3. Run `day-one-mac --wizard` once.
+3. Run `day-one-mac --wizard`, then choose **Start or resume required setup**.
 4. Complete the eight required phases in order. Press Return when the wizard
    offers the next phase; use `q` when you need to stop.
 5. When a phase stops, read **only that phase's** printed `Guide:` path and its
@@ -78,6 +78,32 @@ resumable phases, saved verification, and recorded ownership.
 6. Stop after Phase 8 when you need only the working development foundation.
    Databases, AI clients, MCP servers, profiles, and advanced tools are optional
    and remain available later.
+
+The setup centre also lets you browse **Required phases**, **Optional modules**,
+**Advanced modules**, and **Other actions**. Use Up/Down or `j`/`k` to move,
+Enter or Space to choose, and `b`, Left Arrow, or the **Back** entry to return.
+During required setup questions, `b` or Left Arrow returns to the previous
+setup section; type `:back` at a text prompt. Accepted answers stay in memory
+until you confirm the review screen. Going back from the hosting section
+returns to the centre without saving. Press `q` to stop the current wizard.
+Long lists show one page at a time as you move. Colours and symbols highlight
+the current choice; `NO_COLOR=1` disables colours and `DAY_ONE_MAC_ASCII=1`
+uses plain symbols.
+
+Choose a required phase to preview changes, check it, read its guide, or run it
+with saved choices. Start with the full required setup on a new Mac; selecting
+one phase does not run earlier phases or the Installation Centre automatically.
+Recorded status is saved evidence, and the runner revalidates it before reuse.
+
+Optional and advanced modules offer a guide, preview, component check, new
+selection, and saved-selection run. Apply remains locked until Phase 8 passes.
+New selections are previewed before you choose **Apply**; modules that need a
+reviewed TSV ask for its path. CLI tools open their existing interactive picker.
+AI and application modules ask how to install missing apps through the existing
+ownership-aware prompts; external installations are preserved.
+**Other actions** includes settings, status reports, folder previews, Stage 0,
+and removal. Removal and rollback keep their existing preview and confirmation
+steps. Browsing the centre does not save choices or acquire an operation lock.
 
 ### Manual route — no Day One Mac scripts
 

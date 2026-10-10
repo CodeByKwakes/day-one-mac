@@ -55,7 +55,7 @@ contains_csv() {
 }
 
 clear_screen() {
-  [[ -t 1 ]] && printf '\033[2J\033[H'
+  ui_clear_screen
 }
 
 OPTIONS=(
@@ -137,29 +137,25 @@ load_selection_flags() {
 }
 
 choose_settings() {
-  local cursor=0 key rest index marker check last_group=""
+  local cursor=0 key rest index check last_group=""
   [[ -t 0 && -t 1 ]] || { err 'The settings wizard requires an interactive terminal. Use --preview or --apply for automation.'; return 2; }
   load_selection_flags
   while :; do
     clear_screen
     ui_banner '⚙️' 'Early macOS Settings Wizard'
-    printf 'Choose optional preferences. Required security gates remain separate.\n\n'
-    printf '  Up/Down or j/k: move   Space: toggle   a: all   n: none\n'
-    printf '  Enter: review          q: return without changing settings\n'
-    for ((index=0; index<${#OPTIONS[@]}; index++)); do
+    ui_text 'Choose optional preferences; security gates are separate.'
+    ui_menu_window "${#OPTIONS[@]}" "$cursor" 14
+    for ((index=DAY_ONE_UI_MENU_START; index<DAY_ONE_UI_MENU_END; index++)); do
       if [[ "${OPTION_GROUPS[$index]}" != "$last_group" ]]; then
-        printf '\n  %s\n' "${OPTION_GROUPS[$index]}"
+        ui_text "${OPTION_GROUPS[$index]}"
         last_group="${OPTION_GROUPS[$index]}"
       fi
-      marker=' '; check='[ ]'
-      [[ "$index" == "$cursor" ]] && marker='>'
-      [[ "${SELECTED_FLAGS[$index]}" == 1 ]] && check='[x]'
-      if [[ "$index" == "$cursor" ]]; then
-        printf ' %s%s%s %s %s%s\n' "$DAY_ONE_UI_BOLD" "$DAY_ONE_UI_CYAN" "$marker" "$check" "${LABELS[$index]}" "$DAY_ONE_UI_RESET"
-      else
-        printf ' %s %s %s\n' "$marker" "$check" "${LABELS[$index]}"
-      fi
+      check='[ ]'
+      [[ "${SELECTED_FLAGS[$index]}" != 1 ]] || check='[x]'
+      ui_menu_item "$index" "$cursor" "$check" "${LABELS[$index]}"
     done
+    ui_menu_position "${#OPTIONS[@]}" "$cursor"
+    ui_menu_help toggle 'return without changing settings'
     last_group=""
     IFS= read -rsn1 key
     if [[ "$key" == $'\033' ]]; then IFS= read -rsn2 rest || true; key="$key$rest"; fi

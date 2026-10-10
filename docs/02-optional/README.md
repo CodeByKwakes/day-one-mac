@@ -20,7 +20,11 @@ complete development foundation.
 | 13 | [Enhanced CLI tools](13-enhanced-cli-tools.md) | Installer: installs and records selected formulae | You want additional terminal utilities beyond the required base. |
 | 14 | [Warp Drive](14-warp-drive.md) | Versioned, verified bundle export; manual Warp import | You want the validated importable command and workflow collection. |
 
-Open the interactive selector later with:
+You can also run `day-one-mac --wizard`, choose **Optional modules**, and open
+a module's guide, preview, component check, or configuration action. The setup
+centre runs the existing module commands and keeps application gated by Phase 8.
+New selections are previewed before application. The older plan selector below
+remains available:
 
 ```bash
 day-one-mac optional --guided

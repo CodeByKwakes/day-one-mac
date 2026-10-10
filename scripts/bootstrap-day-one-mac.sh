@@ -5,8 +5,11 @@ set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$HERE/.." && pwd)"
+DOC_DIR="$PROJECT_DIR/docs"
 source "$HERE/lib/project-paths.sh"
 source "$HERE/lib/terminal-ui.sh"
+source "$HERE/lib/required-phase-catalog.sh"
+source "$HERE/lib/wizard-centre.sh"
 source "$HERE/lib/application-ownership.sh"
 source "$HERE/lib/platform.sh"
 source "$HERE/lib/state.sh"
@@ -34,8 +37,8 @@ usage() {
 Usage: ./bootstrap-day-one-mac.sh [options]
 
 Wizard:
-  (no options)                 open the interactive setup wizard
-  --wizard                     open the wizard explicitly
+  (no options)                 open the interactive setup centre
+  --wizard                     browse phases, modules and other actions
   --guided                     open the wizard when no setup choices are supplied
   --dry-run                    preview the wizard's selected base setup
   --optional [--guided]        open optional setup only after Phase 8
@@ -160,33 +163,52 @@ valid_email() {
 }
 
 clear_screen() {
-  [[ -t 1 ]] && printf '\033[2J\033[H'
+  ui_clear_screen
 }
 
 SINGLE_VALUES=()
 SINGLE_LABELS=()
 SINGLE_RESULT=""
 SINGLE_SHOW_REVIEW=0
+wizard_back_available() {
+  local value
+  [[ "${WIZARD_BACK_ENABLED:-0}" != 1 ]] || return 0
+  for value in ${SINGLE_VALUES[@]+"${SINGLE_VALUES[@]}"}; do
+    [[ "$value" != back && "$value" != finish ]] || return 0
+  done
+  return 1
+}
+
+wizard_back() {
+  local value
+  if [[ "${WIZARD_BACK_ENABLED:-0}" == 1 ]]; then return 11; fi
+  for value in ${SINGLE_VALUES[@]+"${SINGLE_VALUES[@]}"}; do
+    if [[ "$value" == back || "$value" == finish ]]; then SINGLE_RESULT="$value"; return 0; fi
+  done
+  return 1
+}
+
 select_one() {
-  local heading="$1" default_index="$2" cursor key rest item marker radio
+  local heading="$1" default_index="$2" cursor key rest item radio details=0
   cursor="$default_index"
   while :; do
     clear_screen
-    ui_banner '🍎' 'Day One Mac setup wizard'
-    [[ "$SINGLE_SHOW_REVIEW" == 1 ]] && print_review_body
-    printf '%s\n\n' "$heading"
-    printf '  Up/Down or j/k: move   Space or Enter: accept   q: quit\n\n'
-    for ((item=0; item<${#SINGLE_VALUES[@]}; item++)); do
-      marker=' '
+    if [[ "$SINGLE_SHOW_REVIEW" == 1 ]]; then
+      print_review_body "$details"
+    else
+      ui_banner '🍎' 'Day One Mac setup wizard'
+    fi
+    ui_prompt "$heading"
+    ui_menu_window "${#SINGLE_VALUES[@]}" "$cursor"
+    for ((item=DAY_ONE_UI_MENU_START; item<DAY_ONE_UI_MENU_END; item++)); do
       radio='( )'
-      [[ "$item" == "$cursor" ]] && marker='>'
-      [[ "$item" == "$cursor" ]] && radio='(●)'
-      if [[ "$item" == "$cursor" ]]; then
-        printf ' %s%s%s %s %s%s\n' "$DAY_ONE_UI_BOLD" "$DAY_ONE_UI_CYAN" "$marker" "$radio" "${SINGLE_LABELS[$item]}" "$DAY_ONE_UI_RESET"
-      else
-        printf ' %s %s %s\n' "$marker" "$radio" "${SINGLE_LABELS[$item]}"
-      fi
+      [[ "$item" != "$cursor" ]] || radio='(*)'
+      ui_menu_item "$item" "$cursor" "$radio" "${SINGLE_LABELS[$item]}"
     done
+    ui_menu_position "${#SINGLE_VALUES[@]}" "$cursor"
+    ui_menu_help single
+    if wizard_back_available; then ui_text 'b / Left Arrow: back'; fi
+    [[ "$SINGLE_SHOW_REVIEW" != 1 ]] || ui_text 'd: toggle full setup details'
     IFS= read -rsn1 key
     if [[ "$key" == $'\033' ]]; then
       IFS= read -rsn2 rest || true
@@ -199,6 +221,13 @@ select_one() {
       $'\033[B'|j|J)
         cursor=$((cursor + 1)); [[ "$cursor" -lt "${#SINGLE_VALUES[@]}" ]] || cursor=0
         ;;
+      d|D) if [[ "$details" == 1 ]]; then details=0; else details=1; fi ;;
+      b|B|$'\033[D')
+        if wizard_back_available; then
+          clear_screen
+          wizard_back
+          return $?
+        fi ;;
       ' ') SINGLE_RESULT="${SINGLE_VALUES[$cursor]}"; clear_screen; return 0 ;;
       q|Q) clear_screen; exit 0 ;;
       '') SINGLE_RESULT="${SINGLE_VALUES[$cursor]}"; clear_screen; return 0 ;;
@@ -211,24 +240,20 @@ MENU_LABELS=()
 MENU_SELECTED=()
 MENU_RESULT=""
 select_toggles() {
-  local heading="$1" cursor=0 key rest item marker check
+  local heading="$1" cursor=0 key rest item check
   while :; do
     clear_screen
     ui_banner '🍎' 'Day One Mac setup wizard'
-    printf '%s\n\n' "$heading"
-    printf '  Up/Down or j/k: move   Space: toggle   a: all   n: none\n'
-    printf '  Enter: accept          q: quit\n\n'
-    for ((item=0; item<${#MENU_VALUES[@]}; item++)); do
-      marker=' '
+    ui_prompt "$heading"
+    ui_menu_window "${#MENU_VALUES[@]}" "$cursor" 11
+    for ((item=DAY_ONE_UI_MENU_START; item<DAY_ONE_UI_MENU_END; item++)); do
       check='[ ]'
-      [[ "$item" == "$cursor" ]] && marker='>'
-      [[ "${MENU_SELECTED[$item]}" == 1 ]] && check='[x]'
-      if [[ "$item" == "$cursor" ]]; then
-        printf ' %s%s%s %s %s%s\n' "$DAY_ONE_UI_BOLD" "$DAY_ONE_UI_CYAN" "$marker" "$check" "${MENU_LABELS[$item]}" "$DAY_ONE_UI_RESET"
-      else
-        printf ' %s %s %s\n' "$marker" "$check" "${MENU_LABELS[$item]}"
-      fi
+      [[ "${MENU_SELECTED[$item]}" != 1 ]] || check='[x]'
+      ui_menu_item "$item" "$cursor" "$check" "${MENU_LABELS[$item]}"
     done
+    ui_menu_position "${#MENU_VALUES[@]}" "$cursor"
+    ui_menu_help toggle
+    if [[ "${WIZARD_BACK_ENABLED:-0}" == 1 ]]; then ui_text 'b / Left Arrow: previous setup section'; fi
     IFS= read -rsn1 key
     if [[ "$key" == $'\033' ]]; then
       IFS= read -rsn2 rest || true
@@ -248,6 +273,8 @@ select_toggles() {
         ;;
       a|A) for ((item=0; item<${#MENU_VALUES[@]}; item++)); do MENU_SELECTED[$item]=1; done ;;
       n|N) for ((item=0; item<${#MENU_VALUES[@]}; item++)); do MENU_SELECTED[$item]=0; done ;;
+      b|B|$'\033[D')
+        if [[ "${WIZARD_BACK_ENABLED:-0}" == 1 ]]; then clear_screen; return 11; fi ;;
       q|Q) clear_screen; exit 0 ;;
       '') break ;;
     esac
@@ -262,17 +289,19 @@ select_toggles() {
 
 prompt_value() {
   local label="$1" default="$2" answer
+  if [[ "${WIZARD_BACK_ENABLED:-0}" == 1 ]]; then ui_text 'Type :back to return to the previous setup section.'; fi
   printf '%s' "$label"
   [[ -n "$default" ]] && printf ' [%s]' "$default"
   printf ': '
   IFS= read -r answer
+  if [[ "${WIZARD_BACK_ENABLED:-0}" == 1 && "$answer" == :back ]]; then return 11; fi
   PROMPT_RESULT="${answer:-$default}"
 }
 
 prompt_name() {
   local default="$1"
   while :; do
-    prompt_value 'Git author name' "$default"
+    prompt_value 'Git author name' "$default" || return $?
     if valid_line "$PROMPT_RESULT"; then GIT_NAME="$PROMPT_RESULT"; return 0; fi
     warn 'Enter a one-line name.'
   done
@@ -281,7 +310,7 @@ prompt_name() {
 prompt_email() {
   local default="$1"
   while :; do
-    prompt_value 'Primary Git email' "$default"
+    prompt_value 'Primary Git email' "$default" || return $?
     if valid_email "$PROMPT_RESULT"; then GIT_EMAIL="$PROMPT_RESULT"; return 0; fi
     warn 'Enter a valid email address.'
   done
@@ -374,10 +403,24 @@ show_required_base() {
 
 print_review_body() {
   ui_banner '🧭' 'Review your setup'
+  if [[ "${1:-1}" == 0 ]]; then
+    ui_text "Track $TRACK: $(track_label "$TRACK") | preset: $PRESET"
+    ui_text "Stack: $(stack_label "$STACK")"
+    ui_text "Git: $GIT_NAME <$GIT_EMAIL> | auth: $AUTH_MODE"
+    ui_text "Folders: $FOLDER_LAYOUT | ghq: $GHQ_CHOICE"
+    [[ -z "$FOLDER_GHQ_ROOT" ]] || ui_text "Root: $FOLDER_GHQ_ROOT"
+    [[ -z "${GITHUB_CLONE_DIR:-}" ]] || ui_text "GitHub clone: $GITHUB_CLONE_DIR"
+    [[ -z "${AZURE_CLONE_DIR:-}" ]] || ui_text "Azure clone: $AZURE_CLONE_DIR"
+    ui_text "Config: $DOTFILES_VERSIONING | shell: $SHELL_CHOICE | prompt: $PROMPT_CHOICE"
+    ui_text "IDE: $PRIMARY_IDE | macOS settings: $MACOS_SETTINGS_PLAN"
+    ui_text 'Required Phases 1-8 run first; optional modules run afterward.'
+    return 0
+  fi
   printf 'Required setup — preset: %s\n' "$PRESET"
   printf '  Hosting:   Track %s — %s\n' "$TRACK" "$(track_label "$TRACK")"
   printf '  Stack:     %s\n' "$(stack_label "$STACK")"
-  printf '  Folders:   %s; ghq: %s; existing root: %s\n' "$FOLDER_LAYOUT" "$GHQ_CHOICE" "$FOLDER_GHQ_ROOT"
+  printf '  Folders:   %s; ghq: %s\n' "$FOLDER_LAYOUT" "$GHQ_CHOICE"
+  [[ -z "$FOLDER_GHQ_ROOT" ]] || printf '  Root:      %s\n' "$FOLDER_GHQ_ROOT"
   printf '  Git name:  %s\n' "$GIT_NAME"
   printf '  Git email: %s\n' "$GIT_EMAIL"
   if [[ "$PRIMARY_IDE" == vscode ]]; then
@@ -471,7 +514,6 @@ build_application_review_cache() {
 
 show_review() {
   clear_screen
-  ui_banner '🍎' 'Day One Mac setup wizard'
   print_review_body
 }
 
@@ -562,7 +604,7 @@ choose_track() {
   case "$TRACK" in 2) default_index=1 ;; 3) default_index=2 ;; 4) default_index=3 ;; esac
   SINGLE_VALUES=(1 2 3 4)
   SINGLE_LABELS=('Track 1 — GitHub' 'Track 2 — Azure DevOps' 'Track 3 — GitHub + Azure DevOps' 'Track 4 — None of the above; manage repository access yourself')
-  select_one 'Choose the hosting services this Mac will use:' "$default_index"
+  select_one 'Choose the hosting services this Mac will use:' "$default_index" || return $?
   TRACK="$SINGLE_RESULT"
 }
 
@@ -576,21 +618,23 @@ choose_folders() {
     'Purpose-oriented — Projects, Sandbox, Resources, Archive'
     'Keep existing — preserve roots and all repository locations'
   )
-  select_one 'Choose future placement; no repositories will be moved:' "$default_index"
+  select_one 'Choose future placement; no repositories will be moved:' "$default_index" || return $?
   FOLDER_LAYOUT="$SINGLE_RESULT"
   SINGLE_VALUES=(no yes)
   SINGLE_LABELS=('Do not select ghq — leave any existing copy and settings untouched' 'Select ghq — install if missing; review existing settings before configuring')
-  select_one 'Use ghq for repository cloning and discovery?' 0
+  default_index=0
+  [[ "$GHQ_CHOICE" != yes ]] || default_index=1
+  select_one 'Use ghq for repository cloning and discovery?' "$default_index" || return $?
   GHQ_CHOICE="$SINGLE_RESULT"
-  FOLDER_GHQ_ROOT=''
   if [[ "$GHQ_CHOICE" == yes && "$FOLDER_LAYOUT" == existing ]]; then
     printf '\nReview ghq root --all in another terminal. No roots will be rewritten.\n'
     while :; do
-      printf 'Confirmed absolute primary root (the output of ghq root): '
-      IFS= read -r FOLDER_GHQ_ROOT || return 1
+      prompt_value 'Confirmed absolute primary root (the output of ghq root)' "$FOLDER_GHQ_ROOT" || return $?
+      FOLDER_GHQ_ROOT="$PROMPT_RESULT"
       [[ "$FOLDER_GHQ_ROOT" == /* && "$FOLDER_GHQ_ROOT" != *[$'\t\r\n']* ]] && break
       warn 'Enter an absolute, single-line path.'
     done
+  else FOLDER_GHQ_ROOT=''
   fi
 }
 
@@ -603,7 +647,7 @@ choose_stack() {
     *) MENU_SELECTED=(1 1) ;;
   esac
   while :; do
-    select_toggles 'Choose one or both development stacks:'
+    select_toggles 'Choose one or both development stacks:' || return $?
     case "$MENU_RESULT" in
       node) STACK=node; return 0 ;;
       python) STACK=python; return 0 ;;
@@ -621,7 +665,7 @@ choose_preset() {
     'Recommended productivity — includes VS Code, Raycast, Warp and the Nerd Font'
     'Core — command-line tools only; 1Password only if selected for authentication'
   )
-  select_one 'Choose the software preset' "$default_index"
+  select_one 'Choose the software preset' "$default_index" || return $?
   PRESET="$SINGLE_RESULT"
 }
 
@@ -633,7 +677,7 @@ choose_primary_ide() {
     'Yes — use VS Code for Git commit messages, diffs and merge conflicts'
     'No — keep Git editor, diff and merge-tool settings unchanged'
   )
-  select_one 'Use VS Code for Git and chezmoi editing? (VS Code remains installed with this preset)' "$default_index"
+  select_one 'Use VS Code for Git and chezmoi editing? (VS Code remains installed with this preset)' "$default_index" || return $?
   PRIMARY_IDE="$SINGLE_RESULT"
 }
 
@@ -655,19 +699,21 @@ choose_auth_mode() {
     'My own SSH agent — Secretive, a YubiKey, or a company agent'
     'HTTPS instead of SSH — no SSH key at all'
   )
-  select_one 'Choose how Git authenticates:' "$default_index"
+  select_one 'Choose how Git authenticates:' "$default_index" || return $?
   AUTH_MODE="$SINGLE_RESULT"
   case "$AUTH_MODE" in
     keychain) printf '\nA private key will be created in ~/.ssh and protected by a passphrase you choose.\n\n' ;;
     external) printf '\nDay One Mac will not create a key; it only checks that your agent offers one.\n\n' ;;
     https)    printf '\nNo SSH key is set up. Choose a credential helper for Git access.\n\n' ;;
   esac
-  HTTPS_HELPER=existing
   if [[ "$AUTH_MODE" == https ]]; then
     SINGLE_VALUES=(gcm existing)
     SINGLE_LABELS=('Git Credential Manager — browser sign-in (recommended for Azure)' 'GitHub CLI / existing Azure helper — company-managed or PAT/Keychain')
-    select_one 'Choose the HTTPS Git credential helper:' 0
+    default_index=0
+    [[ "${HTTPS_HELPER:-gcm}" != existing ]] || default_index=1
+    select_one 'Choose the HTTPS Git credential helper:' "$default_index" || return $?
     HTTPS_HELPER="$SINGLE_RESULT"
+  else HTTPS_HELPER=existing
   fi
 }
 
@@ -684,7 +730,7 @@ choose_verification_repos() {
     case "$provider" in github) provider_label=GitHub ;; azure) provider_label='Azure DevOps' ;; esac
     SINGLE_VALUES=(none clone)
     SINGLE_LABELS=('No — verify access without downloading a repository (default)' 'Yes — clone a repository to verify access')
-    select_one "Would you like to clone a repository from $provider_label to verify access?" 0
+    select_one "Would you like to clone a repository from $provider_label to verify access?" 0 || return $?
     action="$SINGLE_RESULT"
     printf '\nBoth options need a repository you can read. Prefer a private repository to check authenticated access.\n'
     if [[ "$action" == clone ]]; then
@@ -693,7 +739,7 @@ choose_verification_repos() {
       printf 'Only remote access will be checked; no clone will be created.\n'
     fi
     while :; do
-      prompt_value "$provider repository URL ($AUTH_MODE)" "$(hosting_repo_url "$provider")"
+      prompt_value "$provider repository URL ($AUTH_MODE)" "$(hosting_repo_url "$provider")" || return $?
       url="$PROMPT_RESULT"
       if hosting_repo_valid "$provider" "$url" "$AUTH_MODE"; then break; fi
       warn 'Use the exact provider clone URL for the selected transport, without tokens.'
@@ -707,7 +753,7 @@ choose_verification_repos() {
         destination="$(folders_target_root)/$name"
       fi
       while :; do
-        prompt_value "$provider clone destination (absolute path; existing files are preserved)" "$destination"
+        prompt_value "$provider clone destination (absolute path; existing files are preserved)" "$destination" || return $?
         destination="$PROMPT_RESULT"
         hosting_clone_dir_valid "$destination" && break
         warn 'Choose an absolute folder path without symlinks, parent traversal or a trailing slash.'
@@ -729,10 +775,10 @@ choose_dotfiles() {
     'Create a new chezmoi source and protect it with private Git'
     'Use an existing private dotfiles repository'
   )
-  select_one 'Choose who manages your configuration files:' "$default_index"
+  select_one 'Choose who manages your configuration files:' "$default_index" || return $?
   if [[ "$SINGLE_RESULT" == existing ]]; then
     while :; do
-      prompt_value 'Private dotfiles repository URL' "$DOTFILES_REPO"
+      prompt_value 'Private dotfiles repository URL' "$DOTFILES_REPO" || return $?
       if valid_line "$PROMPT_RESULT" && [[ "$PROMPT_RESULT" != *[[:space:]]* ]]; then
         DOTFILES_REPO="$PROMPT_RESULT"
         DOTFILES_VERSIONING=git
@@ -754,14 +800,35 @@ choose_shell_and_prompt() {
   [[ "$SHELL_CHOICE" != homebrew ]] || default_index=2
   SINGLE_VALUES=(keep apple homebrew)
   SINGLE_LABELS=('Keep my current zsh login shell (other shells need manual setup)' 'Use Apple /bin/zsh' 'Install and use Homebrew zsh')
-  select_one 'Choose the login shell; existing shell files are preserved for review:' "$default_index"
+  select_one 'Choose the login shell; existing shell files are preserved for review:' "$default_index" || return $?
   SHELL_CHOICE="$SINGLE_RESULT"
   default_index=0
   [[ "$PROMPT_CHOICE" != starship ]] || default_index=1
   SINGLE_VALUES=(none starship)
   SINGLE_LABELS=('Leave my existing prompt alone' 'Install and configure Starship')
-  select_one 'Choose the prompt independently of the shell and chezmoi:' "$default_index"
+  select_one 'Choose the prompt independently of the shell and chezmoi:' "$default_index" || return $?
   PROMPT_CHOICE="$SINGLE_RESULT"
+}
+
+choose_database_services() {
+  MENU_VALUES=(postgres redis mongodb)
+  MENU_LABELS=('PostgreSQL' 'Redis' 'MongoDB')
+  selected_defaults "$1" postgres redis mongodb
+  select_toggles "$2" || return $?
+}
+
+choose_container_engine() {
+  SINGLE_VALUES=(auto docker orbstack)
+  SINGLE_LABELS=('Use the installed engine (detect Docker Desktop or OrbStack)' 'Docker Desktop' 'OrbStack')
+  select_one 'Choose a container engine:' 0 || return $?
+  CONTAINER_RUNTIME="$SINGLE_RESULT"
+}
+
+choose_ai_clients() {
+  MENU_VALUES=(claude codex copilot-app copilot-vscode copilot-cli raycast-ai)
+  MENU_LABELS=('Claude Code' 'OpenAI Codex' 'GitHub Copilot app — standalone desktop client' 'GitHub Copilot in VS Code' 'GitHub Copilot CLI' 'Raycast AI — paid plan required for custom providers')
+  selected_defaults "$1" claude codex copilot-app copilot-vscode copilot-cli raycast-ai
+  select_toggles "$2" || return $?
 }
 
 choose_optional_plan() {
@@ -780,7 +847,7 @@ choose_optional_plan() {
     'Second Brain — choose an Obsidian or Notion knowledge system'
   )
   selected_defaults "$OPTIONAL_MODULES" databases ai-clients omniroute mcp-servers vscode-profiles enhanced-cli warp-drive advanced second-brain
-  select_toggles 'Choose optional modules to plan for after Phase 8 (none is valid):'
+  select_toggles 'Choose optional modules to plan for after Phase 8 (none is valid):' || return $?
   OPTIONAL_MODULES="$MENU_RESULT"
 
   if { contains_csv "$OPTIONAL_MODULES" omniroute || contains_csv "$OPTIONAL_MODULES" mcp-servers; } \
@@ -798,10 +865,7 @@ choose_optional_plan() {
 
   DATABASE_SERVICES=""
   if contains_csv "$OPTIONAL_MODULES" databases; then
-    MENU_VALUES=(postgres redis mongodb)
-    MENU_LABELS=('PostgreSQL' 'Redis' 'MongoDB')
-    selected_defaults "$previous_databases" postgres redis mongodb
-    select_toggles 'Choose database services (none removes Databases from the plan):'
+    choose_database_services "$previous_databases" 'Choose database services (none removes Databases from the plan):'
     DATABASE_SERVICES="$MENU_RESULT"
     if [[ -z "$DATABASE_SERVICES" ]]; then
       OPTIONAL_MODULES="$(without_csv_value "$OPTIONAL_MODULES" databases)"
@@ -810,18 +874,12 @@ choose_optional_plan() {
   fi
 
   if contains_csv "$OPTIONAL_MODULES" databases || contains_csv "$OPTIONAL_MODULES" omniroute; then
-    SINGLE_VALUES=(auto docker orbstack)
-    SINGLE_LABELS=('Use the installed engine (detect Docker Desktop or OrbStack)' 'Docker Desktop' 'OrbStack')
-    select_one 'Choose a container engine:' 0
-    CONTAINER_RUNTIME="$SINGLE_RESULT"
+    choose_container_engine
   fi
 
   AI_CLIENTS=""
   if contains_csv "$OPTIONAL_MODULES" ai-clients; then
-    MENU_VALUES=(claude codex copilot-app copilot-vscode copilot-cli raycast-ai)
-    MENU_LABELS=('Claude Code' 'OpenAI Codex' 'GitHub Copilot app — standalone desktop client' 'GitHub Copilot in VS Code' 'GitHub Copilot CLI' 'Raycast AI — paid plan required for custom providers')
-    selected_defaults "$previous_ai_clients" claude codex copilot-app copilot-vscode copilot-cli raycast-ai
-    select_toggles 'Choose AI clients (none also removes OmniRoute and MCP from the plan):'
+    choose_ai_clients "$previous_ai_clients" 'Choose AI clients (none also removes OmniRoute and MCP from the plan):'
     AI_CLIENTS="$MENU_RESULT"
     if [[ -z "$AI_CLIENTS" ]]; then
       OPTIONAL_MODULES="$(without_csv_value "$OPTIONAL_MODULES" ai-clients)"
@@ -842,7 +900,7 @@ choose_optional_plan() {
       'Playwright — browser-driven testing'
     )
     selected_defaults "$previous_mcp_servers" context7 apify tavily filesystem playwright
-    select_toggles 'Choose MCP servers (none removes MCP servers from the plan):'
+    select_toggles 'Choose MCP servers (none removes MCP servers from the plan):' || return $?
     MCP_SERVERS="$MENU_RESULT"
     if [[ -z "$MCP_SERVERS" ]]; then
       OPTIONAL_MODULES="$(without_csv_value "$OPTIONAL_MODULES" mcp-servers)"
@@ -898,7 +956,7 @@ run_optional_center() {
     )
     SHOW_OPTIONAL_REVIEW=1
     SINGLE_SHOW_REVIEW=1
-    select_one 'Save this optional plan?' 0
+    select_one 'Save this optional plan?' 0 || return $?
     SINGLE_SHOW_REVIEW=0
     SHOW_OPTIONAL_REVIEW=0
     review_action="$SINGLE_RESULT"
@@ -922,7 +980,7 @@ run_optional_center() {
         'Install or resume the selected database services now'
         'Exit with the database selection saved for later'
       )
-      select_one 'Databases are selected. Continue now?' 0
+      select_one 'Databases are selected. Continue now?' 0 || return $?
       if [[ "$SINGLE_RESULT" == install ]]; then
         bash "$HERE/configure-databases.sh" --services "$DATABASE_SERVICES"
       else
@@ -956,40 +1014,57 @@ run_optional_center() {
 post_required_menu() {
   local action
   while :; do
-    SINGLE_VALUES=(finish optional report)
+    SINGLE_VALUES=(finish optional advanced actions report)
     SINGLE_LABELS=(
-      'Finish and exit — optional modules can be added later (recommended)'
-      'Open the optional setup centre'
+      'Return to setup centre (recommended)'
+      'Browse optional modules'
+      'Browse advanced modules'
+      'Open other actions'
       'View the final verification report'
     )
-    select_one '✅ Required Day One Mac setup is complete. What would you like to do next?' 0
+    select_one '✅ Required Day One Mac setup is complete. What would you like to do next?' 0 || return $?
     action="$SINGLE_RESULT"
     case "$action" in
       finish) return 0 ;;
-      optional) run_optional_center; return 0 ;;
+      optional) centre_modules optional; return 0 ;;
+      advanced) centre_modules advanced; return 0 ;;
+      actions) centre_other_actions; return 0 ;;
       report) show_verification_report ;;
     esac
   done
 }
 
-configure_wizard() {
+choose_git_identity() {
   local default_name default_email
-  choose_track
-  choose_stack
-  choose_folders
   clear_screen
   ui_banner '🔐' 'Git identity'
   printf 'This identity becomes the global default. Advanced Module 18 adds multiple identities later.\n\n'
   default_name="${GIT_NAME:-$(git config --global user.name 2>/dev/null || id -F 2>/dev/null || id -un)}"
   default_email="${GIT_EMAIL:-$(git config --global user.email 2>/dev/null || true)}"
-  prompt_name "$default_name"
-  prompt_email "$default_email"
-  choose_preset
-  if [[ "$PRESET" == core ]]; then PRIMARY_IDE=other; else choose_primary_ide; fi
-  choose_auth_mode
-  choose_verification_repos
-  choose_dotfiles
-  choose_shell_and_prompt
+  prompt_name "$default_name" || return $?
+  prompt_email "$default_email" || return $?
+}
+
+configure_wizard() {
+  local step=0 status WIZARD_BACK_ENABLED=1
+  local steps=(choose_track choose_stack choose_folders choose_git_identity choose_preset choose_primary_ide choose_auth_mode choose_verification_repos choose_dotfiles choose_shell_and_prompt)
+  while [[ "$step" -lt "${#steps[@]}" ]]; do
+    # Core has no editor question; Track 4 has no provider access question.
+    if [[ "$step" == 5 && "$PRESET" == core ]]; then PRIMARY_IDE=other; step=$((step + 1)); continue; fi
+    if [[ "$step" == 7 && "$TRACK" == 4 ]]; then
+      choose_verification_repos || return $?
+      step=$((step + 1)); continue
+    fi
+    if "${steps[$step]}"; then status=0; else status=$?; fi
+    if [[ "$status" == 11 ]]; then
+      if [[ "$step" == 0 ]]; then return 11; fi
+      step=$((step - 1))
+      [[ "$step" != 5 || "$PRESET" != core ]] || step=$((step - 1))
+      [[ "$step" != 7 || "$TRACK" != 4 ]] || step=$((step - 1))
+    elif [[ "$status" != 0 ]]; then return "$status"
+    else step=$((step + 1))
+    fi
+  done
   # Keep the initial wizard focused on the required base. The runner asks
   # whether to configure optional macOS preferences immediately after Phase 1.
   MACOS_SETTINGS_PLAN=ask
@@ -1040,14 +1115,14 @@ load_saved_choices() {
 }
 
 choose_machine_state() {
-  SINGLE_VALUES=(clean existing unsure exit)
+  SINGLE_VALUES=(clean existing unsure back)
   SINGLE_LABELS=(
     'New or factory-reset Mac — continue to the eight required phases'
     'Existing Mac with data or settings — choose Route A or Route B'
     'Not sure — open Stage 0 and create the read-only safety report first'
-    'Exit without changing anything'
+    'Back to setup centre without changing anything'
   )
-  select_one 'What state is this Mac in?' 0
+  select_one 'What state is this Mac in?' 0 || return $?
   case "$SINGLE_RESULT" in
     clean) return 0 ;;
     existing)
@@ -1056,7 +1131,7 @@ choose_machine_state() {
       fi
       ;;
     unsure) direct_stage_zero prepare --guided ;;
-    exit) exit 0 ;;
+    back) return 11 ;;
   esac
 }
 
@@ -1067,23 +1142,23 @@ run_wizard() {
   [[ "$DRY_RUN" == 1 ]] || day_one_serialize setup "$0" "${ORIGINAL_ARGS[@]}"
   load_saved_choices
   if has_saved_core_choices; then
-    SINGLE_VALUES=(resume change status exit)
+    SINGLE_VALUES=(resume change status back)
     SINGLE_LABELS=(
       'Resume with the saved choices (recommended)'
       'Review or change setup choices'
       'Show detailed phase status'
-      'Exit'
+      'Back to setup centre'
     )
-    select_one "Saved setup found: Track $TRACK — $(track_label "$TRACK"); $(stack_label "$STACK")" 0
+    select_one "Saved setup found: Track $TRACK — $(track_label "$TRACK"); $(stack_label "$STACK")" 0 || return $?
     case "$SINGLE_RESULT" in
-      change) configure_wizard ;;
+      change) configure_wizard || { [[ "$?" == 11 ]] && return 0; return 1; } ;;
       status) direct_setup --status ;;
-      exit) exit 0 ;;
+      back) return 0 ;;
     esac
     [[ "$PRIMARY_IDE" =~ ^(vscode|other)$ ]] || choose_primary_ide
   else
-    choose_machine_state
-    configure_wizard
+    choose_machine_state || { [[ "$?" == 11 ]] && return 0; return 1; }
+    configure_wizard || { [[ "$?" == 11 ]] && return 0; return 1; }
   fi
 
   if [[ "$TRACK" != 4 ]] && { [[ "$TRACK" != 2 && -z "$GITHUB_REPO" ]] || [[ "$TRACK" != 1 && -z "$AZURE_REPO" ]]; }; then
@@ -1092,19 +1167,19 @@ run_wizard() {
   build_application_review_cache 0
 
   while :; do
-    SINGLE_VALUES=(start change exit)
+    SINGLE_VALUES=(start change back)
     if [[ "$DRY_RUN" == 1 ]]; then
-      SINGLE_LABELS=('Preview the selected setup without saving' 'Go back and change choices' 'Exit without saving')
+      SINGLE_LABELS=('Preview the selected setup without saving' 'Go back and change choices' 'Back to setup centre without saving')
     else
-      SINGLE_LABELS=('Save choices and begin or resume setup' 'Go back and change choices' 'Exit without saving')
+      SINGLE_LABELS=('Save choices and begin or resume setup' 'Go back and change choices' 'Back to setup centre without saving')
     fi
     SINGLE_SHOW_REVIEW=1
-    select_one 'Are these choices correct?' 0
+    select_one 'Are these choices correct?' 0 || return $?
     SINGLE_SHOW_REVIEW=0
     review_action="$SINGLE_RESULT"
     case "$review_action" in
-      change) configure_wizard; build_application_review_cache 0 ;;
-      exit) exit 0 ;;
+      change) configure_wizard || { [[ "$?" == 11 ]] && return 0; return 1; }; build_application_review_cache 0 ;;
+      back) return 0 ;;
       start) break ;;
     esac
   done
@@ -1139,6 +1214,15 @@ run_wizard() {
 # The wizard is the default for a person. Fully specified commands retain the
 # stable direct runner used by tests, automation and one-phase recovery.
 case "${1:-}" in
+  --configure)
+    # Internal entry keeps the setup lock scoped to configuration and execution,
+    # rather than holding it while someone browses the read-only centre.
+    shift
+    [[ "$#" == 0 || ( "$#" == 1 && "$1" == --dry-run ) ]] || die 'Invalid configuration wizard options.'
+    [[ "$#" == 0 ]] || DRY_RUN=1
+    run_wizard
+    exit $?
+    ;;
   --optional)
     shift
     [[ "$#" -eq 0 || ( "$#" -eq 1 && "$1" == --guided ) ]] \
@@ -1179,7 +1263,7 @@ if [[ "$FORCE_WIZARD" == 1 && "$DIRECT_REQUEST" == 1 ]]; then
 fi
 
 if [[ "$FORCE_WIZARD" == 1 || ( "$WIZARD_CANDIDATE" == 1 && "$DIRECT_REQUEST" == 0 ) ]]; then
-  run_wizard
+  run_setup_centre
 else
   direct_setup "${PASSTHROUGH_ARGS[@]}"
 fi

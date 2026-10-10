@@ -9,6 +9,7 @@ CATALOG="$PROJECT_DIR/config/optional-formulae.tsv"
 source "$SCRIPT_DIR/lib/project-paths.sh"
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
 source "$SCRIPT_DIR/lib/module-execution.sh"
+source "$SCRIPT_DIR/lib/configuration-choices.sh"
 ORIGINAL_ARGS=("$@")
 STATE_ROOT="$(day_one_state_root)"
 STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
@@ -22,6 +23,9 @@ CHECK_ONLY=0
 SELECT_ALL=0
 PACKAGE_CSV=""
 USE_SAVED=0
+SETUP_ALIASES=0
+ALIASES_TARGET=""
+ALIASES_SOURCE=""
 
 usage() {
   cat <<'EOF'
@@ -35,11 +39,13 @@ Without selection options, an interactive grouped selector is shown.
   --packages A,B,C       select only these formula tokens
   --saved                use the last applied selection, including failed runs
   --dry-run              print the brew commands without running them
-  --yes                  skip the final ordinary confirmation
+  --aliases              add guarded eza aliases using the Phase 5 owner
+  --yes                  skip installation confirmation; does not select aliases
   -h, --help             show this help
 
-This script only installs selected formulae. An unselected or toggled-off item
-is never uninstalled. Use Homebrew directly when removal is intentional.
+Only selected formulae are installed. An unselected or toggled-off item
+is never uninstalled. Optional aliases require --aliases or a separate yes.
+Use Homebrew directly when removal is intentional.
 EOF
 }
 
@@ -57,12 +63,17 @@ while [[ $# -gt 0 ]]; do
     --saved) USE_SAVED=1 ;;
     --packages) shift; [[ $# -gt 0 ]] || { err "--packages needs a comma-separated list"; exit 2; }; PACKAGE_CSV="$1" ;;
     --dry-run) DRY_RUN=1 ;;
+    --aliases) SETUP_ALIASES=1 ;;
     --yes) ASSUME_YES=1 ;;
     -h|--help) usage; exit 0 ;;
     *) err "unknown option: $1"; usage >&2; exit 2 ;;
   esac
   shift
 done
+
+[[ "$SETUP_ALIASES" == 0 || ( "$CHECK_ONLY" == 0 && "$LIST_ONLY" == 0 ) ]] || {
+  err '--aliases is an apply/preview option; --check verifies packages only.'; exit 2;
+}
 
 [[ "$USE_SAVED" == 0 || ( -z "$PACKAGE_CSV" && "$SELECT_ALL" == 0 ) ]] || {
   err '--saved cannot be combined with a new selection'; exit 2;
@@ -133,7 +144,7 @@ set_csv_selection() {
 }
 
 interactive_select() {
-  local cursor=0 group_cursor=0 key rest i check pointer state group selected_count
+  local cursor=0 group_cursor=0 key rest i check state item group selected_count
   local groups=() visible=()
   for group in "${TOOL_GROUPS[@]}"; do
     if [[ "${#groups[@]}" == 0 || "$group" != "${groups[${#groups[@]} - 1]}" ]]; then
@@ -143,30 +154,27 @@ interactive_select() {
   done
   [[ -t 0 ]] || { err "interactive selection needs a terminal; use --all or --packages"; exit 2; }
   while :; do
-    printf '\033[2J\033[H'
-    ui_banner '🎛️' 'Toggle selection — installation only'
-    printf '  Left/Right or h/l: category   Up/Down or j/k: tool\n'
-    printf '  Space: toggle   a/n: all/none in this category\n'
-    printf '  Enter: review all selections   q: quit\n\n'
-    printf '  Required setup tools are managed by Phases 2–8.\n'
+    ui_clear_screen
+    ui_banner '🎛️' 'Optional command-line tools'
     selected_count=0
     for i in "${SELECTED[@]}"; do selected_count=$((selected_count + i)); done
-    printf '  Selected across all categories: %s\n\n' "$selected_count"
+    ui_text "Selected: $selected_count across all categories"
     group="${groups[$group_cursor]}"
-    printf '  %s (%s/%s)\n' "$group" "$((group_cursor + 1))" "${#groups[@]}"
+    ui_text "$group ($((group_cursor + 1))/${#groups[@]})"
     visible=()
     for ((i=0; i<${#FORMULAE[@]}; i++)); do
-      [[ "${TOOL_GROUPS[$i]}" == "$group" ]] || continue
-      visible+=("$i")
+      [[ "${TOOL_GROUPS[$i]}" != "$group" ]] || visible+=("$i")
+    done
+    ui_menu_window "${#visible[@]}" "$cursor" 13
+    for ((item=DAY_ONE_UI_MENU_START; item<DAY_ONE_UI_MENU_END; item++)); do
+      i="${visible[$item]}"
       if is_installed "${FORMULAE[$i]}"; then state='installed'; else state='missing'; fi
       if [[ "${SELECTED[$i]}" == 1 ]]; then check='[x]'; else check='[ ]'; fi
-      if [[ "$((${#visible[@]} - 1))" == "$cursor" ]]; then pointer='>'; else pointer=' '; fi
-      if [[ "$pointer" == '>' ]]; then
-        printf ' %s%s%s %s %-25s %-11s %s%s\n' "$DAY_ONE_UI_BOLD" "$DAY_ONE_UI_CYAN" "$pointer" "$check" "${FORMULAE[$i]}" "[$state]" "${PURPOSES[$i]}" "$DAY_ONE_UI_RESET"
-      else
-        printf ' %s %s %-25s %-11s %s\n' "$pointer" "$check" "${FORMULAE[$i]}" "[$state]" "${PURPOSES[$i]}"
-      fi
+      ui_menu_item "$item" "$cursor" "$check" "${FORMULAE[$i]} [$state]"
     done
+    ui_text "${PURPOSES[${visible[$cursor]}]}"
+    ui_menu_position "${#visible[@]}" "$cursor"
+    ui_menu_help category
     IFS= read -rsn1 key || exit 10
     if [[ "$key" == $'\033' ]]; then
       IFS= read -rsn2 rest || true
@@ -178,12 +186,78 @@ interactive_select() {
       $'\033[D'|h|H) group_cursor=$((group_cursor - 1)); [[ "$group_cursor" -ge 0 ]] || group_cursor=$((${#groups[@]} - 1)); cursor=0 ;;
       $'\033[C'|l|L) group_cursor=$((group_cursor + 1)); [[ "$group_cursor" -lt "${#groups[@]}" ]] || group_cursor=0; cursor=0 ;;
       ' ') i="${visible[$cursor]}"; if [[ "${SELECTED[$i]}" == 1 ]]; then SELECTED[$i]=0; else SELECTED[$i]=1; fi ;;
-      q|Q) exit 10 ;;
+      b|B|q|Q) exit 10 ;;
       a|A) for i in "${visible[@]}"; do SELECTED[$i]=1; done ;;
       n|N) for i in "${visible[@]}"; do SELECTED[$i]=0; done ;;
-      '') printf '\033[2J\033[H'; return 0 ;;
+      '') ui_clear_screen; return 0 ;;
     esac
   done
+}
+
+state_value() { [[ ! -r "$STATE_DIR/$1" ]] || sed -n '1p' "$STATE_DIR/$1"; }
+
+cli_aliases_block() {
+  cat <<'EOF'
+# Day One Mac optional eza aliases
+if command -v eza >/dev/null 2>&1; then
+  (( ${+aliases[ls]} || ${+functions[ls]} )) || alias ls='eza --group-directories-first'
+  (( ${+aliases[ll]} || ${+functions[ll]} )) || alias ll='eza --long --all --git --group-directories-first'
+  (( ${+aliases[lt]} || ${+functions[lt]} )) || alias lt='eza --tree'
+fi
+# End Day One Mac optional eza aliases
+EOF
+}
+
+cli_aliases_prepare() {
+  local COMPLETED_DIR="$STATE_DIR/completed" DOTFILES_VERSIONING='' SHELL_CHOICE='' PROMPT_CHOICE=''
+  configuration_load_choices
+  ALIASES_TARGET="$HOME/.config/zsh/aliases.zsh"
+  ALIASES_SOURCE="$ALIASES_TARGET"
+  day_one_safe_state_path "$HOME/.zshrc" && day_one_safe_state_path "$ALIASES_TARGET" || return 10
+  [[ -f "$HOME/.zshrc" && -r "$HOME/.zshrc" ]] \
+    && grep -Fq '.config/zsh/aliases.zsh' "$HOME/.zshrc" || {
+    err 'Complete the Phase 5 aliases.zsh source line in ~/.zshrc before adding aliases.'; return 10;
+  }
+  case "$DOTFILES_VERSIONING" in
+    none) configuration_unmanaged_preflight || return $? ;;
+    local|git)
+      have chezmoi || { err 'The selected configuration owner requires chezmoi.'; return 10; }
+      ALIASES_SOURCE="$(chezmoi source-path "$ALIASES_TARGET")" || return 10
+      [[ "$ALIASES_SOURCE" == /* && "$ALIASES_SOURCE" != *.tmpl && -f "$ALIASES_SOURCE" ]] \
+        && day_one_safe_state_path "$ALIASES_SOURCE" && cmp -s "$ALIASES_SOURCE" "$ALIASES_TARGET" || {
+        err 'Merge aliases with chezmoi edit ~/.config/zsh/aliases.zsh: templates or source/live drift need manual review.'; return 10;
+      } ;;
+    *) err 'Choose configuration ownership in Phase 5 before adding aliases.'; return 10 ;;
+  esac
+  [[ ! -e "$ALIASES_SOURCE" || ( -f "$ALIASES_SOURCE" && -r "$ALIASES_SOURCE" && -O "$ALIASES_SOURCE" ) ]] || {
+    err 'The aliases source must be a readable regular file owned by you.'; return 10;
+  }
+}
+
+cli_aliases_apply() {
+  local temporary
+  if [[ -f "$ALIASES_SOURCE" ]] && grep -Fq '# Day One Mac optional eza aliases' "$ALIASES_SOURCE"; then
+    /bin/zsh -n "$ALIASES_SOURCE" || return 1
+    info 'Existing Day One Mac eza alias block retained.'
+    return 0
+  fi
+  day_one_state_directory "$(dirname "$ALIASES_SOURCE")" || return 1
+  temporary="$(mktemp "$(dirname "$ALIASES_SOURCE")/.optional-aliases.XXXXXX")" || return 1
+  if [[ -f "$ALIASES_SOURCE" ]]; then
+    cp -p "$ALIASES_SOURCE" "$MODULE_RUN/before/optional-aliases.zsh" || { rm -f "$temporary"; return 1; }
+    chmod 600 "$MODULE_RUN/before/optional-aliases.zsh"
+    cp -p "$ALIASES_SOURCE" "$temporary" || { rm -f "$temporary"; return 1; }
+  else chmod 600 "$temporary"; fi
+  { printf '\n'; cli_aliases_block; } >> "$temporary"
+  /bin/zsh -n "$temporary" || { rm -f "$temporary"; return 1; }
+  mv -f "$temporary" "$ALIASES_SOURCE" || { rm -f "$temporary"; return 1; }
+  day_one_module_event configured-aliases "$ALIASES_SOURCE"
+  if [[ "$ALIASES_SOURCE" != "$ALIASES_TARGET" ]]; then
+    chezmoi apply --exclude=scripts "$ALIASES_TARGET" || return $?
+    cmp -s "$ALIASES_SOURCE" "$ALIASES_TARGET" || { err 'chezmoi did not apply the aliases file.'; return 1; }
+  fi
+  ok 'Optional eza aliases configured; open a new terminal to use them.'
+  info "Source backup, when needed: $MODULE_RUN/before/optional-aliases.zsh"
 }
 
 if [[ "$LIST_ONLY" == 1 ]]; then print_catalogue; exit 0; fi
@@ -214,11 +288,20 @@ if [[ "$MISSING_COUNT" -gt 0 ]]; then printf 'Missing:  %s\n' "${MISSING[*]}"; e
 [[ "$CHECK_ONLY" == 1 ]] && { [[ "$MISSING_COUNT" -eq 0 ]]; exit $?; }
 [[ "$CHOSEN_COUNT" -gt 0 ]] || { info "nothing selected; no changes made"; exit 0; }
 
+if [[ "$SETUP_ALIASES" == 1 ]]; then
+  [[ " ${CHOSEN[*]} " == *' eza '* ]] || { err '--aliases currently supports eza; include eza in the selection.'; exit 2; }
+  [[ "$DRY_RUN" == 1 ]] || cli_aliases_prepare
+fi
+
 if [[ "$DRY_RUN" == 1 ]]; then
   if [[ "$MISSING_COUNT" -gt 0 ]]; then
     for formula in "${MISSING[@]}"; do printf '  $ brew install %q\n' "$formula"; done
   else
     ok "every selected optional formula is already installed"
+  fi
+  if [[ "$SETUP_ALIASES" == 1 ]]; then
+    ui_section '' 'Optional aliases for ~/.config/zsh/aliases.zsh (Phase 5 owner)'
+    cli_aliases_block
   fi
   info 'Plan only; selection, shell configuration and Brewfile were not changed.'
   exit 0
@@ -277,10 +360,20 @@ INSTALLED_FORMULAE="$(brew list --formula | LC_ALL=C sort)"
 for formula in "${CHOSEN[@]}"; do
   is_installed "$formula" || { err "Verification failed: missing $formula"; exit 1; }
 done
-MODULE_VERIFIED=1
 ok 'Selected optional formulae verified'
 
-printf '\nShell integration is intentionally not edited automatically.\n'
+if [[ "$SETUP_ALIASES" == 0 && "$ASSUME_YES" == 0 && -t 0 && -t 1 && " ${CHOSEN[*]} " == *' eza '* ]]; then
+  ui_section '' 'Optional eza aliases'
+  ui_text 'ls: directory listing | ll: detailed listing | lt: tree'
+  ui_text 'Existing aliases and functions are preserved.'
+  printf 'Add these aliases? [y/N]: '
+  IFS= read -r answer || answer=''
+  case "$answer" in y|Y|yes|YES) SETUP_ALIASES=1; cli_aliases_prepare ;; esac
+fi
+if [[ "$SETUP_ALIASES" == 1 ]]; then cli_aliases_apply; fi
+MODULE_VERIFIED=1
+
+printf '\nOther shell integrations remain manual. Use --aliases for optional eza aliases.\n'
 printf 'Review docs/02-optional/13-enhanced-cli-tools.md for eza, zoxide and Zsh plugin snippets.\n'
 if [[ -e "$HOME/Brewfile" ]]; then
   printf 'Add the selected declarations to the chezmoi-managed Brewfile after review:\n'

@@ -5,31 +5,23 @@ set -uo pipefail
 # permissions, the login shell, or Homebrew packages.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/project-paths.sh"
+source "$SCRIPT_DIR/lib/terminal-ui.sh"
 source "$SCRIPT_DIR/lib/configuration-choices.sh"
 STATE_DIR="$(day_one_state_dir "$(day_one_state_root)")"
 COMPLETED_DIR="$STATE_DIR/completed"
-state_value() { [[ ! -r "$STATE_DIR/$1" ]] || sed -n '1p' "$STATE_DIR/$1"; }
-err() { printf '%s\n' "$*" >&2; }
 DOTFILES_VERSIONING='' SHELL_CHOICE='' PROMPT_CHOICE=''
 configuration_load_choices
 configuration_validate_choices || exit 10
 
-green=$'\033[32m'
-red=$'\033[31m'
-blue=$'\033[36m'
-reset=$'\033[0m'
-[[ -t 1 ]] || green='' red='' blue='' reset=''
-
-ok()   { printf '  %s✓%s %s\n' "$green" "$reset" "$*"; }
-fail() { printf '  %s✗%s %s\n' "$red" "$reset" "$*"; failures=$((failures + 1)); }
-info() { printf '  %sℹ%s %s\n' "$blue" "$reset" "$*"; }
+ok() { ui_success "$@"; }
+fail() { ui_status error "$DAY_ONE_UI_ERROR $*"; failures=$((failures + 1)); }
+info() { ui_info "$@"; }
 
 failures=0
 expected="$(configuration_shell_target 2>/dev/null || true)"
 configured="$(configuration_login_shell 2>/dev/null || true)"
 
-printf '\n🐚 Day One Mac shell status\n'
-printf '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'
+ui_title '🐚' 'Day One Mac shell status'
 
 [[ -x "$expected" && "${expected##*/}" == zsh ]] || {
   fail "Selected zsh is missing or unsupported: ${expected:-unknown}"; exit 1; }
@@ -111,8 +103,8 @@ TOOLS
 fi
 
 if (( failures == 0 )); then
-  printf '\n%s✓ Shell status passed.%s\n' "$green" "$reset"
+  ui_success 'Shell status passed.'
   exit 0
 fi
-printf '\n%s✗ Shell status found %d problem(s).%s\n' "$red" "$failures" "$reset"
+ui_status error "$DAY_ONE_UI_ERROR Shell status found $failures problem(s)."
 exit 1

@@ -68,6 +68,9 @@ run_public_status() {
 }
 
 run_status > "$TEST_ROOT/status.txt"
+run_status --details > "$TEST_ROOT/status-details.txt"
+grep -Fq 'Next:' "$TEST_ROOT/status-details.txt"
+[[ "$(wc -l < "$TEST_ROOT/status-details.txt")" -gt "$(wc -l < "$TEST_ROOT/status.txt")" ]]
 grep -Eq 'ready +09 — Local databases' "$TEST_ROOT/status.txt"
 grep -Eq 'partial +10 — AI clients' "$TEST_ROOT/status.txt"
 grep -Eq 'not selected +10A — OmniRoute AI gateway' "$TEST_ROOT/status.txt"

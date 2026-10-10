@@ -111,4 +111,99 @@ mv "$TEST_STATE/install-manifest.tsv" "$TEST_ROOT/manifest-original"
 ln -s "$TEST_ROOT/manifest-original" "$TEST_STATE/install-manifest.tsv"
 expect_failure 1 run_module --module 13 --resume --yes
 [[ -L "$TEST_STATE/install-manifest.tsv" ]] || fail 'state symlink replaced'
+
+# Alias opt-in uses a separate private home and the real CLI/wrapper paths.
+ALIAS_HOME="$TEST_ROOT/home with spaces café"
+ALIAS_STATE="$TEST_ROOT/alias-state"
+ALIAS_TARGET="$ALIAS_HOME/.config/zsh/aliases.zsh"
+mkdir -p "$ALIAS_HOME/.config/zsh" "$ALIAS_STATE/completed"
+printf 'fixture\n' > "$ALIAS_STATE/completed/08"
+printf 'none\n' > "$ALIAS_STATE/dotfiles-versioning"
+printf '[[ -r "$HOME/.config/zsh/aliases.zsh" ]] && source "$HOME/.config/zsh/aliases.zsh"\n' > "$ALIAS_HOME/.zshrc"
+printf "# Existing café configuration\nalias ls='ls -G'\nll() { print custom; }\n\n" > "$ALIAS_TARGET"
+cp "$ALIAS_TARGET" "$TEST_ROOT/aliases-original"
+printf '#!/bin/sh\nexit 0\n' > "$MOCK_BIN/eza"
+chmod +x "$MOCK_BIN/eza"
+run_alias() {
+  env HOME="$ALIAS_HOME" DAY_ONE_MAC_STATE_ROOT="$ALIAS_STATE" DAY_ONE_MAC_STATE_DIR="$ALIAS_STATE" \
+    PATH="$MOCK_BIN:/usr/bin:/bin" NO_COLOR=1 \
+    "$SCRIPT_DIR/day-one-mac" "$@"
+}
+run_alias cli-tools --packages eza --yes > "$TEST_ROOT/no-aliases"
+cmp -s "$ALIAS_TARGET" "$TEST_ROOT/aliases-original" || fail '--yes opted into aliases'
+run_alias optional --module 13 --plan --packages eza --aliases > "$TEST_ROOT/alias-plan"
+grep -Fq '# Day One Mac optional eza aliases' "$TEST_ROOT/alias-plan" || fail 'alias preview missing'
+cmp -s "$ALIAS_TARGET" "$TEST_ROOT/aliases-original" || fail 'alias preview wrote configuration'
+run_alias optional --module 13 --apply --packages eza --aliases --yes > "$TEST_ROOT/alias-apply"
+python3 - "$ALIAS_TARGET" "$TEST_ROOT/aliases-original" <<'PY'
+from pathlib import Path
+import sys
+assert Path(sys.argv[1]).read_bytes().startswith(Path(sys.argv[2]).read_bytes())
+PY
+cat > "$TEST_ROOT/verify-aliases.zsh" <<'EOF'
+source "$1"
+[[ "${aliases[ls]}" == 'ls -G' ]] || exit 1
+[[ "${+functions[ll]}" == 1 && "${+aliases[ll]}" == 0 ]] || exit 1
+[[ "${aliases[lt]}" == 'eza --tree' ]] || exit 1
+EOF
+PATH="$MOCK_BIN:/usr/bin:/bin" /bin/zsh -df "$TEST_ROOT/verify-aliases.zsh" "$ALIAS_TARGET" || fail 'custom aliases/functions replaced'
+find "$ALIAS_STATE/module-runs/13" -name optional-aliases.zsh -exec cmp -s {} "$TEST_ROOT/aliases-original" \; -print > "$TEST_ROOT/alias-backups"
+[[ -s "$TEST_ROOT/alias-backups" ]] || fail 'original alias source was not backed up'
+cp "$ALIAS_TARGET" "$TEST_ROOT/aliases-configured"
+run_alias cli-tools --packages eza --aliases --yes > "$TEST_ROOT/alias-repeat"
+cmp -s "$ALIAS_TARGET" "$TEST_ROOT/aliases-configured" || fail 'alias rerun duplicated block'
+expect_failure 2 run_alias cli-tools --packages fzf --aliases --dry-run
+expect_failure 2 run_alias cli-tools --packages eza --aliases --check
+expect_failure 2 run_alias optional --module 09 --plan --aliases
+
+# Ownership and redirected targets must be resolved before any alias write.
+mv "$ALIAS_TARGET" "$TEST_ROOT/alias-link-target"
+ln -s "$TEST_ROOT/alias-link-target" "$ALIAS_TARGET"
+expect_failure 10 run_alias cli-tools --packages eza --aliases --yes
+cmp -s "$TEST_ROOT/alias-link-target" "$TEST_ROOT/aliases-configured" || fail 'alias symlink target changed'
+rm "$ALIAS_TARGET"
+mv "$TEST_ROOT/alias-link-target" "$ALIAS_TARGET"
+rm "$ALIAS_STATE/dotfiles-versioning"
+expect_failure 10 run_alias cli-tools --packages eza --aliases --yes
+cmp -s "$ALIAS_TARGET" "$TEST_ROOT/aliases-configured" || fail 'unknown owner changed aliases'
+
+# Managed plain files update through chezmoi; templates/drift remain manual.
+ALIAS_SOURCE_FIXTURE="$TEST_ROOT/chezmoi-source/aliases.zsh"
+export ALIAS_SOURCE_FIXTURE
+mkdir -p "$(dirname "$ALIAS_SOURCE_FIXTURE")"
+cp "$TEST_ROOT/aliases-original" "$ALIAS_TARGET"
+cp "$ALIAS_TARGET" "$ALIAS_SOURCE_FIXTURE"
+printf 'local\n' > "$ALIAS_STATE/dotfiles-versioning"
+cat > "$MOCK_BIN/chezmoi" <<'EOF'
+#!/bin/sh
+case "$1" in
+  source-path) printf '%s\n' "$ALIAS_SOURCE_FIXTURE" ;;
+  apply)
+    [ "$#" = 3 ] && [ "$2" = --exclude=scripts ] || exit 97
+    cp "$ALIAS_SOURCE_FIXTURE" "$3" ;;
+  *) exit 98 ;;
+esac
+EOF
+chmod +x "$MOCK_BIN/chezmoi"
+run_alias cli-tools --packages eza --aliases --yes > "$TEST_ROOT/alias-managed"
+cmp -s "$ALIAS_SOURCE_FIXTURE" "$ALIAS_TARGET" || fail 'managed source was not applied'
+grep -Fq '# Day One Mac optional eza aliases' "$ALIAS_SOURCE_FIXTURE" || fail 'managed block missing'
+printf '# live drift\n' >> "$ALIAS_TARGET"
+cp "$ALIAS_SOURCE_FIXTURE" "$TEST_ROOT/source-before-drift"
+expect_failure 10 run_alias cli-tools --packages eza --aliases --yes
+cmp -s "$ALIAS_SOURCE_FIXTURE" "$TEST_ROOT/source-before-drift" || fail 'source/live drift ignored'
+mv "$ALIAS_SOURCE_FIXTURE" "$ALIAS_SOURCE_FIXTURE.tmpl"
+ALIAS_SOURCE_FIXTURE="$ALIAS_SOURCE_FIXTURE.tmpl"
+expect_failure 10 run_alias cli-tools --packages eza --aliases --yes
+
+printf 'none\n' > "$ALIAS_STATE/dotfiles-versioning"
+printf 'if broken syntax\n' > "$ALIAS_TARGET"
+cp "$ALIAS_TARGET" "$TEST_ROOT/invalid-aliases"
+expect_failure 1 run_alias cli-tools --packages eza --aliases --yes
+cmp -s "$ALIAS_TARGET" "$TEST_ROOT/invalid-aliases" || fail 'syntax failure replaced original file'
+printf '# Day One Mac optional eza aliases\n' >> "$ALIAS_TARGET"
+cp "$ALIAS_TARGET" "$TEST_ROOT/invalid-marked-aliases"
+expect_failure 1 run_alias cli-tools --packages eza --aliases --yes
+cmp -s "$ALIAS_TARGET" "$TEST_ROOT/invalid-marked-aliases" || fail 'invalid existing block was changed'
+
 printf 'PASS: module registry, preview, apply, check, resume, ownership, backups and locks\n'

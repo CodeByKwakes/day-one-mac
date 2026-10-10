@@ -217,6 +217,7 @@ case "${1:-}" in
       '  docs              browse, export, locate, or open bundled documentation' \
       '' \
       'Required setup and inspection:' \
+      '  (no command)      browse the setup centre: phases, modules and actions' \
       '  setup [options]   run or inspect the eight required phases' \
       '                    --plan | --apply | --check | --resume; --phase NN selects phases' \
       '  folders           standalone layouts and opt-in ghq: --plan | --apply | --check | --resume' \

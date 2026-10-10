@@ -19,6 +19,7 @@ REPOSITORY_REPORT=""
 AUDIT=0
 CHECK_ONLY=0
 PRINT_REPORT=0
+SHOW_DETAILS=0
 FAILURES=0
 REVIEWS=0
 PARTIALS=0
@@ -39,6 +40,7 @@ Usage: ./optional-status.sh [options]
 
 Show one read-only dashboard for optional and advanced Modules 09–22.
 
+  --details      show evidence and next actions for every module
   --audit        run the deeper environment audit and write a combined report
   --check        exit non-zero when a selected module is not ready/current
   --stdout       print the Markdown report created by --audit
@@ -534,6 +536,7 @@ write_report() {
 
 while (( $# )); do
   case "$1" in
+    --details) SHOW_DETAILS=1; shift ;;
     --audit) AUDIT=1; shift ;;
     --check) CHECK_ONLY=1; shift ;;
     --stdout) PRINT_REPORT=1; AUDIT=1; shift ;;
@@ -552,12 +555,21 @@ ui_label 'State' "$STATE_DIR"
 printf '\n'
 
 for id in "${MODULE_IDS[@]}"; do
+  case "$id" in
+    09) ui_section '' 'Optional modules' ;;
+    15) ui_section '' 'Advanced modules' ;;
+  esac
   evaluate_module "$id"
   STATUSES+=("$RESULT_STATUS")
   DETAILS+=("$RESULT_DETAIL")
   ACTIONS+=("$RESULT_ACTION")
   print_module "$id"
-  printf '      %s\n' "$RESULT_DETAIL"
+  if [[ "$SHOW_DETAILS" == 1 || "$RESULT_STATUS" != 'not selected' ]]; then
+    ui_text "$RESULT_DETAIL" '      '
+  fi
+  if [[ "$SHOW_DETAILS" == 1 && -n "$RESULT_ACTION" ]]; then
+    ui_text "Next: $RESULT_ACTION" '      '
+  fi
   [[ "$RESULT_STATUS" == 'not selected' ]] || print_payload_breakdown "$id"
   case "$RESULT_STATUS" in
     partial) PARTIALS=$((PARTIALS + 1)) ;;

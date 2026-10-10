@@ -28,6 +28,12 @@ wizard, `s` to continue directly to Phase 2, or `q` to stop safely. Rerunning
 the required setup resumes at this checkpoint. Existing saved choices remain
 valid, so upgrading this playbook does not reset completed phases.
 
+The menu shows a window of preferences that fits your terminal. Use Up/Down
+or `j`/`k` to reach every item, Space to toggle it, and Enter to review. The
+item counter shows your position; `a` selects all preferences and `n` clears
+all of them, including items outside the visible window. Press `q` to return
+without changing settings.
+
 ## What is automatic and what remains manual
 
 The script can safely write and read back these scalar user preferences:

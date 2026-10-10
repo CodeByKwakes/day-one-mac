@@ -16,6 +16,8 @@ docs/manual/developer-folders.md
 scripts/configure-folders.sh
 scripts/lib/developer-folders.sh
 scripts/lib/hosting-auth.sh
+scripts/lib/required-phase-catalog.sh
+scripts/lib/wizard-centre.sh
 scripts/lib/configuration-choices.sh
 docs/00-preflight/00-existing-mac-decision.md
 docs/00-preflight/01-private-inventory.md

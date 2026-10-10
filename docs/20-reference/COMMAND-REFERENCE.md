@@ -33,6 +33,19 @@ from any directory without a Git checkout. The runtime installer remains the
 launcher's owner; Phase 5 must not adopt it into chezmoi. See
 [Install and manage the standalone runtime](PORTABLE-COMMAND.md).
 
+The wizard opens a setup centre with **Start or resume required setup**,
+**Required phases (01–08)**, **Optional modules (09–14)**,
+**Advanced modules (15–22)**, and **Other actions**. Move with Up/Down or
+`j`/`k`, choose with Enter or Space, and use `b`, Left Arrow or **Back** to
+return. During required setup questions, back returns to the previous section;
+text prompts accept `:back`. Accepted answers remain in memory until review.
+Use `q` to stop the current wizard. Modules use the same plan, check, apply and resume runners as the
+commands below; new selections are previewed before application. Phase 8 still
+gates optional and advanced application. `day-one-mac --wizard --dry-run`
+previews configuration without applying it. Status, documentation and report
+actions retain their usual behaviour. For plain styling, set `NO_COLOR=1`;
+for ASCII symbols, set `DAY_ONE_MAC_ASCII=1`.
+
 ### Direct scripts — fallback and maintenance
 
 From either the installed runtime or a development checkout:
@@ -62,7 +75,7 @@ updates and rollback.
 
 | Portable command | Direct script equivalent | Use it when |
 |---|---|---|
-| `day-one-mac` | `./bootstrap-day-one-mac.sh` | Open the main setup wizard using saved choices when available. |
+| `day-one-mac` | `./bootstrap-day-one-mac.sh` | Browse the setup centre and choose required phases, optional/advanced modules, or other actions. |
 | `day-one-mac bootstrap [options]` | Downloaded-dispatcher operation | Clone or reuse the project and install the portable command before Phase 1. |
 | `day-one-mac help` | No exact script; dispatcher help | See the installed top-level commands. `-h` and `--help` are equivalent. |
 | `day-one-mac --version` | Read the active runtime's `VERSION` | Print the runtime or checkout version. `version` is an alias; this does not check for updates. |
@@ -102,7 +115,7 @@ updates and rollback.
 | `day-one-mac advanced --module 21 --plan\|--apply\|--check\|--resume` | `./optional-module.sh --module 21 [options]` | Preview/check bounded setup evidence without writes, or save a versioned snapshot and compare it to the previous one. Never upgrades, cleans or rebuilds. |
 | `day-one-mac advanced --module 22 --plan\|--apply\|--check\|--resume` | `./optional-module.sh --module 22 [options]` | Use `--manifest PATH` for explicit skill/MCP metadata ownership and drift snapshots. Never executes skills or changes client trust. |
 | `day-one-mac advanced-audit [options]` | `./advanced-audit.sh [options]` | Generate the private, extended environment and repository report. |
-| `day-one-mac cli-tools [options]` | `./configure-cli-tools.sh [options]` | Select and install optional Homebrew formulae without removing unselected tools. |
+| `day-one-mac cli-tools [options]` | `./configure-cli-tools.sh [options]` | Select optional Homebrew formulae; `--aliases` opts in to guarded eza aliases. |
 | `day-one-mac finalize [options]` | `./finalize-setup.sh [options]` | Review or compact setup evidence after Phase 8, or deliberately detach the setup system. |
 | `day-one-mac remove [options]` | `./remove-day-one-mac.sh [options]` | Choose a recorded, sectional, or full removal plan with an ownership-aware preview. |
 | `day-one-mac rollback [options]` | `./rollback-recorded-setup.sh [options]` | Preview or reverse only changes recorded as belonging to Day One Mac. |
@@ -455,6 +468,8 @@ day-one-mac inventory --output "/absolute/path/applications.md"
 day-one-mac cli-tools --list
 day-one-mac cli-tools --check
 day-one-mac cli-tools --packages eza,fd,lazygit --dry-run
+day-one-mac cli-tools --packages eza --aliases --dry-run
+day-one-mac cli-tools --packages eza --aliases
 
 day-one-mac databases --saved
 day-one-mac databases --services postgres,redis --dry-run

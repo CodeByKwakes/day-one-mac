@@ -21,7 +21,7 @@ phase_07() {
   fi
   phase_next "VS Code settings and command-line launcher" "Open VS Code, install the 'code' command in PATH, and keep both AI tool auto-approval settings false."
   settings="$HOME/Library/Application Support/Code/User/settings.json"
-  settings_content=$'{\n  "editor.formatOnSave": true,\n  "files.insertFinalNewline": true,\n  "files.trimTrailingWhitespace": true,\n  "git.autofetch": true,\n  "terminal.integrated.defaultProfile.osx": "zsh",\n  "terminal.integrated.fontFamily": "\u0027JetBrainsMono Nerd Font\u0027",\n  "chat.tools.global.autoApprove": false,\n  "chat.tools.terminal.enableAutoApprove": false\n}\n'
+  settings_content=$'{\n  "editor.formatOnSave": true,\n  "files.insertFinalNewline": true,\n  "files.trimTrailingWhitespace": true,\n  "git.autofetch": true,\n  "terminal.integrated.defaultProfile.osx": "zsh",\n  "terminal.integrated.shellIntegration.enabled": true,\n  "terminal.integrated.suggest.enabled": true,\n  "terminal.integrated.fontFamily": "\u0027JetBrainsMono Nerd Font\u0027",\n  "chat.tools.global.autoApprove": false,\n  "chat.tools.terminal.enableAutoApprove": false\n}\n'
   if [[ ! -e "$settings" ]]; then
     create_directory "$HOME/Library/Application Support/Code"
     create_directory "$HOME/Library/Application Support/Code/User"

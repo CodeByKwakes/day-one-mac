@@ -64,6 +64,10 @@ day-one-mac cli-tools --packages eza,zsh-autosuggestions,lazydocker --dry-run
 day-one-mac cli-tools --packages eza,zsh-autosuggestions,lazydocker
 ```
 
+The selector shows the focused tool’s description below the choices, with
+installed or missing labels beside each visible tool. Long categories use a
+window of rows; the item counter shows where you are in the full category.
+
 In the selector, use Left/Right (or `h`/`l`) to change category, Up/Down (or
 `j`/`k`) to move between tools, and Space to toggle. `a` selects all tools in
 the current category; `n` clears only that category. Selections stay checked
@@ -83,10 +87,90 @@ day-one-mac cli-tools \
   --check
 ```
 
-## Add shell integration through chezmoi
+## Optional alias setup on the script-assisted route
 
-Installing a formula and changing shell behaviour are separate actions. Edit
-the managed shell file rather than allowing an installer to mutate it:
+After an interactive install with `eza` selected, the CLI offers to add `ls`,
+`ll` and `lt` aliases. Press Enter to skip. `--yes` accepts package installation
+only; alias setup needs a separate yes or the explicit `--aliases` flag:
+
+```bash
+# Preview package installation and the alias block without writing files.
+day-one-mac cli-tools --packages eza --aliases --dry-run
+
+# Install or reuse eza, then add the optional aliases.
+day-one-mac cli-tools --packages eza --aliases
+```
+
+The shared module interface accepts the same opt-in:
+
+```bash
+day-one-mac optional --module 13 --apply --packages eza --aliases
+```
+
+Complete Phase 5 first: `~/.zshrc` must already source
+`~/.config/zsh/aliases.zsh`, and configuration ownership must be selected.
+User-owned files receive an appended, marked block. Existing aliases and
+functions keep their definitions, and rerunning the setup does not duplicate
+the block. Existing content is backed up privately in the printed module run
+folder before the write; a syntax check runs before replacement.
+
+For chezmoi-owned configuration, the CLI updates the plain source file only
+when it matches the live file, then [applies that single target with scripts
+excluded](https://www.chezmoi.io/reference/commands/apply/). Templated files,
+symlinks, unresolved ownership and source/live drift require the manual merge
+below. If targeted apply fails, the source backup remains in the printed run
+folder; review the source and live file before retrying.
+
+Open a new terminal afterward. The aliases are guarded by the presence of
+`eza`. Other tools and shell integrations keep their existing manual setup.
+`--check` continues to verify packages; it does not verify alias activation.
+
+## Add shell integration with your selected configuration owner
+
+Use the same shell activation for the manual and script-assisted routes.
+The plugins remain optional; VS Code's terminal suggestion dropdown is enabled
+separately in [Phase 7](../01-required/07-vscode-base.md#step-73--use-the-minimal-settings-baseline).
+
+On the script-assisted route, select `zsh-completions`, `zsh-autosuggestions`
+and `zsh-syntax-highlighting` in the selector's Shell category, or run:
+
+```bash
+day-one-mac cli-tools --packages zsh-completions,zsh-autosuggestions,zsh-syntax-highlighting
+```
+
+On the manual route, install those same selected packages yourself:
+
+```bash
+brew install zsh-completions zsh-autosuggestions zsh-syntax-highlighting
+```
+
+For **user-owned configuration**, edit `~/.zshrc` directly with your editor.
+For **chezmoi-owned configuration**, use `chezmoi edit ~/.zshrc`, review
+`chezmoi diff`, then apply. Do not run chezmoi commands for user-owned files.
+
+Fresh Phase 5 files already contain the required blocks. For an existing file,
+merge only what is missing from
+[Step 5.3](../01-required/05-dotfiles-and-shell.md#step-53--configure-interactive-zsh):
+
+1. Add Homebrew's `site-functions` and `zsh-completions` directories to `fpath`
+   before the existing `autoload -Uz compinit` and completion initialization.
+   Preserve Docker and other completion paths; initialize completion once.
+2. Source `zsh-autosuggestions` through the readable-file guard before Starship
+   initialization. Keep persistent history enabled for history suggestions.
+3. Source `zsh-syntax-highlighting` through its guard as the final integration.
+4. In VS Code's active profile, enable the shell integration and suggestion
+   settings from Phase 7. Close existing terminals and open a new Zsh terminal.
+
+Try `git ch` followed by **Tab**, start typing a command already in your history
+and press **Right Arrow** to accept its grey suggestion, or press **Ctrl+Space**
+for VS Code's terminal suggestion dropdown. These instructions also apply to
+Warp's Zsh shell, except the VS Code-specific dropdown.
+
+### Other optional shell integrations
+
+Installing a formula and changing shell behaviour are separate actions. The
+commands below show the chezmoi route; for user-owned files, edit the same
+targets directly and omit `chezmoi diff` and `chezmoi apply`.
 
 ```bash
 chezmoi edit ~/.config/zsh/aliases.zsh
@@ -97,9 +181,9 @@ Add the `eza` block to `aliases.zsh` only when selected:
 ```zsh
 # Better directory listing; remove these aliases if scripts expect BSD ls.
 if command -v eza >/dev/null 2>&1; then
-  alias ls='eza --group-directories-first'
-  alias ll='eza --long --all --git --group-directories-first'
-  alias lt='eza --tree'
+  (( ${+aliases[ls]} || ${+functions[ls]} )) || alias ls='eza --group-directories-first'
+  (( ${+aliases[ll]} || ${+functions[ll]} )) || alias ll='eza --long --all --git --group-directories-first'
+  (( ${+aliases[lt]} || ${+functions[lt]} )) || alias lt='eza --tree'
 fi
 ```
 
@@ -126,7 +210,8 @@ setopt AUTO_CD
 
 Phase 5 already contains guarded integration for `zsh-completions`,
 `zsh-autosuggestions` and `zsh-syntax-highlighting`. Installing those formulae
-activates them in the next shell; do not add a second source or `compinit`.
+activates them in the next shell when those blocks are present; existing files
+need the reviewed merge above. Do not add a second source or `compinit`.
 
 Keep `eza` aliases in `aliases.zsh`. Keep `zoxide init`, completion `fpath`,
 `compinit`, Starship and plugin source lines in `.zshrc`, in the order shown in

@@ -831,6 +831,8 @@ uv --version
   "files.trimTrailingWhitespace": true,
   "git.autofetch": true,
   "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.shellIntegration.enabled": true,
+  "terminal.integrated.suggest.enabled": true,
   "terminal.integrated.fontFamily": "'JetBrainsMono Nerd Font'",
   "chat.tools.global.autoApprove": false,
   "chat.tools.terminal.enableAutoApprove": false
@@ -838,6 +840,11 @@ uv --version
 ```
 
 - [ ] Install only extensions required by an actual project.
+- [ ] If you want Zsh Tab completion, history suggestions and syntax
+      highlighting, follow the manual activation instructions in
+      [Optional 13](../02-optional/13-enhanced-cli-tools.md#add-shell-integration-with-your-selected-configuration-owner).
+      Restart the integrated terminal, then try Tab, Right Arrow and
+      `Ctrl+Space`. Terminal suggestions require no editor extension.
 - [ ] Leave Settings Sync off until the clean baseline is verified, or review
       the account and synchronized categories before enabling it.
 

@@ -41,6 +41,11 @@ day-one-mac runtime-status
 day-one-mac --wizard
 ```
 
+The wizard opens the setup centre. Choose **Start or resume required setup**
+for the full eight-phase route, or browse individual phases, optional and
+advanced modules, status checks, settings, and maintenance. See the
+[setup centre controls](../START-HERE.md#script-assisted-route--recommended).
+
 The installer:
 
 1. Downloads `day-one-mac-runtime.tar.gz` from the latest GitHub release.

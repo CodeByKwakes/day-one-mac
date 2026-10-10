@@ -7,6 +7,12 @@ connects first setup, everyday maintenance, ownership and advanced templates.
 **Start only after the eight required phases pass.** Nothing in this directory
 is needed for a secure, working development Mac.
 
+For an interactive menu, run `day-one-mac --wizard` and choose **Advanced
+modules**. Select a module to read its guide, preview a reviewed selection,
+check its components, or apply/resume it after Phase 8. Modules that need a TSV
+ask for its path and show a preview before you choose **Apply**. Guides and
+previews can be opened before completing the foundation.
+
 The required setup intentionally stops at a small, reproducible foundation.
 This advanced layer adds power-user capabilities only when they solve a real
 need. Teardown work, machine migration, fixed package counts, and optional

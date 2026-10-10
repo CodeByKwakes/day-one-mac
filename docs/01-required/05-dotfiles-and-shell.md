@@ -254,6 +254,14 @@ if [[ -r /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 ```
 
+The completion paths and guarded plugin blocks above belong to both the
+manual and script-assisted baselines. Installing the optional plugins enables
+them on the next shell only when these blocks are present. Existing `.zshrc`
+files are preserved, so merge missing blocks through your selected
+configuration owner; follow
+[Optional 13's activation steps](../02-optional/13-enhanced-cli-tools.md#add-shell-integration-with-your-selected-configuration-owner).
+Do not append a second `compinit` or duplicate plugin sources.
+
 ### Why both startup files load the shared PATH setup
 
 zsh reads `~/.zprofile` only for **login** shells. A plain `zsh`, a tmux pane,

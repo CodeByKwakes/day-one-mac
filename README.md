@@ -49,7 +49,10 @@ day-one-mac docs chezmoi-guide --browser
 
 The runtime container is `~/.local/share/day-one-mac`; its `current` link points
 to the active versioned release. No Git checkout is required afterward. The
-wizard saves completed phases and tells you which
+wizard opens a setup centre for required phases, optional and advanced modules,
+status checks, settings, and maintenance. Choose **Start or resume required
+setup** for the complete first-time route. The setup runner saves completed
+phases and tells you which
 guide to open when a manual action is required. It also asks whether VS Code
 should become Git's primary editor, diff viewer, and merge tool; choosing
 another primary IDE leaves those Git settings unchanged. Read the

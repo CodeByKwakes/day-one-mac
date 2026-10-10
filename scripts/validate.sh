@@ -417,6 +417,8 @@ required_scripts=(
   lib/container-data-paths.sh
   lib/platform.sh
   lib/terminal-ui.sh
+  lib/required-phase-catalog.sh
+  lib/wizard-centre.sh
   tests/test-application-ownership.sh
   tests/test-configure-databases.sh
   tests/test-optional-status.sh
@@ -463,7 +465,8 @@ fi
 
 if grep -Fq 'exec bash "$HERE/setup.sh" "$@"' "$SCRIPT_DIR/bootstrap-day-one-mac.sh" \
    && grep -Fq 'select_toggles()' "$SCRIPT_DIR/bootstrap-day-one-mac.sh" \
-   && grep -Fq 'Space or Enter: accept' "$SCRIPT_DIR/bootstrap-day-one-mac.sh" \
+   && grep -Fq 'ui_menu_help single' "$SCRIPT_DIR/bootstrap-day-one-mac.sh" \
+   && grep -Fq 'Enter/Space: choose' "$SCRIPT_DIR/lib/terminal-ui.sh" \
    && grep -Fq "' ') SINGLE_RESULT=" "$SCRIPT_DIR/bootstrap-day-one-mac.sh" \
    && grep -Fq '🔒 Phase 1' "$SCRIPT_DIR/bootstrap-day-one-mac.sh" \
    && grep -Fq 'Save choices and begin or resume setup' "$SCRIPT_DIR/bootstrap-day-one-mac.sh" \
@@ -897,7 +900,7 @@ fi
 if grep -Fq $'Navigation\teza\t' "$PROJECT_DIR/config/optional-formulae.tsv" \
    && grep -Fq $'Shell\tzsh-autosuggestions\t' "$PROJECT_DIR/config/optional-formulae.tsv" \
    && grep -Fq $'Containers\tlazydocker\t' "$PROJECT_DIR/config/optional-formulae.tsv" \
-   && grep -Fq 'This script only installs selected formulae' "$SCRIPT_DIR/configure-cli-tools.sh"; then
+   && grep -Fq 'Only selected formulae are installed' "$SCRIPT_DIR/configure-cli-tools.sh"; then
   pass "optional CLI catalogue includes requested tools and is installation-only"
 else
   fail "optional CLI catalogue or selector policy is incomplete"

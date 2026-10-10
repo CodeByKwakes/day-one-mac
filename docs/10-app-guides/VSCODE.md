@@ -105,6 +105,8 @@ The required baseline is intentionally small:
   "files.trimTrailingWhitespace": true,
   "git.autofetch": true,
   "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.shellIntegration.enabled": true,
+  "terminal.integrated.suggest.enabled": true,
   "terminal.integrated.fontFamily": "'JetBrainsMono Nerd Font'",
   "chat.tools.global.autoApprove": false,
   "chat.tools.terminal.enableAutoApprove": false

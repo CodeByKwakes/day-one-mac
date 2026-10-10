@@ -346,28 +346,26 @@ SINGLE_VALUES=()
 SINGLE_LABELS=()
 SINGLE_RESULT=""
 select_one() {
-  local heading="$1" default_index="$2" cursor key rest item marker radio
+  local heading="$1" default_index="$2" cursor key rest item radio
   cursor="$default_index"
   while :; do
-    [[ -t 1 ]] && printf '\033[2J\033[H'
+    ui_clear_screen
     ui_banner '🧭' 'Day One Mac — prepare an existing Mac'
-    printf '%s\n\n' "$heading"
-    printf '  Up/Down or j/k: move   Space or Enter: accept   q: quit\n\n'
-    for ((item=0; item<${#SINGLE_VALUES[@]}; item++)); do
-      marker=' '; radio='( )'
-      [[ "$item" == "$cursor" ]] && marker='>' && radio='(●)'
-      if [[ "$item" == "$cursor" ]]; then
-        printf ' %s%s%s %s %s%s\n' "$DAY_ONE_UI_BOLD" "$DAY_ONE_UI_CYAN" "$marker" "$radio" "${SINGLE_LABELS[$item]}" "$DAY_ONE_UI_RESET"
-      else
-        printf ' %s %s %s\n' "$marker" "$radio" "${SINGLE_LABELS[$item]}"
-      fi
+    ui_text "$heading"
+    ui_menu_window "${#SINGLE_VALUES[@]}" "$cursor" 11
+    for ((item=DAY_ONE_UI_MENU_START; item<DAY_ONE_UI_MENU_END; item++)); do
+      radio='( )'
+      [[ "$item" != "$cursor" ]] || radio='(*)'
+      ui_menu_item "$item" "$cursor" "$radio" "${SINGLE_LABELS[$item]}"
     done
+    ui_menu_position "${#SINGLE_VALUES[@]}" "$cursor"
+    ui_menu_help single
     IFS= read -rsn1 key
     if [[ "$key" == $'\033' ]]; then IFS= read -rsn2 rest || true; key="$key$rest"; fi
     case "$key" in
       $'\033[A'|k|K) cursor=$((cursor - 1)); [[ "$cursor" -ge 0 ]] || cursor=$((${#SINGLE_VALUES[@]} - 1)) ;;
       $'\033[B'|j|J) cursor=$((cursor + 1)); [[ "$cursor" -lt "${#SINGLE_VALUES[@]}" ]] || cursor=0 ;;
-      ' '|"") SINGLE_RESULT="${SINGLE_VALUES[$cursor]}"; [[ -t 1 ]] && printf '\033[2J\033[H'; return 0 ;;
+      ' '|"") SINGLE_RESULT="${SINGLE_VALUES[$cursor]}"; ui_clear_screen; return 0 ;;
       q|Q) exit 0 ;;
     esac
   done
@@ -377,22 +375,19 @@ MENU_VALUES=()
 MENU_LABELS=()
 MENU_SELECTED=()
 select_toggles() {
-  local heading="$1" cursor=0 key rest item marker check
+  local heading="$1" cursor=0 key rest item check
   while :; do
-    [[ -t 1 ]] && printf '\033[2J\033[H'
+    ui_clear_screen
     ui_banner '🧭' 'Day One Mac — prepare an existing Mac'
-    printf '%s\n\n' "$heading"
-    printf '  Up/Down or j/k: move   Space: toggle   Enter: accept   q: quit\n\n'
-    for ((item=0; item<${#MENU_VALUES[@]}; item++)); do
-      marker=' '; check='[ ]'
-      [[ "$item" == "$cursor" ]] && marker='>'
-      [[ "${MENU_SELECTED[$item]}" == 1 ]] && check='[x]'
-      if [[ "$item" == "$cursor" ]]; then
-        printf ' %s%s%s %s %s%s\n' "$DAY_ONE_UI_BOLD" "$DAY_ONE_UI_CYAN" "$marker" "$check" "${MENU_LABELS[$item]}" "$DAY_ONE_UI_RESET"
-      else
-        printf ' %s %s %s\n' "$marker" "$check" "${MENU_LABELS[$item]}"
-      fi
+    ui_text "$heading"
+    ui_menu_window "${#MENU_VALUES[@]}" "$cursor" 11
+    for ((item=DAY_ONE_UI_MENU_START; item<DAY_ONE_UI_MENU_END; item++)); do
+      check='[ ]'
+      [[ "${MENU_SELECTED[$item]}" != 1 ]] || check='[x]'
+      ui_menu_item "$item" "$cursor" "$check" "${MENU_LABELS[$item]}"
     done
+    ui_menu_position "${#MENU_VALUES[@]}" "$cursor"
+    ui_menu_help simple-toggle
     IFS= read -rsn1 key
     if [[ "$key" == $'\033' ]]; then IFS= read -rsn2 rest || true; key="$key$rest"; fi
     case "$key" in
@@ -401,7 +396,7 @@ select_toggles() {
       ' ')
         if [[ "${MENU_SELECTED[$cursor]}" == 1 ]]; then MENU_SELECTED[$cursor]=0; else MENU_SELECTED[$cursor]=1; fi
         ;;
-      "") [[ -t 1 ]] && printf '\033[2J\033[H'; return 0 ;;
+      "") ui_clear_screen; return 0 ;;
       q|Q) exit 0 ;;
     esac
   done

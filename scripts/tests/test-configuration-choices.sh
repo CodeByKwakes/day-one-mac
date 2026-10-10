@@ -195,4 +195,37 @@ for bounded_action in 01 02 install-centre 04; do
 done
 [[ "$(cat "$TEST_ROOT/bounded/.config/chezmoi/fixture")" == 'preserve me' ]]
 [[ ! -e "$TEST_ROOT/bounded/state" ]]
+# The editor baseline enables terminal suggestions on fresh setups, while
+# reruns leave existing user/profile settings unchanged.
+(
+  export HOME="$TEST_ROOT/editor home"
+  PRESET=recommended-productivity DRY_RUN=0
+  DAY_ONE_APP_SOURCE=external
+  # shellcheck disable=SC2329
+  verify_application() { return 0; }
+  # shellcheck disable=SC2329
+  day_one_app_source_label() { printf 'fixture\n'; }
+  # shellcheck disable=SC2329
+  create_directory() { mkdir -p "$1"; }
+  # shellcheck disable=SC2329
+  write_text_file() { printf '%s' "$2" > "$1"; }
+  # shellcheck disable=SC2329
+  phase_step_done() { :; }
+  # shellcheck disable=SC2329
+  code() { :; }
+  phase_07 > "$TEST_ROOT/editor.log"
+  settings="$HOME/Library/Application Support/Code/User/settings.json"
+  python3 - "$settings" <<'PY'
+import json, sys
+settings = json.load(open(sys.argv[1]))
+assert settings['terminal.integrated.shellIntegration.enabled'] is True
+assert settings['terminal.integrated.suggest.enabled'] is True
+assert settings['chat.tools.global.autoApprove'] is False
+assert settings['chat.tools.terminal.enableAutoApprove'] is False
+PY
+  printf '{"terminal.integrated.suggest.enabled":false,"custom.setting":"keep", "chat.tools.global.autoApprove": false, "chat.tools.terminal.enableAutoApprove": false}\n' > "$settings"
+  before="$(shasum -a 256 "$settings")"
+  phase_07 >> "$TEST_ROOT/editor.log"
+  [[ "$before" == "$(shasum -a 256 "$settings")" ]]
+)
 printf 'Configuration ownership, selection, preservation and rerun fixtures passed.\n'

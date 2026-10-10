@@ -118,8 +118,10 @@ print_list() {
   local number
   ui_title '🧰' 'Advanced optional setup — Modules 15–22'
   for number in 15 16 17 18 19 20 21 22; do
-    printf '  %s  %-48s %s\n' "$number" "$(module_title "$number")" "$(module_doc "$number")"
+    ui_text "$(module_title "$number")" "  $number  "
   done
+  printf '\n'
+  ui_text 'Read a guide: day-one-mac advanced --module NN'
 }
 
 print_status() {

@@ -100,6 +100,8 @@ every line except the last ends with a comma.
   "files.trimTrailingWhitespace": true,
   "git.autofetch": true,
   "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.shellIntegration.enabled": true,
+  "terminal.integrated.suggest.enabled": true,
   "terminal.integrated.fontFamily": "'JetBrainsMono Nerd Font'",
   "chat.tools.global.autoApprove": false,
   "chat.tools.terminal.enableAutoApprove": false
@@ -111,6 +113,8 @@ Why this stays small:
 - Formatting behavior is predictable without selecting a global formatter.
 - Git fetches metadata but does not push or merge automatically.
 - Integrated terminals use the shell configured in Phases 5–6.
+- Shell integration and terminal suggestions are enabled for commands, paths
+  and arguments. Press `Ctrl+Space` to open suggestions manually.
 - Starship symbols render through the installed Nerd Font.
 - AI tools cannot globally or terminal-auto-approve actions if enabled later.
 
@@ -121,6 +125,17 @@ itself needs around a name containing spaces. Note also that the family name is
 
 A project can override settings in `.vscode/settings.json` without making every
 workspace inherit framework-specific choices.
+
+For shell Tab completion, history suggestions and syntax highlighting, follow
+[Optional 13's shell activation steps](../02-optional/13-enhanced-cli-tools.md#add-shell-integration-with-your-selected-configuration-owner).
+These Zsh plugins are separate from VS Code's suggestion dropdown. The same
+shell setup works in Warp and other Zsh terminals. Existing settings are
+preserved by the script-assisted phase: merge these two terminal settings
+manually when upgrading an existing setup. Close old terminals with the trash
+icon and create a new terminal after changing shell files or settings.
+
+See [VS Code terminal suggestions](https://code.visualstudio.com/docs/terminal/shell-integration#_intellisense)
+for the supported settings and shortcuts.
 
 ## Step 7.4 — Keep extensions project-driven
 

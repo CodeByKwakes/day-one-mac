@@ -207,18 +207,18 @@ print_plan() {
 }
 
 interactive_groups() {
-  local cursor=0 key rest i pointer check
+  local cursor=0 key rest i check
   [[ -t 0 && -t 1 ]] || die 'the Raycast wizard needs a terminal; use --preview or --groups with --apply'
   while :; do
-    printf '\033[2J\033[H'
+    ui_clear_screen
     ui_banner '🚀' 'Choose Raycast command groups'
-    printf '  Up/Down or j/k: move   Space: toggle   a: recommended   n: none\n'
-    printf '  Enter: review          q: quit\n\n'
-    for ((i=0; i<${#GROUP_IDS[@]}; i++)); do
+    ui_menu_window "${#GROUP_IDS[@]}" "$cursor" 11
+    for ((i=DAY_ONE_UI_MENU_START; i<DAY_ONE_UI_MENU_END; i++)); do
       [[ "${GROUP_SELECTED[$i]}" == 1 ]] && check='[x]' || check='[ ]'
-      [[ "$i" == "$cursor" ]] && pointer='>' || pointer=' '
-      printf ' %s %s %-14s %s\n' "$pointer" "$check" "${GROUP_IDS[$i]}" "${GROUP_LABELS[$i]}"
+      ui_menu_item "$i" "$cursor" "$check" "${GROUP_IDS[$i]}: ${GROUP_LABELS[$i]}"
     done
+    ui_menu_position "${#GROUP_IDS[@]}" "$cursor"
+    ui_menu_help recommended
     IFS= read -rsn1 key || exit 10
     if [[ "$key" == $'\033' ]]; then IFS= read -rsn2 rest || true; key="$key$rest"; fi
     case "$key" in

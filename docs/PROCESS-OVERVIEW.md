@@ -49,6 +49,11 @@ day-one-mac --wizard
 ```
 
 The command is available before Phase 1 and does not require a Git checkout.
+Choose **Start or resume required setup** in the setup centre for the complete
+route. You can also select individual required phases, optional and advanced
+modules, or other actions. Module previews and guides are available before
+Phase 8; applying optional or advanced work requires its completion. See the
+[setup centre controls](START-HERE.md#script-assisted-route--recommended).
 The standalone installer remains its sole owner; Phase 5 deliberately keeps
 the launcher out of chezmoi. Details are documented in
 [PORTABLE-COMMAND.md](20-reference/PORTABLE-COMMAND.md).

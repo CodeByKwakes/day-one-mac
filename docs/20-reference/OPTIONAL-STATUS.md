@@ -8,6 +8,13 @@ Use one read-only command to review Modules 09–22:
 day-one-mac optional --status
 ```
 
+The compact view keeps each module status and selected payload breakdowns.
+Add `--details` to include evidence and next actions for every module:
+
+```bash
+day-one-mac optional --status --details
+```
+
 The dashboard reads the saved optional plan, installed payloads, Docker state,
 Day One Mac ownership records, and Advanced completion fingerprints. It never
 installs software, starts a container, edits configuration, or marks a manual

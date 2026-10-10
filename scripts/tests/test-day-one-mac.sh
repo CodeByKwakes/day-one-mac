@@ -55,11 +55,35 @@ export DAY_ONE_MAC_DISABLE_BREW_DISCOVERY=1
 ui_output="$TEST_ROOT/terminal-ui.txt"
 NO_COLOR=1 TERM=xterm /bin/bash -c 'source "$1"; ui_title "🧪" "UI test"; ui_success "complete"; ui_warning "review"' \
   _ "$SCRIPT_DIR/lib/terminal-ui.sh" > "$ui_output" 2>&1
-grep -Fq '🧪 UI test' "$ui_output"
+grep -Fxq 'UI test' "$ui_output"
 grep -Fq '✓ complete' "$ui_output"
 grep -Fq '⚠ review' "$ui_output"
 if LC_ALL=C grep -q $'\033' "$ui_output"; then
   printf 'FAIL: NO_COLOR output contains terminal escape codes\n' >&2
+  exit 1
+fi
+
+# Geometry and ASCII fallbacks must remain safe under macOS Bash nounset.
+COLUMNS=40 LINES=18 DAY_ONE_MAC_ASCII=1 TERM=dumb /bin/bash -eu -c '
+  source "$1"
+  [[ "$(ui_width)" == 40 ]]
+  ui_menu_window 22 21 14
+  [[ "$DAY_ONE_UI_MENU_START" == 21 && "$DAY_ONE_UI_MENU_END" == 22 ]]
+  ui_clear_screen
+  ui_title "ignored" "Small terminal"
+  ui_success "complete"
+  ui_text "" ""
+  COLUMNS=bad LINES=bad
+  [[ "$(ui_width)" == 72 ]]
+  ui_menu_window 22 0
+  [[ "$DAY_ONE_UI_MENU_END" == 12 ]]
+  COLUMNS=0000 LINES=0000
+  [[ "$(ui_width)" == 72 ]]
+  ui_menu_window 22 0
+' _ "$SCRIPT_DIR/lib/terminal-ui.sh" > "$ui_output" 2>&1
+grep -Fq '[ok] complete' "$ui_output"
+if LC_ALL=C grep -q $'\033' "$ui_output"; then
+  printf 'FAIL: dumb terminal contains screen controls\n' >&2
   exit 1
 fi
 
@@ -70,7 +94,7 @@ fi
 "$SCRIPT_DIR/remove-day-one-mac.sh" --help | grep -Fq -- '--developer MODE'
 "$SCRIPT_DIR/finalize-setup.sh" --help | grep -Fq -- '--detach'
 "$SCRIPT_DIR/finalize-setup.sh" --help | grep -Fq -- '--warp-handled'
-"$SCRIPT_DIR/bootstrap-day-one-mac.sh" --help | grep -Fq 'open the interactive setup wizard'
+"$SCRIPT_DIR/bootstrap-day-one-mac.sh" --help | grep -Fq 'open the interactive setup centre'
 "$SCRIPT_DIR/bootstrap-day-one-mac.sh" --help | grep -Fq -- '--new-dotfiles'
 "$SCRIPT_DIR/bootstrap-day-one-mac.sh" --help | grep -Fq -- '--local-dotfiles'
 "$SCRIPT_DIR/bootstrap-day-one-mac.sh" --help | grep -Fq -- '--dotfiles-versioning'
@@ -117,7 +141,7 @@ grep -Fq 'optional/10a-omniroute.md' "$SCRIPT_DIR/validate.sh"
 "$SCRIPT_DIR/clean-development-state.sh" --help | grep -Fq -- '--archive-rebuildable-caches'
 "$SCRIPT_DIR/clean-development-state.sh" --help | grep -Fq -- '--resume-snapshot'
 "$SCRIPT_DIR/clean-development-state.sh" --help | grep -Fq -- '--resume-cleanup'
-"$SCRIPT_DIR/configure-cli-tools.sh" --help | grep -Fq 'This script only installs selected formulae'
+"$SCRIPT_DIR/configure-cli-tools.sh" --help | grep -Fq 'Only selected formulae are installed'
 "$SCRIPT_DIR/configure-macos-settings.sh" --help | grep -Fq 'Original scalar'
 "$SCRIPT_DIR/configure-macos-settings.sh" --help | grep -Fq 'floating-point values'
 grep -Fq 'OPTION_GROUPS=(' "$SCRIPT_DIR/configure-macos-settings.sh"

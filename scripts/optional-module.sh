@@ -9,6 +9,7 @@ STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
 MODULE="" ACTION="" SELECTION="" SELECTOR="" ASSUME_YES=0 LIST=0
 APP_POLICY=""
 CONTAINER_RUNTIME=""
+SETUP_ALIASES=0
 
 usage() {
   cat <<'EOF'
@@ -32,6 +33,7 @@ Usage: day-one-mac optional --module ID --plan|--apply|--check|--resume [selecti
   --inventory        Module 16 candidate TSV to stdout; never saves or applies
   --app-install-policy MODE
                      Module 10/16: prompt, homebrew, or check-only (default)
+  --aliases          Module 13: opt in to guarded eza aliases
   --yes              accept apply/resume confirmation, not platform permissions
   --list             list optional and advanced capabilities, not completion
   -h, --help         show help
@@ -56,6 +58,7 @@ while (( $# )); do
     --app-install-policy)
       [[ $# -ge 2 && -z "$APP_POLICY" ]] || die '--app-install-policy needs one value'
       APP_POLICY="$2"; shift 2 ;;
+    --aliases) SETUP_ALIASES=1; shift ;;
     --yes) ASSUME_YES=1; shift ;;
     --list) LIST=1; shift ;;
     -h|--help) usage; exit 0 ;;
@@ -63,7 +66,7 @@ while (( $# )); do
   esac
 done
 if [[ "$LIST" == 1 ]]; then
-  [[ -z "$MODULE$ACTION$SELECTOR$APP_POLICY$CONTAINER_RUNTIME" && "$ASSUME_YES" == 0 ]] || die '--list cannot be combined with a module action'
+  [[ -z "$MODULE$ACTION$SELECTOR$APP_POLICY$CONTAINER_RUNTIME" && "$ASSUME_YES" == 0 && "$SETUP_ALIASES" == 0 ]] || die '--list cannot be combined with a module action'
   printf 'ID\tLayer\tExecution\tPrerequisite\tModule\n'
   awk -F '\t' 'BEGIN {OFS="\t"} !/^#/ {print $1,$2,$3,$4,$5}' "$PROJECT_DIR/config/modules.tsv"
   exit 0
@@ -80,6 +83,7 @@ if [[ "$ACTION" == resume && -n "$SELECTOR" ]]; then die '--resume uses saved ch
 if [[ "$ASSUME_YES" == 1 && "$ACTION" != apply && "$ACTION" != resume ]]; then die '--yes is only valid with --apply or --resume'; fi
 [[ -z "$CONTAINER_RUNTIME" || "$MODULE" == 09 ]] || die 'container runtime is only supported for 09'
 [[ -z "$APP_POLICY" || "$MODULE" == 10 || "$MODULE" == 16 ]] || die 'application policy is only supported for 10 and 16'
+[[ "$SETUP_ALIASES" == 0 || ( "$MODULE" == 13 && "$ACTION" != check ) ]] || die '--aliases is supported for Module 13 plan/apply/resume only'
 [[ "$ACTION" != inventory || ( "$MODULE" == 16 && -z "$SELECTOR$APP_POLICY" ) ]] || die '--inventory is only supported for Module 16 without other selections'
 if [[ "$MODULE" =~ ^(11|12|14|15|17|18|21|22)$ ]]; then
   [[ -z "$SELECTOR" || ( "$MODULE" =~ ^(11|12|15|17|18|22)$ && "$SELECTOR" == --manifest ) ]] || die 'This artifact module does not accept that selector'
@@ -127,6 +131,7 @@ if [[ "$ACTION" == apply || "$ACTION" == resume ]]; then
 fi
 # Underlying installers read saved selections after acquiring the apply lock.
 args=()
+[[ "$SETUP_ALIASES" == 0 ]] || args+=(--aliases)
 [[ -z "$CONTAINER_RUNTIME" ]] || args+=(--container-runtime "$CONTAINER_RUNTIME")
 if [[ -n "$SELECTION" ]]; then args+=("$SELECTOR" "$SELECTION"); else args+=(--saved); fi
 case "$ACTION" in
