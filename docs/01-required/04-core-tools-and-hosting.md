@@ -126,7 +126,9 @@ launchers.
 Choose **No predefined layout**, **Repository-oriented**, **Purpose-oriented**,
 or **Keep existing**, independently of the hosting track. All create/reuse
 `~/Developer`; only Purpose-oriented adds `Projects`, `Sandbox`, `Resources`,
-and `Archive`. No choice moves existing repositories.
+and `Archive`, plus the Resources subfolders and a local README described in
+the folder guide. Existing README files and contents are preserved. No choice
+moves existing repositories.
 
 Follow [Developer folders and optional ghq](../manual/developer-folders.md) for
 the full manual walkthrough, where to place different kinds of work, and the

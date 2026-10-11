@@ -24,6 +24,7 @@ phases that must all be completed before running the setup.
 | Which chezmoi command or path do I need? | [Chezmoi command reference](CHEZMOI-COMMAND-REFERENCE.md) |
 | What should chezmoi manage, and why? | [Chezmoi concepts and safety boundaries](CHEZMOI-CONCEPTS-AND-BOUNDARIES.md) |
 | Where will files and tools live? | [Expected filesystem layout](EXPECTED-LAYOUT.md) |
+| What belongs in Developer Resources? | [Resources folder guide](developer-resources/README.md) |
 | Does Homebrew, Company Portal, the App Store, or another installer own this app? | [Application ownership](APPLICATION-OWNERSHIP.md) |
 | What does each app/formula do, and when is it selected? | [Software catalogue](SOFTWARE-CATALOGUE.md) |
 | How do I clone a private GitHub repository on a new Mac? | [Private GitHub repository access](GITHUB-PRIVATE-REPOSITORY.md) |

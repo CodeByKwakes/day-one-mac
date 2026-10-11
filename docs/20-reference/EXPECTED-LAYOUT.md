@@ -39,6 +39,10 @@ keep existing + ghq:  confirmed existing root(s), unchanged
 without ghq:          chosen folders only; Git clone destinations are manual
 ```
 
+Purpose-oriented setup also creates the supporting-material folders and
+`README.md` described in the [Resources guide](developer-resources/README.md)
+under `~/Developer/Resources`. Existing contents and README files are preserved.
+
 Examples:
 
 ```text

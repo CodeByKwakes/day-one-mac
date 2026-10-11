@@ -34,7 +34,30 @@ folders_paths() {
   printf '%s/Developer\n' "$HOME"
   if [[ "$FOLDER_LAYOUT" == purpose ]]; then
     printf '%s/Developer/%s\n' "$HOME" Projects "$HOME" Sandbox "$HOME" Resources "$HOME" Archive
+    local name
+    for name in Project-Materials Shared-Assets Datasets Templates Reference Scripts VSCode; do
+      printf '%s/Developer/Resources/%s\n' "$HOME" "$name"
+    done
+    for name in Settings Profiles Extensions Snippets Themes Workspaces; do
+      printf '%s/Developer/Resources/VSCode/%s\n' "$HOME" "$name"
+    done
+    for name in Warp Raycast; do
+      printf '%s/Developer/Resources/%s\n' "$HOME" "$name"
+    done
+    for name in Themes Workflows Launch-Configurations Exports; do
+      printf '%s/Developer/Resources/Warp/%s\n' "$HOME" "$name"
+    done
+    for name in Script-Commands Quicklinks Snippets Exports; do
+      printf '%s/Developer/Resources/Raycast/%s\n' "$HOME" "$name"
+    done
+    for name in Projects Experiments Project-Materials Exports; do
+      printf '%s/Developer/Archive/%s\n' "$HOME" "$name"
+    done
   fi
+}
+
+folders_resources_readme() {
+  printf '%s/Developer/Resources/README.md\n' "$HOME"
 }
 
 folders_inspect_paths() {
@@ -44,6 +67,13 @@ folders_inspect_paths() {
     day_one_safe_state_path "$path/.folder-check" || return 11
     [[ ! -e "$path" || -d "$path" ]] || { err "Not a directory: $path"; return 11; }
   done < <(folders_paths)
+  if [[ "$FOLDER_LAYOUT" == purpose ]]; then
+    path="$(folders_resources_readme)"
+    day_one_safe_state_path "$path" || return 11
+    [[ ! -e "$path" || -f "$path" ]] || { err "Not a regular file: $path"; return 11; }
+    [[ -r "$SCRIPT_DIR/../docs/20-reference/developer-resources/README.md" ]] || {
+      err 'Resources README template is unavailable.'; return 11; }
+  fi
 }
 
 folders_git_ready() {
@@ -117,6 +147,10 @@ folders_plan() {
   while IFS= read -r path; do
     if [[ -d "$path" ]]; then info "Reuse (not adopted): $path"; else info "Create directory: $path"; fi
   done < <(folders_paths)
+  if [[ "$FOLDER_LAYOUT" == purpose ]]; then
+    path="$(folders_resources_readme)"
+    if [[ -f "$path" ]]; then info "Preserve existing README: $path"; else info "Create Resources guide: $path"; fi
+  fi
   info 'No repositories are moved, renamed, cloned or deleted. Other existing folders remain untouched.'
   if [[ "$GHQ_CHOICE" == no ]]; then
     info 'ghq installation and configuration are untouched.'
@@ -138,6 +172,9 @@ folders_check() {
   while IFS= read -r path; do
     [[ -d "$path" ]] || { err "Missing selected directory: $path"; return 11; }
   done < <(folders_paths)
+  if [[ "$FOLDER_LAYOUT" == purpose ]]; then
+    [[ -f "$(folders_resources_readme)" ]] || { err 'Missing Resources README.'; return 11; }
+  fi
   if [[ "$GHQ_CHOICE" == yes ]]; then
     folders_git_ready || return $?
     have ghq || { err 'Selected ghq is unavailable.'; return 11; }
@@ -181,6 +218,9 @@ folders_apply() {
     install_formula ghq || return $?
   fi
   while IFS= read -r path; do create_directory "$path" || return $?; done < <(folders_paths)
+  if [[ "$FOLDER_LAYOUT" == purpose && ! -e "$(folders_resources_readme)" ]]; then
+    write_text_file "$(folders_resources_readme)" "$(cat "$SCRIPT_DIR/../docs/20-reference/developer-resources/README.md")"$'\n' || return $?
+  fi
   if [[ "$GHQ_CHOICE" == yes && "$FOLDERS_WRITE_ROOT" == 1 ]]; then
     if [[ "$DRY_RUN" != 1 ]]; then record_path_before_write "$HOME/.gitconfig" || return $?; fi
     run git config --global ghq.root "$(folders_target_root)" || return $?

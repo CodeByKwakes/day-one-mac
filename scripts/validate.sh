@@ -129,6 +129,7 @@ required_docs=(
   docs/20-reference/CHEZMOI-CONCEPTS-AND-BOUNDARIES.md
   docs/20-reference/MANAGING-DOTFILES-WITH-CHEZMOI.md
   docs/20-reference/phase-05-shell-files/README.md
+  docs/20-reference/developer-resources/README.md
   docs/04-operations/README.md
   docs/04-operations/FINALIZE.md
   docs/04-operations/REMOVE-DAY-ONE-MAC.md
