@@ -55,6 +55,12 @@ docs/03-advanced/20-restore-and-migrate.md
 docs/03-advanced/21-audit-maintenance-and-rebuild.md
 docs/03-advanced/22-ai-skills-and-mcp-operations.md
 docs/03-advanced/GIT-WORKTREES-VSCODE-AND-AI.md
+docs/03-advanced/WORKTREES-TERMINAL.md
+docs/03-advanced/WORKTREES-VSCODE.md
+docs/03-advanced/WORKTREES-CODEX.md
+docs/03-advanced/WORKTREES-CLAUDE.md
+docs/03-advanced/WORKTREES-ENVIRONMENT.md
+docs/03-advanced/WORKTREES-TROUBLESHOOTING.md
 docs/03-advanced/README.md
 docs/04-operations/FINALIZE.md
 docs/04-operations/README.md

@@ -45,6 +45,7 @@ try {
     keychain: 'docs/manual/keychain-ssh.md',
     ssh: 'docs/manual/ssh-signing-and-recovery.md',
     software: 'docs/20-reference/SOFTWARE-CATALOGUE.md',
+    worktrees: 'docs/03-advanced/GIT-WORKTREES-VSCODE-AND-AI.md',
     shortcuts: 'docs/10-app-guides/MACOS-SHORTCUTS.md',
   };
   for (const [topic, file] of Object.entries(handbookTopics)) {
@@ -153,6 +154,9 @@ try {
   const { documentationRenderer, documentationNavigation, findDocumentation, coreSequence } = require(path.join(fixture, 'scripts/lib/docs-browser.js'));
   const navigation = documentationNavigation(embedded);
   assert.deepEqual(navigation.groups.map(group => group.label), ['Start here', 'Core setup', 'Customisation', 'Reference and recovery']);
+  const worktrees = navigation.groups.flatMap(group => group.sections).find(section => section.label === 'Git worktrees');
+  assert.equal(worktrees.entries.length, 7);
+  assert.ok(worktrees.entries.some(entry => entry.path.endsWith('WORKTREES-VSCODE.md')));
   const listed = navigation.groups.flatMap(group => group.sections.flatMap(section => section.entries.map(entry => entry.path)));
   assert.equal(new Set(listed).size, listed.length, 'Each guide has one canonical navigation location');
   assert.deepEqual([...listed].sort(), [...embedded.keys()].sort(), 'All bundled guides remain discoverable');

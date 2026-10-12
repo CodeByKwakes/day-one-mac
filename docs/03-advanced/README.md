@@ -66,7 +66,7 @@ is substituted for a user-confirmed guide fingerprint.
 | [15 · Full dotfiles and bootstrap](15-full-dotfiles-and-bootstrap.md) | Expanded chezmoi inventory, machine data, templates, hooks, and secret audit | Executable inventory/proposals; manual imports, secrets and hooks | More than the minimal five configuration areas must reproduce |
 | [16 · Brewfile, applications, and editor inventory](16-brewfile-apps-and-editor.md) | Curated formula/cask/MAS/VS Code desired state and safe cleanup | Reviewed TSV payload installer; Brewfile, MAS and removal remain manual | The Mac needs a wider application catalogue |
 | [17 · Shell and package automation](17-shell-and-package-automation.md) | ghq navigation, Git helpers, manager detection, repo/package audits | Executable helper bundles and declaration checks; manual activation | Repeated terminal work justifies aliases and helpers |
-| [18 · Hosting identities, Azure, and worktrees](18-hosting-identities-azure-and-worktrees.md) | Personal/work identity routing, Azure defaults, repository layout, and the linked [VS Code/AI worktree guide](GIT-WORKTREES-VSCODE-AND-AI.md) | Executable identity/signing/layout checks and proposals; manual configuration and lifecycle | Multiple identities/providers or concurrent branches are real requirements |
+| [18 · Hosting identities, Azure, and worktrees](18-hosting-identities-azure-and-worktrees.md) | Personal/work identity routing, Azure defaults, repository layout, and the linked [worktree overview and tool routes](GIT-WORKTREES-VSCODE-AND-AI.md) | Executable identity/signing/layout checks and proposals; manual configuration and lifecycle | Multiple identities/providers or concurrent branches are real requirements |
 | [19 · macOS, GUI, and local HTTPS](19-macos-gui-and-local-https.md) | Reviewed defaults, permissions, launch-at-login, Raycast/menu bar, local certificates | Executable selected scalar preferences; manual security, UI and trust | The base tools are stable and personal ergonomics are understood |
 | [20 · Restore and migrate selected data](20-restore-and-migrate.md) | Verified-volume restore, repo re-cloning, project data, database imports | Executable checksummed file staging; manual live placement and imports | A clean Mac needs selected content from a previous machine |
 | [21 · Audit, maintenance, and rebuild](21-audit-maintenance-and-rebuild.md) | Drift reports, update routine, private commits, and rebuild rehearsal | Executable evidence snapshots/checks; guided maintenance and rebuild | The setup must remain reproducible over time |
@@ -106,7 +106,7 @@ present Day One Mac design; it is not a second sequence to complete.
 | Maintenance and ten-minute rebuild rehearsal | Advanced 21 | Optional operational discipline |
 | Command/port reference and Warp workflows | Optional 14 | Kept as an importable command library |
 | Full Brewfile catalogue | Advanced 16 | Dynamic desired state; no fixed totals |
-| Git worktrees | [Advanced 18](18-hosting-identities-azure-and-worktrees.md) and the [detailed VS Code/AI guide](GIT-WORKTREES-VSCODE-AND-AI.md) | Optional |
+| Git worktrees | [Advanced 18](18-hosting-identities-azure-and-worktrees.md) and the [worktree routes: Terminal, VS Code, Codex and Claude](GIT-WORKTREES-VSCODE-AND-AI.md) | Optional |
 | Emergency rollback | `ROLLBACK.md` | Kept and expanded |
 | Retired credential managers, package managers, and duplicate-app removal | Cleanup tools only | Not setup work and never replayed on a clean Mac |
 

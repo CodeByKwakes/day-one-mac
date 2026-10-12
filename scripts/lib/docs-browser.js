@@ -97,6 +97,15 @@ function documentationNavigation(documents) {
       { label: 'Manual learning guides', entries: entries(matching('docs/manual/')) },
       { label: 'Application guides', entries: entries(matching('docs/10-app-guides/')) },
       { label: 'Optional modules', entries: entries(matching('docs/02-optional/')) },
+      { label: 'Git worktrees', entries: entries([
+        'docs/03-advanced/GIT-WORKTREES-VSCODE-AND-AI.md',
+        'docs/03-advanced/WORKTREES-TERMINAL.md',
+        'docs/03-advanced/WORKTREES-VSCODE.md',
+        'docs/03-advanced/WORKTREES-CODEX.md',
+        'docs/03-advanced/WORKTREES-CLAUDE.md',
+        'docs/03-advanced/WORKTREES-ENVIRONMENT.md',
+        'docs/03-advanced/WORKTREES-TROUBLESHOOTING.md',
+      ]) },
       { label: 'Advanced modules', entries: entries(matching('docs/03-advanced/')) },
     ] },
     { label: 'Reference and recovery', sections: [

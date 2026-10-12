@@ -13,6 +13,7 @@ day-one-mac docs chezmoi-guide --browser
 day-one-mac docs second-brain-guide --browser
 day-one-mac docs security --browser
 day-one-mac docs software --browser
+day-one-mac docs worktrees --browser
 ```
 
 The command creates a private temporary reader and opens it in your default
