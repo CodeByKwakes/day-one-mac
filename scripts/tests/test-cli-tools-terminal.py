@@ -339,13 +339,16 @@ printf 'ROOT:%s\\n' "$FOLDER_GHQ_ROOT"
                       "RUN:optional --module 09 --plan", command=centre, args=centre_args,
                       check_category=False)
     assert "--resume" not in output and "--apply" not in output
-    output = exercise(dict(env, CENTRE_DRY_RUN="1"), b"jjjj\r" + b"j" * 12 + b"\r\rk\rk\r",
+    output = exercise(dict(env, CENTRE_DRY_RUN="1"), b"jjjj\r" + b"j" * 13 + b"\r\rk\rk\r",
                       "RUN:remove --guided", command=centre, args=centre_args,
                       check_category=False)
     assert "--execute" not in output and "--dry-run" not in output
     output = exercise(dict(env, CENTRE_DRY_RUN="1"), b"jjjj\rjjjjjjj\r\rk\rk\r",
                       "RUN:cli-tools --dry-run", command=centre, args=centre_args,
                       check_category=False)
+    for dry_run, expected in (("1", "RUN:shortcuts --plan"), ("0", "RUN:shortcuts --guided")):
+        exercise(dict(env, CENTRE_DRY_RUN=dry_run), b"jjjj\r" + b"j" * 9 + b"\r\rk\rk\r",
+                 expected, command=centre, args=centre_args, check_category=False)
     coloured_centre = exercise(coloured, b"q", "Setup centre", command=centre,
                               args=centre_args, check_category=False)
     assert "◆" in coloured_centre and "●" in coloured_centre

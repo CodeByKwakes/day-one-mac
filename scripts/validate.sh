@@ -137,6 +137,7 @@ required_docs=(
   docs/99-maintenance/README.md
   docs/99-maintenance/DOCUMENTATION-AUDIT.md
   docs/10-app-guides/README.md
+  docs/10-app-guides/MACOS-SHORTCUTS.md
   docs/10-app-guides/KEYBOARD-SHORTCUTS.md
   docs/10-app-guides/RAYCAST.md
   docs/10-app-guides/RAYCAST-COMMANDS.md
@@ -1040,6 +1041,10 @@ run_fixture "configuration choices preserve ownership and do not reinstall decli
 run_fixture "immutable projectless task creation, metadata, and boundaries pass" \
   "projectless workspace manager regression fixture failed" \
   "$SCRIPT_DIR/tests/test-workspace-manager.sh" || true
+
+run_fixture "shortcut imports preserve preview and manual installation boundaries" \
+  "shortcut import fixture failed" \
+  "$SCRIPT_DIR/tests/test-shortcuts.sh" || true
 
 run_fixture "track-aware Raycast commands and extension catalogue pass" \
   "Raycast command manager regression fixture failed" \

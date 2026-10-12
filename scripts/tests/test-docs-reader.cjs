@@ -83,6 +83,7 @@ async function run() {
     'docs/01-required/01-first-boot-and-decisions.md': '# Phase 1',
     'docs/01-required/MACOS-SETTINGS.md': '# Settings checkpoint',
     'docs/01-required/02-command-line-foundation.md': '# Phase 2',
+    'docs/10-app-guides/MACOS-SHORTCUTS.md': fs.readFileSync(path.join(root, 'docs/10-app-guides/MACOS-SHORTCUTS.md'), 'utf8'),
     'docs/02-optional/09-databases.md': '# Databases',
   };
   for (const [file, text] of Object.entries(pages)) {
@@ -105,6 +106,7 @@ async function run() {
   const navigate = hash => { location.hash = hash; events.hashchange(); };
   const active = () => get('chapters').querySelectorAll('a').filter(node => node.getAttribute('aria-current') === 'page');
 
+  assert.ok(get('chapters').textContent.includes('macOS Shortcuts and Finder actions'));
   assert.equal(active().length, 1);
   assert.equal(active()[0].href, '#docs/START-HERE.md');
   assert.equal(document.activeElement, undefined, 'Initial rendering does not steal focus');
@@ -126,6 +128,9 @@ async function run() {
 
   const search = get('search'); search.value = 'phase'; search.fire('input');
   assert.equal(get('results').children.length, 2); assert.match(get('search-status').textContent, /2 guides/);
+  search.value = 'Shortcuts'; search.fire('input');
+  assert.equal(get('results').children.length, 1);
+  assert.ok(get('results').textContent.includes('Shortcuts'));
   search.value = '<script>'; search.fire('input'); assert.equal(get('results').children.length, 0); assert.match(get('search-status').textContent, /No matching/);
   search.value = ''; search.fire('input'); assert.equal(get('search-status').textContent, '');
 
@@ -141,6 +146,9 @@ async function run() {
   navigate('#docs/02-optional/09-databases.md'); assert.equal(get('page-sequence').hidden, true);
   assert.match(get('breadcrumbs').textContent, /Customisation/);
   assert.equal(active().length, 1);
+  navigate('#docs/10-app-guides/MACOS-SHORTCUTS.md');
+  assert.ok(get('article').textContent.includes('day-one-mac shortcuts --import'));
+  assert.match(get('breadcrumbs').textContent, /Application guides/);
   navigate('#missing.md'); assert.match(get('article').textContent, /Guide unavailable/); assert.equal(active().length, 0);
   assert.equal(document.activeElement, get('article').querySelector('h1'));
   navigate('#%ZZ'); assert.match(get('article').textContent, /malformed/);

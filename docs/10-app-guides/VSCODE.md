@@ -48,6 +48,15 @@ in, enable Settings Sync, install an extension catalogue, or create profiles.
 
 If the action says the command already exists, no change is needed.
 
+## Optional — open a Finder folder in VS Code
+
+Follow [Create Open in VS Code](MACOS-SHORTCUTS.md#create-open-in-vs-code)
+to add **Finder → right-click a folder → Quick Actions → Open in VS Code**.
+The built-in **Open File** action needs neither shell scripting nor the `code`
+launcher. Script-assisted users can run `day-one-mac shortcuts --import`
+and review **Add Shortcut** in Apple Shortcuts; the manual recipe works for
+either setup route.
+
 ## Step 2 — Decide whether this is a clean setup
 
 Use one of these routes before signing in:

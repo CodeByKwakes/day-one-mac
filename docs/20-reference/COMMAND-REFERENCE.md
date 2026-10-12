@@ -97,6 +97,7 @@ updates and rollback.
 | `day-one-mac workspace [command]` | `./workspace-manager.sh [command]` | Create, inspect, complete, or open a bounded projectless task. |
 | `day-one-mac second-brain obsidian [options]` | `second-brain/obsidian/scripts/second-brain-manager.sh` (from project root) | Preview or apply vault layouts and local integrations. Use `--guided` to choose a layout; `--apply` explicitly enables changes. |
 | `day-one-mac second-brain notion [options]` | `second-brain/notion/scripts/notion-second-brain-manager.sh` (from project root) | Preview or save a local workspace plan and helpers. No cloud provisioning or sign-in; use `--help` for options. |
+| `day-one-mac shortcuts [options]` | `./configure-shortcuts.sh [options]` | Preview or open the bundled VS Code Finder shortcut for manual import; `--guided` asks first and `--dry-run` opens nothing. |
 | `day-one-mac raycast [options]` | `./configure-raycast.sh [options]` | Choose `alongside-spotlight` or `raycast-only` launcher guidance, then preview, generate, inspect, or archive the optional track-aware Raycast Script Commands. Raycast uses `⌥Space` in both modes. |
 | `day-one-mac optional --guided` | `./bootstrap-day-one-mac.sh --optional --guided` | Choose optional modules after required Phase 8 passes and continue to available installers. |
 | `day-one-mac optional --list` | `./optional-module.sh --list` | List executable versus guided module capabilities, not completion. |
@@ -580,3 +581,11 @@ use.
 ---
 
 [← Start Here](../START-HERE.md) · [Process overview](../PROCESS-OVERVIEW.md) · [Removal and reset](../04-operations/REMOVE-DAY-ONE-MAC.md)
+
+## Optional macOS shortcut import
+
+`day-one-mac shortcuts [--plan | --import | --guided] [--dry-run]` previews
+the bundled Finder **Open in VS Code** action by default. `--import` opens
+Apple Shortcuts for review and **Add Shortcut**; `--guided` asks before opening.
+`--dry-run` opens nothing. The command does not mark the workflow installed.
+See the [shortcut guide](../10-app-guides/MACOS-SHORTCUTS.md).

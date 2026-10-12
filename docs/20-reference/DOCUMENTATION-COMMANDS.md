@@ -122,3 +122,10 @@ Markdown renderer and its MIT licence are in `scripts/vendor/markdown-it/`.
 No runtime package install is needed. Update the explicit runtime allowlist
 whenever adding a bundled guide or reader asset; run `scripts/tests/test-docs.sh`,
 Markdown lint, full validation, and packaged-runtime checks before release.
+
+## macOS Shortcuts guide
+
+Run `day-one-mac docs shortcuts --browser` to open the guide directly.
+It also appears under **Customisation → Application guides → macOS Shortcuts
+and Finder actions** and in the reader search. Regenerate older exports after
+updating the runtime.

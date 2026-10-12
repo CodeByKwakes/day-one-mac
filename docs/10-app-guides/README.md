@@ -34,6 +34,11 @@ After the first-launch steps, use the consolidated
 shortcuts deliberately and explains the `⌘\` conflict between 1Password
 Universal Autofill and Warp Drive.
 
+For optional Finder actions and folder launchers, use the
+[macOS Shortcuts guide](MACOS-SHORTCUTS.md). It includes a script-free
+**Open in VS Code** recipe, assisted import with `day-one-mac shortcuts`,
+and existing terminal and path-copy actions.
+
 ## What is required
 
 | Application | Installed in | Configuration guide | Required outcome |

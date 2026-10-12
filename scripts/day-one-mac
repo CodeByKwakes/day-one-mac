@@ -147,6 +147,7 @@ case "${1:-}" in
   applications) shift; exec "$PROJECT_ROOT/scripts/application-status.sh" "$@" ;;
   install) shift; exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" --install-centre "$@" ;;
   ssh-pin) shift; [[ $# -gt 0 ]] || set -- both; exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" --ssh-pin "$@" ;;
+  shortcuts) shift; exec "$PROJECT_ROOT/scripts/configure-shortcuts.sh" "$@" ;;
   raycast) shift; exec "$PROJECT_ROOT/scripts/configure-raycast.sh" "$@" ;;
   workspace) shift; exec "$PROJECT_ROOT/scripts/workspace-manager.sh" "$@" ;;
   macos-settings) shift; exec "$PROJECT_ROOT/scripts/configure-macos-settings.sh" "$@" ;;
@@ -230,6 +231,7 @@ case "${1:-}" in
       '' \
       'Optional and advanced configuration:' \
       '  second-brain      preview or configure Obsidian layouts or a local Notion plan' \
+      '  shortcuts         preview or import the optional Finder shortcut' \
       '  raycast           manage optional Day One Raycast commands' \
       '  workspace         create and open bounded projectless tasks' \
       '  macos-settings    configure or restore optional macOS preferences' \

@@ -70,6 +70,7 @@ function documentationNavigation(documents) {
     'docs/01-required/README.md': 'Script-assisted overview',
     'docs/01-required/MACOS-SETTINGS.md': 'Checkpoint: macOS preferences (optional)',
     'docs/01-required/INSTALLATION-CENTRE.md': 'Checkpoint: Installation Centre',
+    'docs/10-app-guides/MACOS-SHORTCUTS.md': 'macOS Shortcuts and Finder actions',
     'docs/manual/README.md': 'Manual learning guides',
     'docs/manual/chezmoi.md': 'Chezmoi and dotfiles',
     'docs/manual/developer-folders.md': 'Developer folders and ghq',

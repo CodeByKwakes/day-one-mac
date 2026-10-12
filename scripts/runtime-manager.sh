@@ -146,7 +146,7 @@ open_docs() {
           '' \
           'Topics: start, index, manual, process, project, commands, chezmoi, status, optional, advanced, second-brain' \
           'Handbook topics: handbook, chezmoi-guide, chezmoi-daily, chezmoi-reference, chezmoi-concepts' \
-          'Setup guides: second-brain-guide, folders, security, 1password, keychain, ssh, software' \
+          'Setup guides: second-brain-guide, folders, security, 1password, keychain, ssh, software, shortcuts' \
           '' \
           'Without --open or --browser, the command prints the installed path.' \
           '--browser opens an offline HTML reader; --open keeps the default Markdown app.'
@@ -184,6 +184,7 @@ open_docs() {
       'keychain' "$RUNTIME_ROOT/docs/manual/keychain-ssh.md" \
       'ssh' "$RUNTIME_ROOT/docs/manual/ssh-signing-and-recovery.md" \
       'software' "$RUNTIME_ROOT/docs/20-reference/SOFTWARE-CATALOGUE.md" \
+      'shortcuts' "$RUNTIME_ROOT/docs/10-app-guides/MACOS-SHORTCUTS.md" \
       'chezmoi-guide' "$RUNTIME_ROOT/docs/manual/chezmoi.md" \
       'folders' "$RUNTIME_ROOT/docs/manual/developer-folders.md" \
       'chezmoi-daily' "$RUNTIME_ROOT/docs/20-reference/MANAGING-DOTFILES-WITH-CHEZMOI.md" \
@@ -213,6 +214,7 @@ open_docs() {
       1password) target="$RUNTIME_ROOT/docs/manual/1password.md" ;;
       keychain) target="$RUNTIME_ROOT/docs/manual/keychain-ssh.md" ;;
       ssh) target="$RUNTIME_ROOT/docs/manual/ssh-signing-and-recovery.md" ;;
+      shortcuts) target="$RUNTIME_ROOT/docs/10-app-guides/MACOS-SHORTCUTS.md" ;;
       software) target="$RUNTIME_ROOT/docs/20-reference/SOFTWARE-CATALOGUE.md" ;;
       chezmoi-guide) target="$RUNTIME_ROOT/docs/manual/chezmoi.md" ;;
       folders) target="$RUNTIME_ROOT/docs/manual/developer-folders.md" ;;

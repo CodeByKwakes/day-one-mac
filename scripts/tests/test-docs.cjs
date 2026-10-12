@@ -45,6 +45,7 @@ try {
     keychain: 'docs/manual/keychain-ssh.md',
     ssh: 'docs/manual/ssh-signing-and-recovery.md',
     software: 'docs/20-reference/SOFTWARE-CATALOGUE.md',
+    shortcuts: 'docs/10-app-guides/MACOS-SHORTCUTS.md',
   };
   for (const [topic, file] of Object.entries(handbookTopics)) {
     assert.equal(fs.realpathSync(run([topic]).trim()), fs.realpathSync(path.join(fixture, file)));

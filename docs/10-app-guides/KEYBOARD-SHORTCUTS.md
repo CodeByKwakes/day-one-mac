@@ -175,6 +175,13 @@ instead of editing `keybindings.json` blindly.
 | `⌘Q` | Quit the current application |
 | `⌘,` | Open the current application's settings when supported |
 
+## Optional Finder Quick Actions and launchers
+
+Follow [macOS Shortcuts for development](MACOS-SHORTCUTS.md) to add
+**Open in VS Code**, a project picker, and saved folder/report launchers.
+The guide also covers existing Terminal/Warp services and `⌥⌘C` to copy a
+Finder pathname. Custom workflows do not assign global hotkeys automatically.
+
 ## Shortcut verification checklist 🚦
 
 - [ ] `⌥Space` opens Raycast once.

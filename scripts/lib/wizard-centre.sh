@@ -151,8 +151,8 @@ centre_modules() {
 centre_docs() {
   local guide
   while :; do
-    SINGLE_VALUES=(START-HERE.md PROCESS-OVERVIEW.md 20-reference/COMMAND-REFERENCE.md 02-optional/README.md 03-advanced/README.md back)
-    SINGLE_LABELS=('Start here' 'Whole process overview' 'Command reference' 'Optional module index' 'Advanced module index' 'Back to other actions')
+    SINGLE_VALUES=(START-HERE.md PROCESS-OVERVIEW.md 20-reference/COMMAND-REFERENCE.md 02-optional/README.md 03-advanced/README.md 10-app-guides/MACOS-SHORTCUTS.md back)
+    SINGLE_LABELS=('Start here' 'Whole process overview' 'Command reference' 'Optional module index' 'Advanced module index' 'macOS Shortcuts and Finder actions' 'Back to other actions')
     select_one 'Documentation · choose a bundled guide' 0
     guide="$SINGLE_RESULT"
     [[ "$guide" != back ]] || return 0
@@ -162,7 +162,7 @@ centre_docs() {
 
 centre_other_actions() {
   while :; do
-    SINGLE_VALUES=(status modules shell runtime docs install macos cli raycast folders prepare rollback remove back)
+    SINGLE_VALUES=(status modules shell runtime docs install macos cli raycast shortcuts folders prepare rollback remove back)
     SINGLE_LABELS=(
       'Required phase status (recorded)'
       'Optional and advanced status · component breakdown'
@@ -173,6 +173,7 @@ centre_other_actions() {
       'macOS preferences wizard'
       'CLI tools and optional aliases'
       'Raycast command setup'
+      'macOS Shortcuts · import Open in VS Code'
       'Preview developer folder settings'
       'Prepare an existing Mac · Stage 0'
       'Preview recorded rollback'
@@ -187,6 +188,10 @@ centre_other_actions() {
       shell) centre_command shell-status ;;
       runtime) centre_command runtime-status ;;
       docs) centre_docs ;;
+      shortcuts)
+        if [[ "$DRY_RUN" == 1 ]]; then centre_command shortcuts --plan
+        else centre_command shortcuts --guided
+        fi ;;
       folders) centre_command folders --plan ;;
       rollback) centre_command rollback ;;
       install|macos|cli|raycast|prepare|remove)
