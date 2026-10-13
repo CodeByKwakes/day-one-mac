@@ -155,7 +155,8 @@ try {
   const navigation = documentationNavigation(embedded);
   assert.deepEqual(navigation.groups.map(group => group.label), ['Start here', 'Core setup', 'Customisation', 'Reference and recovery']);
   const worktrees = navigation.groups.flatMap(group => group.sections).find(section => section.label === 'Git worktrees');
-  assert.equal(worktrees.entries.length, 7);
+  assert.equal(worktrees.entries.length, 8);
+  assert.ok(worktrees.entries.some(entry => entry.path.endsWith('WORKTREES-COPILOT.md')));
   assert.ok(worktrees.entries.some(entry => entry.path.endsWith('WORKTREES-VSCODE.md')));
   const listed = navigation.groups.flatMap(group => group.sections.flatMap(section => section.entries.map(entry => entry.path)));
   assert.equal(new Set(listed).size, listed.length, 'Each guide has one canonical navigation location');

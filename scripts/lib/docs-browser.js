@@ -101,6 +101,7 @@ function documentationNavigation(documents) {
         'docs/03-advanced/GIT-WORKTREES-VSCODE-AND-AI.md',
         'docs/03-advanced/WORKTREES-TERMINAL.md',
         'docs/03-advanced/WORKTREES-VSCODE.md',
+        'docs/03-advanced/WORKTREES-COPILOT.md',
         'docs/03-advanced/WORKTREES-CODEX.md',
         'docs/03-advanced/WORKTREES-CLAUDE.md',
         'docs/03-advanced/WORKTREES-ENVIRONMENT.md',

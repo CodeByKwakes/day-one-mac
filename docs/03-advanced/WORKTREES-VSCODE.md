@@ -206,16 +206,6 @@ skip investigating unfinished changes. Branch deletion is separate; use the
 
 ## VS Code Agents and GitHub Copilot
 
-If the installed VS Code build offers worktree isolation for an agent session:
-
-1. commit every base change the agent needs;
-2. fetch the intended base branch;
-3. start a new isolated session;
-4. choose a new worktree rather than the active checkout;
-5. verify its path with `git worktree list --verbose`;
-6. give one bounded task and explicit acceptance checks;
-7. review every diff and command result; and
-8. integrate through a pull request or reviewed merge.
-
-A chat or session fork that shares the same directory is not filesystem
-isolation. Use separate worktrees for independent writers.
+Use the [dedicated Agents and Copilot route](WORKTREES-COPILOT.md) for manual
+or agent-managed worktrees, feature and fix prompts, PR reviews, tests,
+environment setup, main updates, integration, and cleanup.

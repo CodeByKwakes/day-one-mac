@@ -18,6 +18,7 @@ day-one-mac docs worktrees --browser
 |---|---|
 | [Git worktrees from Terminal](WORKTREES-TERMINAL.md) | You want explicit branches, bases, and paths for features, hotfixes, PR reviews, and tests |
 | [VS Code GUI](WORKTREES-VSCODE.md) | You prefer a worked GUI example with clearly marked terminal steps for reviews and tests |
+| [VS Code Agents and GitHub Copilot](WORKTREES-COPILOT.md) | You want agent-assisted features, fixes, reviews, and tests in VS Code |
 | [Codex](WORKTREES-CODEX.md) | You want app-managed isolation or Codex in a manually created worktree |
 | [Claude](WORKTREES-CLAUDE.md) | You want Claude-managed isolation or Claude in a manually created worktree |
 | [Environment files and running applications](WORKTREES-ENVIRONMENT.md) | You need independent `.env` files, ports, databases, and dependencies |
