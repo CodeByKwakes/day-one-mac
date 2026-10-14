@@ -75,6 +75,8 @@ docs/10-app-guides/RAYCAST-COMMANDS.md
 docs/10-app-guides/RAYCAST.md
 docs/10-app-guides/README.md
 docs/10-app-guides/VSCODE.md
+docs/10-app-guides/VSCODE-TYPESCRIPT.md
+docs/10-app-guides/VORSSAINT.md
 docs/10-app-guides/WARP.md
 docs/20-reference/AI-WORKSPACES.md
 docs/20-reference/APPLICATION-OWNERSHIP.md

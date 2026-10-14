@@ -14,6 +14,11 @@ environment, starts with a small portable configuration, and has a deliberate
 backup or synchronization policy. This guide also explains how to start clean,
 import an existing profile, export the new setup, and change the decision later.
 
+After the base is verified, use the [TypeScript full-stack guide](VSCODE-TYPESCRIPT.md)
+for Angular, NestJS, Nx, Prisma, User Settings, import shortcuts, environment
+files, icons, worktrees, project skills/agents, and MCP connections. That guide
+keeps editor preferences personal and makes project AI configuration optional.
+
 ## What Phase 7 already does
 
 The Day One runner first verifies the Visual Studio Code application and

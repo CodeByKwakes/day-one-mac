@@ -52,6 +52,15 @@ and existing terminal and path-copy actions.
 Common shortcuts for all four applications are kept in
 [Day One Mac keyboard shortcuts](KEYBOARD-SHORTCUTS.md).
 
+After Phase 8, the optional [TypeScript full-stack VS Code guide](VSCODE-TYPESCRIPT.md)
+covers Angular, NestJS, Nx, Prisma, Copilot/Codex/Claude, personal settings and
+shortcuts, environment files, icons, worktrees, project skills, and MCP servers.
+
+For optional desktop utilities, the [Vorssaint developer guide](VORSSAINT.md)
+covers personal window layouts, resource and port monitoring, shortcut
+ownership, clipboard/snippet alternatives, and optional agent status. Vorssaint
+is optional and does not replace required development tools.
+
 Raycast extensions, Warp Drive workflows, VS Code profiles, AI features, the
 OmniRoute gateway, and MCP servers are optional. The required setup succeeds
 without them.

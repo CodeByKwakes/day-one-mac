@@ -48,6 +48,13 @@ Universal Autofill. Keep `⌘\` for 1Password and either open Warp Drive from
 Warp's `⌘P` Command Palette or remap Warp Drive under **Warp Settings →
 Keyboard shortcuts**.
 
+## Optional Vorssaint ownership
+
+The [Vorssaint developer guide](VORSSAINT.md#3-assign-shortcuts-without-conflicts)
+provides custom window and utility shortcuts, plus port inspection guidance. If Vorssaint takes window
+management or clipboard ownership, remove the equivalent Raycast binding
+first. Keep Raycast Root Search and 1Password autofill ownership above.
+
 ## 1Password
 
 ### Everyday global actions

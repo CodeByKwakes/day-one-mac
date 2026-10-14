@@ -19,6 +19,8 @@ folder before starting.
 | Need one status or audit view for Modules 09–22 | [Optional and advanced status dashboard](20-reference/OPTIONAL-STATUS.md) |
 | Need power-user automation or migration | [Advanced modules](03-advanced/README.md) |
 | Need help configuring an installed application | [Application guides](10-app-guides/README.md) |
+| Want a personal VS Code setup for Angular, NestJS, Nx, and AI agents | [TypeScript full-stack VS Code guide](10-app-guides/VSCODE-TYPESCRIPT.md) |
+| Want developer window layouts, port monitoring, and desktop utilities | [Vorssaint developer guide](10-app-guides/VORSSAINT.md) |
 | Want human decisions and manual tasks grouped together | [Manual Setup Handbook](manual/README.md) |
 | Want first setup, daily use, templates or recovery for dotfiles | [Chezmoi learning path](manual/chezmoi.md) |
 | Want an Obsidian or Notion knowledge system with backup and recovery | [Second Brain walkthrough](manual/second-brain.md) |

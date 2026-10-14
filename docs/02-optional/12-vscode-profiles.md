@@ -11,6 +11,12 @@ profiles. Existing settings were exported before removal, Settings Sync has a
 single understood source of truth, and each new profile contains only the
 extensions and settings needed for its job.
 
+For the Angular/NestJS/Nx stack, follow the [TypeScript full-stack VS Code guide](../10-app-guides/VSCODE-TYPESCRIPT.md).
+It provides Default, Full Stack, Operations, and AI assignments, profile User
+Settings, keyboard shortcuts, icons, worktrees, shared skills, and MCP recipes.
+The [AI profile](../10-app-guides/VSCODE-TYPESCRIPT.md#ai-profile-focused-agent-work-and-prompt-authoring)
+adds focused Copilot/Codex/Claude Code workflows, prompt generation, and optional evaluation tools.
+
 Profiles are optional. A single default profile is the simplest and most
 reproducible choice. Add profiles only when work, personal, or content tasks
 need meaningfully different extensions, accounts, trust boundaries, or UI.

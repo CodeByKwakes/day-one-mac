@@ -163,8 +163,11 @@ merge only what is missing from
 
 Try `git ch` followed by **Tab**, start typing a command already in your history
 and press **Right Arrow** to accept its grey suggestion, or press **Ctrl+Space**
-for VS Code's terminal suggestion dropdown. These instructions also apply to
-Warp's Zsh shell, except the VS Code-specific dropdown.
+for VS Code's terminal suggestion dropdown. Warp supplies its own input editor
+and completions; guard Zsh completion and line-editor plugins so they do not
+load there. Follow the [shared VS Code/Warp Zsh setup](../10-app-guides/VSCODE-TYPESCRIPT.md#12-use-zsh-consistently-in-vs-code-and-warp)
+for the exact guard and profile settings. Fresh Phase 5 files do not yet add
+that Warp guard; merge it before using these optional plugins with Warp.
 
 ### Other optional shell integrations
 

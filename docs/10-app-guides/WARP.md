@@ -497,6 +497,16 @@ For a clean reconfiguration:
 Signing out or uninstalling the app should not be assumed to remove cloud data,
 team objects, or every local support file.
 
+## Share Zsh with VS Code
+
+Use the [VS Code/Warp Zsh setup](VSCODE-TYPESCRIPT.md#12-use-zsh-consistently-in-vs-code-and-warp)
+for personal terminal settings, shared PATH and Node initialization, Starship,
+keyboard shortcuts, and checks from the same worktree. Warp owns its completion
+and input UI: exclude `compinit` and optional Zsh line-editor plugins from
+Warp with the documented `TERM_PROGRAM` guard rather than loading every
+conventional-terminal integration. The guide shows how to merge that guard
+into the Phase 5 reference configuration.
+
 ## Troubleshooting
 
 | Symptom | What to do |
