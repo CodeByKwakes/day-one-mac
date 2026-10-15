@@ -381,6 +381,23 @@ should preserve the shared options unless an override explicitly replaces them.
   "terminal.external.osxExec": "Warp.app",
   "chat.tools.global.autoApprove": false,
   "chat.tools.terminal.enableAutoApprove": false,
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "Use Conventional Commits: <type>(<optional scope>): <description>. Choose feat, fix, docs, refactor, perf, test, build, ci, chore, or revert based on the actual change. Follow repository conventions when available."
+    },
+    {
+      "text": "Write an imperative, specific subject, preferably within 72 characters, without a trailing period. Describe the main outcome rather than listing filenames. Use a scope only when it makes the affected area clearer."
+    },
+    {
+      "text": "For substantial changes, add a blank line and a concise body explaining the problem, what changed, and why. Include meaningful behavior changes or limitations. Keep simple changes to a subject alone."
+    },
+    {
+      "text": "Describe only changes included in this commit. Do not invent motivations, test results, issue references, or compatibility guarantees. Mention validation only when its execution and outcome are known."
+    },
+    {
+      "text": "Use ! and a BREAKING CHANGE footer only for actual breaking changes. Include issue references only when supplied. Return only the commit message, without Markdown fences or commentary."
+    }
+  ],
   "markdownlint.run": "onSave",
   "markdown.extension.toc.updateOnSave": false,
   "markdown.extension.tableFormatter.enabled": false,
@@ -416,6 +433,16 @@ The approval settings preserve Day One Mac's baseline; they govern supported
 VS Code chat flows, not every vendor extension. Keep credentials out of User
 Settings and exported profiles. User settings are personal configuration, not
 secret storage. [AI settings reference](https://code.visualstudio.com/docs/agents/reference/ai-settings).
+
+The shared commit-message instructions ask Copilot to use Conventional Commits
+with a specific subject and, for substantial changes, a body explaining what
+changed and why. Stage the intended changes, then select **Generate Commit
+Message** beside the message input in Source Control and review the result.
+This setting is experimental and applies to Copilot's commit-message generator;
+Codex and Claude require their own instructions. All four profile scripts
+include it when generating new bundles. For an existing setup, merge the setting
+into User Settings and use **Apply Setting to all Profiles** if desired.
+[Commit-message instruction setting](https://code.visualstudio.com/docs/agents/reference/ai-settings).
 
 ## 4. Apply profile settings
 
