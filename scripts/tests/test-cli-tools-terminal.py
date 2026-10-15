@@ -316,14 +316,19 @@ printf 'ROOT:%s\\n' "$FOLDER_GHQ_ROOT"
     output = exercise(env, b"jjj\r\rjjjj\r\rk\rk\r", "Optional setup remains locked",
                       command=centre, args=centre_args, check_category=False)
     assert "RUN:" not in output, "advanced module bypassed Phase 8"
-    output = exercise(env, b"jj\rjjjjjj\rjjj\r\rk\rk\r",
+    # Follow the registry order so retiring a module does not select Back.
+    optional_ids = [row.split("\t")[0] for row in
+                    (SCRIPT.parent.parent / "config/modules.tsv").read_text().splitlines()
+                    if not row.startswith("#") and row.split("\t")[1] == "optional"]
+    warp_keys = b"jj\r" + b"j" * optional_ids.index("14") + b"\rjjj\r\rk\rk\r"
+    output = exercise(env, warp_keys,
                       "Preview only: complete required Phase 8", command=centre,
                       args=centre_args, check_category=False)
     assert "RUN:optional --module 14 --plan" in output and "--apply" not in output
     completed = home / "centre-state/completed"
     completed.mkdir(parents=True)
     (completed / "08").write_text("fixture\n")
-    output = exercise(dict(env, CENTRE_FAIL_PLAN="1"), b"jj\rjjjjjj\rjjj\r\rk\rk\r",
+    output = exercise(dict(env, CENTRE_FAIL_PLAN="1"), warp_keys,
                       "RUN:optional --module 14 --plan", command=centre, args=centre_args,
                       check_category=False)
     assert "Apply the reviewed selection" not in output

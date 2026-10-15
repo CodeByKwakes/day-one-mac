@@ -2,7 +2,7 @@
 
 # Optional and advanced status dashboard
 
-Use one read-only command to review Modules 09–22:
+Use one read-only command to review active Modules 09–22 (12 is retired):
 
 ```bash
 day-one-mac optional --status
@@ -71,7 +71,10 @@ Passing checks stay `partial` because provider readiness, activation and trust
 remain manual; a failed check or drift is `review`. A guide marker does not
 override these executable-scope checks.
 
-Generated Module 12/14 artifacts count as selected even without the wizard.
+Generated Module 14 artifacts count as selected even without the wizard.
+Retired Module 12 is excluded from the dashboard and group totals. Old profile
+selections and artifacts remain untouched; verify active profiles using the
+[VS Code application guide](../10-app-guides/VSCODE-PROFILES.md).
 Valid files are `partial` because application import, workspace choice and
 Sync state remain manual. Invalid/missing outputs or changed Warp source are
 `review`. Module 21 additionally checks live bounded evidence against its

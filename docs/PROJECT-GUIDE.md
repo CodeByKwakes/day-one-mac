@@ -395,9 +395,11 @@ that OmniRoute and MCP require an installed AI client.
 | [10 · AI clients](02-optional/10-ai-agents.md) | You have selected Claude, Codex, the GitHub Copilot app, Copilot in VS Code, Copilot CLI, or Raycast AI and understand its account/billing model |
 | [10A · OmniRoute](02-optional/10a-omniroute.md) | Selected clients should optionally use one OrbStack-hosted local Docker AI gateway; includes Raycast Custom Providers and Warp-launched terminal clients |
 | [11 · MCP servers](02-optional/11-mcp-servers.md) | An installed AI client needs a specific external tool |
-| [12 · VS Code profiles](02-optional/12-vscode-profiles.md) | Work, personal, or content-creation settings truly need separation |
 | [13 · Enhanced CLI tools](02-optional/13-enhanced-cli-tools.md) | You want `eza`, Zsh suggestions, `lazydocker`, fuzzy finding, richer Git tools, or content utilities |
 | [14 · Warp Drive](02-optional/14-warp-drive.md) | You want the validated setup, cleanup-preview, ghq, chezmoi, toolchain, and Homebrew command collection in Warp |
+
+VS Code profiles are configured in the [application guide](10-app-guides/VSCODE-PROFILES.md).
+Module 12 is retired; existing module numbers are unchanged.
 
 The early installer provides and owns the `day-one-mac` dispatcher before
 Phase 1; Phase 5 deliberately keeps it out of chezmoi. Its

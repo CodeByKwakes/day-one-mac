@@ -16,9 +16,11 @@ complete development foundation.
 | 10 | [AI clients](10-ai-agents.md) | Selected payload installer; guided sign-in/configuration | You deliberately want one or more supported AI clients. |
 | 10A | [OmniRoute](10a-omniroute.md) | Owned digest-pinned container lifecycle; manual providers/keys/routing | Selected clients should use an optional local Docker AI gateway. |
 | 11 | [MCP servers](11-mcp-servers.md) | Generate workspace snippets; manual authentication/trust/activation | A selected AI client needs a reviewed external tool connection. |
-| 12 | [VS Code profiles](12-vscode-profiles.md) | Generate/verify a reviewed profile bundle; manual import | Work, personal, or content creation needs isolated editor profiles. |
 | 13 | [Enhanced CLI tools](13-enhanced-cli-tools.md) | Installer: installs and records selected formulae | You want additional terminal utilities beyond the required base. |
 | 14 | [Warp Drive](14-warp-drive.md) | Versioned, verified bundle export; manual Warp import | You want the validated importable command and workflow collection. |
+
+VS Code profile setup lives in the [application guide](../10-app-guides/VSCODE-PROFILES.md).
+Module 12 is retired; its number is reserved and other module IDs are unchanged.
 
 You can also run `day-one-mac --wizard`, choose **Optional modules**, and open
 a module's guide, preview, component check, or configuration action. The setup
@@ -102,8 +104,8 @@ policy. The default policy is `check-only`; `--yes` never chooses Homebrew.
 
 Modules 09, 10 and 13 support payload installation through this interface;
 [10A](10a-omniroute.md#executable-digest-pinned-container-route) adds an owned gateway.
-Modules [11](11-mcp-servers.md#executable-workspace-snippet-route),
-[12](12-vscode-profiles.md) and [14](14-warp-drive.md) use the same
+Modules [11](11-mcp-servers.md#executable-workspace-snippet-route)
+and [14](14-warp-drive.md) use the same
 actions to generate and verify artifacts, not to import them.
 Advanced 16 also supports a
 [reviewed software selection](../03-advanced/16-brewfile-apps-and-editor.md#executable-selected-payload-route).

@@ -5,6 +5,15 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/operation-lock.sh"
 MODULE_RUN=""
 MODULE_VERIFIED=0
 
+# Compatibility notice only: retired IDs never load or migrate saved artifacts.
+day_one_retired_profile_module() {
+  printf '%s\n' 'Module 12 is retired. VS Code profiles now use the application guide.' \
+    'Preview: day-one-mac vscode-profile full-stack --dry-run' \
+    'Choose default, full-stack, ai or operations; import remains manual.' \
+    'Existing Module 12 selections and generated files are preserved; they are not migrated or checked.' >&2
+  printf 'Guide: %s/docs/10-app-guides/VSCODE-PROFILES.md\n' "$1" >&2
+}
+
 day_one_module_begin() {
   local id="$1" selection="$2" target index=0
   shift 2

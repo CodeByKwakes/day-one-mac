@@ -18,7 +18,7 @@ usage() {
 Usage: day-one-mac optional --module ID --plan|--apply|--check|--resume [selection]
        day-one-mac optional --list
 
-  --module ID        09 databases, 10 AI, 10A gateway, 11 MCP, 12 profiles, 13 CLI,
+  --module ID        09 databases, 10 AI, 10A gateway, 11 MCP, 13 CLI,
                      14 Warp, 15 dotfiles, 16 software, 17 shell, 18 identities,
                      19 preferences, 20 restore staging,
                      21 audit, 22 governance
@@ -32,7 +32,7 @@ Usage: day-one-mac optional --module ID --plan|--apply|--check|--resume [selecti
   --services CSV     Module 09 services; otherwise use saved database selection
   --packages CSV     Module 13 formulae; otherwise use saved CLI selection
   --clients CSV      Module 10 client IDs; otherwise use saved AI selection
-  --manifest PATH    Module 10A, 11, 12, 15–20 or 22 TSV; otherwise saved selection
+  --manifest PATH    Module 10A, 11, 15–20 or 22 TSV; otherwise saved selection
   --inventory        Module 16 candidate TSV to stdout; never saves or applies
   --app-install-policy MODE
                      Module 10/16: prompt, homebrew, or check-only (default)
@@ -42,6 +42,7 @@ Usage: day-one-mac optional --module ID --plan|--apply|--check|--resume [selecti
   -h, --help         show help
 
 Apply/resume requires completed Phase 8. Planning is allowed before completion.
+Module 12 is retired; use day-one-mac vscode-profile and its application guide.
 Existing databases and cli-tools commands remain supported.
 EOF
 }
@@ -75,6 +76,7 @@ if [[ "$LIST" == 1 ]]; then
   awk -F '\t' 'BEGIN {OFS="\t"} !/^#/ {print $1,$2,$3,$4,$5}' "$PROJECT_DIR/config/modules.tsv"
   exit 0
 fi
+if [[ "$MODULE" == 12 ]]; then day_one_retired_profile_module "$PROJECT_DIR"; exit 2; fi
 [[ -n "$MODULE" && -n "$ACTION" ]] || { usage >&2; exit 2; }
 row="$(awk -F '\t' -v id="$MODULE" '!/^#/ && $1 == id {print}' "$PROJECT_DIR/config/modules.tsv")"
 [[ -n "$row" ]] || die "unknown module: $MODULE"
@@ -90,8 +92,8 @@ if [[ "$ASSUME_YES" == 1 && "$ACTION" != apply && "$ACTION" != resume ]]; then d
 [[ -z "$APP_POLICY" || "$MODULE" == 10 || "$MODULE" == 16 ]] || die 'application policy is only supported for 10 and 16'
 [[ "$SETUP_ALIASES" == 0 || ( "$MODULE" == 13 && "$ACTION" != check ) ]] || die '--aliases is supported for Module 13 plan/apply/resume only'
 [[ "$ACTION" != inventory || ( "$MODULE" == 16 && -z "$SELECTOR$APP_POLICY" ) ]] || die '--inventory is only supported for Module 16 without other selections'
-if [[ "$MODULE" =~ ^(11|12|14|15|17|18|21|22)$ ]]; then
-  [[ -z "$SELECTOR" || ( "$MODULE" =~ ^(11|12|15|17|18|22)$ && "$SELECTOR" == --manifest ) ]] || die 'This artifact module does not accept that selector'
+if [[ "$MODULE" =~ ^(11|14|15|17|18|21|22)$ ]]; then
+  [[ -z "$SELECTOR" || ( "$MODULE" =~ ^(11|15|17|18|22)$ && "$SELECTOR" == --manifest ) ]] || die 'This artifact module does not accept that selector'
   artifact_args=(--module "$MODULE" "--$ACTION")
   [[ -z "$SELECTION" ]] || artifact_args+=(--manifest "$SELECTION")
   [[ "$ASSUME_YES" == 0 ]] || artifact_args+=(--yes)

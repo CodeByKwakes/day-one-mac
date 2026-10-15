@@ -8,6 +8,20 @@ trap 'rm -rf "$TEST_ROOT"' EXIT
 
 fail_test() { printf 'FAIL: %s\n' "$1" >&2; exit 1; }
 
+# Consume the full response before matching. grep -q on a pipe can close it
+# while the producer is still writing and fail under pipefail despite a match.
+assert_runtime_status() {
+  local output
+  if ! output="$(HOME="$1" "$2" runtime-status 2>&1)"; then
+    printf '%s\n' "$output" >&2
+    fail_test 'runtime-status failed'
+  fi
+  if ! grep -Fq "$3" <<< "$output"; then
+    printf '%s\n' "$output" >&2
+    fail_test "$4"
+  fi
+}
+
 # Reproduce Git's pre-push environment using disposable repositories only.
 # A stub validator verifies isolation before creating its own fixture repository.
 hook_parent="$TEST_ROOT/hook-parent"
@@ -57,7 +71,7 @@ HOME="$test_home" "$portable" optional --list | grep -Fq $'16\tadvanced\texecuta
   || fail_test 'standalone runtime omitted executable software selections'
 [[ -x "$runtime/scripts/configure-software.sh" ]] \
   || fail_test 'standalone runtime omitted the software runner'
-for module in 10A 11 12 14 15 17 18 19 20 21 22; do
+for module in 10A 11 14 15 17 18 19 20 21 22; do
   HOME="$test_home" "$portable" optional --list | grep -Eq "^${module}[[:space:]].*[[:space:]]executable[[:space:]]" \
     || fail_test "standalone runtime omitted artifact module $module"
 done
@@ -80,10 +94,10 @@ HOME="$test_home" "$runtime/scripts/configure-software.sh" --help | grep -Fq 'De
   || fail_test 'standalone runtime included contributor-only node_modules'
 [[ "$(HOME="$test_home" "$portable" root)" == "$runtime" ]] \
   || fail_test 'portable dispatcher did not resolve the standalone runtime'
-HOME="$test_home" "$portable" runtime-status | grep -Fq 'Integrity: verified' \
-  || fail_test 'installed runtime did not pass checksum verification'
-HOME="$test_home" "$portable" runtime-status | grep -Fq 'Version:   test-1.0.0' \
-  || fail_test 'first runtime version was not activated'
+assert_runtime_status "$test_home" "$portable" 'Integrity: verified' \
+  'installed runtime did not pass checksum verification'
+assert_runtime_status "$test_home" "$portable" 'Version:   test-1.0.0' \
+  'first runtime version was not activated'
 [[ "$(HOME="$test_home" "$portable" docs)" == *'/docs/START-HERE.md' ]] \
   || fail_test 'installed runtime did not resolve its documentation'
 docs_list="$(HOME="$test_home" "$portable" docs --list)"
@@ -118,8 +132,8 @@ HOME="$test_home" "$SCRIPT_DIR/install-portable-command.sh" \
   --source "$PROJECT_ROOT" --version test-2.0.0 --standalone >/dev/null
 [[ "$(readlink "$runtime")" == 'releases/test-2.0.0' ]] \
   || fail_test 'second install did not switch the current runtime symlink'
-HOME="$test_home" "$portable" runtime-status | grep -Fq 'Version:   test-2.0.0' \
-  || fail_test 'second runtime version was not activated'
+assert_runtime_status "$test_home" "$portable" 'Version:   test-2.0.0' \
+  'second runtime version was not activated'
 [[ "$(grep -Fc '.config/zsh/path.zsh' "$test_home/.zprofile")" == 1 ]] \
   || fail_test 'reinstall duplicated the .zprofile source line'
 [[ "$(wc -l < "$test_home/.day-one-mac/runtime-root" | tr -d ' ')" == 1 ]] \
@@ -131,8 +145,8 @@ HOME="$test_home" "$portable" rollback-runtime \
   --version test-1.0.0 --execute >/dev/null
 [[ "$(readlink "$runtime")" == 'releases/test-1.0.0' ]] \
   || fail_test 'rollback did not switch the current runtime symlink'
-HOME="$test_home" "$portable" runtime-status | grep -Fq 'Version:   test-1.0.0' \
-  || fail_test 'rolled-back runtime version was not activated'
+assert_runtime_status "$test_home" "$portable" 'Version:   test-1.0.0' \
+  'rolled-back runtime version was not activated'
 
 # Default rollback follows activation history, including a forward toggle.
 HOME="$test_home" "$portable" rollback-runtime --execute >/dev/null
@@ -191,7 +205,7 @@ HOME="$bootstrap_home" "$downloaded" bootstrap \
 bootstrapped="$bootstrap_home/.local/bin/day-one-mac"
 [[ -x "$bootstrapped" ]] || fail_test 'downloaded dispatcher did not install itself after cloning'
 rm -rf "$fixture_checkout"
-HOME="$bootstrap_home" "$bootstrapped" runtime-status | grep -Fq 'Integrity: verified' \
-  || fail_test 'standalone runtime stopped working after its cloned source was removed'
+assert_runtime_status "$bootstrap_home" "$bootstrapped" 'Integrity: verified' \
+  'standalone runtime stopped working after its cloned source was removed'
 
 printf 'PASS: standalone portable runtime is verified, idempotent and checkout-independent\n'

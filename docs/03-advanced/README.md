@@ -54,7 +54,7 @@ preferences with typed originals and conflict checks. Without an action,
 `advanced --module ID` still opens the guide.
 
 `day-one-mac optional --list` now lists these modules alongside executable
-Optional 09, 10, 10A, 11, 12, 13 and 14. All Advanced 15–22 are labelled
+Optional 09, 10, 10A, 11, 13 and 14. Module 12 is retired. All Advanced 15–22 are labelled
 executable only for their bounded scopes. Module 18 adds identity/worktree
 review artifacts; Module 20 adds checksummed restore staging. No execution result
 is substituted for a user-confirmed guide fingerprint.

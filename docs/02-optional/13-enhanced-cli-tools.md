@@ -1,4 +1,4 @@
-[← VS Code profiles](12-vscode-profiles.md) · **🤖 ⚙️ Optional 13** · [Warp Drive →](14-warp-drive.md)
+[← MCP servers](11-mcp-servers.md) · **🤖 ⚙️ Optional 13** · [Warp Drive →](14-warp-drive.md)
 
 # Optional 13 — Enhanced command-line toolkit 🤖 ⚙️
 
@@ -312,4 +312,4 @@ also knows about optional formulae that this selector added.
 
 ---
 
-[← VS Code profiles](12-vscode-profiles.md) · [Warp Drive →](14-warp-drive.md) · [Project home](../README.md)
+[← MCP servers](11-mcp-servers.md) · [Warp Drive →](14-warp-drive.md) · [Project home](../README.md)

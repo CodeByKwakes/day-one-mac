@@ -46,7 +46,7 @@ expect_failure() {
 }
 
 # Registry is data, with fixed IDs and real installed guide paths.
-awk -F '\t' '!/^#/ {if (NF != 6 || seen[$1]++ || ($3 != "guided" && $3 != "executable") || $4 != "08") exit 1; count++} END {if (count != 15) exit 1}' \
+awk -F '\t' '!/^#/ {if (NF != 6 || seen[$1]++ || ($3 != "guided" && $3 != "executable") || $4 != "08") exit 1; count++} END {if (count != 14) exit 1}' \
   "$PROJECT_DIR/config/modules.tsv" || fail 'invalid registry'
 while IFS=$'\t' read -r id layer mode prerequisite title guide; do
   [[ "$id" != \#* ]] || continue
@@ -57,6 +57,7 @@ grep -Fq $'09\toptional\texecutable' "$TEST_ROOT/list" || fail 'missing database
 grep -Fq $'18\tadvanced\texecutable' "$TEST_ROOT/list" || fail 'identity review capability is missing'
 grep -Fq $'20\tadvanced\texecutable' "$TEST_ROOT/list" || fail 'restore staging capability is missing'
 grep -Fq $'22\tadvanced\texecutable' "$TEST_ROOT/list" || fail 'governance capability is missing'
+if grep -q $'^12\t' "$TEST_ROOT/list"; then fail 'retired module listed'; fi
 run_module --module 13 --plan --packages eza,fzf > "$TEST_ROOT/plan"
 grep -Fq 'brew install eza' "$TEST_ROOT/plan" || fail 'missing plan operation'
 [[ ! -e "$TEST_STATE" && ! -e "$TEST_STATE.operation.lock" ]] || fail 'plan created state/lock'

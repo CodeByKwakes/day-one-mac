@@ -1,4 +1,4 @@
-[← OmniRoute](10a-omniroute.md) · **🤖 ⚙️ Optional 11** · [VS Code profiles →](12-vscode-profiles.md)
+[← OmniRoute](10a-omniroute.md) · **🤖 ⚙️ Optional 11** · [Enhanced CLI tools →](13-enhanced-cli-tools.md)
 
 # Optional 11 — Model Context Protocol (MCP) servers
 
@@ -421,4 +421,4 @@ Provider setup references: [Context7](https://context7.com/docs/resources/all-cl
 
 ---
 
-[← OmniRoute gateway](10a-omniroute.md) · [VS Code profiles (optional) →](12-vscode-profiles.md) · [Project home](../README.md)
+[← OmniRoute gateway](10a-omniroute.md) · [Enhanced CLI tools →](13-enhanced-cli-tools.md) · [Project home](../README.md)

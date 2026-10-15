@@ -45,7 +45,7 @@ plan before applying it.
 | [10 · AI clients](../02-optional/10-ai-agents.md) | Install selected client payloads under the chosen app policy | Sign in, select subscriptions/providers, approve permissions | Installation is not authority to use an account or spend money |
 | [10A · Gateway](../02-optional/10a-omniroute.md) | Manage an owned, digest-pinned local OrbStack container | Review resource/startup choices; configure providers, keys and routing | Resource use, secrets and request routing need deliberate consent |
 | [11 · MCP](../02-optional/11-mcp-servers.md) | Generate selected workspace snippets | Inspect endpoints and permissions; authenticate and enable a server in each client | A valid snippet is not a trust decision |
-| [12 · Profiles](../02-optional/12-vscode-profiles.md) | Generate and verify a profile bundle | Review extensions, choose profile and import in VS Code | Profile ownership and extension trust depend on your workflow |
+| [VS Code profiles](../10-app-guides/VSCODE-PROFILES.md) | Generate settings, extension and keybinding review files | Review extensions, choose profile and import in VS Code | Profile ownership and extension trust depend on your workflow |
 | [13 · CLI tools](../02-optional/13-enhanced-cli-tools.md) | Install selected formulae and check presence | Choose tools; activate shell integration and update desired state if wanted | Installed commands should not silently alter every shell |
 | [14 · Warp](../02-optional/14-warp-drive.md) | Export and verify a versioned bundle | Review/import in the intended account/workspace; test safely | An exported file does not prove successful application import |
 | [15 · Dotfiles](../03-advanced/15-full-dotfiles-and-bootstrap.md) | Inventory selected files and prepare ownership proposals | Review secrets and templates; decide ownership; apply with chezmoi | A hash cannot establish that content is safe or portable |
@@ -97,11 +97,12 @@ in the owning account; deleting a generated snippet does not revoke a token.
 ## 3. Editor profiles, extensions, Warp and app settings
 
 **When needed:** work/personal contexts need separate application choices.
-**CLI preparation:** Modules 12/14 prepare bundles; Module 16 can install payloads.
+**CLI preparation:** `vscode-profile` prepares reviewed editor recipes; Module 14
+exports Warp workflows. Module 16 can install selected payloads.
 **Manual steps:** choose the target profile before installing extensions or
 importing settings. Pick one owner: application sync, chezmoi, or a reviewed
 manual export. Use [VS Code](../10-app-guides/VSCODE.md),
-[profiles](../02-optional/12-vscode-profiles.md), [Warp](../10-app-guides/WARP.md),
+[profiles](../10-app-guides/VSCODE-PROFILES.md), [Warp](../10-app-guides/WARP.md),
 and [Raycast](../10-app-guides/RAYCAST.md) for their actual application steps.
 
 **Verify:** check the active profile/account and run one harmless workflow.

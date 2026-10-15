@@ -14,11 +14,17 @@ environment, starts with a small portable configuration, and has a deliberate
 backup or synchronization policy. This guide also explains how to start clean,
 import an existing profile, export the new setup, and change the decision later.
 
-After the base is verified, use the [final profile setup](VSCODE-PROFILES.md)
-and [TypeScript full-stack reference](VSCODE-TYPESCRIPT.md)
-for Angular, NestJS, Nx, Prisma, User Settings, import shortcuts, environment
-files, icons, worktrees, project skills/agents, and MCP connections. That guide
-keeps editor preferences personal and makes project AI configuration optional.
+Use these guides by task; they are not three sequential setup checklists:
+
+| Task | Authoritative guide |
+|---|---|
+| First launch, base settings, backup, selective reset and Settings Sync | This guide |
+| Choose and configure profiles, extensions and shared settings | [Profile setup](VSCODE-PROFILES.md) |
+| Add import shortcuts, icons, worktrees, skills, agents, MCP or shell recipes | [Advanced reference](VSCODE-TYPESCRIPT.md) |
+
+After the base is verified, choose profiles only when useful. The separate
+Module 12 generator is retired; profile setup uses the application guide and
+its `day-one-mac vscode-profile` command.
 
 ## What Phase 7 already does
 
@@ -201,10 +207,10 @@ List exactly what is installed:
 code --list-extensions --show-versions | sort
 ```
 
-An extension can belong to only one profile. In the Extensions view, use
-**Apply Extension to all Profiles** only when every profile truly needs it.
-The optional [VS Code profiles module](../02-optional/12-vscode-profiles.md)
-provides a planned multi-profile design.
+Review extensions in the active profile. Use **Apply Extension to all Profiles**
+only when every profile needs it. The [profile setup guide](VSCODE-PROFILES.md)
+owns the curated extension lists and settings; an extension can be used in
+multiple profiles.
 
 If OmniRoute was selected in the Day One wizard, follow
 [Optional 10A](../02-optional/10a-omniroute.md) after installing the selected AI
@@ -316,6 +322,26 @@ This is a recovery archive, not the preferred cross-machine import method.
 Restore profiles through the Profiles editor and copy individual snippets or
 keybindings only after inspecting them.
 
+## Reset selected local settings or profiles
+
+Export each affected profile first and retain the backup until the replacement
+works. Turn off Settings Sync while cleaning up; keep the cloud copy unless
+replacing it is an explicit, separate decision.
+
+| What needs changing | Scoped action in VS Code |
+|---|---|
+| Unwanted extensions | Switch to the intended profile; disable or uninstall only the selected entries in Extensions |
+| Conflicting settings | Open the active profile's User Settings JSON and remove only the unwanted keys; review workspace overrides separately |
+| Complete settings reset | After export, replace only that profile's settings with `{}`, then reapply the approved base or profile recipe |
+| Old named profiles | Export each one, switch to the replacement, then remove only the unwanted named profile in Profiles |
+| Clean custom profile | Create an Empty Profile and apply the [reviewed baseline](VSCODE-PROFILES.md#9-optional-custom-profile-tech-content-creator) |
+
+Test formatting, Git, terminal launch and the expected extension set before
+removing the old profile. Do not delete the entire `Code/User` directory as a
+shortcut: it contains more than settings and may hold other profiles and
+extension state. Resetting local settings does not clear cloud Sync data or
+change a client's credential permissions.
+
 ## Change or clear Settings Sync later
 
 To change what synchronizes:
@@ -326,11 +352,13 @@ To change what synchronizes:
 
 To create a genuinely new cloud baseline:
 
-1. Export the current local profile and extension inventory.
-2. Select **Settings Sync is On** → **Turn Off**.
-3. Select the option to clear all cloud data.
-4. Verify the local Day One settings and extensions.
-5. Turn Settings Sync on again and select only the desired categories.
+1. Export the affected profiles on each device and review the intended Sync account.
+2. Select **Settings Sync is On** → **Turn Off**; keep cloud data initially.
+3. Verify the replacement local settings and extensions with Sync off.
+4. Only when intentionally replacing the shared remote baseline, select the
+   separate option to clear all cloud data. Coordinate work-managed accounts with IT.
+5. Turn Sync on again for the intended account, select only the approved
+   categories, and test another device before discarding backups.
 
 Clearing cloud data affects other devices using that account. Do it only when
 you intend to replace the shared remote state.
@@ -373,4 +401,4 @@ Official references: [VS Code on macOS](https://code.visualstudio.com/docs/setup
 
 ---
 
-[← Required apps](README.md) · [Return to Phase 7](../01-required/07-vscode-base.md) · [Optional profiles →](../02-optional/12-vscode-profiles.md)
+[← Required apps](README.md) · [Return to Phase 7](../01-required/07-vscode-base.md) · [Profile setup →](VSCODE-PROFILES.md)

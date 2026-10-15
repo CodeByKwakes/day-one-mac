@@ -327,7 +327,7 @@ csv_label() {
       ai-clients) label='AI clients' ;;
       omniroute) label='OmniRoute AI gateway' ;;
       mcp-servers) label='MCP servers' ;;
-      vscode-profiles) label='VS Code profiles' ;;
+      vscode-profiles) label='VS Code profiles — moved to the application guide' ;;
       enhanced-cli) label='Enhanced CLI tools' ;;
       warp-drive) label='Warp Drive workflows' ;;
       advanced) label='Advanced modules' ;;
@@ -836,19 +836,18 @@ choose_ai_clients() {
 choose_optional_plan() {
   local previous_databases="$DATABASE_SERVICES"
   local previous_ai_clients="$AI_CLIENTS" previous_mcp_servers="$MCP_SERVERS"
-  MENU_VALUES=(databases ai-clients omniroute mcp-servers vscode-profiles enhanced-cli warp-drive advanced second-brain)
+  MENU_VALUES=(databases ai-clients omniroute mcp-servers enhanced-cli warp-drive advanced second-brain)
   MENU_LABELS=(
     'Databases — PostgreSQL, Redis or MongoDB'
     'AI clients — Claude Code, Codex, GitHub Copilot or Raycast AI'
     'OmniRoute AI gateway — local Docker routing for selected AI clients'
     'MCP servers — requires at least one selected AI client'
-    'VS Code profiles — work, personal or content profiles'
     'Enhanced CLI tools — eza, lazydocker, shell helpers and more'
     'Warp Drive — importable workflows and command notebook'
     'Advanced modules — identities, worktrees, HTTPS, restore and audits'
     'Second Brain — choose an Obsidian or Notion knowledge system'
   )
-  selected_defaults "$OPTIONAL_MODULES" databases ai-clients omniroute mcp-servers vscode-profiles enhanced-cli warp-drive advanced second-brain
+  selected_defaults "$OPTIONAL_MODULES" databases ai-clients omniroute mcp-servers enhanced-cli warp-drive advanced second-brain
   select_toggles 'Choose optional modules to plan for after Phase 8 (none is valid):' || return $?
   OPTIONAL_MODULES="$MENU_RESULT"
 
@@ -994,7 +993,7 @@ run_optional_center() {
     contains_csv "$OPTIONAL_MODULES" ai-clients \
       && info 'AI payload preview: day-one-mac optional --module 10 --plan (sign-in remains manual)'
     contains_csv "$OPTIONAL_MODULES" vscode-profiles \
-      && info 'Profile bundle: day-one-mac optional --module 12 --plan --manifest /path/to/profile.tsv (import remains manual)'
+      && info 'Profiles moved: day-one-mac vscode-profile full-stack --dry-run (choose a recipe in the VS Code application guide)'
     contains_csv "$OPTIONAL_MODULES" warp-drive \
       && info 'Warp export preview: day-one-mac optional --module 14 --plan (import remains manual)'
     contains_csv "$OPTIONAL_MODULES" advanced \
@@ -1002,7 +1001,6 @@ run_optional_center() {
     if contains_csv "$OPTIONAL_MODULES" ai-clients \
        || contains_csv "$OPTIONAL_MODULES" omniroute \
        || contains_csv "$OPTIONAL_MODULES" mcp-servers \
-       || contains_csv "$OPTIONAL_MODULES" vscode-profiles \
        || contains_csv "$OPTIONAL_MODULES" warp-drive \
        || contains_csv "$OPTIONAL_MODULES" second-brain; then
       info 'The remaining selected modules contain account, secret, or application UI decisions; follow their installed guides.'

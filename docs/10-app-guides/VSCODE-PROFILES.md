@@ -1,17 +1,30 @@
-[← Application guides](README.md) · [Detailed stack recipes](VSCODE-TYPESCRIPT.md) · [Profile management](../02-optional/12-vscode-profiles.md)
+[← Application guides](README.md) · [Detailed stack recipes](VSCODE-TYPESCRIPT.md) · [Backup, reset and sync](VSCODE.md#export-and-back-up-the-configuration)
 
-# Final VS Code profile setup for full-stack TypeScript development
+# Choose and configure VS Code profiles
 
 **Document type:** how-to guide and extension reference. **Audience:** experienced
 macOS developers using Angular, NestJS, Nx, Prisma, Azure DevOps, Docker,
 PostgreSQL, Copilot, Codex, and Claude Code. **Updated:** 15 October 2026.
 
-This is the final profile selection and settings recipe for this stack. Use it
-first; use the [detailed stack guide](VSCODE-TYPESCRIPT.md) for complete icon,
-Angular HTML, worktree, skill, symlink, MCP, and Zsh instructions.
+This is the authoritative profile selection, extension and settings recipe.
+Start with [base VS Code setup](VSCODE.md), then choose only the profiles your
+work needs here. Use the [advanced reference](VSCODE-TYPESCRIPT.md) for icons,
+Angular HTML, worktrees, skills, MCP and Zsh. Backup, selective reset and
+Settings Sync are maintained in [VS Code setup and maintenance](VSCODE.md).
 
-Latest stable checked: **VS Code 1.142.0**, released 14 October 2026. Your installed
-version was 1.141.2 when checked; update through **Code → Check for Updates**.
+Profiles are optional. Keeping Default alone is valid. Work/Personal describe
+account or organisational contexts; Full Stack/AI/Operations describe tasks.
+They are alternative ways to organise your editor, not two sets to install.
+A profile organises editor settings and extensions; it is not an account or
+security boundary. Follow employer policy for sign-in, Sync, extension trust
+and credential separation. Do not rely on a profile name to enforce access.
+
+The old [Module 12 generator is retired](../02-optional/12-vscode-profiles.md).
+The manual and script-assisted routes below now share this one recipe.
+
+Recipe source check: **VS Code 1.142.0**, 15 October 2026. Check your own
+approved version through **Code → Check for Updates**; this is not a live
+inventory of your Mac.
 New agent defaults roll out progressively and employer policies can override
 availability. [Release notes](https://code.visualstudio.com/updates/v1_142).
 
@@ -23,7 +36,7 @@ personal preferences. Keep required project configuration intact.
 
 ## Contents
 
-1. [Create the four profiles](#1-create-the-four-profiles)
+1. [Choose and create profiles](#1-choose-and-create-profiles)
 2. [Install the final extension lists](#2-install-the-final-extension-lists)
 3. [Apply shared User Settings](#3-apply-shared-user-settings)
 4. [Apply profile settings](#4-apply-profile-settings)
@@ -31,8 +44,9 @@ personal preferences. Keep required project configuration intact.
 6. [Configure DataGrip and PostgreSQL connections](#6-configure-datagrip-and-postgresql-connections)
 7. [Finish shortcuts, icons, worktrees, and Zsh](#7-finish-shortcuts-icons-worktrees-and-zsh)
 8. [Verify and export](#8-verify-and-export)
+9. [Optional custom profile: Tech Content Creator](#9-optional-custom-profile-tech-content-creator)
 
-## 1. Create the four profiles
+## 1. Choose and create profiles
 
 | Profile | Purpose | Appearance | Normal database use |
 |---|---|---|---|
@@ -41,13 +55,21 @@ personal preferences. Keep required project configuration intact.
 | AI | Prompt authoring, reviews, debugging, agents and skills | Dark Modern; purple | Optional local/dev/test tools |
 | Operations | Containers, pipelines, databases, remote work | Dark Modern; green | Production read-only investigation |
 
-1. Export your current profile before changing it.
+Choose Default plus whichever task profiles are useful. The extension and
+settings sections define the same baseline for both routes. Start with the
+manual route if you do not use Day One Mac scripts; use the generator route
+if you want files prepared for review. Do not perform both setup procedures.
+
+### Manual route — create the selected profiles
+
+1. [Export your current profiles](VSCODE.md#export-a-portable-profile--preferred) before changing them.
 2. Configure Default with the shared extensions/settings below.
-3. Create Full Stack and Operations by copying Default.
-4. Configure Full Stack, then copy it to create AI.
+3. Create Full Stack and/or Operations by copying Default, if selected.
+4. If AI is selected, use the Full Stack settings as its foundation, then apply AI overrides. Copy a configured Full Stack profile when available; you do not need to keep a separate Full Stack profile solely for this step.
 5. In AI, disable Full Stack-only extensions unless needed for the current task.
-6. Associate your normal repository with Full Stack. Select AI or Operations
-   deliberately for focused work, preferably in a separate window/worktree.
+6. Associate each repository with its chosen profile. Use Full Stack for
+   development if selected; choose AI or Operations deliberately for focused
+   work, preferably in a separate window/worktree.
 
 Copying profiles is a snapshot, not automatic inheritance. Apply common
 preferences to all profiles deliberately; keep accents and Copilot completion
@@ -56,6 +78,9 @@ credentials, CLI configuration, or database permissions.
 [Profiles](https://code.visualstudio.com/docs/configure/profiles).
 
 ### Generate profile files with the scripts
+
+**Script-assisted route:** prepare files from the same recipes below, then
+review and import them. This replaces the manual creation procedure above.
 
 Use the installed `day-one-mac vscode-profile` command from any directory; no
 source checkout is needed. **Availability:** these recipes originated in source
@@ -70,11 +95,6 @@ extension tables and settings recipes. They create personal review files, not
 repository `.vscode` files or active editor settings. Preview and bundle export
 are available before Phase 8; explicit extension installation requires current
 Phase 8. Import/merge remains a reviewed manual action after the required setup.
-
-| Route | Generated contents | Prerequisite and verification |
-|---|---|---|
-| `vscode-profile` recipes below | Settings, selected extensions and applicable keybindings for four named recipes | Node 22+; export does not alter VS Code; extension installation requires current Phase 8 |
-| [Module 12](../02-optional/12-vscode-profiles.md) | A user-chosen name and extension selection only | Plan/check before Phase 8; apply/resume requires current Phase 8; check validates the saved artifact, not the imported profile |
 
 | Profile | Generate its reviewed baseline | Baseline extensions |
 |---|---|---|
@@ -186,7 +206,8 @@ already present in the guide's profile recipe. `--code "/path/to/code"` selects
 another VS Code CLI executable. `--help` lists options. `--dry-run` always
 prevents file writes and CLI calls, including when combined with install mode.
 
-Validate the scripts without touching live VS Code configuration:
+**Contributor check:** from a source checkout, validate the generators without
+touching live VS Code configuration. This check is not an installed-runtime command:
 
 ```bash
 node scripts/tests/test-vscode-profiles.cjs
@@ -791,207 +812,29 @@ from Full Stack selectively; a profile switch does not grant database access.
 
 ## 5. Finish prompts, skills, agents, and MCP
 
-### Agent accounts and prompt tools
+These are shared manual actions for either setup route. Configure only the
+clients and integrations you selected; signing in or importing a profile does
+not configure the other clients automatically.
 
-| Surface | Configure it through | Recommended use |
+| Task | Setup reference | Verify in the actual client |
 |---|---|---|
-| Copilot | VS Code's existing AI setup and account selection | Inline help in Full Stack; Ask/Plan/agent work as needed |
-| Codex | Its extension panel and supported personal configuration | Investigation, implementation, review; its own account/access |
-| Claude Code | Its own extension sign-in and permission controls | Planning, implementation, independent review; its own account/access |
-| Good Prompts | GoodPrompts: Open Panel | Build a bounded task prompt, review the preview, then copy it to the selected agent |
-| Chat Customizations Evaluations | Analyze Prompt command, if installed | Review skill/prompt diagnostics; Copilot required for LLM analysis |
-| Foundry Toolkit | Provider/playground UI, if installed | AI application experiments; separate provider access/billing can apply |
+| Agent accounts and prompt tools | [AI workflow reference](VSCODE-TYPESCRIPT.md#3-ai-workflow-reference) | Intended account, permission mode and project; preview a prompt before editing |
+| Shared instructions and client-specific agent wrappers | [Project instructions, skills and agents](VSCODE-TYPESCRIPT.md#9-share-project-instructions-skills-and-agents) | One canonical policy; each client discovers its own adapter |
+| Selected project skills | [Skill selection reference](VSCODE-TYPESCRIPT.md#10-choose-and-install-project-skills) | Review source and project compatibility; inspect existing files before adding links |
+| MCP servers | [Project and global MCP recipes](VSCODE-TYPESCRIPT.md#11-configure-project-and-global-mcp-servers) | Trust, authentication and tool access in each client separately |
 
-For Good Prompts, select the actual target tool explicitly: several agent
-extensions are installed, so automatic detection may choose a different one.
-Set TypeScript, the project's real Node version, Angular/NestJS/Nx, and its style
-rules through the panel. Its documented configuration uses extension state,
-not invented `goodprompts.*` JSON settings. Leave its optional MCP connections
-unused initially; your clients already have their own MCP setup.
-[Good Prompts](https://marketplace.visualstudio.com/items?itemName=omarbanat.goodprompts).
-
-Use Ask/read-only or Plan mode to turn a rough request into a prompt containing:
-**goal, current behavior/evidence, desired behavior, affected files, constraints,
-validation, and expected final report**. Review invented assumptions before
-implementation. The [copyable prompt-builder request](VSCODE-TYPESCRIPT.md#generate-a-good-prompt-with-tools-you-already-have)
-works without an extra generator. Use one editing agent per worktree.
-
-### Canonical project skills and agent wrappers
-
-Keep one canonical skill library under `.agents/skills`. Current Copilot and
-Codex can use it; give Claude links rather than maintaining duplicate files.
-Use `AGENTS.md` for shared project policy and a compatible `CLAUDE.md` link.
-Share role policy as Markdown, with small client-specific wrappers for Codex,
-Copilot, and Claude; their agent definition formats are not interchangeable.
-
-Follow the complete [no-overwrite project symlink recipe](VSCODE-TYPESCRIPT.md#link-project-skills-and-the-claude-adapter-manually).
-It creates relative Claude skill-folder links and a link to the Claude agent
-adapter. Inspect existing files first. Verify Claude agent discovery after a
-restart; its symlink behavior must be checked against the installed version.
-
-Keep these personal project files out of Git using the documented local
-exclude recipe if you do not want to share them. Ignored local files do not
-automatically appear in a new worktree; recreate the selected links there.
-Global personal skills in `~/.agents/skills` are not profile-private.
-
-Recommended initial skills and the reason to use them:
-
-| Skill | Why / when |
-|---|---|
-| angular-developer | Angular framework implementation using the project's supported version |
-| nx-workspace | Understand projects, targets, and boundaries before a monorepo change |
-| nx-run-tasks | Select the correct build/lint/test/affected tasks |
-| nx-generate | Generate code through repository conventions |
-| nestjs-best-practices | Nest API architecture, DI, validation, and tests; community maintained |
-| systematic-debugging | Reproduce and establish a cause before changing code |
-| verification-before-completion | Gather real verification evidence before declaring success |
-| supabase-postgres-best-practices | PostgreSQL query/schema performance; apply service-specific advice selectively |
-
-For example, from the application repository, install the selected Angular/Nx
-skills into the canonical shared workflow:
-
-```bash
-npx skills@latest add angular/skills \
-  --skill angular-developer --agent codex github-copilot
-npx skills@latest add nrwl/nx-ai-agents-config \
-  --skill nx-workspace nx-run-tasks nx-generate --agent codex github-copilot
-```
-
-Use the [full skill reference and commands](VSCODE-TYPESCRIPT.md#10-choose-and-install-project-skills)
-for NestJS, debugging, Docker, PostgreSQL, Azure DevOps, and Prisma. Check the
-project's Prisma major version before installing version-specific Prisma skills.
-Skip duplicate global/project packs unless deliberately maintaining a different
-version. The skill source checks in that reference are dated, not a promise
-that future `@latest` downloads remain identical.
-
-Current VS Code `.prompt.md` commands apply only to Local harness sessions.
-For Copilot/Codex reusable workflows, prefer portable skills. Do not add
-deprecated customization-location settings; follow migration notices when an
-old profile-local prompt needs conversion.
-[Prompt files](https://code.visualstudio.com/docs/agent-customization/prompt-files).
-
-### Selected MCP servers
-
-| Server | Where it belongs | Why |
-|---|---|---|
-| Angular CLI MCP, read-only initially | Project context | Framework and Angular workspace tools |
-| Nx MCP | Project context | Targets, generators, workspace context |
-| Context7 | Personal/global or selected project | Current library documentation |
-| Azure DevOps MCP | Selected organisation/project | Work items, PRs, build/pipeline context |
-| Playwright MCP | Selected browser task | Interactive investigation; separate from Playwright Test extension |
-| DataGrip MCP | Selected local/dev/test work | Existing DataGrip connections and database tools |
-| GitHub MCP | Optional, only for GitHub-hosted work | Not a replacement for Azure DevOps tooling |
-
-Use the [project/global MCP installation recipes](VSCODE-TYPESCRIPT.md#11-configure-project-and-global-mcp-servers).
-Copilot, Codex, and Claude read different configuration locations/formats;
-a server configured in one is not automatically configured in the others.
-Portable global configuration can be shared across editor profiles. Do not
-assume changing profiles stops a server or changes its database permissions.
+Use one editing agent per worktree. Personal skills and global agent/MCP
+configuration can be shared across profiles; a profile switch neither isolates
+credentials nor stops servers. Keep private configuration out of exported
+profiles and review any project files before committing them.
 
 ## 6. Configure DataGrip and PostgreSQL connections
 
-Use DataGrip for substantial database work and Microsoft's PostgreSQL extension
-for in-editor browsing. Both connect to the same servers independently; saved
-connections, passwords, and SSH tunnels do not automatically synchronize.
-The installed DataGrip version checked was **2026.2.6**.
-
-### Name connections consistently
-
-| Environment | Suggested name in both clients | Normal permission | DataGrip colour |
-|---|---|---|---|
-| Local | LOCAL • app • developer | Read/write to local development data | Blue |
-| Development | DEV • app • developer | Team-approved development privileges | Green |
-| Test | TEST • app • reader | Read-only initially; separate writer when needed | Amber |
-| Production | PROD • app • READ ONLY | Database-enforced read-only role | Red |
-| Production maintenance | PROD • app • MAINTENANCE | Separate deliberate maintenance access | Red |
-
-Use personal, identifiable database accounts. Do not reuse application service
-accounts. A production read replica can suit investigation; account for lag
-when checking a recent write. A profile name or connection colour is a visual
-cue, not a permission boundary.
-
-### Configure the VS Code client at User scope
-
-1. Run **PGSQL: Add New Connection** in Full Stack or Operations.
-2. Enter the real server, database, authentication, and friendly connection name.
-3. Open **Advanced**. Set **Scope → User**, the correct port, and required SSL.
-4. Use server groups to separate environments. Test before saving.
-5. Choose **Save Password** only when appropriate; the extension uses VS Code
-   SecretStorage, backed by macOS Keychain, rather than plaintext settings.
-6. Keep local/dev/test work in Full Stack and production investigation in
-   Operations. Other extensions and clients can still access what their own
-   configured credentials allow.
-
-User scope avoids a committed `.vscode/settings.json` connection. Azure-hosted
-PostgreSQL can use Entra authentication when the server and roles support it;
-Azure DevOps usage alone does not identify your database host.
-[Connections and credential storage](https://learn.microsoft.com/en-us/azure/postgresql/development/vs-code-extension/connections).
-
-For a local Docker database, use its published host port, preferably bound to
-`127.0.0.1`. For remote servers, use approved private networking/VPN or an SSH
-bastion. Both clients support tunnelling and TLS; match the actual server's
-certificate requirements. Prefer hostname/CA verification through **Verify
-Full** rather than disabling verification to make a connection work.
-[VS Code advanced connections](https://learn.microsoft.com/en-us/azure/postgresql/development/vs-code-extension/advanced-connection-options),
-[DataGrip SSH/TLS](https://www.jetbrains.com/help/datagrip/configuring-ssh-and-ssl.html).
-
-### Configure DataGrip and production sessions
-
-In **Data Sources and Drivers**, set friendly names, colours, selected schemas,
-and the connection's read-only option. Use a restricted database role for the
-normal production connection. Manual transaction mode is useful for deliberate
-maintenance, but does not make every operation reversible. Keep the maintenance
-connection separate and disconnect after use.
-[DataGrip connection configuration](https://www.jetbrains.com/help/datagrip/configuring-database-connections.html).
-
-Before important work, confirm the actual connection:
-
-```sql
-SELECT
-  current_database() AS database_name,
-  current_user AS database_user,
-  inet_server_addr() AS server_address,
-  inet_server_port() AS server_port;
-```
-
-Use filters/row limits and sensible statement/lock timeouts for investigation.
-Do not leave transactions open while switching tasks. Keep production data and
-schema changes as reviewed SQL/migrations rather than casual grid edits.
-
-### DataGrip MCP and AI access
-
-In DataGrip, open **Settings → Tools → MCP Server**, enable it, and inspect
-**Exposed Tools**. Use its **Copy Config** or detected-client configuration for
-your chosen client, preferring personal/global configuration. Restart the
-client and test listing database connections before querying. Keep DataGrip
-open with the intended project. Do not guess a permanent MCP port or command.
-[JetBrains MCP setup](https://www.jetbrains.com/help/datagrip/mcp-server.html).
-
-Initially use agent tools for local/dev/test only. Leave production out of the
-agent workflow. For any later production agent access, database-enforced
-read-only credentials are required for guaranteed write restriction. DataGrip
-read-only UI flags, VS Code profiles, and MCP tool selection are not substitutes.
-Leave DataGrip's command-execution-without-confirmation setting disabled.
-
-The PostgreSQL extension's per-connection **Copilot access mode → Read Only**
-is an additional control for that integration; it does not govern Codex,
-Claude, or DataGrip MCP. Configure and verify each path independently.
-
-### Optional SQL-file handoff
-
-If you install Switch to DataGrip, its User Settings for this Mac can be:
-
-```json
-{
-  "switch2datagrip.dataGripPath": "/Users/kwakes.prempeh/Applications/DataGrip.app"
-}
-```
-
-Open the intended DataGrip project first, then use **Open in DataGrip** from
-VS Code's editor context menu. This opens the file in DataGrip; it does not
-mirror its database tree. Avoid its default Cmd+Shift+D if it conflicts with
-VS Code's debugging shortcut.
-[Extension listing](https://marketplace.visualstudio.com/items?itemName=MaxPowerEngine.switch2datagrip).
+Database connections and credentials are a separate manual step. Use the
+[DataGrip and PostgreSQL reference](VSCODE-TYPESCRIPT.md#14-datagrip-and-postgresql-connections)
+for naming, User-scope connections, TLS, restricted production access and MCP.
+Choose only the environments your work requires. A profile or connection
+colour does not enforce database permissions.
 
 ## 7. Finish shortcuts, icons, worktrees, and Zsh
 
@@ -1006,35 +849,10 @@ VS Code's debugging shortcut.
 | Native Git worktrees | One working directory for each independent branch/agent task | [Worked UI/CLI example](VSCODE-TYPESCRIPT.md#8-create-a-native-git-worktree-worked-example) |
 | Zsh in VS Code and Warp | Shared PATH, Node manager and history; terminal-specific completions | [Complete home-file merge recipe](VSCODE-TYPESCRIPT.md#12-use-zsh-consistently-in-vs-code-and-warp) |
 
-Useful macOS actions:
-
-| Action | Shortcut / entry point |
-|---|---|
-| Command Palette | Cmd+Shift+P |
-| Quick Open | Cmd+P |
-| Format document | Shift+Option+F |
-| Rename symbol | F2, or Fn+F2 when required by the keyboard |
-| Problems | Cmd+Shift+M |
-| Toggle integrated terminal | Ctrl+backtick |
-| Open external terminal in Warp | Cmd+Shift+C, with the setting above |
-| Organise imports, custom chord | Cmd+K then Cmd+I, after adding the recipe |
-| Remove unused imports, custom chord | Cmd+K then Cmd+U, after adding the recipe |
-| Sort imports, custom chord | Cmd+K then Cmd+Shift+I, after adding the recipe |
-
-For the native worktree flow: open **Source Control Repositories → More
-Actions → Worktrees → Create Worktree**, choose/create a branch, choose a
-sibling directory, then open it in a new window with the intended profile.
-Native support requires Git; no worktree extension is needed. Give each
-worktree appropriate local ports and database state before running migrations.
-
-For Warp, retain shared PATH/Node/history, but guard optional Zsh completion
-and line-editor plugins with `TERM_PROGRAM != WarpTerminal` as documented in
-the linked recipe. Prefer Warp's native suggestions there; avoid duplicate
-`compinit`, prompt initialization, and shell integration. If VS Code's
-suggestion dropdown competes with shell autosuggestions, choose one owner.
-
-Do not overwrite `.zshrc`, `.zprofile`, or a chezmoi-owned source file wholesale.
-This is a merge into your chosen shell setup, not another dotfile manager.
+Follow the linked recipe only for the capability you selected. The advanced
+reference owns the detailed shortcuts and shell/worktree examples. Preserve
+existing configuration and merge through its chosen owner, including chezmoi
+when used. Review account permissions separately from editor appearance.
 
 ## 8. Verify and export
 
@@ -1058,6 +876,42 @@ This is a merge into your chosen shell setup, not another dotfile manager.
 Exported profiles do not replace database credential management or runtime
 configuration backups. A successful editor setup does not establish that a
 migration is safe. No live configuration is changed by this guide.
+
+## 9. Optional custom profile: Tech Content Creator
+
+Use a separate writing profile only when articles, tutorials or screenshots
+need a different editor layout. This is a manual customisation, not a fifth
+`vscode-profile` generator recipe. Work and Personal profiles can use the same
+approach with their organisation-approved extensions and account policies.
+
+1. Export the current configuration using the [backup guide](VSCODE.md#export-and-back-up-the-configuration).
+2. Create **Tech Content Creator** by copying a reviewed Default profile, or
+   choose **Empty Profile** when cleaning up unknown state.
+3. Review the [Default extension list](#default-extensions). Markdown, spelling,
+   Prettier and icons cover the writing baseline. Add `usernamehw.errorlens`
+   only if inline error messages help your demonstrations.
+4. Apply [shared User Settings](#3-apply-shared-user-settings) and
+   [Default overrides](#default-overrides), then merge the presentation
+   overrides below. Preserve both explicit agent approval settings and the
+   shared commit-message instructions when editing the baseline.
+5. Test Markdown formatting, terminal launch and a sample document; then
+   [export the new profile](VSCODE.md#export-a-portable-profile--preferred).
+
+```jsonc
+{
+  "editor.fontSize": 15,
+  "editor.lineHeight": 24,
+  "editor.wordWrap": "on",
+  "editor.rulers": [88],
+  "window.commandCenter": false,
+  "zenMode.hideLineNumbers": false
+}
+```
+
+These are overrides, not a complete settings file. Keep project formatting
+rules in the repository's own configuration. Inspect exports for private
+paths, account details and unwanted extensions; profile copying is a snapshot,
+so later shared-baseline changes must be reviewed in this custom profile too.
 
 ---
 

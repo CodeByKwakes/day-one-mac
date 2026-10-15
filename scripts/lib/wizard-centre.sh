@@ -71,7 +71,7 @@ centre_module_selection() {
       choose_ai_clients '' 'Select AI clients · Space to toggle, Enter to review' || return $?
       [[ -n "$MENU_RESULT" ]] || return 1
       CENTRE_SELECTION=(--clients "$MENU_RESULT") ;;
-    10A|11|12|15|16|17|18|19|20|22)
+    10A|11|15|16|17|18|19|20|22)
       ui_text 'Use a reviewed TSV manifest described in the module guide. Empty input cancels.'
       printf '  Manifest path: '; IFS= read -r value
       [[ -n "$value" && "$value" != :back ]] || return 1

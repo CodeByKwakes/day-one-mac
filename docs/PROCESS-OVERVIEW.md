@@ -356,9 +356,11 @@ repeatedly stop for unrelated choices.
 | [**10 — AI clients**](02-optional/10-ai-agents.md) | Claude Code, Codex, GitHub Copilot app, Copilot in VS Code, Copilot CLI, or Raycast AI |
 | [**10A — OmniRoute**](02-optional/10a-omniroute.md) | A local Docker AI gateway for selected compatible clients |
 | [**11 — MCP servers**](02-optional/11-mcp-servers.md) | Reviewed external tools and data sources for selected AI clients |
-| [**12 — VS Code profiles**](02-optional/12-vscode-profiles.md) | Separate work, personal, or content-creation editor environments |
 | [**13 — Enhanced CLI tools**](02-optional/13-enhanced-cli-tools.md) | eza, fzf, zoxide, lazygit, lazydocker, Zsh helpers, and related tools |
 | [**14 — Warp Drive**](02-optional/14-warp-drive.md) | Importable Day One Mac workflows and command references |
+
+VS Code profiles are configured in the [application guide](10-app-guides/VSCODE-PROFILES.md).
+Module 12 is retired; existing module numbers are unchanged.
 
 Unselected clients and applications are left unchanged. Deselecting something
 is not permission to uninstall it.

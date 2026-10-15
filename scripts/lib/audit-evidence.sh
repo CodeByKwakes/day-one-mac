@@ -39,13 +39,13 @@ day_one_audit_evidence() {
     else printf 'selection-%s\tINFO\tnot recorded\n' "$file"
     fi
   done
-  for id in 09 10 10A 11 12 13 14 15 16 17 18 19 20 22; do
+  for id in 09 10 10A 11 13 14 15 16 17 18 19 20 22; do
     case "$id" in
       09) selection=database-services ;;
       10) selection=software-10-clients
           [[ -s "$STATE_DIR/$selection" ]] || selection=ai-clients ;;
       10A) selection=omniroute-selection.tsv ;;
-      11|12|14|15|17|18|22) selection="artifact-$id-selection.tsv" ;;
+      11|14|15|17|18|22) selection="artifact-$id-selection.tsv" ;;
       19) selection=preferences-19-selection.tsv ;;
       20) selection=restore-20-selection.tsv ;;
       13) selection=optional-cli-packages ;;

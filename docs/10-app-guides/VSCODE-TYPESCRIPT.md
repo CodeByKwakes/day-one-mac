@@ -1,39 +1,26 @@
-[← VS Code first launch](VSCODE.md) · [Profiles](../02-optional/12-vscode-profiles.md) · [MCP module](../02-optional/11-mcp-servers.md)
+[← VS Code first launch](VSCODE.md) · [Profile setup](VSCODE-PROFILES.md) · [MCP module](../02-optional/11-mcp-servers.md)
 
-# Configure VS Code for Angular, NestJS, Nx, and AI agents
+# Advanced VS Code reference for TypeScript and AI workflows
 
-**Document type:** how-to guide with reference tables. **Audience:** experienced
+**Document type:** reference with task-specific how-to recipes. **Audience:** experienced
 TypeScript developers on macOS. **Last source check:** 15 October 2026.
 
-Use this guide to configure a personal editor for Angular, NestJS, Prisma, Nx,
-Azure DevOps, PostgreSQL, Docker, Codex, GitHub Copilot, and occasional Claude
-Code use. It includes project skills, agent adapters, and MCP connections.
-VS Code's stable release page listed **1.142.0** when checked; use **Code →
-Check for Updates** rather than assuming that version stays current.
-[Release notes](https://code.visualstudio.com/updates/v1_142).
+Use this reference after [base setup](VSCODE.md) and the
+[main profile guide](VSCODE-PROFILES.md). It explains optional capabilities,
+import shortcuts, icons, worktrees, skills, agents, MCP and shell integration.
+Read the section needed for your task; this is not a second setup checklist.
 
-Editor preferences and keyboard shortcuts belong in **User Settings for the
-active profile**, not a committed `.vscode/settings.json`. Skills and agent
-definitions require files; you can keep those project files local or share
-them deliberately. Nothing in this guide automatically changes your live
-editor, installs an extension, signs in, or applies a database migration.
-
-Complete [Phase 7](../01-required/07-vscode-base.md) first. Day One Mac's base
-settings and trust checks still apply; merge additions rather than replacing
-them. For first launch, backups, imports, and Settings Sync, use the
-[VS Code application guide](VSCODE.md).
-
-Start with the [final profile setup](VSCODE-PROFILES.md) for the authoritative
-profile extension tables and ordered User Settings recipe, including your
-DataGrip and local/dev/test/production workflow. This document supplies the
-detailed examples behind that setup. Its focused settings blocks are reference
-recipes, not extra overrides to apply blindly after the final setup.
+The main profile guide owns the extension assignments and shared/per-profile
+settings. This reference owns the advanced examples and import keybindings.
+Merge optional examples only when needed; repository rules and managed policy
+still apply. Account sign-in, credential permissions and external services
+must be checked separately from editor profile configuration.
 
 ## Contents
 
 1. [Prepare the toolchain and profiles](#1-prepare-the-toolchain-and-profiles)
-2. [Install the extension set](#2-install-the-extension-set)
-3. [Configure User Settings and profile colors](#3-configure-user-settings-and-profile-colors)
+2. [Extension capability reference](#2-extension-capability-reference)
+3. [AI workflow reference](#3-ai-workflow-reference)
 4. [Configure import cleanup and keyboard shortcuts](#4-configure-import-cleanup-and-keyboard-shortcuts)
 5. [Edit environment files](#5-edit-environment-files)
 6. [Configure Angular and NestJS folder icons](#6-configure-angular-and-nestjs-folder-icons)
@@ -44,6 +31,7 @@ recipes, not extra overrides to apply blindly after the final setup.
 11. [Configure project and global MCP servers](#11-configure-project-and-global-mcp-servers)
 12. [Use Zsh consistently in VS Code and Warp](#12-use-zsh-consistently-in-vs-code-and-warp)
 13. [Verify, troubleshoot, and maintain the setup](#13-verify-troubleshoot-and-maintain-the-setup)
+14. [DataGrip and PostgreSQL connections](#14-datagrip-and-postgresql-connections)
 
 ## 1. Prepare the toolchain and profiles
 
@@ -60,74 +48,18 @@ Angular, NestJS, Nx, Prisma, ESLint, the PostgreSQL server, or the Docker engine
 Install project dependencies before diagnosing language-server failures.
 For a Python-based MCP server, also complete the selected Python/uv setup.
 
-### Choose four purposeful profiles
+### Choose profiles in the main guide
 
-| Profile | Purpose | Main workflows | Appearance |
-|---|---|---|---|
-| **Default** | Lightweight general editing and troubleshooting | Markdown, configuration, native Git | Dark Modern, neutral accent |
-| **Full Stack** | Daily TypeScript development | Angular, NestJS, Nx, Prisma, Copilot, Codex, Claude Code, Good Prompts | Dark Modern, blue accent |
-| **Operations** | Database and infrastructure investigation | PostgreSQL, Docker, Azure Pipelines, agents | Dark Modern, green accent |
-| **AI** | Focused agent work and prompt authoring | Copilot/Codex/Claude Code, reviews, debugging, skills, prompt evaluation | Dark Modern, purple accent |
+Use [Choose and create profiles](VSCODE-PROFILES.md#1-choose-and-create-profiles)
+for the manual or generated route. Default, Full Stack, AI and Operations are
+available recipes, not a requirement to maintain four profiles. Profiles do
+not isolate accounts, agent credentials or database permissions.
 
-Angular and NestJS belong together because they share TypeScript tooling and
-often the same Nx repository. Add a separate employer profile only when
-account or extension policies require it. Profiles are editor customization
-sets; they are not separate operating-system accounts or agent sandboxes.
+## 2. Extension capability reference
 
-1. Export the existing profile before changing it.
-2. Open **Manage → Profiles** and configure Default.
-3. Create Full Stack and Operations by copying Default; create AI by copying
-   the configured Full Stack profile and applying the AI section below.
-4. Give each its own Settings and Extensions configuration.
-5. Use **Apply Extension to all Profiles** for the shared baseline.
-6. Use **Apply Setting to all Profiles** for shared preferences.
-7. Associate your Nx root with Full Stack.
-
-Copying a profile creates a snapshot, not automatic inheritance. To edit the
-right file, switch profiles, then run **Preferences: Open User Settings
-(JSON)**. Named profiles have separate settings files. You do not need to
-find their internal profile IDs. [Profile documentation](https://code.visualstudio.com/docs/configure/profiles).
-
-## 2. Install the extension set
-
-**All** means Default, Full Stack, Operations, and AI. Optional entries are choices,
-not another installation checklist. The linked listings verify the display
-names and Marketplace identifiers.
-
-| Display name | Identifier | What it provides | Profiles |
-|---|---|---|---|
-| [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) | `esbenp.prettier-vscode` | Formatting for TypeScript, templates, styles, JSON, Markdown, and YAML | All |
-| [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme) | `pkief.material-icon-theme` | File/folder icons and custom associations | All |
-| [EditorConfig](https://marketplace.visualstudio.com/items?itemName=editorconfig.editorconfig) | `editorconfig.editorconfig` | Honor repository whitespace conventions | All |
-| [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) | `yzhang.markdown-all-in-one` | Markdown editing conveniences | All |
-| [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker) | `streetsidesoftware.code-spell-checker` | Spelling diagnostics | All |
-| [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) | `dbaeumer.vscode-eslint` | Repository lint diagnostics and fixes | Full Stack, AI |
-| [Angular Language Service](https://marketplace.visualstudio.com/items?itemName=Angular.ng-template) | `angular.ng-template` | Angular template completion, diagnostics, and navigation | Full Stack, AI |
-| [Nx Console](https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console) | `nrwl.angular-console` | Nx target/generator workflows and workspace information | Full Stack, AI |
-| [Prisma](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma) | `prisma.prisma` | Prisma schema completion, diagnostics, and formatting | Full Stack, AI |
-| [GitLens — Git supercharged](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) | `eamodio.gitlens` | Richer blame, history, comparisons, and remote links | Full Stack, Operations, AI |
-| [Codex – OpenAI's coding agent](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt) | `openai.chatgpt` | Codex coding, investigation, and review integration | Full Stack, AI; Operations optional |
-| [Claude Code for VS Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) | `anthropic.claude-code` | Claude's own editor integration | Full Stack, AI; Operations optional |
-| [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) | `redhat.vscode-yaml` | General YAML completion and schema diagnostics | Full Stack, Operations, AI |
-| [Azure Pipelines](https://marketplace.visualstudio.com/items?itemName=ms-azure-devops.azure-pipelines) | `ms-azure-devops.azure-pipelines` | Pipeline YAML language/schema support | Full Stack, Operations |
-| [Container Tools](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-containers) | `ms-azuretools.vscode-containers` | Docker/Compose editing and container management | Full Stack, Operations |
-| [PostgreSQL](https://marketplace.visualstudio.com/items?itemName=ms-ossdata.vscode-pgsql) | `ms-ossdata.vscode-pgsql` | Database connections, SQL, objects, and query plans | Full Stack, Operations; AI optional |
-| [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) | `ms-vscode-remote.remote-containers` | Run the development toolchain in a container | Full Stack, Operations optional |
-| [DotENV](https://marketplace.visualstudio.com/items?itemName=mikestead.dotenv) | `mikestead.dotenv` | `.env` syntax highlighting | Full Stack, Operations, AI |
-| [vscode-angular-html](https://marketplace.visualstudio.com/items?itemName=ghaschel.vscode-angular-html) | `ghaschel.vscode-angular-html` | Additional Angular HTML syntax highlighting | Full Stack |
-| [markdownlint](https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint) | `davidanson.vscode-markdownlint` | Markdown structure checks for documentation and skill files | All |
-| [Good Prompts](https://marketplace.visualstudio.com/items?itemName=omarbanat.goodprompts) | `omarbanat.goodprompts` | Guided local prompt templates and a personal library | Full Stack, AI |
-| [Chat Customizations Evaluations](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-chat-customizations-evaluations) | `ms-vscode.vscode-chat-customizations-evaluations` | Analyze prompts, skills, agents, and instructions | AI optional |
-| [Foundry Toolkit for VS Code](https://marketplace.visualstudio.com/items?itemName=ms-windows-ai-studio.windows-ai-studio) | `ms-windows-ai-studio.windows-ai-studio` | Model playground and AI application/agent development | AI optional |
-
-Install through the active profile's Extensions view, or name the profile:
-
-```bash
-code --profile "Full Stack" --install-extension angular.ng-template
-code --profile "Full Stack" --install-extension ghaschel.vscode-angular-html
-code --profile "Full Stack" --install-extension mikestead.dotenv
-code --profile "Operations" --install-extension ms-ossdata.vscode-pgsql
-```
+Use the [canonical extension lists](VSCODE-PROFILES.md#2-install-the-final-extension-lists)
+for exact IDs, required/optional assignments and installation. Do not install
+a second list from this reference after completing the main guide.
 
 ### Native capabilities, accounts, and trade-offs
 
@@ -162,383 +94,25 @@ code --profile "Operations" --install-extension ms-ossdata.vscode-pgsql
 - Markdownlint checks Markdown, not whether a skill's instructions or an
   agent's tool names are valid. No skills-manager extension is required.
 
-## 3. Configure User Settings and profile colors
+## 3. AI workflow reference
 
-All editor snippets in this section belong in **User Settings**, not repository
-settings. For focused agent work, go directly to the [AI profile](#ai-profile-focused-agent-work-and-prompt-authoring).
-Merge their properties into one JSON object. Preserve the Day One
-terminal/font and approval settings. Existing workspace and managed settings
-can override your preferences; inspect the Settings editor when values differ.
-
-### Shared preferences: all profiles
-
-```json
-{
-  "files.autoSave": "off",
-  "files.insertFinalNewline": true,
-  "editor.minimap.enabled": false,
-  "editor.renderWhitespace": "selection",
-  "editor.rulers": [100],
-  "editor.bracketPairColorization.enabled": true,
-  "editor.guides.bracketPairs": true,
-  "editor.stickyScroll.enabled": true,
-  "editor.formatOnSave": false,
-  "editor.formatOnPaste": false,
-  "editor.linkedEditing": true,
-  "git.autofetch": true,
-  "git.confirmSync": true,
-  "git.enableSmartCommit": false,
-  "scm.alwaysShowRepositories": true,
-  "workbench.editor.labelFormat": "medium",
-  "terminal.integrated.defaultProfile.osx": "zsh",
-  "terminal.integrated.shellIntegration.enabled": true,
-  "terminal.integrated.scrollback": 10000,
-  "workbench.colorTheme": "Dark Modern",
-  "workbench.iconTheme": "material-icon-theme"
-}
-```
-
-Explicit saves make formatting predictable. Git autofetch refreshes metadata
-without merging. Smart commit stays disabled so unstaged files are not silently
-included. Linked editing helps rename matching HTML tags; it is distinct from
-TypeScript symbol rename. Sticky scroll retains the enclosing code context.
-
-### Full Stack: language and formatting preferences
-
-```json
-{
-  "editor.tabSize": 2,
-  "editor.insertSpaces": true,
-  "editor.detectIndentation": true,
-  "prettier.requireConfig": false,
-  "prettier.singleQuote": true,
-  "prettier.semi": true,
-  "prettier.printWidth": 100,
-  "prettier.tabWidth": 2,
-  "eslint.format.enable": false,
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit",
-      "source.sortImports": "explicit",
-      "source.organizeImports": "never",
-      "source.removeUnusedImports": "never"
-    }
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit",
-      "source.sortImports": "explicit",
-      "source.organizeImports": "never",
-      "source.removeUnusedImports": "never"
-    }
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit",
-      "source.sortImports": "explicit",
-      "source.organizeImports": "never",
-      "source.removeUnusedImports": "never"
-    }
-  },
-  "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[scss]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[css]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true,
-    "editor.wordWrap": "on"
-  },
-  "[prisma]": {
-    "editor.defaultFormatter": "Prisma.prisma",
-    "editor.formatOnSave": true
-  },
-  "search.exclude": {
-    "**/dist": true,
-    "**/coverage": true,
-    "**/.nx": true,
-    "**/.angular": true
-  },
-  "files.watcherExclude": {
-    "**/dist/**": true,
-    "**/coverage/**": true,
-    "**/.nx/**": true,
-    "**/.angular/**": true
-  }
-}
-```
-
-Prettier's personal options are fallbacks: repository Prettier/EditorConfig
-rules take precedence. Avoid a global `prettier.configPath`, which forces one
-configuration over project rules. ESLint still needs the project package and
-configuration. Angular HTML linting needs the project's Angular ESLint setup.
-[Prettier configuration](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
-
-Open the Nx root and run **TypeScript: Select TypeScript Version → Use Workspace
-Version**. Prefer the version supported by that Angular project. If automatic
-discovery fails, current documentation uses `js/ts.tsdk.path`, not the older
-`typescript.tsdk`; set an appropriate path only for that project. Do not
-hard-code one global installation for every repository.
-[TypeScript version selection](https://code.visualstudio.com/docs/typescript/typescript-transpiling).
-
-### Full Stack and Operations: YAML and infrastructure files
-
-```json
-{
-  "files.associations": {
-    "azure-pipelines.yml": "azure-pipelines",
-    "azure-pipelines.yaml": "azure-pipelines",
-    "**/.azure-pipelines/**/*.yml": "azure-pipelines",
-    "**/.azure-pipelines/**/*.yaml": "azure-pipelines",
-    ".env": "dotenv",
-    ".env.*": "dotenv",
-    "*.env": "dotenv"
-  },
-  "yaml.format.enable": false,
-  "[yaml]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[azure-pipelines]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[sql]": {
-    "editor.formatOnSave": false
-  },
-  "[dockerfile]": {
-    "editor.formatOnSave": false
-  }
-}
-```
-
-Merge file associations with existing ones. Only associate known pipeline
-paths; leave other YAML in YAML mode. SQL and Dockerfiles stay manually
-formatted until a formatter is chosen. Prettier formats YAML while Red Hat
-YAML supplies schema diagnostics. Pipelines have their own language ID.
-[Azure Pipelines settings](https://marketplace.visualstudio.com/items?itemName=ms-azure-devops.azure-pipelines).
-
-### Full Stack and Operations: Git and agents
-
-```json
-{
-  "gitlens.currentLine.enabled": false,
-  "gitlens.codeLens.enabled": false,
-  "gitlens.statusBar.enabled": true,
-  "github.copilot.enable": {
-    "*": true,
-    "plaintext": false,
-    "markdown": false,
-    "scminput": false,
-    "dotenv": false
-  },
-  "chat.useAgentSkills": true,
-  "chat.useAgentsMdFile": true,
-  "chat.useClaudeMdFile": true,
-  "chat.useCustomizationsInParentRepositories": true,
-  "github.copilot.chat.cli.customAgents.enabled": true,
-  "chatgpt.openOnStartup": false,
-  "chatgpt.composerEnterBehavior": "cmdAlways",
-  "chatgpt.commentCodeLensEnabled": false
-}
-```
-
-GitLens stays available without inline clutter. Copilot supplies inline
-suggestions; select Codex when you want its agent workflow. Parent discovery
-helps when opening an Nx subfolder. These chat settings govern supported native
-workflows, not every vendor extension. Avoid deprecated customization-location
-settings. [Current AI setting reference](https://code.visualstudio.com/docs/agents/reference/ai-settings).
-
-If Claude/markdownlint are installed, add:
-
-```json
-{
-  "claudeCode.preferredLocation": "sidebar",
-  "claudeCode.initialPermissionMode": "default",
-  "markdownlint.run": "onSave"
-}
-```
-
-Codex runtime settings use `~/.codex/config.toml`; Claude's use its supported
-personal/project configuration files. VS Code profiles do not isolate those
-files or provider credentials. Extension UI preferences remain User Settings.
-[OpenAI IDE settings](https://learn.chatgpt.com/docs/ide/settings),
-[Claude extension settings](https://code.claude.com/docs/en/vs-code).
-
-### Profile colors: keep these separate
-
-Use these blocks in the respective profile, without **Apply to all Profiles**:
-
-**Default:**
-
-```json
-{
-  "workbench.colorCustomizations": {
-    "titleBar.activeBackground": "#30343B",
-    "titleBar.activeForeground": "#FFFFFF"
-  }
-}
-```
-
-**Full Stack:**
-
-```json
-{
-  "workbench.colorCustomizations": {
-    "titleBar.activeBackground": "#163A63",
-    "titleBar.activeForeground": "#FFFFFF",
-    "activityBarBadge.background": "#2563EB"
-  }
-}
-```
-
-**Operations:**
-
-```json
-{
-  "workbench.colorCustomizations": {
-    "titleBar.activeBackground": "#174B3A",
-    "titleBar.activeForeground": "#FFFFFF",
-    "activityBarBadge.background": "#16805D"
-  }
-}
-```
+Shared settings, language formatters, environment-file behaviour, profile
+colours and agent preferences are defined only in the
+[main profile settings](VSCODE-PROFILES.md#3-apply-shared-user-settings).
+Use its [AI overrides](VSCODE-PROFILES.md#ai-overrides) for the settings discussed
+below. This section describes how to use the resulting tools.
 
 ### AI profile: focused agent work and prompt authoring
 
-Use **AI** for planning, investigating failures, reviewing diffs, maintaining
-skills/agents, and preparing prompts. Keep Full Stack for ordinary coding with
-inline completions. The AI profile should retain semantic TypeScript tooling
-so agent changes still receive Angular, ESLint, and Prisma diagnostics.
+Use AI for planning, investigation, reviewing diffs, maintaining skills and
+preparing prompts. Keep the relevant language diagnostics enabled. Place the
+active chat beside the editor/diff and run one editing agent per worktree.
+Choose the intended account and permission mode in each client; switching
+profiles does not isolate personal skills, MCP processes or CLI configuration.
 
-Create it by copying **Full Stack**, name it **AI**, then:
-
-1. Keep Prettier, Material Icon Theme, ESLint, Angular Language Service, Nx
-   Console, Prisma, DotENV, GitLens, Copilot, Codex, and Claude Code.
-2. Enable markdownlint for instruction, skill, and prompt authoring.
-3. Keep Claude Code enabled in AI and sign in through its own panel. Selecting
-   a Claude model in Copilot uses Copilot's account and workflow, not Claude Code.
-4. Disable Azure Pipelines, Container Tools, PostgreSQL, and Dev Containers
-   in this profile initially; enable a specific tool when the task needs it.
-5. Include Good Prompts in Full Stack and AI; add an optional evaluation tool
-   only when it solves a problem you encounter.
-   Do not add Cline, Roo Code, Continue, and several prompt managers merely
-   to fill the profile: each adds another agent/configuration surface.
-6. Open **View → Appearance → Secondary Side Bar**, place your active chat
-   there, and keep the editor/diff visible beside it. Run one editing agent
-   per worktree; another agent may review a snapshot independently.
-
-The distinct profile provides a focused layout and authoring tools. It does
-not isolate provider accounts, personal skills, MCP processes, or
-`~/.codex/config.toml`. Open a separate worktree for independent changes.
-
-#### AI profile User Settings
-
-Keep the shared settings and TypeScript formatting blocks already copied from
-Full Stack. Merge these **overrides into User Settings while AI is active**;
-do not apply the purple colors or inline-completion choice to every profile.
-The two approval settings preserve Day One Mac's baseline.
-
-```json
-{
-  "workbench.colorTheme": "Dark Modern",
-  "workbench.colorCustomizations": {
-    "titleBar.activeBackground": "#452568",
-    "titleBar.activeForeground": "#FFFFFF",
-    "activityBarBadge.background": "#9B6DDA"
-  },
-  "files.autoSave": "off",
-  "chat.fontSize": 14,
-  "chat.editor.fontSize": 13,
-  "chat.editor.wordWrap": "on",
-  "chat.checkpoints.enabled": true,
-  "chat.checkpoints.showFileChanges": true,
-  "chat.editing.autoAcceptDelay": 0,
-  "chat.editing.confirmEditRequestRemoval": true,
-  "chat.editing.confirmEditRequestRetry": true,
-  "chat.tools.global.autoApprove": false,
-  "chat.tools.terminal.enableAutoApprove": false,
-  "chat.useAgentSkills": true,
-  "chat.useAgentsMdFile": true,
-  "chat.useClaudeMdFile": true,
-  "chat.useCustomizationsInParentRepositories": true,
-  "github.copilot.chat.cli.customAgents.enabled": true,
-  "github.copilot.enable": {
-    "*": false
-  },
-  "chatgpt.openOnStartup": false,
-  "chatgpt.composerEnterBehavior": "cmdAlways",
-  "chatgpt.followUpQueueMode": "queue",
-  "chatgpt.reviewDelivery": "detached",
-  "chatgpt.commentCodeLensEnabled": false,
-  "claudeCode.preferredLocation": "sidebar",
-  "claudeCode.initialPermissionMode": "default",
-  "claudeCode.allowDangerouslySkipPermissions": false,
-  "claudeCode.useTerminal": false,
-  "claudeCode.useCtrlEnterToSend": true,
-  "claudeCode.attachOpenFile": false,
-  "claudeCode.autosave": false,
-  "claudeCode.continueAfterReload": false,
-  "claudeCode.respectGitIgnore": true,
-  "markdownlint.run": "onSave",
-  "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true,
-    "editor.wordWrap": "on",
-    "editor.quickSuggestions": {
-      "other": "off",
-      "comments": "off",
-      "strings": "off"
-    }
-  }
-}
-```
-
-Larger chat text and wrapped code improve reading. Checkpoints and change
-summaries help inspect supported chat edits; Git is still your change record.
-A zero auto-accept delay disables timed acceptance, and retry/removal
-confirmations protect against accidentally undoing work. These controls
-apply to supported native chat flows; they do not govern every vendor agent.
-[VS Code AI settings](https://code.visualstudio.com/docs/agents/reference/ai-settings).
-
-The Copilot `enable` object disables its **inline suggestions**, not Chat or
-agents. This makes prompt writing quieter. To keep inline coding help in AI,
-change `"*"` to `true` and retain the language exclusions from the Full Stack
-agent block. `.env` inline exclusions do not block tool access to the file.
-
-Codex uses Cmd+Enter to submit, queues follow-ups rather than steering a
-running task, and opens reviews separately. Those are extension preferences;
-choose sandbox, approvals, and models through Codex's own controls/config.
-A model available through Copilot is not automatically available through Codex.
-Keep the bundled CLI path unset. [Official OpenAI IDE settings](https://learn.chatgpt.com/docs/ide/settings).
-
-For experiments, select a small supported model for prompt drafts, and a
-stronger available model for ambiguous debugging/reviews. Choose from each
-client's current model picker; do not hard-code a model ID or pretend a
-profile changes subscription limits. API experiments can require separate
-billing even when Copilot or ChatGPT subscriptions are active.
+For experiments, choose models from the actual client's model picker according
+to the task and approved access. A profile does not change subscription limits
+or provide credentials. Use a separate worktree for independent code changes.
 
 #### Claude Code in the AI profile
 
@@ -557,7 +131,7 @@ in Warp or VS Code's terminal requires the separate standalone CLI install.
 [Claude Code listing](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code),
 [extension setup](https://code.claude.com/docs/en/vs-code).
 
-The AI settings above give Claude its own sidebar, Cmd+Enter submission, and
+The main guide’s AI settings give Claude its own sidebar, Cmd+Enter submission, and
 **Manual** starting permissions (`default`). Use **Plan** for prompt generation
 or architecture investigation, then select the appropriate editing mode when
 implementing. Keep one editing agent active per worktree; use Claude for a
@@ -571,7 +145,7 @@ reduces irrelevant results but does not prevent an explicit file read.
 
 For reusable prompts, select **Claude Code** explicitly in Good Prompts; its
 automatic detection may prefer one of your other installed clients. The
-extension settings above belong to **AI User Settings**. Claude's runtime
+extension settings in the main guide belong to **AI User Settings**. Claude's runtime
 permissions, hooks, skills, and MCP configuration remain in its own supported
 personal/project files and are not isolated by the VS Code profile.
 
@@ -586,7 +160,7 @@ reloading the project.
 
 Good Prompts is recommended in **Full Stack and AI**. The two evaluation/app
 tools are optional in **AI**. Marketplace names and IDs were checked in October
-2026; the final profile setup distinguishes their assignments.
+2026; the main profile guide owns their assignments.
 
 | Display name | Identifier | Purpose | Recommendation and requirements |
 |---|---|---|---|
@@ -822,24 +396,13 @@ another action. [Keyboard configuration](https://code.visualstudio.com/docs/conf
 ## 5. Edit environment files
 
 Install DotENV in Full Stack, Operations, and AI. Its verified language identifier
-is `dotenv`; associations in section 3 cover `.env`, `.env.local`,
+is `dotenv`; the main guide’s profile settings cover `.env`, `.env.local`,
 `.env.example`, and `development.env`.
 [Language manifest](https://github.com/mikestead/vscode-dotenv/blob/master/package.json).
 
-Merge this into those profiles' User Settings:
-
-```json
-{
-  "[dotenv]": {
-    "editor.formatOnSave": false,
-    "editor.formatOnPaste": false,
-    "editor.quickSuggestions": false,
-    "editor.inlineSuggest.enabled": false,
-    "editor.wordWrap": "off",
-    "files.trimTrailingWhitespace": false
-  }
-}
-```
+The [canonical profile settings](VSCODE-PROFILES.md#4-apply-profile-settings)
+already disable automatic formatting and suggestions for environment files.
+Review that baseline in the active profile rather than applying another copy.
 
 Keep whitespace and quoting under the application's parser rules. Do not
 associate dotenv with shellscript solely to get colors: Docker Compose, dotenv,
@@ -2012,6 +1575,112 @@ sources, and export a reviewed profile outside this repository. Remote/Dev
 Container extension installation and environment variables must be checked
 in the environment where the tools actually run.
 
+## 14. DataGrip and PostgreSQL connections
+
+Use DataGrip for substantial database work and Microsoft's PostgreSQL extension
+for in-editor browsing. Both connect to the same servers independently; saved
+connections, passwords, and SSH tunnels do not automatically synchronize.
+Use the approved DataGrip version installed on your Mac.
+
+### Name connections consistently
+
+| Environment | Suggested name in both clients | Normal permission | DataGrip colour |
+|---|---|---|---|
+| Local | LOCAL • app • developer | Read/write to local development data | Blue |
+| Development | DEV • app • developer | Team-approved development privileges | Green |
+| Test | TEST • app • reader | Read-only initially; separate writer when needed | Amber |
+| Production | PROD • app • READ ONLY | Database-enforced read-only role | Red |
+| Production maintenance | PROD • app • MAINTENANCE | Separate deliberate maintenance access | Red |
+
+Use personal, identifiable database accounts. Do not reuse application service
+accounts. A production read replica can suit investigation; account for lag
+when checking a recent write. A profile name or connection colour is a visual
+cue, not a permission boundary.
+
+### Configure the VS Code client at User scope
+
+1. Run **PGSQL: Add New Connection** in Full Stack or Operations.
+2. Enter the real server, database, authentication, and friendly connection name.
+3. Open **Advanced**. Set **Scope → User**, the correct port, and required SSL.
+4. Use server groups to separate environments. Test before saving.
+5. Choose **Save Password** only when appropriate; the extension uses VS Code
+   SecretStorage, backed by macOS Keychain, rather than plaintext settings.
+6. Keep local/dev/test work in Full Stack and production investigation in
+   Operations. Other extensions and clients can still access what their own
+   configured credentials allow.
+
+User scope avoids a committed `.vscode/settings.json` connection. Azure-hosted
+PostgreSQL can use Entra authentication when the server and roles support it;
+Azure DevOps usage alone does not identify your database host.
+[Connections and credential storage](https://learn.microsoft.com/en-us/azure/postgresql/development/vs-code-extension/connections).
+
+For a local Docker database, use its published host port, preferably bound to
+`127.0.0.1`. For remote servers, use approved private networking/VPN or an SSH
+bastion. Both clients support tunnelling and TLS; match the actual server's
+certificate requirements. Prefer hostname/CA verification through **Verify
+Full** rather than disabling verification to make a connection work.
+[VS Code advanced connections](https://learn.microsoft.com/en-us/azure/postgresql/development/vs-code-extension/advanced-connection-options),
+[DataGrip SSH/TLS](https://www.jetbrains.com/help/datagrip/configuring-ssh-and-ssl.html).
+
+### Configure DataGrip and production sessions
+
+In **Data Sources and Drivers**, set friendly names, colours, selected schemas,
+and the connection's read-only option. Use a restricted database role for the
+normal production connection. Manual transaction mode is useful for deliberate
+maintenance, but does not make every operation reversible. Keep the maintenance
+connection separate and disconnect after use.
+[DataGrip connection configuration](https://www.jetbrains.com/help/datagrip/configuring-database-connections.html).
+
+Before important work, confirm the actual connection:
+
+```sql
+SELECT
+  current_database() AS database_name,
+  current_user AS database_user,
+  inet_server_addr() AS server_address,
+  inet_server_port() AS server_port;
+```
+
+Use filters/row limits and sensible statement/lock timeouts for investigation.
+Do not leave transactions open while switching tasks. Keep production data and
+schema changes as reviewed SQL/migrations rather than casual grid edits.
+
+### DataGrip MCP and AI access
+
+In DataGrip, open **Settings → Tools → MCP Server**, enable it, and inspect
+**Exposed Tools**. Use its **Copy Config** or detected-client configuration for
+your chosen client, preferring personal/global configuration. Restart the
+client and test listing database connections before querying. Keep DataGrip
+open with the intended project. Do not guess a permanent MCP port or command.
+[JetBrains MCP setup](https://www.jetbrains.com/help/datagrip/mcp-server.html).
+
+Initially use agent tools for local/dev/test only. Leave production out of the
+agent workflow. For any later production agent access, database-enforced
+read-only credentials are required for guaranteed write restriction. DataGrip
+read-only UI flags, VS Code profiles, and MCP tool selection are not substitutes.
+Leave DataGrip's command-execution-without-confirmation setting disabled.
+
+The PostgreSQL extension's per-connection **Copilot access mode → Read Only**
+is an additional control for that integration; it does not govern Codex,
+Claude, or DataGrip MCP. Configure and verify each path independently.
+
+### Optional SQL-file handoff
+
+If you install Switch to DataGrip, set its User Settings to the actual application path. For an app installed
+in the system Applications folder, the example is:
+
+```json
+{
+  "switch2datagrip.dataGripPath": "/Applications/DataGrip.app"
+}
+```
+
+Open the intended DataGrip project first, then use **Open in DataGrip** from
+VS Code's editor context menu. This opens the file in DataGrip; it does not
+mirror its database tree. Avoid its default Cmd+Shift+D if it conflicts with
+VS Code's debugging shortcut.
+[Extension listing](https://marketplace.visualstudio.com/items?itemName=MaxPowerEngine.switch2datagrip).
+
 ---
 
-[VS Code first launch](VSCODE.md) · [Profiles](../02-optional/12-vscode-profiles.md) · [Worktrees](../03-advanced/WORKTREES-VSCODE.md) · [MCP operations](../03-advanced/22-ai-skills-and-mcp-operations.md)
+[VS Code first launch](VSCODE.md) · [Profile setup](VSCODE-PROFILES.md) · [Worktrees](../03-advanced/WORKTREES-VSCODE.md) · [MCP operations](../03-advanced/22-ai-skills-and-mcp-operations.md)

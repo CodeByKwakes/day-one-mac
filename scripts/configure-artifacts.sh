@@ -14,19 +14,18 @@ source "$SCRIPT_DIR/lib/review-node.sh"
 ORIGINAL_ARGS=("$@")
 STATE_ROOT="$(day_one_state_root)"
 STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
-MODULE="" ACTION="" INPUT="" YES=0 SELECTION="" PROFILE="" EXTENSIONS=""
+MODULE="" ACTION="" INPUT="" YES=0 SELECTION=""
 CURRENT="" CURRENT_HASH="" ARTIFACT="" EVIDENCE="" DRIFT="" SOURCE_HASH=""
 export NO_COLOR=1 HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_ANALYTICS=1
 
 die() { printf '%s\n' "$1" >&2; exit "${2:-2}"; }
 usage() {
   cat <<'EOF'
-Usage: configure-artifacts.sh --module 11|12|14|15|17|18|21|22 --plan|--apply|--check|--resume
-  --manifest PATH   Module 11 MCP, 12 profile, 15 dotfiles, 17 helpers, 18 identities or 22 governance TSV
+Usage: configure-artifacts.sh --module 11|14|15|17|18|21|22 --plan|--apply|--check|--resume
+  --manifest PATH   Module 11 MCP, 15 dotfiles, 17 helpers, 18 identities or 22 governance TSV
   --yes             confirm artifact creation, never an import or installation
 
 11 generates workspace MCP snippets, never activates clients or reads tokens.
-12 generates a minimal .code-profile and reviewed extension list.
 14 exports the bundled Warp directory. Both verify files, not application imports.
 15 inventories explicit dotfiles and proposed ownership; never imports content.
 17 generates validated helper bundles and inspects explicit project declarations.
@@ -48,8 +47,9 @@ while (( $# )); do
     *) die "unknown artifact option: $1" ;;
   esac
 done
-[[ "$MODULE" =~ ^(11|12|14|15|17|18|21|22)$ && -n "$ACTION" ]] || die 'choose an artifact module and one action'
-[[ "$MODULE" =~ ^(11|12|15|17|18|22)$ || -z "$INPUT" ]] || die '--manifest is only for Module 11, 12, 15, 17, 18 or 22'
+if [[ "$MODULE" == 12 ]]; then day_one_retired_profile_module "$PROJECT_DIR"; exit 2; fi
+[[ "$MODULE" =~ ^(11|14|15|17|18|21|22)$ && -n "$ACTION" ]] || die 'choose an artifact module and one action'
+[[ "$MODULE" =~ ^(11|15|17|18|22)$ || -z "$INPUT" ]] || die '--manifest is only for Module 11, 15, 17, 18 or 22'
 [[ "$ACTION" != resume || -z "$INPUT" ]] || die '--resume uses saved choices'
 [[ "$YES" == 0 || "$ACTION" == apply || "$ACTION" == resume ]] || die '--yes is only for apply/resume'
 SAVED="$STATE_DIR/artifact-$MODULE-selection.tsv"
@@ -107,50 +107,10 @@ verify_tree() {
   hashes="$(tree_hashes "$1")" || return 1
   [[ "$(printf '%s\n' "$hashes" | shasum -a 256 | awk '{print $1}')" == "$2" ]]
 }
-load_profile() {
-  local row kind value
-  [[ -n "$INPUT" ]] || INPUT="$SAVED"
-  [[ -f "$INPUT" && -r "$INPUT" ]] || die 'Provide a reviewed Module 12 --manifest first.'
-  while IFS= read -r row || [[ -n "$row" ]]; do
-    [[ -n "$row" && "$row" != \#* ]] || continue
-    [[ "$row" == *$'\t'* && "$row" != *$'\r'* ]] || die 'Expected two tab-separated fields.'
-    kind="${row%%$'\t'*}"; value="${row#*$'\t'}"
-    [[ -n "$value" && "$value" != *$'\t'* ]] || die 'Expected exactly two nonempty fields.'
-    case "$kind" in
-      profile)
-        [[ -z "$PROFILE" && "${#value}" -le 64 && "$value" =~ ^[A-Za-z0-9][A-Za-z0-9\ ._-]*$ && "$value" != Default ]] || die 'Use one non-Default profile name (1–64 plain letters, digits, spaces, . _ -).'
-        PROFILE="$value" ;;
-      extension)
-        [[ "$value" =~ ^[a-z0-9][a-z0-9-]*\.[a-z0-9][a-z0-9._-]*$ ]] || die 'Use lowercase publisher.name extension IDs, without versions or paths.'
-        grep -Fxq "$value" <<< "$EXTENSIONS" || EXTENSIONS="${EXTENSIONS:+$EXTENSIONS$'\n'}$value" ;;
-      *) die "Unsupported profile field: $kind" ;;
-    esac
-  done < "$INPUT"
-  [[ -n "$PROFILE" ]] || die 'Manifest needs one profile row.'
-  SELECTION="profile"$'\t'"$PROFILE"
-  while IFS= read -r value; do
-    [[ -z "$value" ]] || SELECTION="$SELECTION"$'\n'"extension"$'\t'"$value"
-  done <<< "$EXTENSIONS"
-}
-profile_json() {
-  local id extensions='[' separator=''
-  while IFS= read -r id; do
-    [[ -n "$id" ]] || continue
-    extensions="$extensions$separator{\"identifier\":{\"id\":\"$id\"}}"
-    separator=,
-  done <<< "$EXTENSIONS"
-  extensions="$extensions]"
-  # VS Code IUserDataProfileTemplate.extensions is a string, not an array;
-  # ExtensionsResource parses that embedded JSON when importing the profile.
-  # Inputs are restricted ASCII; the only inner JSON escapes needed are quotes.
-  printf '{"name":"%s","extensions":"%s"}\n' "$PROFILE" "${extensions//\"/\\\"}"
-}
 manual_steps() {
   case "$MODULE" in
     11) printf '%s\n' 'Manual: review and merge snippets into the intended workspace client configuration. Do not overwrite existing configuration.' \
       'Codex entries are disabled. Tokens, OAuth, client activation and server trust approval remain manual. Integrity is not connectivity or trust.' ;;
-    12) printf '%s\n' 'Manual: export your existing profile, review profile.code-profile, then import into a NEW profile in VS Code.' \
-      'Import may download/run extensions. Review publisher trust and policy first. Accounts, settings and Settings Sync are not configured.' ;;
     14) printf '%s\n' 'Manual: open Warp, choose the intended workspace and import the exported Day One Mac directory.' \
       'Verify imported workflows in Warp; export integrity does not prove an import or cloud sync.' ;;
     15) printf '%s\n' 'Scope: allowlisted dotfile hashes, file ownership and declared manager/source only. Contents are not copied or executed.' \
@@ -188,7 +148,6 @@ case "$MODULE" in
   22)
     SELECTION="$(day_one_governance_selection "${INPUT:-$SAVED}")"
     EVIDENCE="$(day_one_governance_evidence)" || die 'Governance evidence collection failed.' 1 ;;
-  12) load_profile ;;
   14)
     hashes="$(warp_hashes)" || die 'Warp source inventory is unsafe or differs from the runtime allowlist.' 1
     SOURCE_HASH="$(printf '%s\n' "$hashes" | shasum -a 256 | awk '{print $1}')"
@@ -209,7 +168,6 @@ manual_steps
 if [[ "$ACTION" == plan ]]; then
   printf 'Plan only: create a new private Module %s artifact under %s/module-runs/%s/.\n' "$MODULE" "$STATE_DIR" "$MODULE"
   printf 'Selection:\n%s\n' "$SELECTION"
-  if [[ "$MODULE" == 12 ]]; then profile_json; fi
   if [[ "$MODULE" == 11 ]]; then
     for client in claude codex vscode; do
       if grep -q "^$client"$'\t' <<< "$SELECTION"; then printf '\n%s snippet:\n' "$client"; day_one_mcp_render "$client"; fi
@@ -223,9 +181,7 @@ if [[ "$ACTION" == check ]]; then
   [[ -n "$CURRENT" ]] || die 'No published artifact; use --plan then --apply.' 1
   verify_tree "$CURRENT" "$CURRENT_HASH" || die 'Artifact integrity failed; no files changed.' 1
   [[ -f "$CURRENT/selection.tsv" && "$(cat "$CURRENT/selection.tsv")" == "$SELECTION" ]] || die 'Artifact does not match the current selection/source; review a new plan.' 1
-  if [[ "$MODULE" == 12 ]]; then
-    [[ "$(cat "$CURRENT/profile.code-profile")" == "$(profile_json)" ]] || die 'Profile content differs from its reviewed selection.' 1
-  elif [[ "$MODULE" =~ ^(15|17|18|21|22)$ ]]; then
+  if [[ "$MODULE" =~ ^(15|17|18|21|22)$ ]]; then
     printf '%s\n%s\n' "$EVIDENCE" "$DRIFT"
     if grep -q $'\tFAIL\t' <<< "$EVIDENCE" || [[ "$DRIFT" != 'No evidence drift.' ]]; then
       die 'Audit gate failure or evidence drift; review before accepting a new snapshot.' 1
@@ -257,10 +213,6 @@ case "$MODULE" in
         day_one_mcp_render "$client" > "$ARTIFACT/$client-mcp.$suffix"
       fi
     done ;;
-  12)
-    profile_json > "$ARTIFACT/profile.code-profile"
-    printf '%s\n' "$EXTENSIONS" > "$ARTIFACT/extensions.txt"
-    [[ "$(cat "$ARTIFACT/profile.code-profile")" == "$(profile_json)" ]] || die 'Profile generation failed.' 1 ;;
   14)
     # This existing validator uses disposable scratch files, so it is apply-only.
     "$SCRIPT_DIR/validate-warp-drive.sh" > "$MODULE_RUN/source-validation.txt"

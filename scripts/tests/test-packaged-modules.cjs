@@ -7,8 +7,12 @@ try {
   const run = (args, expected = 0) => execute(cli, args, { env, cwd: root, expected });
   const git = args => execute('git', ['-c', 'core.hooksPath=/dev/null', ...args], { env, cwd: root });
   const modules = run(['optional', '--list']).trim().split('\n').slice(1).map(row => row.split('\t'));
-  need(modules.length === 15 && modules.every(row => row[2] === 'executable'), 'Packaged capability registry is incomplete.');
+  need(modules.length === 14 && modules.every(row => row[2] === 'executable'), 'Packaged capability registry is incomplete.');
   need(!fs.existsSync(path.join(runtime, 'node_modules')) && !fs.existsSync(path.join(runtime, '.git')), 'Package contains development dependencies or Git metadata.');
+  need(!modules.some(row => row[0] === '12'), 'Retired module advertised as active.');
+  const beforeRetired = stateSnapshot(state);
+  execute(cli, ['optional', '--module', '12', '--apply', '--manifest', '/missing.tsv', '--yes'], { env, cwd: root, expected: 2 });
+  need(stateSnapshot(state) === beforeRetired, 'Retired module changed packaged state.');
   // Exercise the public profile route outside a checkout, using only bundled recipes.
   run(['vscode-profile', '--help']);
   for (const slug of ['default', 'full-stack', 'ai', 'operations']) {
@@ -62,5 +66,5 @@ try {
   for (const id of ['17','18','20','21']) need(new RegExp(`partial +${id} —`).test(dashboard), 'Package claimed manual work was complete.');
   need(stateSnapshot(state) === before, 'Packaged dashboard changed setup state.');
   run(['verify']);
-  console.log('PASS: archive installation, 15 capabilities, packaged Node helpers, plan/apply/check/resume, drift and bounded audit');
+  console.log('PASS: archive installation, 14 active capabilities, packaged Node helpers, plan/apply/check/resume, drift and bounded audit');
 } finally { fs.rmSync(root, { recursive: true, force: true }); }

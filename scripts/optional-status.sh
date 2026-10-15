@@ -26,7 +26,7 @@ PARTIALS=0
 PENDING=0
 ENVIRONMENT_FAILED=0
 
-MODULE_IDS=(09 10 10A 11 12 13 14 15 16 17 18 19 20 21 22)
+MODULE_IDS=(09 10 10A 11 13 14 15 16 17 18 19 20 21 22)
 STATUSES=()
 DETAILS=()
 ACTIONS=()
@@ -67,7 +67,6 @@ module_title() {
     10) printf 'AI clients\n' ;;
     10A) printf 'OmniRoute AI gateway\n' ;;
     11) printf 'MCP servers\n' ;;
-    12) printf 'VS Code profiles\n' ;;
     13) printf 'Enhanced CLI tools\n' ;;
     14) printf 'Warp Drive\n' ;;
     15) printf 'Full dotfiles and bootstrap\n' ;;
@@ -87,7 +86,6 @@ module_doc() {
     10) printf '%s/docs/02-optional/10-ai-agents.md\n' "$PROJECT_DIR" ;;
     10A) printf '%s/docs/02-optional/10a-omniroute.md\n' "$PROJECT_DIR" ;;
     11) printf '%s/docs/02-optional/11-mcp-servers.md\n' "$PROJECT_DIR" ;;
-    12) printf '%s/docs/02-optional/12-vscode-profiles.md\n' "$PROJECT_DIR" ;;
     13) printf '%s/docs/02-optional/13-enhanced-cli-tools.md\n' "$PROJECT_DIR" ;;
     14) printf '%s/docs/02-optional/14-warp-drive.md\n' "$PROJECT_DIR" ;;
     15) printf '%s/docs/03-advanced/15-full-dotfiles-and-bootstrap.md\n' "$PROJECT_DIR" ;;
@@ -107,7 +105,6 @@ optional_token() {
     10) printf 'ai-clients\n' ;;
     10A) printf 'omniroute\n' ;;
     11) printf 'mcp-servers\n' ;;
-    12) printf 'vscode-profiles\n' ;;
     13) printf 'enhanced-cli\n' ;;
     14) printf 'warp-drive\n' ;;
     15|16|17|18|19|20|21|22) printf 'advanced\n' ;;
@@ -132,7 +129,7 @@ module_is_selected() {
   [[ "$id" != 19 || ! -s "$STATE_DIR/preferences-19-selection.tsv" ]] || return 0
   [[ "$id" != 20 || ! -s "$STATE_DIR/restore-20-selection.tsv" ]] || return 0
   case "$id" in
-    11|12|14|15|17|18|21|22) [[ ! -s "$STATE_DIR/artifact-$id-selection.tsv" ]] || return 0 ;;
+    11|14|15|17|18|21|22) [[ ! -s "$STATE_DIR/artifact-$id-selection.tsv" ]] || return 0 ;;
   esac
   if [[ "$id" =~ ^(15|16|17|18|19|20|21|22)$ ]]; then
     marker="$STATE_ROOT/advanced/completed/$id"
@@ -270,18 +267,6 @@ check_11() {
   fi
 }
 
-check_12() {
-  local profiles=""
-  if [[ -s "$STATE_DIR/artifact-12-selection.tsv" ]]; then check_artifact 12; return; fi
-  command -v code >/dev/null 2>&1 || { set_result blocked 'VS Code command is unavailable' 'Repair required Phase 7 before configuring profiles.'; return; }
-  profiles="$(code --list-profiles 2>/dev/null || true)"
-  if [[ -n "$profiles" ]]; then
-    set_result partial 'VS Code reports profile data; purpose, exports, and account separation require manual verification' 'Complete the Optional 12 checklist.'
-  else
-    set_result partial 'VS Code is installed; keeping only the Default profile may be intentional' 'Review Optional 12 and verify whether additional profiles are needed.'
-  fi
-}
-
 check_13() {
   local formula installed installed_count=0 missing_count=0 selected_count=0
   if [[ -s "$STATE_DIR/optional-cli-packages" ]]; then
@@ -380,7 +365,6 @@ evaluate_module() {
     10) check_10 ;;
     10A) check_10a ;;
     11) check_11 ;;
-    12) check_12 ;;
     13) check_13 ;;
     14) check_14 ;;
     16) check_16 ;;
@@ -518,8 +502,8 @@ write_report() {
         "$(escape_table "${DETAILS[$i]}")" "$(escape_table "${ACTIONS[$i]}")"
     done
     printf '\n'
-    print_group_status 'Optional phase' 0 6
-    print_group_status 'Advanced phase' 7 14
+    print_group_status 'Optional phase' 0 5
+    print_group_status 'Advanced phase' 6 13
     printf '\n## Status meanings\n\n'
     printf -- '- **ready:** the module has sufficient machine-verifiable evidence, or an Advanced guide fingerprint is current.\n'
     printf -- '- **partial:** automated evidence exists, but a manual/UI/security checklist still needs human verification.\n'
@@ -579,8 +563,8 @@ for id in "${MODULE_IDS[@]}"; do
   esac
 done
 
-print_group_status 'Optional phase' 0 6
-print_group_status 'Advanced phase' 7 14
+print_group_status 'Optional phase' 0 5
+print_group_status 'Advanced phase' 6 13
 
 printf '\nSelected-module attention: %s blocked · %s review · %s partial · %s pending\n' \
   "$FAILURES" "$REVIEWS" "$PARTIALS" "$PENDING"
