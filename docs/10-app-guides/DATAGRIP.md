@@ -16,6 +16,11 @@ VS Code is another client of the same server. Neither client automatically
 copies the other's connections, passwords, certificates or SSH tunnels. Your
 application makes a third, independent connection using its own identity.
 
+For a free desktop alternative, follow the [DBeaver Community guide](DBEAVER.md).
+Its setup reuses this guide's local server, role, migration and restore procedures;
+those Terminal/SQL sections work without installing DataGrip. Do not create a
+second database or rerun role creation just to add another client.
+
 DataGrip is optional and is not installed or configured by Day One Mac's
 application catalogue. Database access is a shared manual action on both setup
 routes. Module 09 provisions only the selected local containers; it does not

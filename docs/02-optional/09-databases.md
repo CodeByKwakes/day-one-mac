@@ -285,16 +285,18 @@ It continues from these local containers with application roles, DataGrip and
 VS Code connections, and separate dev/test/prod procedures. DataGrip is installed
 through JetBrains or the approved company installer; this module does not install it.
 
-DBeaver Community is available when a project benefits from browsing schemas,
-running reviewed queries, or comparing more than one database engine. It is not
-needed for the container health checks and is never installed automatically:
+[DBeaver Community](../10-app-guides/DBEAVER.md) is a free alternative with a
+complete local/dev/test/prod and VS Code setup guide. It reuses these containers
+and the shared PostgreSQL role setup. It is not needed for container health
+checks and is never installed automatically:
 
 ```bash
 day-one-mac applications --id dbeaver-community
 day-one-mac applications --id dbeaver-community --install-missing
 ```
 
-The first command is read-only. In the second command, choose Homebrew or an
+The first command checks installation and records local provenance/state; it
+does not install software. In the second command, choose Homebrew or an
 approved external installer only after reviewing the displayed owner. Store
 saved production credentials in the approved secret manager; do not commit
 them in a DBeaver project or export. Use the localhost development credentials

@@ -1577,21 +1577,24 @@ in the environment where the tools actually run.
 
 ## 14. DataGrip and PostgreSQL connections
 
-The dedicated [PostgreSQL setup guide with DataGrip and VS Code](DATAGRIP.md)
-owns the complete database workflow. Start with its local tutorial, then add
-only the shared development, test and production connections your work requires.
+The [PostgreSQL setup guide with DataGrip and VS Code](DATAGRIP.md) owns the
+shared database provisioning, role, migration and recovery procedures. For a
+free desktop alternative, use the [DBeaver Community guide](DBEAVER.md), which
+reuses those procedures. Add only the shared development, test and production
+connections your work requires.
 
 | Task | Instructions |
 |---|---|
 | Create the local database and application roles | [Local setup](DATAGRIP.md#3-start-a-local-postgresql-server) |
 | Configure DataGrip for local or remote servers | [Local connection](DATAGRIP.md#5-connect-datagrip-to-local-postgresql) · [Remote connections](DATAGRIP.md#7-connect-datagrip-to-remote-environments) |
+| Configure DBeaver Community and hand off SQL files from VS Code | [DBeaver setup](DBEAVER.md) · [SQL-file handoff](DBEAVER.md#8-open-a-sql-file-from-vs-code-in-dbeaver) |
 | Configure VS Code's own PostgreSQL connections | [VS Code setup](DATAGRIP.md#8-connect-vs-code-to-the-same-databases) |
 | Set application credentials and deploy schema changes | [Applications and migrations](DATAGRIP.md#9-configure-applications-and-promote-migrations) |
 | Verify access and recover data | [Session checks](DATAGRIP.md#10-use-and-verify-connections-safely) · [Backup and restore](DATAGRIP.md#11-back-up-and-rehearse-a-restore) |
 | Open SQL files in DataGrip or configure MCP | [Optional handoff and AI access](DATAGRIP.md#12-optional-sql-handoff-and-ai-access) |
 
-DataGrip and VS Code connect independently. Profiles and connection colours
-organize work; server permissions enforce access.
+DataGrip, DBeaver and VS Code connect independently. Profiles and connection
+colours organize work; server permissions enforce access.
 
 ---
 

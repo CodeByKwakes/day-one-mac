@@ -69,6 +69,7 @@ docs/04-operations/REMOVE-DAY-ONE-MAC.md
 docs/04-operations/ROLLBACK.md
 docs/10-app-guides/1PASSWORD-SSH-APPROVAL.md
 docs/10-app-guides/DATAGRIP.md
+docs/10-app-guides/DBEAVER.md
 docs/10-app-guides/KEYBOARD-SHORTCUTS.md
 docs/10-app-guides/MACOS-SHORTCUTS.md
 docs/10-app-guides/RAYCAST-AI-PROVIDERS.md

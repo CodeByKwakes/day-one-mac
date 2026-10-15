@@ -57,10 +57,17 @@ The [TypeScript full-stack reference](VSCODE-TYPESCRIPT.md)
 covers Angular, NestJS, Nx, Prisma, Copilot/Codex/Claude, personal settings and
 shortcuts, environment files, icons, worktrees, project skills, and MCP servers.
 
-For PostgreSQL, use the optional [DataGrip and VS Code database setup guide](DATAGRIP.md).
-It covers local provisioning, separate dev/test/prod connections, roles, TLS,
-migrations, backups and troubleshooting. DataGrip is installed separately through
-JetBrains or the approved company installer; it is not a required baseline app.
+For PostgreSQL, choose an optional desktop client guide:
+
+- [DataGrip and VS Code](DATAGRIP.md): local provisioning, roles, separate
+  dev/test/prod connections, TLS, migrations, backups and troubleshooting.
+  Install DataGrip through JetBrains or the approved company installer.
+- [DBeaver Community and VS Code](DBEAVER.md): reuse the same PostgreSQL setup,
+  configure Community-specific connections and credential handling, and optionally
+  open SQL files from VS Code. DBeaver is registered in the optional app catalogue.
+
+Both clients are optional. Their connections are configured separately; using
+both does not require a second database server or another set of local roles.
 
 For optional desktop utilities, the [Vorssaint developer guide](VORSSAINT.md)
 covers personal window layouts, resource and port monitoring, shortcut

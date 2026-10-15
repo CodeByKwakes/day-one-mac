@@ -51,7 +51,7 @@ query. It does not prove successful login or application configuration.
 | `warp` | Warp — terminal and optional shared workflows | `warp` | Non-core productivity / 04 | Open shell, check prompt/font, review account/import; [Warp](../10-app-guides/WARP.md) |
 | `docker-desktop` | Docker Desktop — local container engine | `docker-desktop` | Optional / 09 | Finish first-run setup; verify `docker --version` and `docker info`; [databases](../02-optional/09-databases.md) |
 | `orbstack` | OrbStack — local container engine | `orbstack` | Optional / 09 | Launch, review resources/startup and `docker context show`; [databases](../02-optional/09-databases.md) |
-| `dbeaver-community` | DBeaver Community — database connection/query GUI | `dbeaver-community` | Optional / 09 | Open app, connect to intended local test DB; [databases](../02-optional/09-databases.md) |
+| `dbeaver-community` | DBeaver Community — database connection/query GUI | `dbeaver-community` | Optional / 09 | [DBeaver and VS Code setup](../10-app-guides/DBEAVER.md); connect to intended local test DB; [database services](../02-optional/09-databases.md) |
 | `claude-code` | Claude Code — terminal AI coding client | `claude-code` | Optional / 10 | `claude --version`, chosen account and workspace permissions; [AI clients](../02-optional/10-ai-agents.md) |
 | `codex` | Codex CLI — terminal AI coding client, not the desktop app | `codex` | Optional / 10 | `codex --version`, chosen account and workspace permissions; [AI clients](../02-optional/10-ai-agents.md) |
 | `copilot-app` | GitHub Copilot app — graphical AI client | `github-copilot-app` | Optional / 10 | Open app, confirm account/entitlement and permissions; [AI clients](../02-optional/10-ai-agents.md) |

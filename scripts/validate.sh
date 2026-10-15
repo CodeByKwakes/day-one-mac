@@ -628,11 +628,15 @@ fi
 # Numbered documentation folders are part of the navigation contract. Reject
 # stale script paths and Markdown links instead of allowing two competing
 # structures to reappear.
-if rg -n 'docs/(preflight|required|optional|advanced|operations|app-guides|reference|maintenance)/|\]\((\.\./){0,2}(preflight|required|optional|advanced|operations|app-guides|reference|maintenance)/' \
-  "$PROJECT_DIR" --glob '*.md' --glob '*.sh' \
-  --glob '!node_modules/**' >/dev/null 2>&1; then
-  fail "a script or guide still refers to a retired unnumbered documentation folder"
-  semantic_failed=1
+retired_docs_pattern='docs/(preflight|required|optional|advanced|operations|app-guides|reference|maintenance)/|\]\((\.\./){0,2}(preflight|required|optional|advanced|operations|app-guides|reference|maintenance)/'
+if rg_scan -n "$retired_docs_pattern" "$PROJECT_DIR" --glob '*.md' --glob '*.sh'; then
+  # External sites can use the same folder names. Remove URLs, not whole lines:
+  # a line may contain both an external reference and an obsolete local path.
+  if printf '%s\n' "$RG_OUTPUT" | sed -E 's@https?://[^[:space:]<>)"]+@@g' | \
+      rg "$retired_docs_pattern" >/dev/null; then
+    fail "a script or guide still refers to a retired unnumbered documentation folder"
+    semantic_failed=1
+  fi
 fi
 for retired_docs_dir in preflight required optional advanced operations app-guides reference maintenance; do
   if [[ -e "$PROJECT_DIR/docs/$retired_docs_dir" ]]; then

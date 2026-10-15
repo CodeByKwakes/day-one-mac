@@ -835,6 +835,10 @@ Database connections and credentials are a separate manual step. Use the
 for local provisioning, dev/test/prod roles and connections, TLS, migrations,
 backups and optional MCP. Its [VS Code steps](DATAGRIP.md#8-connect-vs-code-to-the-same-databases)
 configure the editor's own User-scope connections.
+For another desktop client, use the [DBeaver Community setup guide](DBEAVER.md),
+including its [optional SQL-file handoff from VS Code](DBEAVER.md#8-open-a-sql-file-from-vs-code-in-dbeaver).
+It reuses the same PostgreSQL databases and roles; no extra VS Code profile or
+third-party DBeaver extension is required.
 Choose only the environments your work requires. A profile or connection
 colour does not enforce database permissions.
 
