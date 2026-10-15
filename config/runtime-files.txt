@@ -75,6 +75,7 @@ docs/10-app-guides/RAYCAST-COMMANDS.md
 docs/10-app-guides/RAYCAST.md
 docs/10-app-guides/README.md
 docs/10-app-guides/VSCODE.md
+docs/10-app-guides/VSCODE-PROFILES.md
 docs/10-app-guides/VSCODE-TYPESCRIPT.md
 docs/10-app-guides/VORSSAINT.md
 docs/10-app-guides/WARP.md
@@ -362,3 +363,8 @@ scripts/workstation-readiness.sh
 config/managed-policy.example.json
 docs/20-reference/WORKSTATION-READINESS.md
 docs/04-operations/WORKSTATION-ACCEPTANCE.md
+scripts/vscode-profiles/build.cjs
+scripts/vscode-profiles/default.sh
+scripts/vscode-profiles/full-stack.sh
+scripts/vscode-profiles/ai.sh
+scripts/vscode-profiles/operations.sh

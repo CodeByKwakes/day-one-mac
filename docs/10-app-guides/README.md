@@ -52,7 +52,8 @@ and existing terminal and path-copy actions.
 Common shortcuts for all four applications are kept in
 [Day One Mac keyboard shortcuts](KEYBOARD-SHORTCUTS.md).
 
-After Phase 8, the optional [TypeScript full-stack VS Code guide](VSCODE-TYPESCRIPT.md)
+After Phase 8, start with the optional [final VS Code profile setup](VSCODE-PROFILES.md).
+The [TypeScript full-stack reference](VSCODE-TYPESCRIPT.md)
 covers Angular, NestJS, Nx, Prisma, Copilot/Codex/Claude, personal settings and
 shortcuts, environment files, icons, worktrees, project skills, and MCP servers.
 

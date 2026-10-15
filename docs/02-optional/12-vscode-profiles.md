@@ -11,7 +11,8 @@ profiles. Existing settings were exported before removal, Settings Sync has a
 single understood source of truth, and each new profile contains only the
 extensions and settings needed for its job.
 
-For the Angular/NestJS/Nx stack, follow the [TypeScript full-stack VS Code guide](../10-app-guides/VSCODE-TYPESCRIPT.md).
+For the Angular/NestJS/Nx stack, start with the [final profile setup](../10-app-guides/VSCODE-PROFILES.md).
+Use the [detailed stack guide](../10-app-guides/VSCODE-TYPESCRIPT.md) for expanded recipes.
 It provides Default, Full Stack, Operations, and AI assignments, profile User
 Settings, keyboard shortcuts, icons, worktrees, shared skills, and MCP recipes.
 The [AI profile](../10-app-guides/VSCODE-TYPESCRIPT.md#ai-profile-focused-agent-work-and-prompt-authoring)

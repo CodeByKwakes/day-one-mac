@@ -971,6 +971,12 @@ run_fixture "offline documentation exports preserve navigation and privacy bound
   "offline documentation regressions failed" \
   "$SCRIPT_DIR/tests/test-docs.sh" || true
 
+if command -v node >/dev/null 2>&1 && [[ -f "$SCRIPT_DIR/tests/test-vscode-profiles.cjs" ]]; then
+  run_fixture "VS Code profile bundles preserve settings and explicit installation boundaries" \
+    "VS Code profile script regressions failed" \
+    node "$SCRIPT_DIR/tests/test-vscode-profiles.cjs" || true
+fi
+
 run_fixture "optional database installer is idempotent and diagnostic" \
   "optional database installer regression fixture failed" \
   "$SCRIPT_DIR/tests/test-configure-databases.sh" || true

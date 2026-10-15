@@ -3,14 +3,14 @@
 # Configure VS Code for Angular, NestJS, Nx, and AI agents
 
 **Document type:** how-to guide with reference tables. **Audience:** experienced
-TypeScript developers on macOS. **Last source check:** 14 October 2026.
+TypeScript developers on macOS. **Last source check:** 15 October 2026.
 
 Use this guide to configure a personal editor for Angular, NestJS, Prisma, Nx,
 Azure DevOps, PostgreSQL, Docker, Codex, GitHub Copilot, and occasional Claude
 Code use. It includes project skills, agent adapters, and MCP connections.
-VS Code's stable release page listed **1.141.1** when checked; use **Code →
+VS Code's stable release page listed **1.142.0** when checked; use **Code →
 Check for Updates** rather than assuming that version stays current.
-[Release notes](https://code.visualstudio.com/updates/v1_141).
+[Release notes](https://code.visualstudio.com/updates/v1_142).
 
 Editor preferences and keyboard shortcuts belong in **User Settings for the
 active profile**, not a committed `.vscode/settings.json`. Skills and agent
@@ -22,6 +22,12 @@ Complete [Phase 7](../01-required/07-vscode-base.md) first. Day One Mac's base
 settings and trust checks still apply; merge additions rather than replacing
 them. For first launch, backups, imports, and Settings Sync, use the
 [VS Code application guide](VSCODE.md).
+
+Start with the [final profile setup](VSCODE-PROFILES.md) for the authoritative
+profile extension tables and ordered User Settings recipe, including your
+DataGrip and local/dev/test/production workflow. This document supplies the
+detailed examples behind that setup. Its focused settings blocks are reference
+recipes, not extra overrides to apply blindly after the final setup.
 
 ## Contents
 
@@ -59,7 +65,7 @@ For a Python-based MCP server, also complete the selected Python/uv setup.
 | Profile | Purpose | Main workflows | Appearance |
 |---|---|---|---|
 | **Default** | Lightweight general editing and troubleshooting | Markdown, configuration, native Git | Dark Modern, neutral accent |
-| **Full Stack** | Daily TypeScript development | Angular, NestJS, Nx, Prisma, Copilot, Codex | Dark Modern, blue accent |
+| **Full Stack** | Daily TypeScript development | Angular, NestJS, Nx, Prisma, Copilot, Codex, Claude Code, Good Prompts | Dark Modern, blue accent |
 | **Operations** | Database and infrastructure investigation | PostgreSQL, Docker, Azure Pipelines, agents | Dark Modern, green accent |
 | **AI** | Focused agent work and prompt authoring | Copilot/Codex/Claude Code, reviews, debugging, skills, prompt evaluation | Dark Modern, purple accent |
 
@@ -92,24 +98,25 @@ names and Marketplace identifiers.
 |---|---|---|---|
 | [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) | `esbenp.prettier-vscode` | Formatting for TypeScript, templates, styles, JSON, Markdown, and YAML | All |
 | [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme) | `pkief.material-icon-theme` | File/folder icons and custom associations | All |
+| [EditorConfig](https://marketplace.visualstudio.com/items?itemName=editorconfig.editorconfig) | `editorconfig.editorconfig` | Honor repository whitespace conventions | All |
+| [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) | `yzhang.markdown-all-in-one` | Markdown editing conveniences | All |
+| [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker) | `streetsidesoftware.code-spell-checker` | Spelling diagnostics | All |
 | [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) | `dbaeumer.vscode-eslint` | Repository lint diagnostics and fixes | Full Stack, AI |
 | [Angular Language Service](https://marketplace.visualstudio.com/items?itemName=Angular.ng-template) | `angular.ng-template` | Angular template completion, diagnostics, and navigation | Full Stack, AI |
 | [Nx Console](https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console) | `nrwl.angular-console` | Nx target/generator workflows and workspace information | Full Stack, AI |
 | [Prisma](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma) | `prisma.prisma` | Prisma schema completion, diagnostics, and formatting | Full Stack, AI |
 | [GitLens — Git supercharged](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) | `eamodio.gitlens` | Richer blame, history, comparisons, and remote links | Full Stack, Operations, AI |
-| [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) | `github.copilot` | Published Copilot inline-suggestion component | Full Stack, Operations, AI, if required by your build |
-| [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) | `github.copilot-chat` | Published Copilot chat/agent component | Full Stack, Operations, AI; use built-in setup |
-| [Codex – OpenAI's coding agent](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt) | `openai.chatgpt` | Codex coding, investigation, and review integration | Full Stack, Operations, AI |
-| [Claude Code for VS Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) | `anthropic.claude-code` | Claude's own editor integration | AI; Full Stack, Operations optional |
-| [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) | `redhat.vscode-yaml` | General YAML completion and schema diagnostics | Full Stack, Operations; AI optional |
+| [Codex – OpenAI's coding agent](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt) | `openai.chatgpt` | Codex coding, investigation, and review integration | Full Stack, AI; Operations optional |
+| [Claude Code for VS Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) | `anthropic.claude-code` | Claude's own editor integration | Full Stack, AI; Operations optional |
+| [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) | `redhat.vscode-yaml` | General YAML completion and schema diagnostics | Full Stack, Operations, AI |
 | [Azure Pipelines](https://marketplace.visualstudio.com/items?itemName=ms-azure-devops.azure-pipelines) | `ms-azure-devops.azure-pipelines` | Pipeline YAML language/schema support | Full Stack, Operations |
 | [Container Tools](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-containers) | `ms-azuretools.vscode-containers` | Docker/Compose editing and container management | Full Stack, Operations |
-| [PostgreSQL](https://marketplace.visualstudio.com/items?itemName=ms-ossdata.vscode-pgsql) | `ms-ossdata.vscode-pgsql` | Database connections, SQL, objects, and query plans | Operations; Full Stack optional |
+| [PostgreSQL](https://marketplace.visualstudio.com/items?itemName=ms-ossdata.vscode-pgsql) | `ms-ossdata.vscode-pgsql` | Database connections, SQL, objects, and query plans | Full Stack, Operations; AI optional |
 | [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) | `ms-vscode-remote.remote-containers` | Run the development toolchain in a container | Full Stack, Operations optional |
 | [DotENV](https://marketplace.visualstudio.com/items?itemName=mikestead.dotenv) | `mikestead.dotenv` | `.env` syntax highlighting | Full Stack, Operations, AI |
-| [vscode-angular-html](https://marketplace.visualstudio.com/items?itemName=ghaschel.vscode-angular-html) | `ghaschel.vscode-angular-html` | Additional Angular HTML syntax highlighting | Full Stack optional |
-| [markdownlint](https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint) | `davidanson.vscode-markdownlint` | Markdown structure checks for documentation and skill files | AI; Full Stack optional |
-| [Good Prompts](https://marketplace.visualstudio.com/items?itemName=omarbanat.goodprompts) | `omarbanat.goodprompts` | Guided local prompt templates and a personal library | AI optional |
+| [vscode-angular-html](https://marketplace.visualstudio.com/items?itemName=ghaschel.vscode-angular-html) | `ghaschel.vscode-angular-html` | Additional Angular HTML syntax highlighting | Full Stack |
+| [markdownlint](https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint) | `davidanson.vscode-markdownlint` | Markdown structure checks for documentation and skill files | All |
+| [Good Prompts](https://marketplace.visualstudio.com/items?itemName=omarbanat.goodprompts) | `omarbanat.goodprompts` | Guided local prompt templates and a personal library | Full Stack, AI |
 | [Chat Customizations Evaluations](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-chat-customizations-evaluations) | `ms-vscode.vscode-chat-customizations-evaluations` | Analyze prompts, skills, agents, and instructions | AI optional |
 | [Foundry Toolkit for VS Code](https://marketplace.visualstudio.com/items?itemName=ms-windows-ai-studio.windows-ai-studio) | `ms-windows-ai-studio.windows-ai-studio` | Model playground and AI application/agent development | AI optional |
 
@@ -128,8 +135,8 @@ code --profile "Operations" --install-extension ms-ossdata.vscode-pgsql
   merge tools, worktrees, and Dark Modern are built in. Git must be installed.
 - Current VS Code integrates Copilot Chat. Start with **Use AI Features** and
   sign in; do not force-install an old standalone component over the bundled
-  one. The table records verified Marketplace IDs, not a requirement to
-  install both Copilot entries manually. Plans, models, and employer policies
+  one. Its managed component IDs are `github.copilot` and
+  `github.copilot-chat`; neither belongs in your manual install checklist. Plans, models, and employer policies
   affect access. [Copilot setup](https://code.visualstudio.com/docs/setup/copilot).
 - The Codex vendor extension uses OpenAI account access; the listing names
   Plus, Pro, Business, Edu, and Enterprise plans. Its Agent Host alternative
@@ -435,7 +442,8 @@ Create it by copying **Full Stack**, name it **AI**, then:
    a Claude model in Copilot uses Copilot's account and workflow, not Claude Code.
 4. Disable Azure Pipelines, Container Tools, PostgreSQL, and Dev Containers
    in this profile initially; enable a specific tool when the task needs it.
-5. Add one optional prompt utility below if it solves a problem you encounter.
+5. Include Good Prompts in Full Stack and AI; add an optional evaluation tool
+   only when it solves a problem you encounter.
    Do not add Cline, Roo Code, Continue, and several prompt managers merely
    to fill the profile: each adds another agent/configuration surface.
 6. Open **View → Appearance → Secondary Side Bar**, place your active chat
@@ -574,21 +582,23 @@ configuration; do not copy Codex TOML or assume Copilot chat settings control
 Claude. Verify the existing skill links through Claude's skills UI after
 reloading the project.
 
-#### Optional prompt and evaluation extensions
+#### Prompt builder and optional evaluation extensions
 
-All three are optional and assigned only to **AI**. Their Marketplace display
-names and IDs were checked on 14 October 2026. Start with native skills and
-chat; install an extra tool only when its workflow is useful.
+Good Prompts is recommended in **Full Stack and AI**. The two evaluation/app
+tools are optional in **AI**. Marketplace names and IDs were checked in October
+2026; the final profile setup distinguishes their assignments.
 
 | Display name | Identifier | Purpose | Recommendation and requirements |
 |---|---|---|---|
-| [Good Prompts](https://marketplace.visualstudio.com/items?itemName=omarbanat.goodprompts) | `omarbanat.goodprompts` | Guided forms for bug fixes, features, refactors, and reviews | Optional community prompt builder; publisher describes local template generation/scoring, with optional MCP connections |
+| [Good Prompts](https://marketplace.visualstudio.com/items?itemName=omarbanat.goodprompts) | `omarbanat.goodprompts` | Guided forms for bug fixes, features, refactors, and reviews | Recommended in Full Stack and AI; community local template builder/scorer, with optional MCP connections |
 | [Chat Customizations Evaluations](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-chat-customizations-evaluations) | `ms-vscode.vscode-chat-customizations-evaluations` | Analyze skill, agent, instruction, and prompt files | Useful when maintaining a growing library; LLM analysis needs Copilot sign-in; Waza evaluation needs its separate runtime |
 | [Foundry Toolkit for VS Code](https://marketplace.visualstudio.com/items?itemName=ms-windows-ai-studio.windows-ai-studio) | `ms-windows-ai-studio.windows-ai-studio` | Model playground, prompt-agent building, and evaluation | Add when building AI applications; formerly called AI Toolkit. Cloud features require provider/Azure access; Windows ML features are not macOS features |
 
-Install only the chosen entries:
+Install the recommended prompt builder in both profiles; choose the evaluator
+only if wanted:
 
 ```bash
+code --profile "Full Stack" --install-extension omarbanat.goodprompts
 code --profile "AI" --install-extension davidanson.vscode-markdownlint
 code --profile "AI" --install-extension omarbanat.goodprompts
 code --profile "AI" --install-extension ms-vscode.vscode-chat-customizations-evaluations
@@ -1394,6 +1404,7 @@ make a generic filesystem or shell MCP server redundant.
 | Azure DevOps MCP | Microsoft; work items, PRs, builds | Copilot HTTP: `https://mcp.dev.azure.com/YOUR_ORGANIZATION`; local: `npx -y @azure-devops/mcp YOUR_ORGANIZATION` | Organization-global or project; remote Entra prerequisites; local needs Node 20+ |
 | Playwright MCP | Microsoft; interactive browser tools | `npx -y @playwright/mcp@latest` | Global or project; supported Node/browser setup; distinct from Playwright CLI skill |
 | Postgres MCP Pro | Crystal DBA community; SQL, schema, EXPLAIN | `uvx --python 3.12 postgres-mcp --access-mode=restricted` | Project; Python/uv, `DATABASE_URI`, database permissions; optional, not Microsoft PostgreSQL extension |
+| DataGrip MCP | Built into DataGrip 2025.2+; existing database connections and IDE tools | Copy the generated client configuration from DataGrip Settings → Tools → MCP Server | Personal/global initially; local/dev/test, restricted DB role; see final setup |
 | GitHub MCP | Official GitHub; GitHub PR/issues/repository context | `https://api.githubcopilot.com/mcp/` | Optional global; GitHub auth; not an Azure Repos substitute |
 
 Sources: [Angular MCP](https://angular.dev/ai/mcp),
@@ -1603,6 +1614,11 @@ For Claude CLI installation, use the same launcher with `--scope project` or
 `--scope user`. Prefer inspecting builds/work items before enabling write tools.
 
 ### PostgreSQL: optional project connection
+
+Since DataGrip is already installed, prefer the
+[DataGrip/PostgreSQL workflow](VSCODE-PROFILES.md#6-configure-datagrip-and-postgresql-connections)
+for your normal setup. The independent server below is an alternative when you
+specifically need it; do not add a duplicate database MCP by default.
 
 For ordinary manual queries, the PostgreSQL extension is sufficient. Add a
 database MCP server only when an agent needs SQL/schema/plan tools.
