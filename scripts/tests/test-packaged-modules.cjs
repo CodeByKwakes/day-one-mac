@@ -9,6 +9,21 @@ try {
   const modules = run(['optional', '--list']).trim().split('\n').slice(1).map(row => row.split('\t'));
   need(modules.length === 15 && modules.every(row => row[2] === 'executable'), 'Packaged capability registry is incomplete.');
   need(!fs.existsSync(path.join(runtime, 'node_modules')) && !fs.existsSync(path.join(runtime, '.git')), 'Package contains development dependencies or Git metadata.');
+  // Exercise the public profile route outside a checkout, using only bundled recipes.
+  run(['vscode-profile', '--help']);
+  for (const slug of ['default', 'full-stack', 'ai', 'operations']) {
+    const output = path.join(root, `profile-${slug}`);
+    run(['vscode-profile', slug, '--dry-run', '--output', output]);
+    need(!fs.existsSync(output), 'Profile preview wrote output.');
+    run(['vscode-profile', slug, '--output', output]);
+    const profile = JSON.parse(fs.readFileSync(path.join(output, `${slug}.code-profile`), 'utf8'));
+    const settings = JSON.parse(JSON.parse(profile.settings).settings);
+    need(settings['github.copilot.chat.commitMessageGeneration.instructions'].length === 5, 'Packaged profile lost commit instructions.');
+    need(settings['chat.tools.global.autoApprove'] === false && settings['chat.tools.terminal.enableAutoApprove'] === false, 'Packaged profile changed approval safety.');
+  }
+  const blockedProfile = path.join(root, 'blocked-profile');
+  run(['vscode-profile', 'default', '--install-extensions', '--code', '/does/not/exist', '--output', blockedProfile], 10);
+  need(!fs.existsSync(blockedProfile), 'Missing Phase 8 must block before profile writes or installation.');
   const repos = path.join(root, 'repositories'), repo = path.join(repos, 'primary'), linked = path.join(repos, 'linked');
   git(['-c', 'init.templateDir=', 'init', '-q', repo]);
   git(['-C', repo, 'config', 'user.name', 'Packaged Fixture']);

@@ -170,8 +170,13 @@ For Day One Mac, a successful release pull request updates:
 - `CHANGELOG.md`; and
 - `.release-please-manifest.json`.
 
-After that pull request is merged, the release workflow creates the tag and
-GitHub Release and attaches the verified runtime assets.
+After that pull request is merged, the workflow creates a tag and **draft**
+release, validates the immutable candidate and exact runtime archive, attaches
+assets/provenance/evidence, then publishes only after final identity checks.
+A failed candidate remains a draft. Use the existing tag in the workflow's
+`draft_tag` input to retry the same candidate; an empty input runs ordinary
+release coordination. Follow the [release lifecycle and retry procedure](GIT-WORKFLOW.md#release-lifecycle-and-failed-draft-retry),
+including the live permissions/publication rehearsal before rollout.
 
 ## Rotate the token
 

@@ -80,7 +80,9 @@ explains the platform's recovery choices.
 ## Completion checklist
 
 - [ ] The selected account can be recovered without relying solely on this Mac.
-- [ ] FileVault is enabled, or an explicit policy exception is documented.
+- [ ] FileVault and Gatekeeper are enabled. These are non-waivable Day One Mac
+      completion controls; retain any organization exception separately without
+      claiming the Day One Mac baseline passed.
 - [ ] Only intended keys are offered to each provider; fingerprints were checked.
 - [ ] Authentication identifies the expected account; one authorised repo is readable.
 - [ ] A test signature verifies if signing is enabled; it is not inferred from login.

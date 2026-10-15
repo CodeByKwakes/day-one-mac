@@ -127,6 +127,21 @@ case "${1:-}" in
     esac
     ;;
   shell-status) shift; exec "$PROJECT_ROOT/scripts/shell-status.sh" "$@" ;;
+  vscode-profile)
+    shift
+    case "${1:-}" in
+      default|full-stack|ai|operations)
+        profile_name="$1"; shift
+        exec /bin/bash "$PROJECT_ROOT/scripts/vscode-profiles/$profile_name.sh" "$@"
+        ;;
+      ''|help|-h|--help)
+        printf '%s\n' 'Usage: day-one-mac vscode-profile default|full-stack|ai|operations [options]' \
+          'Generate private review bundles; --dry-run previews without writes.' \
+          'Use <profile> --help for options. Extension installation requires current Phase 8.'
+        ;;
+      *) printf 'Unknown profile. Choose default, full-stack, ai, or operations.\n' >&2; exit 2 ;;
+    esac
+    ;;
   verify) shift; exec "$PROJECT_ROOT/scripts/verify.sh" "$@" ;;
   validate)
     shift
@@ -235,6 +250,7 @@ case "${1:-}" in
       '  shortcuts         preview or import the optional Finder shortcut' \
       '  raycast           manage optional Day One Raycast commands' \
       '  workspace         create and open bounded projectless tasks' \
+      '  vscode-profile    generate reviewed VS Code settings/extension bundles' \
       '  macos-settings    configure or restore optional macOS preferences' \
       '  optional          choose modules; --status shows or audits Modules 09–22' \
       '                    --list lists capabilities; --module ID --plan|--apply|--check|--resume' \

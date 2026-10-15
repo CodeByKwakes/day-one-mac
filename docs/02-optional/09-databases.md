@@ -56,7 +56,7 @@ Or name the services directly:
 
 ```bash
 day-one-mac databases --services postgres,redis --dry-run
-day-one-mac databases --services postgres,redis
+day-one-mac databases --services postgres,redis --disposable-data
 ```
 
 The installer preserves existing containers and volumes, starts a stopped
@@ -71,9 +71,9 @@ day-one-mac databases --saved --status
 Choose **Docker Desktop** or **OrbStack** in the optional wizard, or explicitly:
 
 ```bash
-day-one-mac databases --services postgres,redis --container-runtime docker
+day-one-mac databases --services postgres,redis --container-runtime docker --disposable-data
 # Alternative:
-day-one-mac databases --services postgres,redis --container-runtime orbstack
+day-one-mac databases --services postgres,redis --container-runtime orbstack --disposable-data
 ```
 
 `auto` reuses a working Docker context, then detects an installed engine. When

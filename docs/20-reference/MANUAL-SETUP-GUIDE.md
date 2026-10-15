@@ -48,7 +48,8 @@ phase fingerprints and manifest-owned rollback.
 ### Hardware and account checklist
 
 - [ ] The Mac uses an Apple-silicon M-series or A-series chip.
-- [ ] The final macOS administrator account exists and its password is known.
+- [ ] Personal Mac: the permanent administrator account is available. Managed
+      Mac: IT has provisioned the daily standard account and approved elevation.
 - [ ] The Mac is connected to power and reliable internet.
 - [ ] At least 30 GB is free, plus space required by real projects.
 - [ ] Important files and repositories exist in a separate, tested backup.
@@ -135,10 +136,22 @@ those desktop steps when deliberately following the core policy yourself.
 
 Complete this worksheet before choosing either route.
 
+### Deployment and acceptance policy
+
+- [ ] Ownership: personal / managed. Hosting track is a separate choice.
+- [ ] Managed: IT confirms enrollment, policy approval, daily standard account,
+      elevation, recovery escrow, software provisioning and update deadlines.
+- [ ] Record the applicable [acceptance-control matrix](WORKSTATION-READINESS.md#acceptance-controls-for-both-setup-routes)
+      and reviewer. Keep policy/evidence references privately, never credentials.
+- [ ] Manual route: retain dated checks and expiry in your own notes. Assisted
+      route: select deployment/policy and complete the current evidence record.
+
 ### Hosting track
 
-- [ ] **Track 1 — GitHub:** install `gh`; require GitHub browser and SSH checks.
-- [ ] **Track 2 — Azure DevOps:** install `az`; require Azure browser and SSH checks.
+- [ ] **Track 1 — GitHub:** install `gh`; verify sign-in and repository access
+      through the selected HTTPS or SSH method.
+- [ ] **Track 2 — Azure DevOps:** install `az`; verify sign-in and repository
+      access through the selected HTTPS or SSH method.
 - [ ] **Track 3 — GitHub + Azure DevOps:** install and verify both.
 - [ ] **Track 4 — None of the above:** choose the provider-specific
       [repository access methods](../01-required/03-security-and-ssh.md#step-36--track-4-none-of-the-above)
@@ -160,7 +173,8 @@ Complete this worksheet before choosing either route.
 - [ ] For private Git: existing repository / new repository
 - [ ] Shell: keep the current zsh / Apple zsh / Homebrew zsh
 - [ ] Prompt: leave the existing prompt alone / Starship
-- [ ] After Phase 1, choose early macOS preferences: configure / skip for now
+- [ ] After Phase 1 on a personal Mac, choose preferences: configure / skip.
+      Managed preferences remain with IT.
 
 > 🔐 **Local-only chezmoi**
 > Local-only removes the Git and remote requirement; it does not remove chezmoi.
@@ -179,8 +193,9 @@ adding developer tools.
 
 - [ ] Finish macOS Setup Assistant with the permanent account.
 - [ ] Open **System Settings → General → Software Update**.
-- [ ] Install every available update and restart when requested.
-- [ ] Recheck Software Update until no further update is offered.
+- [ ] Personal: install applicable updates and restart when requested. Managed:
+      reach IT's approved OS build/deadline; do not bypass update deferrals.
+- [ ] Recheck the installed build against the supported range and selected policy.
 - [ ] Confirm the terminal is native Apple silicon:
 
 ```bash
@@ -199,10 +214,16 @@ spctl --status
 
 Expected results: FileVault is on and Gatekeeper reports assessments enabled.
 
+Complete the [shared acceptance controls](WORKSTATION-READINESS.md#acceptance-controls-for-both-setup-routes),
+including firewall, SIP and recovery. On a managed Mac, obtain IT confirmation
+of enrollment, escrow and the remaining organization controls. Retain dated
+evidence privately; FileVault and Gatekeeper cannot be waived for completion.
+
 #### Optional early macOS settings
 
-You may configure Finder, Dock, keyboard, trackpad, battery, and screenshot
-preferences now, or skip them without blocking development setup.
+On a personal Mac you may configure Finder, Dock, keyboard, trackpad, battery,
+and screenshot preferences now, or skip them. On a managed Mac, ask IT to apply
+approved preferences and skip the local changes below.
 
 Open the documented System Settings locations in
 [Early macOS settings](../01-required/MACOS-SETTINGS.md) and change only the
@@ -211,7 +232,7 @@ do not disable Gatekeeper.
 
 **Checkpoint**
 
-- [ ] macOS is current.
+- [ ] macOS meets the supported range and applicable approved update policy.
 - [ ] `uname -m` prints `arm64`.
 - [ ] FileVault and Gatekeeper checks pass.
 - [ ] Optional preferences were configured or intentionally skipped.
@@ -245,7 +266,10 @@ else
 fi
 ```
 
-Install Homebrew only when the check prints `Homebrew is not installed`:
+On a managed Mac, ask IT to provision native Homebrew and stop here until it is
+available. Do not run the public bootstrap or change the daily account's
+privileges. On a personal Mac, install Homebrew only when the check prints
+`Homebrew is not installed`:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -553,6 +577,10 @@ Back up existing files before editing; merge blocks rather than replace a
 customized file. See [ownership conflicts](../01-required/05-dotfiles-and-shell.md#choose-ownership-shell-and-prompt-first)
 before changing an existing manager.
 
+Copy only initialization blocks for your selected tools. If you chose to keep
+the existing prompt, omit the Starship initialization block below even when
+Starship happens to be installed; preserve your existing prompt configuration.
+
 For chezmoi only, initialize either an existing private source or a new source:
 
 ```bash
@@ -851,7 +879,8 @@ uv --version
 #### Warp and Raycast
 
 - [ ] Open Warp, choose zsh, and select JetBrainsMono Nerd Font.
-- [ ] Confirm the Starship prompt renders in a new Warp tab.
+- [ ] If Starship is selected, confirm it renders in a new Warp tab; otherwise
+      confirm the existing prompt is preserved.
 - [ ] Set Raycast's main hotkey to `⌥Space`.
 - [ ] Choose a launcher mode: keep Spotlight Search on `⌘Space` for the
       recommended alongside path, or disable only **Show Spotlight search**
@@ -872,7 +901,7 @@ code "$HOME/Developer/_sandbox/editor-check"
 **Checkpoint**
 
 - [ ] VS Code opens from Terminal and its integrated terminal uses zsh.
-- [ ] Starship symbols render in VS Code and Warp.
+- [ ] If selected, Starship symbols render in VS Code and Warp.
 - [ ] Raycast opens from `⌥Space`; `⌘Space` matches the chosen Spotlight mode;
       and Spotlight indexing remains available for file-content search.
 - [ ] No app received broader permissions than its selected features need.
@@ -906,7 +935,7 @@ rg -l 'BEGIN .*PRIVATE KEY|ghp_|github_pat_|AKIA|Bearer[[:space:]]' "$SOURCE" ||
 Treat every search result as a review item. Documentation examples can be false
 positives, but a real credential must be removed and rotated.
 
-Run the final command checks:
+Run the final command checks, omitting commands for unselected tools:
 
 ```bash
 brew --prefix
@@ -917,7 +946,7 @@ chezmoi diff             # only when selected
 starship --version      # only when selected
 fdesetup status
 spctl --status
-code --version
+code --version          # non-core desktop preset only
 ```
 
 Then run the selected provider and runtime checks from earlier sections.
@@ -928,7 +957,8 @@ backup contains `~/.local/share/chezmoi`.
 
 **Manual route complete**
 
-- [ ] Every checkpoint above passes.
+- [ ] Every applicable checkpoint above passes; unselected items are recorded
+      as not selected. The shared policy/recovery evidence is current.
 - [ ] `~/Brewfile` describes the intended Homebrew state.
 - [ ] Configuration is recoverable; any selected chezmoi source is secret-free.
 - [ ] A small real repository opens, installs dependencies, and runs its tests.
@@ -963,14 +993,16 @@ without removing the live command.
 The wizard asks for:
 
 - Mac state: clean, existing, or uncertain;
+- ownership: personal, or managed with an approved policy and preflight evidence;
 - hosting track and development stack;
 - Git author name and primary email;
 - Git authentication mode;
 - whether VS Code should be Git's primary editor and comparison tool;
-- existing, new private-Git, or local-only chezmoi source.
+- unmanaged configuration, existing/new private-Git chezmoi, or local-only chezmoi;
+- shell and prompt choices independently of configuration ownership.
 
-After Phase 1, a separate checkpoint asks whether to configure or skip early
-macOS preferences. Other optional selections do not appear until Phase 8 has
+After Phase 1 on personal Macs, a separate checkpoint asks whether to configure
+or skip early preferences. Managed Macs leave preferences with IT. Other optional selections do not appear until Phase 8 has
 passed.
 
 - [ ] Read the final plan.
@@ -988,15 +1020,15 @@ The runner performs these equivalents:
 | Script-assisted phase | Manual equivalent | Shared manual action |
 |---|---|---|
 | Phase 1 | Manual 1 decisions and system checks | Finish Software Update and confirm the clean-machine boundary |
-| Early settings | Optional macOS preference section | Complete selected graphical preferences or skip |
+| Early settings | Optional macOS preference section | Personal: configure or skip; managed: IT-owned and skipped locally |
 | Phase 2 | Manual 2 | Finish Apple's graphical Command Line Tools installer |
 | Installation Centre | Manual 3 and 4 software prerequisites | Choose one Homebrew batch or review external owners; wait for any Company Portal installers |
-| Phase 3 | Manual 3 | Sign in to 1Password, choose approval policy, register keys, and enable FileVault |
+| Phase 3 | Manual 3 | Complete the selected authentication workflow and enable FileVault |
 | Phase 4 | Manual 4 | Complete GitHub/Azure browser authentication and app first launch |
-| Phase 5 | Manual 5 | Review an existing chezmoi diff; create a private remote later if selected |
+| Phase 5 | Manual 5 | Review configuration under the selected owner; chezmoi and private remotes only when selected |
 | Phase 6 | Manual 6 | No ordinary action unless a runtime download or shell check fails |
-| Phase 7 | Manual 7 | Install the VS Code `code` launcher and review existing settings |
-| Phase 8 | Manual 8 | Create and push the selected private dotfiles remote, or confirm local-only recovery |
+| Phase 7 | Manual 7 | Non-core: install the VS Code `code` launcher and review settings; core skips desktop setup |
+| Phase 8 | Manual 8 | Verify selected configuration recovery and all current policy evidence |
 
 > ℹ️ **Safe to stop**
 > Quit between phases. Completed current phases remain recorded. Rerun the same
@@ -1023,9 +1055,10 @@ Do not skip a manual gate just to reach the next phase.
 - [ ] Phase 1: macOS updates and backup boundary confirmed.
 - [ ] Phase 3: the selected authentication mode works; any required public key
       is registered; FileVault is on.
-- [ ] Phase 4: selected hosting provider browser and SSH authentication complete.
-- [ ] Phase 4/7: Raycast, Warp, and VS Code first-launch settings reviewed.
-- [ ] Phase 8: dotfiles private remote pushed or local-only backup plan confirmed.
+- [ ] Phase 4: provider sign-in and repository access use the selected SSH or HTTPS method.
+- [ ] Phase 4/7, non-core only: Raycast, Warp, and VS Code first-launch settings reviewed.
+- [ ] Phase 8: selected private remote is pushed, local-only chezmoi is backed
+      up, or user-owned configuration has a tested backup; policy evidence is current.
 
 After completing the named action, rerun the displayed phase or the wizard.
 
@@ -1043,7 +1076,7 @@ day-one-mac --status
 # Retry one phase. Replace 03 with the displayed number.
 day-one-mac setup --phase 03
 
-# Reopen the early preference selector.
+# Personal Macs only: reopen the early preference selector; managed Macs use IT.
 day-one-mac macos-settings --wizard
 ```
 
@@ -1068,17 +1101,18 @@ Useful commands:
 sed -n '1,240p' "$HOME/.day-one-mac/verification.md"
 sed -n '1,240p' "$HOME/.day-one-mac/application-provenance.md"
 brew bundle check --file="$HOME/Brewfile" --no-upgrade
-chezmoi --use-builtin-diff diff --no-pager
+chezmoi --use-builtin-diff diff --no-pager # only when chezmoi is selected
 ```
 
 - [ ] Every required gate passes.
 - [ ] External/company-managed applications show the correct owner.
 - [ ] Only software actually installed by Day One Mac appears as runner-owned.
-- [ ] The Brewfile and chezmoi source contain no secrets.
+- [ ] The Brewfile and any selected chezmoi source contain no secrets.
 
 ### Script-assisted 6 — complete application setup
 
-The runner installs or recognizes applications but does not sign into them,
+For the core preset, skip the desktop application checklist below. For a
+productivity preset, the runner installs or recognizes applications but does not sign into them,
 grant privacy permissions, enable cloud synchronization, or import old settings.
 
 - [ ] Follow [Raycast](../10-app-guides/RAYCAST.md).
@@ -1124,12 +1158,21 @@ and troubleshooting harder to explain.
 
 ## Final ready-for-work checklist
 
+Apply the [shared acceptance-control matrix](WORKSTATION-READINESS.md#acceptance-controls-for-both-setup-routes)
+and your recorded selections. Mark an unselected optional item **not selected**;
+it is not a failure and does not justify installing additional software.
+
 ### Security and operating system
 
-- [ ] macOS is fully updated.
+- [ ] macOS meets the supported range and approved update policy.
 - [ ] The terminal reports `arm64`.
 - [ ] FileVault is on and the recovery method is understood.
 - [ ] Gatekeeper remains enabled.
+- [ ] Firewall, SIP, recovery and all applicable policy controls have current
+      observations or supported, approved exceptions with retained evidence.
+- [ ] Managed: IT confirms enrollment, standard daily account, elevation,
+      escrow and organization acceptance. Personal: current recovery evidence
+      is retained. FileVault and Gatekeeper are non-waivable in either route.
 - [ ] The chosen authentication mode is set up and recoverable. In
       `1password` mode that means 1Password is recoverable and no plaintext
       private SSH key was added.
@@ -1139,22 +1182,27 @@ and troubleshooting harder to explain.
 - [ ] Git author name and email are correct.
 - [ ] If selected, `ghq root` and `ghq root --all` match the reviewed folder layout.
 - [ ] Required GitHub and/or Azure CLI authentication works.
-- [ ] Required SSH authentication works.
+- [ ] The selected SSH or HTTPS method can read the required repository;
+      HTTPS users do not need an SSH test.
 
 ### Shell and configuration
 
 - [ ] Homebrew uses `/opt/homebrew`.
-- [ ] A new zsh login shell finds Homebrew, chezmoi, and Starship.
-- [ ] chezmoi reports only understood changes.
-- [ ] The dotfiles source is private-Git protected or included in an encrypted backup.
+- [ ] The selected zsh login shell finds Homebrew and the selected tools.
+- [ ] If selected, chezmoi reports only understood changes; otherwise retain
+      and verify your user-owned configuration backup.
+- [ ] If selected, Starship works; otherwise the existing prompt is preserved.
+- [ ] For chezmoi, the source is private-Git protected or included in an
+      encrypted backup according to the selected ownership mode.
 
 ### Languages and editor
 
 - [ ] Selected runtime commands work in a new terminal.
 - [ ] Node projects have npm and a single Homebrew-owned pnpm launcher, when selected.
 - [ ] Python uses a uv-managed interpreter, when selected.
-- [ ] VS Code opens with `code`, starts zsh, and renders the Nerd Font.
-- [ ] Raycast and Warp open with only reviewed permissions and settings.
+- [ ] Non-core preset: VS Code opens with `code`, uses the selected shell and
+      renders the Nerd Font. Core: desktop application checks are not selected.
+- [ ] Non-core preset: Raycast and Warp open with reviewed permissions/settings.
 
 ### Real project proof
 

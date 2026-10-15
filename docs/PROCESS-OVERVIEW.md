@@ -88,6 +88,15 @@ the full [existing-Mac route](00-preflight/README.md) before applying cleanup.
 
 ## 2. Make the setup decisions
 
+First select **personal** or **managed** ownership. Managed Macs need approved
+enrollment, a daily standard account, elevation/recovery ownership and an
+approved OS/update policy before developer setup. IT provisions Homebrew and
+owns managed preferences; the local settings checkpoint is skipped. Direct
+assisted setup accepts `--deployment managed --policy /path/to/approved-policy.json`.
+Personal acceptance also requires current recovery evidence. Both routes use
+the [acceptance-control matrix](20-reference/WORKSTATION-READINESS.md#acceptance-controls-for-both-setup-routes);
+manual users retain equivalent private records without invoking scripts.
+
 Both routes make the same decisions. The script-assisted route records them in
 the main wizard before the required phases install software. The manual route
 records them in your own setup notes while following
@@ -472,7 +481,8 @@ state](04-operations/ROLLBACK.md) before using either mode.
 
 After Phase 8, the Mac has:
 
-- a current, FileVault-protected macOS installation;
+- a supported, policy-approved OS with FileVault and Gatekeeper enabled;
+- current firewall, SIP, recovery and any managed-policy acceptance evidence;
 - Apple Command Line Tools and Homebrew;
 - GitHub, Azure DevOps, or both authenticated with repository read access on
   Tracks 1–3; self-managed provider access on Track 4;

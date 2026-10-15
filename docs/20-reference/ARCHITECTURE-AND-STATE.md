@@ -23,6 +23,15 @@ explicit when moving functions between modules.
 
 ## Selection contract
 
+`deployment-mode` selects `personal` or `managed`; older selections default to
+personal, but enrollment detection blocks personal apply on a managed device.
+`workstation-policy` stores the approved policy path. Managed preflight requires
+that policy and current enrollment/elevation evidence before setup can proceed.
+`workstation-evidence.json` holds private, dated attestations bound to policy,
+device and account. Policy content participates in the completion fingerprint;
+expiry is evaluated by the live readiness check. See the
+[readiness contract](WORKSTATION-READINESS.md) for controls and non-waivable gates.
+
 Saved scalar files include `track`, `stack`, `auth-mode`, `preset`,
 `primary-ide`, Git identity, and dotfiles choices. HTTPS additionally records
 `https-helper`; repository gates use `github-verification-repo` and

@@ -188,6 +188,8 @@ manifests to change tracks.
 Important setup selectors include:
 
 ```text
+--deployment personal|managed
+--policy /absolute/path/to/approved-policy.json
 --track 1|2|3|4
 --stack node|python|both
 --layout none|repository|purpose|existing
@@ -589,6 +591,15 @@ the bundled Finder **Open in VS Code** action by default. `--import` opens
 Apple Shortcuts for review and **Add Shortcut**; `--guided` asks before opening.
 `--dry-run` opens nothing. The command does not mark the workflow installed.
 See the [shortcut guide](../10-app-guides/MACOS-SHORTCUTS.md).
+
+## VS Code profile bundles
+
+For profile recipes, `day-one-mac vscode-profile default|full-stack|ai|operations
+--dry-run` previews a bundle. Without `--dry-run`, it creates private review
+files; it does not apply editor settings. `--install-extensions` additionally
+requires current Phase 8 before any output or installation. See
+[profile bundles](../10-app-guides/VSCODE-PROFILES.md#generate-profile-files-with-the-scripts)
+for availability, output options and manual import instructions.
 
 ## Workstation readiness
 

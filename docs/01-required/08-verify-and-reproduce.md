@@ -14,8 +14,15 @@ and remote checks are not selected; include configuration in a tested backup.
 Starship is checked only when selected, and the login shell must match the
 chosen zsh. Optional databases, AI, MCP, editor
 profiles, and the optional Warp Drive import do not affect this gate. The
-Raycast and Warp applications themselves are required, but Homebrew ownership
-is not: valid external installations satisfy the same gate.
+Raycast and Warp applications themselves are required for non-core presets;
+core omits those desktop gates. Homebrew ownership is not required: valid
+external installations satisfy the same selected application gate.
+
+Phase 8 also requires the current [workstation acceptance controls](../20-reference/WORKSTATION-READINESS.md#acceptance-controls-for-both-setup-routes)
+and policy-bound evidence. FileVault and Gatekeeper must be enabled; an exception
+cannot make those two checks pass. Managed accounts, enrollment, recovery and
+organization controls must meet the approved policy. A stored phase marker is
+not a substitute for a fresh check after evidence expires or the device changes.
 
 After the phase passes, use [Finalise or detach Day One Mac](../04-operations/FINALIZE.md) to
 compact the retained operational evidence or deliberately detach the portable
@@ -61,8 +68,9 @@ checkout; see [Contributor tooling](../CONTRIBUTOR-TOOLING.md). The old
 `day-one-mac validate` command is an alias for `verify` in installed runtimes.
 
 With the core preset, VS Code and the omitted desktop applications are not
-verification gates. Authentication, chosen languages, and dotfiles checks
-remain mandatory.
+verification gates. Authentication and chosen languages remain required.
+Configuration checks follow the selected owner; unmanaged setups do not require
+chezmoi source or remote checks.
 
 ## Step 8.2 — Run the complete Phase 8 gate
 

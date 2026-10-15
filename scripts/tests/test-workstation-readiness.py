@@ -6,6 +6,7 @@ import json
 import io
 import plistlib
 import sys
+import subprocess
 from unittest.mock import patch
 from contextlib import redirect_stdout
 from pathlib import Path
@@ -116,6 +117,26 @@ class ReadinessTests(unittest.TestCase):
             account[0] = 'BBB-222'
             self.assertNotEqual(first, ready.device())
 
+    def test_exceptions_cannot_bypass_required_encryption_and_gatekeeper(self):
+        with tempfile.TemporaryDirectory() as temp:
+            target = Path(temp)/'evidence.json'
+            for control in ('filevault', 'gatekeeper', 'firewall'):
+                evidence = copy.deepcopy(self.evidence)
+                evidence['controls'][control] = {
+                    **evidence['controls']['recovery'], 'status': 'exception',
+                    'reason': 'reviewed fixture', 'approval_reference': 'fixture approval'}
+                target.write_text(json.dumps(evidence))
+                for observed in ('FAIL', 'UNKNOWN'):
+                    with self.subTest(control=control, observed=observed), \
+                         patch.object(sys, 'argv', ['readiness', '--check', '--json', '--evidence', str(target)]), \
+                         patch.object(ready, 'device', return_value='fixture'), \
+                         patch.object(ready, 'probe', side_effect=lambda key, policy: (observed if key == control else 'PASS', 'fixture')):
+                        with redirect_stdout(io.StringIO()) as output:
+                            self.assertEqual(ready.main(), 0 if control == 'firewall' else 10)
+                        report = json.loads(output.getvalue())
+                        result = next(row['result'] for row in report['controls'] if row['control'] == control)
+                        self.assertEqual(result, 'EXCEPTION' if control == 'firewall' else observed)
+
     def test_publisher_observation_never_approves_wrong_or_invalid_signature(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp); app = root/'Fixture Publisher.app'
@@ -147,5 +168,19 @@ class ReadinessTests(unittest.TestCase):
         self.assertLess(workflow.index('scripts/tests/test-packaged-modules.sh'), workflow.index('--draft=false'))
         self.assertIn('ref: ${{ steps.candidate.outputs.sha }}', workflow)
         self.assertGreaterEqual(workflow.count('test "$(git rev-parse'), 3)
+
+    def test_aggregate_ci_gate_blocks_unsuccessful_platform_results(self):
+        workflow = (ROOT/'.github/workflows/validate.yml').read_text()
+        aggregate = workflow.split('\n  validate:\n', 1)[1]
+        self.assertIn('name: validate', aggregate)
+        self.assertIn('needs: platform', aggregate)
+        self.assertIn('if: ${{ always() }}', aggregate)
+        self.assertIn('PLATFORM_RESULT: ${{ needs.platform.result }}', aggregate)
+        self.assertIn('os: [macos-15, macos-26]', workflow)
+        gate = next(line.split('run: ', 1)[1] for line in aggregate.splitlines() if 'run: ' in line)
+        for status in ('success', 'failure', 'cancelled', 'skipped', ''):
+            with self.subTest(status=status):
+                result = subprocess.run(['/bin/bash', '-c', gate], env={'PLATFORM_RESULT': status}, check=False)
+                self.assertEqual(result.returncode == 0, status == 'success')
 
 if __name__ == '__main__': unittest.main()

@@ -72,10 +72,10 @@ function main(args) {
     } else if (arg === '--dry-run') dryRun = true;
     else if (arg === '--install-extensions') install = true;
     else if (arg === '--help') {
-      console.log('Usage: bash scripts/vscode-profiles/<profile>.sh [--dry-run] [--output NEW_DIRECTORY]\n'
+      console.log('Usage: day-one-mac vscode-profile <profile> [--dry-run] [--output NEW_DIRECTORY]\n'
         + '  [--with OPTIONAL_EXTENSION_ID]... [--install-extensions] [--code CLI_PATH]\n'
         + 'Generates review files only by default. Requires Node.js 22+.\n'
-        + 'Install mode adds missing extensions; it may create the named VS Code profile.\n'
+        + 'Install mode requires current Phase 8 and adds missing extensions; it may create the named profile.\n'
         + 'It never applies settings, removes extensions, or installs Copilot.');
       return;
     } else throw new Error(`Unknown option: ${arg}`);
@@ -85,6 +85,15 @@ function main(args) {
   if (dryRun) {
     console.log('Dry run: no files written and no VS Code commands run.');
     return;
+  }
+  if (install) {
+    const gate = spawnSync('/bin/bash', ['-c', 'source "$1"; day_one_phase_current 08',
+      'profile-prerequisite', path.join(root, 'scripts/lib/module-execution.sh')], { encoding: 'utf8' });
+    if (gate.error || gate.status !== 0) {
+      console.error('Current Phase 8 completion is required before installing extensions; use --dry-run or generate a review bundle first.');
+      process.exitCode = 10;
+      return;
+    }
   }
   // A new directory prevents overwriting earlier output, including symlinks.
   if (output) fs.mkdirSync(output, { mode: 0o700 });

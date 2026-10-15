@@ -57,26 +57,40 @@ credentials, CLI configuration, or database permissions.
 
 ### Generate profile files with the scripts
 
-Use the four scripts below from the Day One Mac directory. They require
-**Node.js 22 or newer**. They read this guide's extension tables and settings
-recipes, so keep the scripts and documentation together. Generated settings
-are personal User Settings; these scripts create no repository `.vscode` files.
+Use the installed `day-one-mac vscode-profile` command from any directory; no
+source checkout is needed. **Availability:** these recipes originated in source
+commit `4fbd145`; the public command belongs to the subsequent documentation-audit
+remediation. They are candidate features until a release containing them is
+published. Check `day-one-mac --version` and `day-one-mac vscode-profile --help`;
+an older runtime such as `1.5.0-local.20261015-audit.29cc299` does not include them.
+Use an approved newer runtime rather than copying individual scripts into it.
+
+The generators require **Node.js 22 or newer** and read this bundled guide's
+extension tables and settings recipes. They create personal review files, not
+repository `.vscode` files or active editor settings. Preview and bundle export
+are available before Phase 8; explicit extension installation requires current
+Phase 8. Import/merge remains a reviewed manual action after the required setup.
+
+| Route | Generated contents | Prerequisite and verification |
+|---|---|---|
+| `vscode-profile` recipes below | Settings, selected extensions and applicable keybindings for four named recipes | Node 22+; export does not alter VS Code; extension installation requires current Phase 8 |
+| [Module 12](../02-optional/12-vscode-profiles.md) | A user-chosen name and extension selection only | Plan/check before Phase 8; apply/resume requires current Phase 8; check validates the saved artifact, not the imported profile |
 
 | Profile | Generate its reviewed baseline | Baseline extensions |
 |---|---|---|
-| Default | `bash scripts/vscode-profiles/default.sh` | 6 |
-| Full Stack | `bash scripts/vscode-profiles/full-stack.sh` | 20 |
-| AI | `bash scripts/vscode-profiles/ai.sh` | 16 |
-| Operations | `bash scripts/vscode-profiles/operations.sh` | 12 |
+| Default | `day-one-mac vscode-profile default` | 6 |
+| Full Stack | `day-one-mac vscode-profile full-stack` | 20 |
+| AI | `day-one-mac vscode-profile ai` | 16 |
+| Operations | `day-one-mac vscode-profile operations` | 12 |
 
 Start with a preview, then generate the profiles you want:
 
 ```bash
-bash scripts/vscode-profiles/full-stack.sh --dry-run
-bash scripts/vscode-profiles/default.sh
-bash scripts/vscode-profiles/full-stack.sh
-bash scripts/vscode-profiles/ai.sh
-bash scripts/vscode-profiles/operations.sh
+day-one-mac vscode-profile full-stack --dry-run
+day-one-mac vscode-profile default
+day-one-mac vscode-profile full-stack
+day-one-mac vscode-profile ai
+day-one-mac vscode-profile operations
 ```
 
 Each invocation prints its output directory: by default a new private directory
@@ -86,7 +100,7 @@ destination, pass a **new directory whose parent already exists**:
 
 ```bash
 mkdir -p "$HOME/Developer/Resources/VSCode/Profiles"
-bash scripts/vscode-profiles/full-stack.sh \
+day-one-mac vscode-profile full-stack \
   --output "$HOME/Developer/Resources/VSCode/Profiles/full-stack-review"
 ```
 
@@ -139,10 +153,10 @@ installation option. First run **Shell Command: Install 'code' command in PATH**
 in VS Code if your terminal cannot find `code`.
 
 ```bash
-bash scripts/vscode-profiles/default.sh --install-extensions
-bash scripts/vscode-profiles/full-stack.sh --install-extensions
-bash scripts/vscode-profiles/ai.sh --install-extensions
-bash scripts/vscode-profiles/operations.sh --install-extensions
+day-one-mac vscode-profile default --install-extensions
+day-one-mac vscode-profile full-stack --install-extensions
+day-one-mac vscode-profile ai --install-extensions
+day-one-mac vscode-profile operations --install-extensions
 ```
 
 This targets **Default**, **Full Stack**, **AI**, or **Operations**, respectively,
@@ -157,10 +171,10 @@ running both is not required. [VS Code CLI](https://code.visualstudio.com/docs/c
 Add only optional extensions listed for that profile using repeatable `--with`:
 
 ```bash
-bash scripts/vscode-profiles/full-stack.sh \
+day-one-mac vscode-profile full-stack \
   --with orta.vscode-jest \
   --with ms-playwright.playwright
-bash scripts/vscode-profiles/operations.sh \
+day-one-mac vscode-profile operations \
   --with ms-vscode-remote.remote-ssh \
   --install-extensions
 ```

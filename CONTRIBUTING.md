@@ -53,8 +53,10 @@ hand during normal development. After validation succeeds on `main`, Release
 Please updates one release pull request containing `VERSION`, the private
 contributor-tooling version in `package.json`, `CHANGELOG.md`, and the release
 manifest. Review and merge that pull request when the changes are ready to
-publish. The release workflow then creates the tag and GitHub Release and
-attaches the verified runtime archive, checksum, and installer.
+publish. The workflow creates the tag and a draft release, validates that exact
+candidate and archive, then attaches the runtime, checksum, installer and
+provenance/evidence before publishing. Failed candidates remain drafts; see the
+[release and retry procedure](docs/GIT-WORKFLOW.md#release-lifecycle-and-failed-draft-retry).
 
 Repository maintainers must keep the narrowly scoped `RELEASE_PLEASE_TOKEN`
 Actions secret available so the generated release pull request receives the

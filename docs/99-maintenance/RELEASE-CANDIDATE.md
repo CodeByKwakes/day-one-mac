@@ -37,18 +37,37 @@ release process after reviewing evidence for the intended commit.
 
 - Existing guide commands and saved state formats remain supported. There is
   no state migration, forced configuration replacement or automatic cleanup.
+- Required-phase fingerprints change with implementation/policy changes. Review
+  status and revalidate affected phases before optional/direct installation;
+  a historical Phase 8 marker is not current acceptance evidence.
+- Database first apply requires `--disposable-data` for synthetic fixed-credential
+  workloads. Resume may reuse saved consent; old unowned resources are preserved
+  and refused, not silently adopted. Follow the reviewed migration procedure.
+- `day-one-mac vscode-profile` exports four reviewed settings/extension recipes
+  without a checkout. Export may precede Phase 8; `--install-extensions` requires
+  current Phase 8. Existing profiles need manual import/merge. These features
+  require a runtime containing this candidate, not an older installed release.
+- FileVault/Gatekeeper are non-waivable in readiness and final setup alike.
 - Node 22+ must already be available for the relevant helper modules and
   contributor acceptance tooling. The runtime ships no `node_modules`.
 - Restore staging preserves bytes, not ACLs, extended attributes, ownership or
   executable bits. It is not live migration, archive extraction, a database
   import, a secret scanner or proof that the original backup was correct.
-- Automated fixtures use synthetic completion markers. A native APFS test
+- Automated fixtures generate current fingerprints from isolated selections;
+  these are synthetic prerequisites, not completed onboarding. A native APFS test
   does not replace a fresh-user eight-phase setup or real-provider verification.
 - Signing/trust decisions, credential handling, application imports, live
   promotion, GUI/security changes and destructive lifecycle operations remain
   deliberately manual.
 
 ## Evidence required before publication
+
+The workflow keeps candidates as drafts until immutable-SHA checks, full
+validation, exact-archive acceptance and provenance succeed. Retain
+`release-evidence.json` with its candidate SHA, archive hash and workflow URL.
+Use `draft_tag` only to retry the same failed draft; follow the
+[release lifecycle](../GIT-WORKFLOW.md#release-lifecycle-and-failed-draft-retry).
+Live branch-protection and failed-draft/retry rehearsals remain required.
 
 Use [the acceptance procedure](ACCEPTANCE.md). Capture the exact candidate
 archive hash, tested commit and report directory; resolve failed/skipped gates

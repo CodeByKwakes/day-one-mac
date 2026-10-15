@@ -2,7 +2,7 @@
 
 # Optional 12 — VS Code profiles
 
-**Time:** 15–35 minutes · **Required:** no · **Prerequisite:** Phase 7
+**Time:** 15–35 minutes · **Required:** no · **Prerequisite:** current Phase 8 for assisted apply/resume; installed VS Code for manual import
 
 ## Outcome
 
@@ -15,6 +15,10 @@ For the Angular/NestJS/Nx stack, start with the [final profile setup](../10-app-
 Use the [detailed stack guide](../10-app-guides/VSCODE-TYPESCRIPT.md) for expanded recipes.
 It provides Default, Full Stack, Operations, and AI assignments, profile User
 Settings, keyboard shortcuts, icons, worktrees, shared skills, and MCP recipes.
+The `day-one-mac vscode-profile` recipes export settings and keybindings as well
+as extensions. Module 12's TSV route below exports only a name and extensions;
+these are distinct artifact formats and scopes. See the linked guide's runtime
+availability note before using the newer recipe command.
 The [AI profile](../10-app-guides/VSCODE-TYPESCRIPT.md#ai-profile-focused-agent-work-and-prompt-authoring)
 adds focused Copilot/Codex/Claude Code workflows, prompt generation, and optional evaluation tools.
 

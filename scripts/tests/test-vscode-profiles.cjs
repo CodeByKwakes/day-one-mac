@@ -2,15 +2,16 @@
 'use strict';
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-const os = require('node:os');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const { recipe } = require('../vscode-profiles/build.cjs');
-const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'day-one-profile-tests-'));
+const temporary = fs.mkdtempSync(path.join('/tmp', 'day-one-profile-tests-'));
 const root = path.resolve(__dirname, '../..');
+const environment = { ...process.env, PROFILE_TEST_LOG: path.join(temporary, 'calls.jsonl'),
+  DAY_ONE_MAC_STATE_ROOT: path.join(temporary, 'state'), DAY_ONE_MAC_STATE_DIR: path.join(temporary, 'state') };
 const run = (slug, args = [], status = 0) => {
   const result = spawnSync('/bin/bash', [path.join(root, `scripts/vscode-profiles/${slug}.sh`), ...args], {
-    encoding: 'utf8', env: { ...process.env, PROFILE_TEST_LOG: path.join(temporary, 'calls.jsonl') },
+    encoding: 'utf8', env: environment,
   });
   assert.equal(result.status, status, `${result.stdout}\n${result.stderr}`);
   return result;
@@ -22,6 +23,9 @@ try {
     assert.equal(data.extensions.length, count);
     assert(!data.extensions.some(id => id.startsWith('github.copilot')));
     assert.equal(data.settings['[markdown]']['files.trimTrailingWhitespace'], false);
+    assert.equal(data.settings['github.copilot.chat.commitMessageGeneration.instructions'].length, 5);
+    assert.equal(data.settings['chat.tools.global.autoApprove'], false);
+    assert.equal(data.settings['chat.tools.terminal.enableAutoApprove'], false);
     run(slug, ['--output', output, '--dry-run', '--install-extensions', '--code', '/does/not/exist']);
     assert(!fs.existsSync(output));
     run(slug, ['--output', output]);
@@ -53,6 +57,16 @@ try {
   run('ai', ['--with'], 1);
   run('ai', ['--unknown'], 1);
   assert.match(run('ai', ['--help']).stdout, /Usage:/);
+  const blockedOutput = path.join(temporary, 'blocked-install');
+  run('default', ['--install-extensions', '--output', blockedOutput, '--code', '/does/not/exist'], 10);
+  assert(!fs.existsSync(blockedOutput));
+  const publicPreview = spawnSync('/bin/bash', [path.join(root, 'scripts/day-one-mac'),
+    'vscode-profile', 'ai', '--dry-run'], { cwd: temporary, env: environment, encoding: 'utf8' });
+  assert.equal(publicPreview.status, 0, publicPreview.stderr);
+  assert.match(publicPreview.stdout, /Dry run: no files written/);
+  const seed = spawnSync('/bin/bash', [path.join(root, 'scripts/tests/seed-required-state.sh'),
+    environment.DAY_ONE_MAC_STATE_ROOT], { env: environment, encoding: 'utf8' });
+  assert.equal(seed.status, 0, seed.stderr);
   const mock = path.join(temporary, 'mock code');
   fs.writeFileSync(mock, `#!${process.execPath}
 const fs = require('node:fs');

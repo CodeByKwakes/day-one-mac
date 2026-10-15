@@ -67,11 +67,13 @@ For databases, select only the services your projects need:
 
 ```bash
 day-one-mac optional --module 09 --plan --services postgres,redis
-day-one-mac optional --module 09 --apply --services postgres,redis
+day-one-mac optional --module 09 --apply --services postgres,redis --disposable-data
 day-one-mac optional --module 09 --check
 ```
 
-Preview never starts OrbStack. Apply may start it and require first-run prompts.
+`--disposable-data` acknowledges fixed credentials and synthetic disposable data
+only; use separately managed services for sensitive data. Resume reuses a saved
+acknowledgement. Preview never starts OrbStack. Apply may start it and require first-run prompts.
 If either installer fails, fix the reported prerequisite and resume its saved
 selection:
 

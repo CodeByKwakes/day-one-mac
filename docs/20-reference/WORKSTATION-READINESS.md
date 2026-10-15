@@ -41,6 +41,32 @@ can help the security owner select and maintain one.
 
 ## Policy contract
 
+### Acceptance controls for both setup routes
+
+Use this matrix before setup and again at final acceptance. The manual route
+uses macOS/IT checks and a private operator-kept record; it does not require
+Day One Mac commands. The assisted route uses the selected policy and current
+device/account-bound evidence. Neither route replaces organization approval.
+
+| Control | Personal Mac | Managed Mac | Acceptance evidence |
+|---|---|---|---|
+| Ownership and account | Personally administered account | Enrollment, daily standard account and approved elevation/recovery owner | IT verifies MDM, profiles, SSO and secure/bootstrap tokens where applicable |
+| OS and updates | Supported OS with current applicable updates | Approved OS build and update deadline; do not bypass a deferral | Record OS build, policy revision and check date |
+| FileVault and Gatekeeper | Both enabled | Both enabled, with recovery escrow verified by IT | Required in both routes; exceptions do not satisfy Day One Mac completion |
+| Firewall and SIP | Enabled under the personal baseline | Organization-approved controls | Current observations; any supported exception needs an approval reference |
+| Recovery | Separate recovery method and a successful recovery drill | Approved escrow, break-glass and workload recovery checks | Record outcome and custody references, never keys or credentials |
+| Software and preferences | Selected software and reviewed personal preferences | Approved publishers/installers; IT owns managed preferences | Homebrew is provisioned by the approved administrator; local preference apply/restore is blocked |
+| Organization acceptance | Add controls required for the workload | Startup, lock/sharing, endpoint agents, privacy, software/editor scopes, network, restoration, peripherals, performance and onboarding | Retained tests for every control in the approved policy; see [pilot acceptance](../04-operations/WORKSTATION-ACCEPTANCE.md) |
+
+Manual records identify the policy/baseline, device and account using private
+non-secret references, reviewer, check time, expiry and evidence location. Use
+the selected policy's evidence interval (personal default: seven days); renew
+after expiry or relevant policy/device/account changes. The scripted JSON
+format is needed only for assisted acceptance. Never mark an untested control
+as passed. An approved exception is distinct from an observed pass.
+
+### Policy file
+
 The bundled [managed policy example](../../config/managed-policy.example.json)
 is deliberately **unapproved**. Copy it to private administration storage,
 review every required control, select the supported OS range and record a
@@ -121,9 +147,12 @@ the work. Each manual control needs:
 Keep recovery keys, passwords, tokens, serial numbers and profile payloads out
 of this file. The evidence is bound to the policy hash, device and current
 account. Missing, future-dated, expired or mismatched evidence remains UNKNOWN.
-An observed automatic failure cannot be replaced by a claimed manual PASS;
-only an explicit current exception can supersede it. Publisher allowlist
-failures require correcting the software/policy, not a manual PASS.
+An observed automatic failure cannot be replaced by a claimed manual PASS.
+**FileVault and Gatekeeper are non-waivable:** FAIL or UNKNOWN remains blocking
+even when an exception is recorded, matching required Phases 3 and 8. For other
+automatic controls, an explicit current exception can supersede failure when
+the policy owner approves it. Publisher allowlist and endpoint failures require
+correction; manual PASS or EXCEPTION does not override those additional checks.
 
 ```bash
 day-one-mac readiness --check --json

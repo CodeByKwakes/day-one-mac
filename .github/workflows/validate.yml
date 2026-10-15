@@ -9,7 +9,8 @@ permissions:
   contents: read
 
 jobs:
-  validate:
+  platform:
+    name: Platform (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
@@ -43,3 +44,14 @@ jobs:
         run: scripts/validate.sh
       - name: Rehearse executable modules from the release archive
         run: scripts/tests/test-packaged-modules.sh
+
+  validate:
+    name: validate
+    needs: platform
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every platform check to succeed
+        env:
+          PLATFORM_RESULT: ${{ needs.platform.result }}
+        run: test "$PLATFORM_RESULT" = success

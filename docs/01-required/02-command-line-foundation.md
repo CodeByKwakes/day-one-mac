@@ -113,6 +113,12 @@ restart, and try again.
 
 ## Step 2.2 — Install Homebrew
 
+**Managed Mac:** ask the approved administrator/MDM workflow to provision
+`/opt/homebrew` before continuing. The runner refuses the public bootstrap in
+managed mode. Do not promote the daily account or run the installer below to
+work around that stop. The installation table and bootstrap command below
+apply to personal Macs; existing managed installations follow IT update policy.
+
 The runner checks before it installs anything. It looks for the supported
 Apple-silicon executable at `/opt/homebrew/bin/brew`, even when the current
 Terminal has not loaded Homebrew into `PATH` yet.
@@ -141,8 +147,8 @@ else
 fi
 ```
 
-Only when the last line reports that Homebrew is not installed should you run
-Homebrew's official installation script:
+On a personal Mac, only when the last line reports that Homebrew is not installed
+should you run Homebrew's official installation script:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"

@@ -131,8 +131,14 @@ additional options as follows.
 2. Select **Add checks**.
 3. Search for and select `validate` from **GitHub Actions**.
 
-The workflow is displayed as **Validate**, but the required check is the job
-name `validate` from `.github/workflows/validate.yml`. Do not require
+The workflow is displayed as **Validate**. Its stable aggregate job/check is
+explicitly named `validate` in `.github/workflows/validate.yml`. It waits for
+**Platform (macos-15)** and **Platform (macos-26)** and runs even if a platform
+fails, is cancelled or is skipped; only an all-success result passes the gate.
+Require the aggregate, rather than a single platform result. After deploying
+this workflow, confirm the emitted check and ruleset on a test pull request,
+including a deliberately failing platform case. Local workflow validation does
+not prove the live ruleset is configured. Do not require
 **Prepare and publish runtime release**: it runs only after a successful push
 to `main`, so requiring it on a pull request would create an impossible gate.
 
@@ -232,13 +238,17 @@ automatic release workflow did not start or needs to be retried.
 2. Select **Prepare and publish runtime release**.
 3. Select **Run workflow**.
 4. Choose the `main` branch.
-5. Select **Run workflow** again.
-6. Confirm the workflow updates the existing Release Please pull request,
-   creates one when releasable changes exist, or completes without a release
-   change when there is nothing releasable.
+5. For ordinary coordination, leave **draft_tag** empty. To retry a failed
+   candidate, enter its existing draft tag (for example `v1.6.0`); inspect the
+   failure first and do not retarget the tag to different code.
+6. Select **Run workflow** again. With no tag, confirm release-PR coordination;
+   with a draft tag, confirm that the exact candidate is checked and fully
+   retested before publication. A failed candidate stays a draft.
 
 The manual trigger reruns release coordination. It does not bypass the
 protected pull-request workflow or the required `validate` check.
+Follow the [release lifecycle and retry procedure](GIT-WORKFLOW.md#release-lifecycle-and-failed-draft-retry)
+for the evidence to retain and handling failures that require a code change.
 
 ### Resolve common protection problems
 

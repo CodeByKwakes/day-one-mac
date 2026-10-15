@@ -13,7 +13,9 @@ machine-local development CA that is never committed.
 
 The ordinary Finder, Dock, keyboard, trackpad, menu-bar, and screenshot choices
 now belong to the early [macOS Settings Wizard](../01-required/MACOS-SETTINGS.md). Run that
-wizard after Phase 1 even if you do not plan to use this advanced module.
+wizard after Phase 1 on a personal Mac if you want those changes. Managed Macs
+skip the checkpoint: IT owns preferences, and local apply/resume/restore is
+blocked. Ask the policy owner to make approved changes.
 Advanced 19 remains optional and covers broader preference design, application
 permissions, login items, browser roles, and local HTTPS.
 
@@ -40,7 +42,8 @@ day-one-mac advanced --module 19 --apply --manifest ./preferences.tsv
 day-one-mac advanced --module 19 --check
 ```
 
-Apply requires Phase 8. Supported IDs are:
+Apply requires current Phase 8 on a personal Mac; managed apply/resume is
+refused. Plan/check remain inspection operations. Supported IDs are:
 
 ```text
 finder-hidden, finder-extensions, finder-path, finder-status, finder-list

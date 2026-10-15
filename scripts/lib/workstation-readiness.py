@@ -47,6 +47,8 @@ CONTROLS = {
     'onboarding': 'Fresh-user run, restart persistence and accessibility accepted',
 }
 AUTO = {'os', 'filevault', 'gatekeeper', 'firewall', 'sip', 'enrollment', 'standard-user'}
+# Match the independent encryption/security gates in required Phases 3 and 8.
+NON_WAIVABLE = {'filevault', 'gatekeeper'}
 PERSONAL = ['os', 'filevault', 'gatekeeper', 'firewall', 'sip', 'recovery']
 PREFLIGHT = {'enrollment', 'standard-user', 'management', 'elevation'}
 
@@ -97,7 +99,7 @@ def policy_for(args):
         raise ValueError('duplicate control')
     minimum = set(CONTROLS) if args.mode == 'managed' else set(PERSONAL)
     if not minimum.issubset(required):
-        raise ValueError('policy cannot omit mandatory controls; use reviewed exceptions for non-applicable controls')
+        raise ValueError('policy cannot omit mandatory controls; only waivable controls accept reviewed exceptions')
     if args.mode == 'managed' and (policy.get('approved') is not True or not policy.get('approval_reference')):
         raise ValueError('managed policy needs approval and a non-secret approval reference')
     for key, low, high in [('minimum_major', 15, 27), ('maximum_major', 15, 27), ('max_evidence_hours', 1, 336)]:
@@ -372,7 +374,7 @@ def main():
                 continue
             result, detail = probe(control, policy) if control in AUTO else manual(control, evidence, policy, binding, now)
             # An observed failure cannot be overwritten with a claimed PASS.
-            if result in ('FAIL', 'UNKNOWN') and control in AUTO:
+            if result in ('FAIL', 'UNKNOWN') and control in AUTO and control not in NON_WAIVABLE:
                 status, note = manual(control, evidence, policy, binding, now)
                 if status == 'EXCEPTION':
                     result, detail = status, note

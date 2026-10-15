@@ -104,6 +104,9 @@ docs/20-reference/phase-05-shell-files/home/.gitignore_global
 docs/20-reference/phase-05-shell-files/home/.zprofile
 docs/20-reference/phase-05-shell-files/home/.zshrc
 docs/99-maintenance/DOCUMENTATION-AUDIT.md
+docs/99-maintenance/DOCUMENTATION-CONSISTENCY-AUDIT-2026-10-15.md
+docs/99-maintenance/TECHNICAL-AUDIT-2026-10-14.md
+docs/99-maintenance/AUDIT-IMPLEMENTATION-2026-10-14.md
 docs/99-maintenance/README.md
 docs/CONTRIBUTOR-TOOLING.md
 docs/GIT-WORKFLOW.md

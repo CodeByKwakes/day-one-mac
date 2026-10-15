@@ -11,7 +11,8 @@ and **16 (selected software)** support a shared execution interface.
 use that interface for generated artifacts, not software installation.
 **20** stages explicitly checksummed regular files, or records no-restore.
 An executable module automates its stated scope, not every action in its guide:
-Module 13 does not edit shell configuration or a Brewfile.
+Module 13 never edits a Brewfile. Shell aliases are an explicit `--aliases`
+opt-in, available only with the selected shell-configuration owner.
 
 For a first run, follow the [optional setup walkthrough](../02-optional/README.md#plan-apply-and-check-an-executable-module).
 
@@ -21,12 +22,14 @@ For a first run, follow the [optional setup walkthrough](../02-optional/README.m
 |---|---|
 | `day-one-mac optional --list` | Read the capability registry; this is not installation status. |
 | `--module ID --plan` | Inspect available evidence and print proposed operations. No state, locks, installations, service starts or configuration writes. |
-| `--module ID --apply` | Confirm, save the selection and apply missing work. Requires recorded Phase 8 completion. |
+| `--module ID --apply` | Confirm, save the selection and apply missing work. Requires a current Phase 8 fingerprint for the selected code and choices. |
 | `--module ID --check` | Inspect actual installation/configuration/health. Return nonzero when verification fails; never save completion. |
-| `--module ID --resume` | Reconcile the last saved selection with current reality. Requires Phase 8 and confirmation; does not accept a replacement selection. |
+| `--module ID --resume` | Reconcile the last saved selection with current reality. Requires current Phase 8 and confirmation; does not accept a replacement selection. |
 | `advanced --module 16 --inventory` | Print candidate two-column TSV to stdout. Does not save a selection or evaluate the Brewfile. |
 
 Supply `--services postgres,redis,mongodb` for 09 or `--packages eza,fzf` for 13.
+First database apply also requires `--disposable-data`; saved acknowledgement
+can be reused on resume. Use fixed-credential containers only for synthetic data.
 Omitting the selection uses the saved one; absence of saved choices is an error.
 `--yes` skips the ordinary apply/resume confirmation only. It does not approve
 macOS permissions or another application's onboarding.
@@ -73,10 +76,12 @@ and guide-only `advanced` commands retain their roles. Explicit actions for
 that command still opens the guide. The module interface adds
 strict action validation and a Phase 8 gate for apply/resume.
 
-The direct CLI installer keeps its existing Homebrew prerequisite for
-compatibility; it does not gain a Phase 8 gate. Both direct installers share the
-new locking, saved selections and run records. CLI users can resume directly
-with `day-one-mac cli-tools --saved`.
+Both direct installers (`databases` and `cli-tools`) require a **current Phase 8**
+fingerprint before installation, including saved-selection retries. The CLI
+installer additionally requires Homebrew. Preview/check remains available before
+completion. An old marker alone is insufficient: review setup status and revalidate
+changed phases. Both direct installers share locking, saved selections and run
+records. CLI users can resume directly with `day-one-mac cli-tools --saved`.
 
 Database preview now works before Phase 8 and cannot start OrbStack.
 Database checks are deliberately stricter: running without a passing health

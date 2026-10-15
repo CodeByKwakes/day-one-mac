@@ -4,8 +4,14 @@
 
 This folder contains project-maintenance evidence rather than setup steps.
 
-- [Documentation audit](DOCUMENTATION-AUDIT.md) records the current clarity,
-  alignment, accessibility, and release-validation result.
+- [15 October documentation consistency audit](DOCUMENTATION-CONSISTENCY-AUDIT-2026-10-15.md)
+  records baseline source/runtime differences, document contradictions and
+  subsequent implementation status, with operational acceptance kept explicit.
+- [25 September documentation audit](DOCUMENTATION-AUDIT.md) preserves the
+  earlier clarity, alignment, accessibility and release-validation snapshot.
+- [14 October technical audit](TECHNICAL-AUDIT-2026-10-14.md) and
+  [implementation record](AUDIT-IMPLEMENTATION-2026-10-14.md) distinguish code
+  remediation from managed-device, hardware and release pilot evidence.
 - [Acceptance procedure](ACCEPTANCE.md) covers packaged-runtime checks,
   disposable native restore testing and release-readiness reports.
 - [Candidate release notes](RELEASE-CANDIDATE.md) separate proposed changes,

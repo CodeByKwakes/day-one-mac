@@ -1,15 +1,22 @@
 # Day One Mac documentation audit
 
+> **Historical record — superseded.** Use the
+> [15 October consistency audit](DOCUMENTATION-CONSISTENCY-AUDIT-2026-10-15.md)
+> and its implementation status for later changes. This file preserves earlier
+> observations; it does not certify subsequent releases. The retained document
+> snapshot is revision `ec572a7` (1 October 2026), which includes edits after the
+> original audit date below. Original counts and validation results are historical.
+
 **Audit date:** 25 September 2026
 
-**Release baseline:** 1.0.6 and later
+**Release baseline:** 1.0.6-era documentation; bounded by the retained revision above
 **Scope:** all 125 Markdown files in the repository, including navigation,
 setup, reference, operations, contribution and security documents; Second Brain
 guides; Obsidian vault templates, dashboards and embedded AI instructions; and
 the Warp command catalogue. The documentation-writer skill itself was reviewed
 as process guidance and was not rewritten as product documentation.
 
-This is a current-state report, not a history of earlier playbooks. Upgrade-only
+This described the state at its historical baseline. Upgrade-only
 names and aliases are isolated in
 [Upgrade notes](../20-reference/UPGRADE-NOTES.md).
 
@@ -194,7 +201,7 @@ Before merging the generated Release Please pull request:
 - [ ] After merge, confirm the workflow attaches the archive, checksum, and
       standalone installer to the generated GitHub Release.
 
-## Current conclusion
+## Historical conclusion
 
 The Day One Mac documents now describe one setup system with two explicit ways
 to execute it. Manual readers can complete the base without installing or

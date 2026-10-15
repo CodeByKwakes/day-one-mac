@@ -6,7 +6,7 @@
 
 ## Why this happens early
 
-Phase 1 installs all macOS updates first. The Settings Wizard then establishes
+Phase 1 asks you to finish applicable macOS updates manually. The Settings Wizard then establishes
 the Finder, Dock, keyboard, trackpad, menu-bar, and screenshot behaviour you
 will use during the rest of setup. Running it before the update could be wasted
 because a major macOS update may migrate or reset private preferences.
@@ -18,6 +18,11 @@ skipping optional preferences.
 
 ## What the Phase 1 checkpoint asks
 
+**Personal Macs only.** Managed setup skips this checkpoint, and local preference
+apply/resume/restore is blocked. Ask IT to change managed preferences through
+the approved policy; inspection does not authorize local changes. See
+[workstation ownership](../20-reference/WORKSTATION-READINESS.md#choose-ownership-before-setup).
+
 ```text
 macOS preferences are optional and run before development tools.
 [Enter] configure Finder, Dock, keyboard and trackpad   s skip   q stop:
@@ -25,8 +30,10 @@ macOS preferences are optional and run before development tools.
 
 The choice is saved under `~/.day-one-mac`. Press Enter to open the settings
 wizard, `s` to continue directly to Phase 2, or `q` to stop safely. Rerunning
-the required setup resumes at this checkpoint. Existing saved choices remain
-valid, so upgrading this playbook does not reset completed phases.
+the required setup resumes at this checkpoint. Saved choices remain available,
+but an implementation or policy change can make phase fingerprints stale.
+Review setup status and revalidate affected phases; see
+[completion and migration](../20-reference/ARCHITECTURE-AND-STATE.md#completion-and-migration).
 
 The menu shows a window of preferences that fits your terminal. Use Up/Down
 or `j`/`k` to reach every item, Space to toggle it, and Enter to review. The

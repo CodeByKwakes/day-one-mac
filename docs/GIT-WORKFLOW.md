@@ -222,8 +222,37 @@ updates:
 
 Review and merge the release pull request when the accumulated changes are
 ready to publish. The release workflow then creates the version tag and GitHub
-Release, builds the runtime assets, and uploads the archive, checksum, and
-standalone installer.
+draft release, validates the exact candidate, builds and tests its runtime
+archive, attaches provenance/evidence and publishes only after those checks pass.
+
+### Release lifecycle and failed-draft retry
+
+1. Release Please creates the tag and a **draft** release after the release PR
+   merges. A draft is not an available, validated public release.
+2. The workflow resolves the tag to an immutable candidate commit, checks it out,
+   and verifies tag, `VERSION`, checkout SHA and draft status agree.
+3. Candidate dependency, workflow, lint and full validation checks run before
+   building. Packaged acceptance tests the exact archive intended for upload.
+4. `release-evidence.json` records candidate SHA, archive SHA-256 and run URL.
+   Provenance attests the archive, installer and evidence; the workflow uploads
+   those files plus the checksum while the release remains a draft.
+5. The workflow rechecks tag identity and draft status, then publishes. Retain
+   the successful run URL and matching evidence before announcing availability.
+
+If any candidate step fails, inspect the failed run and keep the release a draft.
+For a transient/tooling failure, run **Prepare and publish runtime release** on
+`main` with **draft_tag** set to that existing draft tag. This skips release-PR
+coordination and fully retests the same candidate; it does not bypass checks.
+Leave **draft_tag** empty for normal release-PR coordination. Never reuse the
+retry input for an already published release or move its tag to a code fix.
+If the candidate code needs fixing, use a reviewed PR and a new release candidate
+through the normal process; retain or retire the failed draft under maintainer
+review. Do not publish incomplete assets manually.
+
+Before adopting this workflow for production, a repository administrator must
+rehearse successful publication, a failed candidate remaining draft and retry
+against the same SHA. Local tests validate workflow structure and packaged code;
+they do not prove GitHub permissions, attestations or live publication.
 
 During normal development, do not manually:
 
