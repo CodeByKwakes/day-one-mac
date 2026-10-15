@@ -31,7 +31,7 @@ try {
   need(stateSnapshot(state) === installedState, 'Packaged plans changed installer state.');
   run(['advanced', '--module', '20', '--apply', '--manifest', restore, '--yes'], 10);
   // These markers are fixture-only, not evidence that machine onboarding ran.
-  for (const phase of ['01','02','03','04','05','06','07','08']) write(path.join(state, 'completed', phase), 'acceptance fixture only\n');
+  execute('/bin/bash', [path.join(__dirname, 'seed-required-state.sh'), state, path.join(runtime, 'scripts')], { env });
   for (const [id, manifest] of [['17', helpers], ['18', identities], ['20', restore]]) {
     run(['advanced', '--module', id, '--apply', '--manifest', manifest, '--yes']);
     run(['advanced', '--module', id, '--check']);

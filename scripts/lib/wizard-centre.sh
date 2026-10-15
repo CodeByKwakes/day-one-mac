@@ -62,9 +62,9 @@ centre_module_selection() {
   CENTRE_SELECTION=()
   case "$module" in
     09)
-      choose_database_services '' 'Select databases · Space to toggle, Enter to review' || return $?
+      choose_database_services '' 'Synthetic-data databases only · fixed credentials · Space to toggle' || return $?
       [[ -n "$MENU_RESULT" ]] || return 1
-      CENTRE_SELECTION=(--services "$MENU_RESULT")
+      CENTRE_SELECTION=(--services "$MENU_RESULT" --disposable-data)
       choose_container_engine || return $?
       CENTRE_SELECTION+=(--container-runtime "$CONTAINER_RUNTIME") ;;
     10)

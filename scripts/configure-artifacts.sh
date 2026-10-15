@@ -56,7 +56,7 @@ SAVED="$STATE_DIR/artifact-$MODULE-selection.tsv"
 POINTER="$STATE_DIR/artifact-$MODULE-current"
 if [[ "$ACTION" == apply || "$ACTION" == resume ]]; then
   day_one_serialize artifacts "$0" "${ORIGINAL_ARGS[@]}"
-  [[ -s "$STATE_DIR/completed/08" ]] || die 'Complete required Phase 8; --plan is available first.' 10
+  day_one_phase_current 08 || die 'Complete current required Phase 8; --plan is available first.' 10
 fi
 
 # Do not follow a changed owned directory or a pointer out of the run namespace.
@@ -216,7 +216,7 @@ if [[ "$ACTION" == plan ]]; then
     done
   fi
   if [[ "$MODULE" =~ ^(15|17|18|21|22)$ ]]; then printf '%s\n%s\n' "$EVIDENCE" "$DRIFT"; fi
-  [[ -s "$STATE_DIR/completed/08" ]] || printf 'Blocked on apply: complete required Phase 8.\n'
+  day_one_phase_current 08 || printf 'Blocked on apply: complete required Phase 8.\n'
   exit 0
 fi
 if [[ "$ACTION" == check ]]; then

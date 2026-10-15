@@ -34,7 +34,7 @@ run advanced --module 15 --plan --manifest "$TEST_ROOT/dotfiles.tsv" > "$TEST_RO
 [[ ! -e "$TEST_STATE" && ! -e "$TEST_STATE.operation.lock" ]] || fail 'plan created state'
 expect_failure 10 run advanced --module 15 --apply --manifest "$TEST_ROOT/dotfiles.tsv" --yes
 mkdir -p "$TEST_STATE/completed"
-printf fixture > "$TEST_STATE/completed/08"
+"$SCRIPT_DIR/tests/seed-required-state.sh" "$TEST_STATE"
 run advanced --module 15 --apply --manifest "$TEST_ROOT/dotfiles.tsv" --yes > "$TEST_ROOT/apply"
 first="$(artifact 15)"
 [[ -f "$first/import-proposal.tsv" ]] || fail 'proposal missing'

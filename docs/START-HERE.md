@@ -37,7 +37,7 @@ setup, saved state, and rollback, read the [whole process overview](PROCESS-OVER
 You need:
 
 - an Apple-silicon Mac running natively as `arm64`;
-- a Mac administrator account whose password you know;
+- a personal administrator account, or a managed standard account with an approved elevation process;
 - power and a reliable internet connection;
 - at least 30 GB of free storage for the required base; full Xcode, container
   images, databases, AI models, and project dependencies need additional space;
@@ -55,6 +55,16 @@ start with [Stage 0 — Safely prepare an existing Mac](00-preflight/README.md).
 wizard first shows Route A (erase with Apple) and Route B (keep the account),
 then makes the read-only safety report the first step for either route.
 
+## Personal or managed Mac
+
+Choose the deployment mode in the wizard. A managed Mac needs an approved
+policy, standard daily account and current enrollment/elevation evidence before
+developer setup. IT owns managed settings. Personal setup also requires current
+recovery evidence at Phase 8. Read [workstation readiness](20-reference/WORKSTATION-READINESS.md)
+for policy/evidence commands and [pilot acceptance](04-operations/WORKSTATION-ACCEPTANCE.md)
+for hardware, migration and performance checks. Local evidence is not independent
+compliance certification.
+
 ## Choose one setup route
 
 Choose once and stay on that route unless a troubleshooting instruction tells
@@ -66,7 +76,7 @@ account provider requires you to approve.
 Use this route when local policy allows the Day One Mac scripts and you want
 resumable phases, saved verification, and recorded ownership.
 
-1. Finish macOS Setup Assistant and install every Software Update.
+1. Finish macOS Setup Assistant and reach the approved OS/update level. On managed Macs, follow IT enrollment and update policy.
 2. Install the standalone command as shown below. A repository checkout is not
    required.
 3. Run `day-one-mac --wizard`, then choose **Start or resume required setup**.

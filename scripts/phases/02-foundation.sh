@@ -69,6 +69,10 @@ phase_02() {
       info "would run the official Homebrew installer from brew.sh"
       return 0
     fi
+    if [[ "${DEPLOYMENT_MODE:-personal}" == managed ]]; then
+      err 'Ask the approved administrator/MDM workflow to provision native Homebrew before retrying. Day One Mac will not change account privileges.'
+      return "$EX_MANUAL"
+    fi
     confirm "Install Homebrew using its official installer?" || return "$EX_MANUAL"
     ensure_state
     installer="$(mktemp "$STATE_DIR/homebrew-installer.XXXXXX")"

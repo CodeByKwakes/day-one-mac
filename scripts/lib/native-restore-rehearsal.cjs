@@ -65,7 +65,7 @@ try {
   run(['advanced','--module','20','--plan','--manifest',manifest]);
   need(stateSnapshot(candidate.state) === installedState, 'Plan changed installer state.'); result.checks.push('read-only-plan');
   run(['advanced','--module','20','--apply','--manifest',manifest,'--yes'], 10); result.checks.push('phase-8-gate');
-  write(path.join(candidate.state, 'completed/08'), 'native fixture only; not a machine verification\n');
+  execute('/bin/bash', [path.join(__dirname, '../tests/seed-required-state.sh'), candidate.state, path.join(candidate.runtime, 'scripts')], { env: candidate.env });
   run(['advanced','--module','20','--apply','--manifest',manifest,'--yes']); run(['advanced','--module','20','--check']);
   const session = fs.readFileSync(path.join(candidate.state, 'restore-20-current'), 'utf8').split('\t')[0];
   const staging = path.join(candidate.state, 'module-runs/20', session, 'staging/files');

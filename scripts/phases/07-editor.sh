@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 # Sourced phase implementation; shared runner context is supplied by setup.sh.
 
+# Default-file evidence only: application policy/profile precedence is a manual gate.
+verify_editor_settings() {
+  command -v python3 >/dev/null 2>&1 || { warn 'Python 3 is needed to inspect JSONC; install it through the approved toolchain.'; return 1; }
+  python3 -I -B "$SCRIPT_DIR/lib/editor-settings.py" "$HOME/Library/Application Support/Code/User/settings.json"
+}
+
 phase_07() {
   local settings settings_content
   if [[ "${PRESET:-recommended-productivity}" == core ]]; then
@@ -33,10 +39,7 @@ phase_07() {
     return "$EX_MANUAL"
   }
   code --version >/dev/null
-  grep -Fq '"chat.tools.global.autoApprove": false' "$settings" || {
-    warn "Keep chat.tools.global.autoApprove false in VS Code settings."; return "$EX_MANUAL"; }
-  grep -Fq '"chat.tools.terminal.enableAutoApprove": false' "$settings" || {
-    warn "Keep chat.tools.terminal.enableAutoApprove false in VS Code settings."; return "$EX_MANUAL"; }
-  phase_step_done "VS Code opens from Terminal with the safe minimal settings"
+  verify_editor_settings || return "$EX_MANUAL"
+  phase_step_done "VS Code CLI and default user-file approval settings verified"
   ok "minimal VS Code base verified; profiles and extension catalogues remain optional"
 }

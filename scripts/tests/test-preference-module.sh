@@ -55,7 +55,7 @@ run --plan --manifest "$TEST_ROOT/selection.tsv" > "$TEST_ROOT/plan"
 if grep -q '^write ' "$MOCK_PREFS/calls"; then fail 'plan wrote preferences'; fi
 expect_failure 10 run --apply --manifest "$TEST_ROOT/selection.tsv" --yes
 mkdir -p "$TEST_STATE/completed"
-printf fixture > "$TEST_STATE/completed/08"
+"$SCRIPT_DIR/tests/seed-required-state.sh" "$TEST_STATE"
 MOCK_READ_FAIL=1 expect_failure 1 run --apply --manifest "$TEST_ROOT/selection.tsv" --yes
 MOCK_BAD_EXPORT=1 expect_failure 1 run --apply --manifest "$TEST_ROOT/selection.tsv" --yes
 [[ ! -e "$TEST_STATE/preferences-19-selection.tsv" ]] || fail 'unreadable defaults treated as absence'

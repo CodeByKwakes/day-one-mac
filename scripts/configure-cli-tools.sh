@@ -313,6 +313,7 @@ if [[ "$ASSUME_YES" != 1 ]]; then
   [[ "$answer" == y || "$answer" == Y || "$answer" == yes || "$answer" == YES ]] || exit 10
 fi
 
+day_one_phase_current 08 || { err 'Current Phase 8 completion is required; use --dry-run first.'; exit 10; }
 selected_csv="$(IFS=,; printf '%s' "${CHOSEN[*]}")"
 day_one_module_begin 13 "$selected_csv" "$SELECTION_FILE" "$MANIFEST" "$LOG_FILE"
 day_one_write_state "$SELECTION_FILE" "$selected_csv"

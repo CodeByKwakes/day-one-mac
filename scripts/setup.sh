@@ -49,6 +49,8 @@ STACK=""
 GIT_NAME=""
 GIT_EMAIL=""
 PRESET=""
+DEPLOYMENT_MODE=""
+WORKSTATION_POLICY=""
 PRIMARY_IDE=""
 DOTFILES_REPO=""
 DOTFILES_VERSIONING=""
@@ -116,6 +118,8 @@ Usage: ./setup.sh [options]
   --azure-clone-dir PATH      optionally clone after Git access passes; none disables
   --name "Full Name"          Git author name
   --email ADDRESS             primary Git author email
+  --deployment MODE          personal (default) or managed
+  --policy PATH              approved workstation policy JSON for managed mode
   --preset PRESET            core or recommended-productivity (default)
   --primary-ide IDE           vscode or other; controls Git editor integration
   --dotfiles-repo URL         apply an existing private chezmoi source
@@ -277,6 +281,10 @@ load_or_choose_selections() {
   [[ -n "$GIT_NAME" ]] || GIT_NAME="$(state_value git-name)"
   [[ -n "$GIT_EMAIL" ]] || GIT_EMAIL="$(state_value git-email)"
   [[ -n "$PRESET" ]] || PRESET="$(state_value preset)"
+  DEPLOYMENT_MODE="${DEPLOYMENT_MODE:-$(state_value deployment-mode)}"
+  DEPLOYMENT_MODE="${DEPLOYMENT_MODE:-personal}"
+  WORKSTATION_POLICY="${WORKSTATION_POLICY:-$(state_value workstation-policy)}"
+  [[ "$DEPLOYMENT_MODE" =~ ^(personal|managed)$ ]] || { err 'deployment must be personal or managed'; return 2; }
   PRESET="${PRESET:-recommended-productivity}"
   [[ "$PRESET" =~ ^(core|recommended-productivity)$ ]] || { err "preset must be core or recommended-productivity"; exit 2; }
   [[ -n "$PRIMARY_IDE" ]] || PRIMARY_IDE="$(state_value primary-ide)"
@@ -320,14 +328,66 @@ load_or_choose_selections() {
   fi
 }
 
+required_load_recorded_choices() {
+  folders_load_choices
+  TRACK="${TRACK:-$(state_value track)}"
+  STACK="${STACK:-$(state_value stack)}"
+  GIT_NAME="${GIT_NAME:-$(state_value git-name)}"
+  GIT_EMAIL="${GIT_EMAIL:-$(state_value git-email)}"
+  PRESET="${PRESET:-$(state_value preset)}"
+  DEPLOYMENT_MODE="${DEPLOYMENT_MODE:-$(state_value deployment-mode)}"
+  DEPLOYMENT_MODE="${DEPLOYMENT_MODE:-personal}"
+  WORKSTATION_POLICY="${WORKSTATION_POLICY:-$(state_value workstation-policy)}"
+  [[ "$DEPLOYMENT_MODE" =~ ^(personal|managed)$ ]] || { err 'deployment must be personal or managed'; return 2; }
+  PRESET="${PRESET:-recommended-productivity}"
+  PRIMARY_IDE="${PRIMARY_IDE:-$(state_value primary-ide)}"
+  [[ -n "$PRIMARY_IDE" ]] || PRIMARY_IDE=vscode
+  DOTFILES_REPO="${DOTFILES_REPO:-$(state_value dotfiles-repo)}"
+  DOTFILES_VERSIONING="${DOTFILES_VERSIONING:-$(state_value dotfiles-versioning)}"
+  configuration_load_choices
+  MACOS_SETTINGS_PLAN="${MACOS_SETTINGS_PLAN:-$(state_value macos-settings-plan)}"
+  AUTH_MODE="${AUTH_MODE:-$(state_value auth-mode)}"
+  [[ -n "$AUTH_MODE" ]] || AUTH_MODE=1password
+  hosting_load_choices
+  OPTIONAL_MODULES="$(state_value optional-modules)"
+}
+
+deployment_preflight() {
+  local enrollment policy_args=(--mode "$DEPLOYMENT_MODE")
+  [[ -z "$WORKSTATION_POLICY" ]] || policy_args+=(--policy "$WORKSTATION_POLICY")
+  if [[ "$DRY_RUN" == 1 ]]; then
+    info "Deployment: $DEPLOYMENT_MODE; applicable workstation evidence is required before completion."
+    return 0
+  fi
+  if [[ "$DEPLOYMENT_MODE" == managed ]]; then
+    [[ -n "$WORKSTATION_POLICY" && -r "$WORKSTATION_POLICY" ]] || {
+      err 'Managed setup needs --policy with an approved policy. See the managed workstation guide.'; return "$EX_MANUAL";
+    }
+    "$SCRIPT_DIR/workstation-readiness.sh" --preflight "${policy_args[@]}" || return "$EX_MANUAL"
+  else
+    enrollment="$(profiles status -type enrollment 2>/dev/null)" || {
+      err 'Management status is unknown. Ask IT to confirm ownership before continuing.'; return "$EX_MANUAL";
+    }
+    if [[ "$enrollment" == *'MDM enrollment: Yes'* ]]; then
+      err 'This Mac is enrolled. Use --deployment managed and its approved policy; local setup must respect management ownership.'
+      return "$EX_MANUAL"
+    fi
+    if [[ "$enrollment" != *'MDM enrollment: No'* ]]; then
+      err 'Management status is unknown. Ask IT to confirm ownership before continuing.'
+      return "$EX_MANUAL"
+    fi
+  fi
+}
+
 phase_fingerprint() {
-  local schema inputs application_catalog_hash implementation
-  local dependencies=("$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/lib/*.sh "$SCRIPT_DIR"/phases/"$1"-*.sh)
+  local schema inputs application_catalog_hash implementation policy_hash=none
+  local dependencies=("$SCRIPT_DIR/setup.sh" "$SCRIPT_DIR"/lib/*.sh "$SCRIPT_DIR"/lib/*.cjs "$SCRIPT_DIR"/lib/*.py "$SCRIPT_DIR"/phases/"$1"-*.sh)
   case "$1" in
     04|05) dependencies+=("$SCRIPT_DIR"/phases/03-*.sh) ;;
     08) dependencies+=("$SCRIPT_DIR"/phases/*.sh "$SCRIPT_DIR/verify.sh") ;;
   esac
   application_catalog_hash="$(awk -F '\t' '$2 == "required"' "$DAY_ONE_APP_CATALOG" | shasum -a 256 | awk '{print $1}')"
+  [[ -z "${WORKSTATION_POLICY:-}" || ! -r "$WORKSTATION_POLICY" ]] || policy_hash="$(shasum -a 256 "$WORKSTATION_POLICY" | awk '{print $1}')"
   eval "schema=\${PHASE_SCHEMA_$1}"
   implementation="$(
     shasum -a 256 "${dependencies[@]}" |
@@ -346,7 +406,7 @@ phase_fingerprint() {
   case "$1" in 04|08) inputs+="|https-helper=${HTTPS_HELPER:-existing}|github-repo=${GITHUB_REPO:-}|azure-repo=${AZURE_REPO:-}" ;; esac
   [[ "$1" != 04 ]] || inputs+="|github-clone-dir=${GITHUB_CLONE_DIR:-none}|azure-clone-dir=${AZURE_CLONE_DIR:-none}"
   { printf 'phase-schema=%s\n' "$schema"; printf 'implementation=%s\n' "$implementation";
-    printf 'inputs=%s\n' "$inputs|preset=${PRESET:-recommended-productivity}|layout=${FOLDER_LAYOUT:-}|ghq=${GHQ_CHOICE:-}|root=${FOLDER_GHQ_ROOT:-}|dotfiles=$DOTFILES_VERSIONING|shell=$SHELL_CHOICE|prompt=$PROMPT_CHOICE"; } \
+    printf 'inputs=%s\n' "$inputs|deployment=${DEPLOYMENT_MODE:-personal}|policy=$policy_hash|preset=${PRESET:-recommended-productivity}|layout=${FOLDER_LAYOUT:-}|ghq=${GHQ_CHOICE:-}|root=${FOLDER_GHQ_ROOT:-}|dotfiles=$DOTFILES_VERSIONING|shell=$SHELL_CHOICE|prompt=$PROMPT_CHOICE"; } \
     | shasum -a 256 | awk '{print $1}'
 }
 
@@ -1193,6 +1253,7 @@ inspect_required_actions() {
     printf ',"folder_layout":'; required_json_string "${FOLDER_LAYOUT:-}"
     printf ',"ghq":'; required_json_string "${GHQ_CHOICE:-}"
     printf ',"ghq_root":'; required_json_string "${FOLDER_GHQ_ROOT:-}"
+    printf ',"deployment":'; required_json_string "${DEPLOYMENT_MODE:-personal}"
     printf ',"preset":'; required_json_string "$PRESET"
     printf ',"auth_mode":'; required_json_string "$AUTH_MODE"
     printf ',"https_helper":'; required_json_string "${HTTPS_HELPER:-existing}"
@@ -1256,6 +1317,9 @@ run_required_action_phase() {
 
 run_macos_settings_checkpoint() {
   local settings_script="$SCRIPT_DIR/configure-macos-settings.sh" settings_status rc answer
+  if [[ "${DEPLOYMENT_MODE:-personal}" == managed ]]; then
+    info 'Managed Mac: preferences remain with the policy owner; local checkpoint skipped.'; return 0
+  fi
   settings_status="$(state_value macos-settings-status)"
   case "$MACOS_SETTINGS_PLAN" in
     ask)
@@ -1331,6 +1395,8 @@ while [[ $# -gt 0 ]]; do
     --ghq-root) shift; [[ $# -gt 0 ]] || exit 2; FOLDER_GHQ_ROOT="$1"; FOLDER_CHOICES_EXPLICIT=1 ;;
     --name) shift; [[ $# -gt 0 ]] || { err "--name needs a value"; exit 2; }; GIT_NAME="$1" ;;
     --email) shift; [[ $# -gt 0 ]] || { err "--email needs a value"; exit 2; }; GIT_EMAIL="$1" ;;
+    --deployment) shift; [[ $# -gt 0 ]] || exit 2; DEPLOYMENT_MODE="$1" ;;
+    --policy) shift; [[ $# -gt 0 ]] || exit 2; WORKSTATION_POLICY="$1" ;;
     --preset) shift; [[ $# -gt 0 ]] || { err "--preset needs core or recommended-productivity"; exit 2; }; PRESET="$1" ;;
     --primary-ide) shift; [[ $# -gt 0 ]] || { err "--primary-ide needs vscode or other"; exit 2; }; PRIMARY_IDE="$1" ;;
     --dotfiles-repo) shift; [[ $# -gt 0 ]] || { err "--dotfiles-repo needs a URL"; exit 2; }; DOTFILES_REPO="$1"; DOTFILES_VERSIONING=git; DOTFILES_EXPLICIT=1 ;;
@@ -1391,7 +1457,7 @@ fi
 if [[ "$SETUP_ACTION" == resume ]]; then
   for option in "${ORIGINAL_ARGS[@]}"; do
     case "$option" in
-      --shell|--prompt|--layout|--ghq|--ghq-root|--track|--stack|--name|--email|--preset|--primary-ide|--dotfiles-repo|--new-dotfiles|--dotfiles-versioning|--local-dotfiles|--auth-mode|--https-helper|--github-repo|--azure-repo|--github-clone-dir|--azure-clone-dir|--macos-settings|--skip-macos-settings)
+      --deployment|--policy|--shell|--prompt|--layout|--ghq|--ghq-root|--track|--stack|--name|--email|--preset|--primary-ide|--dotfiles-repo|--new-dotfiles|--dotfiles-versioning|--local-dotfiles|--auth-mode|--https-helper|--github-repo|--azure-repo|--github-clone-dir|--azure-clone-dir|--macos-settings|--skip-macos-settings)
         err '--resume reuses saved choices; use --plan and --apply to change them.'; exit 2 ;;
     esac
   done
@@ -1477,23 +1543,7 @@ if [[ -n "$SSH_PIN_PROVIDER" ]]; then
 fi
 
 if [[ "$SHOW_STATUS" == 1 ]]; then
-  folders_load_choices
-  TRACK="${TRACK:-$(state_value track)}"
-  STACK="${STACK:-$(state_value stack)}"
-  GIT_NAME="${GIT_NAME:-$(state_value git-name)}"
-  GIT_EMAIL="${GIT_EMAIL:-$(state_value git-email)}"
-  PRESET="${PRESET:-$(state_value preset)}"
-  PRESET="${PRESET:-recommended-productivity}"
-  PRIMARY_IDE="${PRIMARY_IDE:-$(state_value primary-ide)}"
-  [[ -n "$PRIMARY_IDE" ]] || PRIMARY_IDE=vscode
-  DOTFILES_REPO="${DOTFILES_REPO:-$(state_value dotfiles-repo)}"
-  DOTFILES_VERSIONING="${DOTFILES_VERSIONING:-$(state_value dotfiles-versioning)}"
-  configuration_load_choices
-  MACOS_SETTINGS_PLAN="${MACOS_SETTINGS_PLAN:-$(state_value macos-settings-plan)}"
-  AUTH_MODE="${AUTH_MODE:-$(state_value auth-mode)}"
-  [[ -n "$AUTH_MODE" ]] || AUTH_MODE=1password
-  hosting_load_choices
-  OPTIONAL_MODULES="$(state_value optional-modules)"
+  required_load_recorded_choices
   if [[ -n "$TRACK" && "$(state_value track-schema-version)" != "$TRACK_SCHEMA_VERSION" && "$TRACK_EXPLICIT" != 1 ]]; then
     warn "Saved track uses the retired numbering; rerun with --track 1, 2, 3, or 4." >&2
   fi
@@ -1503,6 +1553,7 @@ fi
 
 load_or_choose_selections
 configuration_validate_choices || exit $?
+deployment_preflight || exit $?
 # Check ownership before Phase 3/4 can change shared SSH/Git targets, not just
 # before Phase 5. Preparation-only runs do not change ownership. A manager
 # opt-out is never an implicit detach operation.
@@ -1521,6 +1572,8 @@ save_state_value track-schema-version "$TRACK_SCHEMA_VERSION"
 save_state_value stack "$STACK"
 [[ -n "$GIT_NAME" ]] && save_state_value git-name "$GIT_NAME"
 [[ -n "$GIT_EMAIL" ]] && save_state_value git-email "$GIT_EMAIL"
+save_state_value deployment-mode "$DEPLOYMENT_MODE"
+save_state_value workstation-policy "$WORKSTATION_POLICY"
 save_state_value preset "$PRESET"
 save_state_value auth-mode "$AUTH_MODE"
 save_state_value https-helper "$HTTPS_HELPER"

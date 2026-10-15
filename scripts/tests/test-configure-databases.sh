@@ -13,11 +13,12 @@ MOCK_LOG="$TEST_ROOT/docker.log"
 MOCK_ORB_LOG="$TEST_ROOT/orb.log"
 export MOCK_BIN MOCK_ORB_LOG
 mkdir -p "$TEST_STATE/completed" "$MOCK_BIN" "$MOCK_STATE"
-printf 'complete\n' > "$TEST_STATE/completed/08"
+"$SCRIPT_DIR/tests/seed-required-state.sh" "$TEST_STATE"
 
 cat > "$MOCK_BIN/docker" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
+[[ "${1:-}" != --context ]] || { [[ "$2" == "${MOCK_DOCKER_CONTEXT:-orbstack}" ]] || exit 1; shift 2; }
 printf '%s\n' "$*" >> "$MOCK_DOCKER_LOG"
 case "${1:-}" in
   --version) [[ "${MOCK_DOCKER_CLI_FAIL:-0}" != 1 ]]; exit $? ;;
@@ -27,27 +28,43 @@ case "${1:-}" in
       [[ -f "$MOCK_DOCKER_STATE/orbstack-started" ]] || exit 1
     fi
     ;;
-  context) [[ "$2" == show ]]; printf '%s\n' "${MOCK_DOCKER_CONTEXT:-orbstack}" ;;
+  context)
+    if [[ "$2" == show ]]; then printf '%s\n' "${MOCK_DOCKER_CONTEXT:-orbstack}"
+    else printf '%s\n' "${MOCK_DOCKER_ENDPOINT:-unix:///fixture/docker.sock}"; fi ;;
+  pull) : ;;
+  image) [[ "$2" == inspect ]]; if [[ "${3:-}" == --format ]]; then printf '%s@sha256:%064d\n' "${!#}" 0; fi ;;
   network)
-    if [[ "$2" == inspect ]]; then [[ -f "$MOCK_DOCKER_STATE/network-$3" ]]
-    else touch "$MOCK_DOCKER_STATE/network-$3"; printf '%s\n' "$3"; fi
+    name="${!#}"
+    if [[ "$2" == inspect ]]; then
+      [[ -f "$MOCK_DOCKER_STATE/network-$name" ]]
+      [[ "${3:-}" != --format ]] || printf '%s\n' "${MOCK_OWNER:-databases-v2}"
+    else touch "$MOCK_DOCKER_STATE/network-$name"; printf '%s\n' "$name"; fi
     ;;
   volume)
-    if [[ "$2" == inspect ]]; then [[ -f "$MOCK_DOCKER_STATE/volume-$3" ]]
-    else touch "$MOCK_DOCKER_STATE/volume-$3"; printf '%s\n' "$3"; fi
+    name="${!#}"
+    if [[ "$2" == inspect ]]; then
+      [[ -f "$MOCK_DOCKER_STATE/volume-$name" ]]
+      [[ "${3:-}" != --format ]] || printf '%s\n' "${MOCK_OWNER:-databases-v2}"
+    else touch "$MOCK_DOCKER_STATE/volume-$name"; printf '%s\n' "$name"; fi
     ;;
   container) [[ "$2" == inspect && -f "$MOCK_DOCKER_STATE/container-$3" ]] ;;
   inspect)
     name="${!#}"
     [[ -f "$MOCK_DOCKER_STATE/container-$name" ]] || exit 1
-    if [[ "$2" == *Config.Image* ]]; then
+    format="${2#--format=}"
+    [[ "$2" != --format ]] || format="$3"
+    if [[ "$format" == *'json .Config}'* ]]; then
+      printf 'fixture-spec-%s\n' "${MOCK_SPEC_CONFLICT:-0}"
+    elif [[ "$format" == *Config.Labels* ]]; then
+      printf '%s|false||0|0|["no-new-privileges"]|2147483648|2000000000|no|1|1|1|false|0\n' "${MOCK_OWNER:-databases-v2}"
+    elif [[ "$format" == *Config.Image* ]]; then
       if [[ "${MOCK_CONFIG_CONFLICT:-0}" == 1 ]]; then printf 'conflicting-config\n'; exit 0; fi
       case "$name" in
-        dev-postgres) printf 'postgres:17-alpine|127.0.0.1:5432|dev-pgdata:/var/lib/postgresql/data;|dev-net\n' ;;
-        dev-redis) printf 'redis:7-alpine|127.0.0.1:6379|dev-redisdata:/data;|dev-net\n' ;;
-        dev-mongo) printf 'mongo:8|127.0.0.1:27017|dev-mongodata:/data/db;|dev-net\n' ;;
+        dev-postgres) printf 'postgres:17-alpine@sha256:0000000000000000000000000000000000000000000000000000000000000000|127.0.0.1:5432|dev-pgdata:/var/lib/postgresql/data;|dev-net\n' ;;
+        dev-redis) printf 'redis:7-alpine@sha256:0000000000000000000000000000000000000000000000000000000000000000|127.0.0.1:6379|dev-redisdata:/data;|dev-net\n' ;;
+        dev-mongo) printf 'mongo:8@sha256:0000000000000000000000000000000000000000000000000000000000000000|127.0.0.1:27017|dev-mongodata:/data/db;|dev-net\n' ;;
       esac
-    elif [[ "$2" == *State.Running* && "$2" != *State.Health* ]]; then printf 'true\n'; else printf '%s\n' "${MOCK_HEALTH:-healthy}"; fi
+    elif [[ "$format" == *State.Running* && "$format" != *State.Health* ]]; then printf 'true\n'; else printf '%s\n' "${MOCK_HEALTH:-healthy}"; fi
     ;;
   run)
     [[ "$2" == -d ]]
@@ -88,7 +105,7 @@ run_databases() {
     DAY_ONE_MAC_APPLICATIONS_ROOT="$TEST_ROOT/no-applications" \
     MOCK_DOCKER_STATE="$MOCK_STATE" MOCK_DOCKER_LOG="$MOCK_LOG" \
     PATH="$MOCK_BIN:/usr/bin:/bin:/usr/sbin:/sbin" \
-    "$SCRIPT_DIR/configure-databases.sh" "$@"
+    "$SCRIPT_DIR/configure-databases.sh" --disposable-data "$@"
 }
 
 # A stopped engine is not permission to start OrbStack during a preview.
@@ -147,7 +164,7 @@ grep -Fq 'OrbStack Docker CLI and server are ready' \
 
 dry_state="$TEST_ROOT/dry-state"
 mkdir -p "$dry_state/completed"
-printf 'complete\n' > "$dry_state/completed/08"
+"$SCRIPT_DIR/tests/seed-required-state.sh" "$dry_state"
 HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$dry_state" \
   MOCK_DOCKER_STATE="$MOCK_STATE" MOCK_DOCKER_LOG="$MOCK_LOG" \
   PATH="$MOCK_BIN:/usr/bin:/bin:/usr/sbin:/sbin" \
@@ -208,6 +225,19 @@ if MOCK_DOCKER_CLI_FAIL=1 DAY_ONE_MAC_DOCKER_WAIT_SECONDS=1 run_databases --save
 fi
 grep -Fq 'Docker CLI is present but cannot run' "$TEST_ROOT/broken-cli.txt"
 
+# Reject remote endpoints, environment overrides and unowned resources before mutation.
+for rejection in remote override unowned; do
+  case "$rejection" in
+    remote) export MOCK_DOCKER_ENDPOINT=tcp://remote.example.test:2376 ;;
+    override) export DOCKER_HOST=unix:///other.sock ;;
+    unowned) export MOCK_OWNER=someone-else ;;
+  esac
+  before_mutations="$(grep -Ec '^(run|start|network create|volume create)' "$MOCK_LOG")"
+  if run_databases --saved --yes >/dev/null 2>&1; then printf 'FAIL: %s accepted\n' "$rejection"; exit 1; fi
+  [[ "$before_mutations" == "$(grep -Ec '^(run|start|network create|volume create)' "$MOCK_LOG")" ]]
+  unset MOCK_DOCKER_ENDPOINT DOCKER_HOST MOCK_OWNER
+done
+rm "$TEST_STATE/database-endpoint"
 # Docker Desktop may have a bundle but no CLI symlink on the inherited PATH.
 mkdir -p "$TEST_ROOT/apps/Docker.app/Contents/Resources/bin"
 mv "$MOCK_BIN/docker" "$TEST_ROOT/apps/Docker.app/Contents/Resources/bin/docker"
@@ -240,6 +270,6 @@ if HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE" \
   "$SCRIPT_DIR/configure-databases.sh" --saved --check > "$TEST_ROOT/wrong-context.txt" 2>&1; then
   printf 'FAIL: saved Docker Desktop choice accepted a different engine\n' >&2; exit 1
 fi
-grep -Fq 'active Docker context is orbstack' "$TEST_ROOT/wrong-context.txt"
+grep -Fq 'active Docker context differs' "$TEST_ROOT/wrong-context.txt"
 
 printf 'PASS: optional database install, resume, dry-run, status, and Docker diagnostics\n'

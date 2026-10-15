@@ -485,13 +485,20 @@ if HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE_ROOT" \
 fi
 
 failure_output="$TEST_ROOT/failed-phase.txt"
+# Exercise the phase failure summary independently of the host's enrollment.
+# Management refusal has separate tests; this temporary command changes no Mac.
+enrollment_bin="$TEST_ROOT/enrollment-bin"
+mkdir -p "$enrollment_bin"
+printf '#!/bin/sh\nprintf "MDM enrollment: No\\n"\n' > "$enrollment_bin/profiles"
+chmod +x "$enrollment_bin/profiles"
 if HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE_ROOT" \
+  PATH="$enrollment_bin:$PATH" \
   "$SCRIPT_DIR/bootstrap-day-one-mac.sh" --phase 04 --track 1 --stack node --yes \
   > "$failure_output" 2>&1; then
   printf 'FAIL: Phase 04 passed without the Phase 1 Git identity\n' >&2
   exit 1
 fi
-grep -Fq 'this phase was not marked complete' "$failure_output"
+grep -Fq 'this phase was not marked complete' "$failure_output" || { cat "$failure_output" >&2; exit 1; }
 grep -Fq 'Completed in this attempt:' "$failure_output"
 grep -Fq 'Still required:' "$failure_output"
 grep -Fq 'Required Installation Centre' "$failure_output"

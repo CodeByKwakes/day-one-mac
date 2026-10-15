@@ -21,6 +21,9 @@ DRY_RUN=0
 ASSUME_YES=0
 USE_SAVED=0
 DOCKER_INSPECTABLE=0
+DB_CONTEXT=""
+DB_ENDPOINT=""
+DISPOSABLE_DATA=0
 ORBSTACK_CLI_DIR="${DAY_ONE_MAC_ORBSTACK_CLI_DIR:-$HOME/.orbstack/bin}"
 DOCKER_WAIT_SECONDS="${DAY_ONE_MAC_DOCKER_WAIT_SECONDS:-60}"
 
@@ -33,6 +36,7 @@ Install or resume selected local development databases in Docker containers.
   --services CSV   postgres, redis, mongodb, or a comma-separated selection
   --container-runtime auto|docker|orbstack
                    reuse an existing engine or choose Docker Desktop / OrbStack
+  --disposable-data acknowledge fixed development credentials; synthetic data only
   --saved          use the services saved by `day-one-mac optional`
   --status         show selected container state without changing anything
   --check          verify every selected service; exit non-zero if not ready
@@ -100,6 +104,30 @@ service_port() {
   esac
 }
 
+service_image() {
+  if [[ -r "$STATE_DIR/database-image-$1" ]]; then cat "$STATE_DIR/database-image-$1"
+  else case "$1" in postgres) printf 'postgres:17-alpine' ;; redis) printf 'redis:7-alpine' ;; mongodb) printf 'mongo:8' ;; esac; fi
+}
+
+prepare_service_images() {
+  local service image digest
+  for service in postgres redis mongodb; do
+    contains_csv "$SERVICES" "$service" || continue
+    image="$(service_image "$service")"
+    if [[ "$DRY_RUN" == 1 ]]; then info "Image $service: $image (first apply resolves and records immutable digest)"; continue; fi
+    if [[ ! -s "$STATE_DIR/database-image-$service" ]]; then
+      if container_exists "$(service_container "$service")"; then err 'Existing database needs explicit migration; no image identity recorded.'; return 10; fi
+      db_docker pull "$image" >/dev/null || return 1
+      digest="$(db_docker image inspect --format '{{index .RepoDigests 0}}' "$image")" || return 1
+      [[ "$digest" =~ ^[a-z0-9./:-]+@sha256:[a-f0-9]{64}$ ]] || { err 'Image did not provide an immutable registry digest.'; return 1; }
+      day_one_write_state "$STATE_DIR/database-image-$service" "$digest"
+    fi
+    image="$(service_image "$service")"
+    [[ "$image" =~ ^[a-z0-9./:-]+@sha256:[a-f0-9]{64}$ ]] || return 1
+    db_docker image inspect "$image" >/dev/null 2>&1 || db_docker pull "$image" >/dev/null || return 1
+  done
+}
+
 run_or_preview() {
   if [[ "$DRY_RUN" == 1 ]]; then
     printf '  $'
@@ -111,7 +139,8 @@ run_or_preview() {
 }
 
 docker_server_ready() {
-  docker info >/dev/null 2>&1
+  verify_selected_context || return $?
+  db_docker info >/dev/null 2>&1
 }
 
 refresh_orbstack_cli_path() {
@@ -157,16 +186,40 @@ start_orbstack_and_wait() {
   return 1
 }
 
+# Never let ambient Docker environment variables select another daemon.
 verify_selected_context() {
-  local expected context
-  [[ "$CONTAINER_RUNTIME" != auto ]] || return 0
-  case "$CONTAINER_RUNTIME" in docker) expected=desktop-linux ;; orbstack) expected=orbstack ;; esac
-  context="$(docker context show 2>/dev/null || true)"
-  [[ "$context" == "$expected" ]] || {
-    err "Selected $CONTAINER_RUNTIME, but the active Docker context is $context."
-    warn "Review docker context ls, then deliberately run: docker context use $expected"
-    return 10
+  local expected='' context endpoint recorded
+  [[ -z "${DOCKER_HOST:-}${DOCKER_CONTEXT:-}${DOCKER_TLS_VERIFY:-}${DOCKER_CERT_PATH:-}" ]] || {
+    err 'Unset Docker endpoint overrides before using the local database module.'; return 10;
   }
+  context="$(command docker context show 2>/dev/null)" || return 10
+  [[ "$context" =~ ^[A-Za-z0-9][A-Za-z0-9_.-]*$ ]] || return 10
+  case "$CONTAINER_RUNTIME" in docker) expected=desktop-linux ;; orbstack) expected=orbstack ;; esac
+  [[ -z "$expected" || "$context" == "$expected" ]] || {
+    err 'The active Docker context differs from the selected runtime; review it manually.'; return 10;
+  }
+  endpoint="$(command docker context inspect --format '{{.Endpoints.docker.Host}}' "$context" 2>/dev/null)" || return 10
+  [[ "$endpoint" == unix:///* && "$endpoint" != *$'\n'* && "$endpoint" != *$'\t'* ]] || {
+    err 'Refusing a non-local or ambiguous Docker endpoint.'; return 10;
+  }
+  if [[ -s "$STATE_DIR/database-endpoint" ]]; then
+    recorded="$(cat "$STATE_DIR/database-endpoint")"
+    [[ "$recorded" == "$context"$'\t'"$endpoint" ]] || {
+      err 'Database endpoint changed; review the old resources and migration before changing the saved endpoint.'; return 10;
+    }
+  fi
+  DB_CONTEXT="$context"; DB_ENDPOINT="$endpoint"
+}
+
+db_docker() {
+  [[ -n "$DB_CONTEXT" ]] || { err 'No verified local Docker context.'; return 10; }
+  command docker --context "$DB_CONTEXT" "$@"
+}
+
+verify_owned_resource() {
+  local kind="$1" name="$2" owner
+  owner="$(db_docker "$kind" inspect --format '{{index .Labels "com.day-one-mac.owner"}}' "$name")" || return 1
+  [[ "$owner" == databases-v2 ]] || { err "Unowned $kind $name: nothing adopted or replaced. Review and migrate manually."; return 1; }
 }
 
 ensure_docker() {
@@ -176,6 +229,7 @@ ensure_docker() {
     return 2
   }
   refresh_orbstack_cli_path
+  if command -v docker >/dev/null 2>&1; then verify_selected_context || return $?; fi
   if [[ "$DRY_RUN" == 1 ]]; then
     if command -v docker >/dev/null 2>&1 && docker_server_ready; then
       DOCKER_INSPECTABLE=1
@@ -235,7 +289,7 @@ ensure_docker() {
     else
       warn 'Open the application that owns this Docker context, wait until its engine is running, then rerun the same command.'
     fi
-    warn 'Use `docker info` to confirm the Server section is available. Do not run Docker with sudo.'
+    warn 'Use `db_docker info` to confirm the Server section is available. Do not run Docker with sudo.'
     return 1
   fi
   verify_selected_context || return $?
@@ -243,27 +297,48 @@ ensure_docker() {
 }
 
 container_exists() {
-  docker container inspect "$1" >/dev/null 2>&1
+  db_docker container inspect "$1" >/dev/null 2>&1
 }
 
 container_running() {
-  [[ "$(docker inspect --format='{{.State.Running}}' "$1" 2>/dev/null || true)" == true ]]
+  [[ "$(db_docker inspect --format='{{.State.Running}}' "$1" 2>/dev/null || true)" == true ]]
 }
 
 container_health() {
-  docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}{{if .State.Running}}running{{else}}stopped{{end}}{{end}}' "$1" 2>/dev/null || printf 'missing\n'
+  db_docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}{{if .State.Running}}running{{else}}stopped{{end}}{{end}}' "$1" 2>/dev/null || printf 'missing\n'
+}
+
+container_spec_hash() {
+  # Immutable launch settings only. Exclude dynamic network addresses/health.
+  # Output is hashed before persistence; no environment values enter reports.
+  local spec
+  spec="$(db_docker inspect --format '{{json .Config}}|{{json .HostConfig}}|{{json .Mounts}}|{{range $key, $value := .NetworkSettings.Networks}}{{$key}};{{end}}' "$1")" || return 1
+  [[ -n "$spec" ]] || return 1
+  printf '%s' "$spec" | shasum -a 256 | awk '{print $1}'
 }
 
 container_matches() {
-  local service="$1" container expected actual image destination
+  local service="$1" container expected actual image destination observed_spec
   container="$(service_container "$service")"
+  observed_spec="$(container_spec_hash "$container")" || return 1
+  [[ "$observed_spec" =~ ^[a-f0-9]{64}$ && -r "$STATE_DIR/database-spec-$service" && "$(cat "$STATE_DIR/database-spec-$service")" == "$observed_spec" ]] || {
+    err "$container conflicts with the expected recorded launch specification; manual review required."; return 1;
+  }
   case "$service" in
     postgres) image=postgres:17-alpine; destination=/var/lib/postgresql/data ;;
     redis) image=redis:7-alpine; destination=/data ;;
     mongodb) image=mongo:8; destination=/data/db ;;
   esac
+  image="$(service_image "$service")"
   expected="$image|127.0.0.1:$(service_port "$service")|$(service_volume "$service"):$destination;|dev-net"
-  actual="$(docker inspect --format="{{.Config.Image}}|{{range (index .HostConfig.PortBindings \"$(service_port "$service")/tcp\")}}{{.HostIp}}:{{.HostPort}}{{end}}|{{range .Mounts}}{{if eq .Type \"volume\"}}{{.Name}}:{{.Destination}};{{end}}{{end}}|{{if index .NetworkSettings.Networks \"dev-net\"}}dev-net{{end}}" "$container")" || return 1
+  local safety
+  safety="$(db_docker inspect --format '{{index .Config.Labels "com.day-one-mac.owner"}}|{{.HostConfig.Privileged}}|{{.HostConfig.PidMode}}|{{len .HostConfig.Devices}}|{{len .HostConfig.CapAdd}}|{{json .HostConfig.SecurityOpt}}|{{.HostConfig.Memory}}|{{.HostConfig.NanoCpus}}|{{.HostConfig.RestartPolicy.Name}}|{{len .HostConfig.PortBindings}}|{{len .Mounts}}|{{len .NetworkSettings.Networks}}|{{.HostConfig.PublishAllPorts}}|{{len .HostConfig.VolumesFrom}}' "$container")" || return 1
+  [[ "$safety" == 'databases-v2|false||0|0|["no-new-privileges"]|2147483648|2000000000|no|1|1|1|false|0' ]] || {
+    err "$container conflicts with the expected ownership/security/resource limits. Nothing changed."; return 1;
+  }
+  verify_owned_resource volume "$(service_volume "$service")" || return 1
+  verify_owned_resource network dev-net || return 1
+  actual="$(db_docker inspect --format="{{.Config.Image}}|{{range (index .HostConfig.PortBindings \"$(service_port "$service")/tcp\")}}{{.HostIp}}:{{.HostPort}}{{end}}|{{range .Mounts}}{{if eq .Type \"volume\"}}{{.Name}}:{{.Destination}};{{end}}{{end}}|{{if index .NetworkSettings.Networks \"dev-net\"}}dev-net{{end}}" "$container")" || return 1
   if [[ "$actual" != "$expected" ]]; then
     err "$container conflicts with the expected image, localhost port, volume, or network."
     warn 'Nothing will replace this container. Review its configuration and data before retrying.'
@@ -282,14 +357,15 @@ preflight_containers() {
 }
 
 ensure_network() {
-  if [[ "$DOCKER_INSPECTABLE" == 1 ]] && docker network inspect dev-net >/dev/null 2>&1; then
+  if [[ "$DOCKER_INSPECTABLE" == 1 ]] && db_docker network inspect dev-net >/dev/null 2>&1; then
+    verify_owned_resource network dev-net || return 1
     ok 'Docker network dev-net already exists'
   elif [[ "$DRY_RUN" == 1 ]]; then
     info 'ensure Docker network: dev-net'
-    run_or_preview docker network create dev-net
+    run_or_preview db_docker network create --label com.day-one-mac.owner=databases-v2 dev-net
   else
     day_one_module_event creating-network dev-net
-    docker network create dev-net >/dev/null
+    db_docker network create --label com.day-one-mac.owner=databases-v2 dev-net >/dev/null
     day_one_module_event created-network dev-net
     ok 'created Docker network dev-net'
   fi
@@ -297,14 +373,15 @@ ensure_network() {
 
 ensure_volume() {
   local volume="$1"
-  if [[ "$DOCKER_INSPECTABLE" == 1 ]] && docker volume inspect "$volume" >/dev/null 2>&1; then
+  if [[ "$DOCKER_INSPECTABLE" == 1 ]] && db_docker volume inspect "$volume" >/dev/null 2>&1; then
+    verify_owned_resource volume "$volume" || return 1
     ok "named volume $volume already exists"
   elif [[ "$DRY_RUN" == 1 ]]; then
     info "ensure named volume: $volume"
-    run_or_preview docker volume create "$volume"
+    run_or_preview db_docker volume create --label com.day-one-mac.owner=databases-v2 "$volume"
   else
     day_one_module_event creating-volume "$volume"
-    docker volume create "$volume" >/dev/null
+    db_docker volume create --label com.day-one-mac.owner=databases-v2 "$volume" >/dev/null
     day_one_module_event created-volume "$volume"
     ok "created named volume $volume"
   fi
@@ -314,29 +391,29 @@ create_container() {
   local service="$1"
   case "$service" in
     postgres)
-      run_or_preview docker run -d --name dev-postgres --network dev-net \
-        --restart unless-stopped -p 127.0.0.1:5432:5432 \
+      run_or_preview db_docker run -d --name dev-postgres --network dev-net \
+        --label com.day-one-mac.owner=databases-v2 --memory 2g --cpus 2 --security-opt no-new-privileges --restart no -p 127.0.0.1:5432:5432 \
         -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres \
         -e POSTGRES_DB=postgres -e PGDATA=/var/lib/postgresql/data/pgdata \
         -v dev-pgdata:/var/lib/postgresql/data \
         --health-cmd='pg_isready -U postgres -d postgres' \
         --health-interval=10s --health-timeout=5s --health-retries=5 \
-        postgres:17-alpine
+        "$(service_image postgres)"
       ;;
     redis)
-      run_or_preview docker run -d --name dev-redis --network dev-net \
-        --restart unless-stopped -p 127.0.0.1:6379:6379 \
+      run_or_preview db_docker run -d --name dev-redis --network dev-net \
+        --label com.day-one-mac.owner=databases-v2 --memory 2g --cpus 2 --security-opt no-new-privileges --restart no -p 127.0.0.1:6379:6379 \
         -v dev-redisdata:/data --health-cmd='redis-cli ping' \
         --health-interval=10s --health-timeout=5s --health-retries=5 \
-        redis:7-alpine redis-server --appendonly yes --appendfsync everysec
+        "$(service_image redis)" redis-server --appendonly yes --appendfsync everysec
       ;;
     mongodb)
-      run_or_preview docker run -d --name dev-mongo --network dev-net \
-        --restart unless-stopped -p 127.0.0.1:27017:27017 \
+      run_or_preview db_docker run -d --name dev-mongo --network dev-net \
+        --label com.day-one-mac.owner=databases-v2 --memory 2g --cpus 2 --security-opt no-new-privileges --restart no -p 127.0.0.1:27017:27017 \
         -e MONGO_INITDB_ROOT_USERNAME=dev -e MONGO_INITDB_ROOT_PASSWORD=dev \
         -v dev-mongodata:/data/db \
         --health-cmd='mongosh --quiet --username dev --password dev --authenticationDatabase admin --eval "quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)"' \
-        --health-interval=10s --health-timeout=5s --health-retries=5 mongo:8
+        --health-interval=10s --health-timeout=5s --health-retries=5 "$(service_image mongodb)"
       ;;
   esac
 }
@@ -349,18 +426,18 @@ wait_for_service() {
     case "$status" in
       healthy) ok "$service is ready ($status)"; return 0 ;;
       running) err "$service has no passing health check; refusing to claim readiness"; return 1 ;;
-      unhealthy) err "$service container is unhealthy"; docker logs --tail 40 "$container" >&2 || true; return 1 ;;
+      unhealthy) err "$service container is unhealthy"; db_docker logs --tail 40 "$container" >&2 || true; return 1 ;;
     esac
     attempts=$((attempts + 1))
     sleep 2
   done
   err "$service did not become ready within 30 seconds (last state: $status)"
-  docker logs --tail 40 "$container" >&2 || true
+  db_docker logs --tail 40 "$container" >&2 || true
   return 1
 }
 
 install_service() {
-  local service="$1" container volume
+  local service="$1" container volume observed_spec
   container="$(service_container "$service")"
   volume="$(service_volume "$service")"
   if [[ "$DOCKER_INSPECTABLE" == 1 ]] && container_exists "$container"; then
@@ -369,7 +446,7 @@ install_service() {
     else
       info "starting existing container $container"
       day_one_module_event starting-container "$container"
-      run_or_preview docker start "$container" >/dev/null
+      run_or_preview db_docker start "$container" >/dev/null
       if [[ "$DRY_RUN" == 1 ]]; then info "would start $container"; fi
     fi
   else
@@ -378,6 +455,8 @@ install_service() {
     if [[ "$DRY_RUN" == 1 ]]; then create_container "$service"; return 0; fi
     day_one_module_event creating-container "$container"
     create_container "$service" >/dev/null
+    observed_spec="$(container_spec_hash "$container")" || return 1
+    day_one_write_state "$STATE_DIR/database-spec-$service" "$observed_spec"
     day_one_module_event created-container "$container"
   fi
   [[ "$DRY_RUN" == 0 ]] || return 0
@@ -442,6 +521,7 @@ while (( $# )); do
   case "$1" in
     --container-runtime) [[ "$#" -ge 2 ]] || { err '--container-runtime needs auto, docker, or orbstack'; exit 2; }; CONTAINER_RUNTIME="$2"; shift 2 ;;
     --services) [[ "$#" -ge 2 ]] || { err '--services needs a comma-separated value'; exit 2; }; SERVICES="$2"; shift 2 ;;
+    --disposable-data) DISPOSABLE_DATA=1; shift ;;
     --saved) USE_SAVED=1; shift ;;
     --status) ACTION=status; shift ;;
     --check) ACTION=check; shift ;;
@@ -462,20 +542,25 @@ fi
 
 [[ -n "$SERVICES" ]] || SERVICES="$(saved_services)"
 normalize_services "$SERVICES"
+[[ "$DISPOSABLE_DATA" == 1 || ! -r "$STATE_DIR/database-disposable" ]] || DISPOSABLE_DATA="$(cat "$STATE_DIR/database-disposable")"
+if [[ "$ACTION" == install && "$DRY_RUN" == 0 && "$DISPOSABLE_DATA" != 1 ]]; then
+  err 'Review --plan, then explicitly select --disposable-data. Fixed credentials permit synthetic test data only; use a separately managed service for sensitive data.'
+  exit 10
+fi
 
 if [[ "$ACTION" == status || "$ACTION" == check ]]; then
   if show_status; then exit 0; else exit 1; fi
 fi
 
-if [[ ! -s "$STATE_DIR/completed/08" && "$DRY_RUN" == 0 ]]; then
-  err 'Required Phase 8 is not recorded complete. Finish the base before adding databases.'
+if [[ "$DRY_RUN" == 0 ]] && ! day_one_phase_current 08; then
+  err 'Required Phase 8 is not recorded current. Finish the base before adding databases.'
   exit 10
 fi
-[[ -s "$STATE_DIR/completed/08" ]] || warn 'Plan only: apply requires completion of Phase 8.'
+day_one_phase_current 08 || warn 'Plan only: apply requires current completion of Phase 8.'
 
 ui_title '🗄️' 'Install optional local databases'
 info "selected services: $SERVICES"
-info 'Existing containers and volumes will be preserved.'
+info 'Synthetic disposable data only: fixed development credentials, 2 GiB/2 CPU per service, no automatic restart. Existing unowned resources are refused.'
 if [[ "$DRY_RUN" != 1 && "$ASSUME_YES" != 1 ]]; then
   [[ -t 0 ]] || { err 'installation confirmation needs a terminal or --yes'; exit 10; }
   printf 'Install or resume these database services? [y/N]: '
@@ -488,6 +573,11 @@ if [[ "$DRY_RUN" == 0 ]]; then
   day_one_write_state "$STATE_DIR/database-services" "$SERVICES"
 fi
 ensure_docker
+if [[ "$DRY_RUN" == 0 ]]; then
+  day_one_write_state "$STATE_DIR/database-endpoint" "$DB_CONTEXT"$'\t'"$DB_ENDPOINT"
+  day_one_write_state "$STATE_DIR/database-disposable" 1
+fi
+prepare_service_images
 preflight_containers
 ensure_network
 for service in postgres redis mongodb; do

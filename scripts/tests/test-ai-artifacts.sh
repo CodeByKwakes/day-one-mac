@@ -25,7 +25,7 @@ run optional --module 11 --plan --manifest "$TEST_ROOT/mcp.tsv" > "$TEST_ROOT/pl
 if grep -q super-secret-value "$TEST_ROOT/plan"; then fail 'token value leaked'; fi
 expect_failure 10 run optional --module 11 --apply --manifest "$TEST_ROOT/mcp.tsv" --yes
 mkdir -p "$TEST_STATE/completed" "$TEST_ROOT/skill"
-printf fixture > "$TEST_STATE/completed/08"
+"$SCRIPT_DIR/tests/seed-required-state.sh" "$TEST_STATE"
 printf '# Test skill\nNever run me.\n' > "$TEST_ROOT/skill/SKILL.md"
 run optional --module 11 --apply --manifest "$TEST_ROOT/mcp.tsv" --yes > "$TEST_ROOT/apply"
 first="$(artifact 11)"

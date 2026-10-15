@@ -115,6 +115,11 @@ lists macOS 27 on Apple silicon as Tier 1. The runner therefore refuses Intel
 hardware and Rosetta terminals, requires Homebrew at `/opt/homebrew`, and checks
 the selected Xcode or Command Line Tools before package installation.
 
+The dependency range is macOS 15–27; CI targets 15 and 26. The audit's native
+restore rehearsal ran on 26.7.1. Full macOS 27 and managed-device onboarding
+still require the [pilot acceptance matrix](04-operations/WORKSTATION-ACCEPTANCE.md).
+An accepted OS version is not a completed hardware/MDM test.
+
 Compatibility still has an application-specific boundary. On a company-managed
 Mac, confirm security-agent and Company Portal support before upgrading the OS.
 In particular, 1Password currently documents that **Kolide Device Trust agent
@@ -138,9 +143,10 @@ required. It does not select AI tools or databases.
 
 | Track | Hosting | Installed CLI | Required authentication |
 |---|---|---|---|
-| **1** | GitHub only | `gh` | GitHub browser login and SSH |
-| **2** | Azure DevOps only 🏢 | `az` | Azure login and Azure SSH; no GitHub gate |
+| **1** | GitHub only | `gh` | GitHub login and the selected SSH/HTTPS access method |
+| **2** | Azure DevOps only 🏢 | `az` | Azure login and selected SSH/HTTPS access; no GitHub gate |
 | **3** | GitHub + Azure DevOps 🏢 | `gh`, `az` | Both providers |
+| **4** | Custom/self-managed hosting | No provider CLI required | User-owned provider access |
 
 ## Choose a development stack
 
@@ -347,7 +353,7 @@ changed phase.
 | [04 · Core tools and hosting](01-required/04-core-tools-and-hosting.md) | Git defaults, folders and provider authentication | Track aware |
 | [05 · Configuration ownership, shell and prompt](01-required/05-dotfiles-and-shell.md) | User-owned files or a chezmoi source, selected zsh, and optional Starship | Ownership, shell and prompt are independent choices |
 | [06 · Language toolchains and pnpm](01-required/06-language-toolchains.md) | Selected runtimes work in a new shell | Stack aware |
-| [07 · VS Code base](01-required/07-vscode-base.md) | Clean editor, terminal and minimal settings | Everyone |
+| [07 · VS Code base](01-required/07-vscode-base.md) | Clean editor, terminal and minimal settings | Recommended productivity preset; skipped for core |
 | [08 · Verify and reproduce](01-required/08-verify-and-reproduce.md) | Audit report, Brewfile and selected dotfiles protection | Track, stack and versioning aware |
 
 ```text
@@ -500,18 +506,15 @@ the private provenance report.
 
 ## What the required setup installs
 
-Everyone receives these Homebrew formulae:
+Everyone receives `git`, `jq` and `ripgrep`. Configuration and prompt choices
+independently select `chezmoi`, Homebrew zsh and Starship; ghq is opt-in and uses
+the reviewed root. Node selects `fnm` and `pnpm`, Python selects `uv`, Tracks
+1/3 select `gh`, and Tracks 2/3 select `azure-cli`.
 
-```text
-chezmoi  ghq  git  jq  ripgrep  starship
-```
-
-`ghq` is configured with `~/Developer` as its repository root. Conditional
-formulae are `fnm` and `pnpm` for Node, `uv` for Python, `gh` for Tracks 1 and
-3, and `azure-cli` for Tracks 2 and 3. The preferred Homebrew casks are
-1Password, 1Password CLI, JetBrains Mono Nerd Font, Raycast, VS Code, and Warp.
-A valid externally supplied copy satisfies the same application gate. Raycast
-and Warp remain part of the base; their extensions, Second Brain commands, and
+The recommended productivity preset selects the Nerd Font, Raycast, VS Code and
+Warp. Core skips those desktop applications and editor configuration. 1Password
+and its CLI are required only for 1Password authentication. Existing approved
+external applications retain ownership. Extensions, Second Brain commands and
 Warp Drive workflow import remain optional.
 
 After installation, follow the [application setup hub](10-app-guides/README.md).

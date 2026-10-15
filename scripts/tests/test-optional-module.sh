@@ -73,7 +73,7 @@ expect_failure 2 run_module --module ../09 --plan
 
 # Test prerequisite markers are confined to this disposable fixture.
 mkdir -p "$TEST_STATE/completed"
-printf 'fixture\n' > "$TEST_STATE/completed/08"
+"$SCRIPT_DIR/tests/seed-required-state.sh" "$TEST_STATE"
 run_module --module 13 --apply --packages eza,fzf --yes > "$TEST_ROOT/apply"
 grep -Fxq 'eza,fzf' "$TEST_STATE/optional-cli-packages" || fail 'selection not saved'
 grep -Fxq $'brew-formula\teza' "$TEST_STATE/install-manifest.tsv" || fail 'new installation not owned'
@@ -117,7 +117,7 @@ ALIAS_HOME="$TEST_ROOT/home with spaces café"
 ALIAS_STATE="$TEST_ROOT/alias-state"
 ALIAS_TARGET="$ALIAS_HOME/.config/zsh/aliases.zsh"
 mkdir -p "$ALIAS_HOME/.config/zsh" "$ALIAS_STATE/completed"
-printf 'fixture\n' > "$ALIAS_STATE/completed/08"
+"$SCRIPT_DIR/tests/seed-required-state.sh" "$ALIAS_STATE"
 printf 'none\n' > "$ALIAS_STATE/dotfiles-versioning"
 printf '[[ -r "$HOME/.config/zsh/aliases.zsh" ]] && source "$HOME/.config/zsh/aliases.zsh"\n' > "$ALIAS_HOME/.zshrc"
 printf "# Existing café configuration\nalias ls='ls -G'\nll() { print custom; }\n\n" > "$ALIAS_TARGET"
@@ -185,6 +185,8 @@ case "$1" in
 esac
 EOF
 chmod +x "$MOCK_BIN/chezmoi"
+expect_failure 10 run_alias cli-tools --packages eza --aliases --yes
+"$SCRIPT_DIR/tests/seed-required-state.sh" "$ALIAS_STATE"
 run_alias cli-tools --packages eza --aliases --yes > "$TEST_ROOT/alias-managed"
 cmp -s "$ALIAS_SOURCE_FIXTURE" "$ALIAS_TARGET" || fail 'managed source was not applied'
 grep -Fq '# Day One Mac optional eza aliases' "$ALIAS_SOURCE_FIXTURE" || fail 'managed block missing'
@@ -197,6 +199,7 @@ ALIAS_SOURCE_FIXTURE="$ALIAS_SOURCE_FIXTURE.tmpl"
 expect_failure 10 run_alias cli-tools --packages eza --aliases --yes
 
 printf 'none\n' > "$ALIAS_STATE/dotfiles-versioning"
+"$SCRIPT_DIR/tests/seed-required-state.sh" "$ALIAS_STATE"
 printf 'if broken syntax\n' > "$ALIAS_TARGET"
 cp "$ALIAS_TARGET" "$TEST_ROOT/invalid-aliases"
 expect_failure 1 run_alias cli-tools --packages eza --aliases --yes

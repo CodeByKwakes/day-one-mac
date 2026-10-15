@@ -6,8 +6,8 @@
 
 ## Outcome
 
-At the end of this phase, the permanent administrator account is ready, macOS
-is current, the old computer's data is safely out of scope, and the runner has
+At the end of this phase, the permanent daily account and approved elevation
+path are ready, macOS is at the approved update level, the old computer's data is safely out of scope, and the runner has
 the decisions it needs: hosting track, development stack, Git identity, primary
 IDE behavior, and dotfiles protection. The next checkpoint is the optional macOS Settings Wizard,
 which can be completed before Phase 2 or intentionally skipped and run later.
@@ -22,11 +22,15 @@ blocks are checks or explanations; do not repeat them after the phase passes.
 The [Start Here guide](../START-HERE.md) explains Terminal, placeholders, preview
 mode, and how to resume.
 
+For managed Macs, first complete [managed provisioning and preflight evidence](../20-reference/WORKSTATION-READINESS.md).
+The local scripts never repair enrollment, demote accounts or handle recovery
+keys. The preferences checkpoint is skipped when policy ownership is managed.
+
 ## Before you begin
 
 Keep these nearby:
 
-- The administrator password for this Mac.
+- The personal administrator password, or the approved managed elevation process.
 - A trusted device for Apple, GitHub, Azure, and 1Password sign-in.
 - Credentials and a verified recovery method for the Git authentication mode
   you intend to select. 1Password details are required only for `1password`
@@ -122,9 +126,10 @@ dotfiles.
 
 ## Step 1.2 — Update macOS completely 🔴
 
-Open **System Settings → General → Software Update**. Install every available
-macOS update and restart when requested. Reopen the same panel after each
-restart until no additional update is offered.
+Open **System Settings → General → Software Update**. On personal Macs, install
+supported security updates and review application compatibility before a major
+upgrade. On managed Macs, use the approved build and update schedule supplied
+by IT. Restart when requested and confirm the approved update level.
 
 Then check the installed system:
 
@@ -212,8 +217,8 @@ That command is repository-local and does not modify the global default.
 
 ## Step 1.7 — Choose whether VS Code is the primary IDE
 
-VS Code remains part of the small required base because projects and company
-workflows may expect it. This choice controls only Git integration:
+VS Code is selected by the recommended productivity preset. Core skips it and
+this question. With the productivity preset, this choice controls Git integration:
 
 | Choice | Git behavior |
 |---|---|
@@ -314,7 +319,7 @@ the wizard or pass an explicit option and rerun the affected phase instead.
 ## Phase 1 completion checklist 🚦
 
 - [ ] macOS Software Update reports no outstanding update.
-- [ ] The administrator short username and `$HOME` are final.
+- [ ] The daily account short username and `$HOME` are final; managed Macs use the approved standard-account/elevation policy.
 - [ ] `day-one-mac runtime-status` reports a verified standalone runtime.
 - [ ] Old data exists in a separate, readable backup.
 - [ ] Route A finished an Apple factory reset, or Route B finished the Stage 0

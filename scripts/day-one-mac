@@ -180,6 +180,7 @@ case "${1:-}" in
     exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" --optional "$@"
     ;;
   optional-status|modules) shift; exec "$PROJECT_ROOT/scripts/optional-status.sh" "$@" ;;
+  readiness) shift; exec "$PROJECT_ROOT/scripts/workstation-readiness.sh" "$@" ;;
   databases) shift; exec "$PROJECT_ROOT/scripts/configure-databases.sh" "$@" ;;
   finalize) shift; exec "$PROJECT_ROOT/scripts/finalize-setup.sh" "$@" ;;
   advanced-audit|audit) shift; exec "$PROJECT_ROOT/scripts/advanced-audit.sh" "$@" ;;
@@ -237,6 +238,7 @@ case "${1:-}" in
       '  macos-settings    configure or restore optional macOS preferences' \
       '  optional          choose modules; --status shows or audits Modules 09–22' \
       '                    --list lists capabilities; --module ID --plan|--apply|--check|--resume' \
+      '  readiness         inspect workstation policy, evidence and version drift' \
       '  databases         install, resume, or verify optional databases' \
       '  advanced          track guides; all 15–22 support bounded explicit actions' \
       '  advanced-audit    write the private extended audit' \

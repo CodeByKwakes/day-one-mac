@@ -5,6 +5,9 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/project-paths.sh"
+source "$SCRIPT_DIR/lib/report-safety.sh"
+source "$SCRIPT_DIR/lib/configuration-choices.sh"
+source "$SCRIPT_DIR/lib/deadline.sh"
 source "$SCRIPT_DIR/lib/container-runtime.sh"
 day_one_container_cli_path
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
@@ -50,6 +53,9 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
+umask 077
+day_one_safe_state_path "$REPORT" || exit 2
+day_one_safe_state_path "$REPO_REPORT" || exit 2
 mkdir -p "$STATE_ROOT" "$(dirname "$REPORT")" "$(dirname "$REPO_REPORT")"
 chmod 700 "$STATE_ROOT"
 TMP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/day-one-mac-audit.XXXXXX")"
@@ -76,8 +82,41 @@ check_command() {
   else fail_gate "$label" "$detail"; fi
 }
 
-TRACK="$(sed -n '1p' "$STATE_ROOT/track" 2>/dev/null || true)"
-STACK="$(sed -n '1p' "$STATE_ROOT/stack" 2>/dev/null || true)"
+audit_selected_commands() {
+  COMPLETED_DIR="$STATE_DIR/completed"
+  configuration_load_choices
+  configuration_validate_choices || fail_gate "Configuration choices" "Missing/invalid saved selections; review required setup"
+  PRESET="$(state_value preset)"
+  commands=(brew git day-one-mac)
+  uses_chezmoi && commands+=(chezmoi)
+  uses_starship && commands+=(starship)
+  [[ "$PRESET" == core ]] || commands+=(code)
+  for command_name in "${commands[@]}"; do
+    if command -v "$command_name" >/dev/null 2>&1; then
+      pass_gate "$command_name command" "Available on PATH"
+    else
+      fail_gate "$command_name command" "Missing from PATH"
+    fi
+  done
+}
+
+audit_brew_updates() {
+  if run_with_deadline "$TMP_ROOT/outdated" 30 brew outdated --greedy; then
+    OUTDATED_COUNT="$(awk 'NF {n++} END {print n+0}' "$TMP_ROOT/outdated")"
+    if [[ "$OUTDATED_COUNT" -gt 0 ]]; then review_gate "Homebrew updates" "$OUTDATED_COUNT outdated item(s) need review"
+    else pass_gate "Homebrew updates" "No outdated item reported"; fi
+  else fail_gate "Homebrew updates" "UNKNOWN: inspection failed or timed out; run brew outdated locally"; fi
+}
+
+audit_chezmoi_status() {
+  if run_with_deadline "$TMP_ROOT/chezmoi-status" 30 chezmoi status; then
+    if [[ -s "$TMP_ROOT/chezmoi-status" ]]; then review_gate "chezmoi target drift" "Managed targets differ; inspect chezmoi status and diff"
+    else pass_gate "chezmoi target drift" "No target difference reported"; fi
+  else fail_gate "chezmoi target drift" "UNKNOWN: inspection failed or timed out"; fi
+}
+
+TRACK="$(state_value track)"
+STACK="$(state_value stack)"
 
 {
   printf '# Day One Mac advanced audit\n\n'
@@ -92,13 +131,7 @@ STACK="$(sed -n '1p' "$STATE_ROOT/stack" 2>/dev/null || true)"
 case "$TRACK" in 1|2|3|4) pass_gate "Track state" "Track $TRACK is recorded" ;; *) fail_gate "Track state" "Choose Track 1, 2, 3, or 4 in required Phase 1" ;; esac
 case "$STACK" in node|python|both) pass_gate "Stack state" "$STACK is recorded" ;; *) fail_gate "Stack state" "Choose node, python, or both in required Phase 1" ;; esac
 
-for command_name in brew git chezmoi starship day-one-mac code; do
-  if command -v "$command_name" >/dev/null 2>&1; then
-    pass_gate "$command_name command" "Available on PATH"
-  else
-    fail_gate "$command_name command" "Missing from PATH"
-  fi
-done
+audit_selected_commands
 folders_load_choices
 check_command 'Developer folders and optional ghq' 'Selection-sensitive local checks; no migration' folders_check
 
@@ -110,18 +143,14 @@ fi
 
 if [[ -f "$HOME/Brewfile" && -x "$(command -v brew 2>/dev/null || true)" ]]; then
   check_command "Brewfile desired state" "No installation or upgrade performed" brew bundle check --file="$HOME/Brewfile" --no-upgrade
-  OUTDATED_COUNT="$( (brew outdated --greedy 2>/dev/null || true) | awk 'NF {n++} END {print n+0}')"
-  if [[ "$OUTDATED_COUNT" -gt 0 ]]; then review_gate "Homebrew updates" "$OUTDATED_COUNT outdated item(s) need review"
-  else pass_gate "Homebrew updates" "No outdated item reported"; fi
+  audit_brew_updates
 else
   fail_gate "Brewfile" "$HOME/Brewfile is missing"
 fi
 
-if command -v chezmoi >/dev/null 2>&1; then
+if uses_chezmoi && command -v chezmoi >/dev/null 2>&1; then
   check_command "chezmoi doctor" "Configuration and dependencies" chezmoi doctor
-  CHEZMOI_STATUS="$(chezmoi status 2>/dev/null || true)"
-  if [[ -n "$CHEZMOI_STATUS" ]]; then review_gate "chezmoi target drift" "Managed targets differ; inspect chezmoi status and diff"
-  else pass_gate "chezmoi target drift" "No target difference reported"; fi
+  audit_chezmoi_status
 fi
 
 printf 'state\tremote\trepository\n' > "$REPO_REPORT"
@@ -143,7 +172,7 @@ if [[ "$GHQ_CHOICE" == yes ]] && command -v ghq >/dev/null 2>&1; then
     [[ -n "$remote" ]] || { remote=NO-REMOTE; NO_REMOTE_COUNT=$((NO_REMOTE_COUNT + 1)); }
     ahead="$(git -C "$directory" rev-list --count '@{upstream}..HEAD' 2>/dev/null || true)"
     if [[ "$ahead" =~ ^[0-9]+$ && "$ahead" -gt 0 ]]; then state="${state}+AHEAD($ahead)"; AHEAD_COUNT=$((AHEAD_COUNT + 1)); fi
-    printf '%s\t%s\t%s\n' "$state" "$remote" "$repository" >> "$REPO_REPORT"
+    printf '%s\t%s\t%s\n' "$state" "$(day_one_remote_display "$remote")" "$(printf '%s' "$repository" | tr '\t\r\n' ' ')" >> "$REPO_REPORT"
   done < <(folders_ghq list -p 2>/dev/null || true)
   if [[ "$DIRTY_COUNT" -gt 0 || "$NO_REMOTE_COUNT" -gt 0 || "$AHEAD_COUNT" -gt 0 ]]; then
     review_gate "Repository risk" "$REPO_COUNT total; $DIRTY_COUNT dirty; $NO_REMOTE_COUNT without origin; $AHEAD_COUNT ahead"

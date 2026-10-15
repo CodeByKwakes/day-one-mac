@@ -7,6 +7,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/lib/project-paths.sh"
+source "$SCRIPT_DIR/lib/report-safety.sh"
 source "$SCRIPT_DIR/lib/terminal-ui.sh"
 
 STATE_ROOT="$(day_one_state_root)"
@@ -406,7 +407,7 @@ while IFS= read -r repo; do
   fi
   stashes="$(git -C "$repo" stash list 2>/dev/null | wc -l | tr -d ' ')"
   printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
-    "$(tsv_text "$repo")" "$(tsv_text "$branch")" "$dirty" "$(tsv_text "$remote")" \
+    "$(tsv_text "$repo")" "$(tsv_text "$branch")" "$dirty" "$(tsv_text "$(day_one_remote_display "$remote")")" \
     "$(tsv_text "$upstream")" "$ahead" "$behind" "$stashes" >> "$REPOS_TSV"
   repo_count=$((repo_count + 1))
   [[ "$dirty" -eq 0 ]] || dirty_count=$((dirty_count + 1))

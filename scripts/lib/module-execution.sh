@@ -59,3 +59,15 @@ day_one_module_finish() {
   fi
   exit "$status"
 }
+
+# Reuse the runner's fingerprint contract without setup, prompts or writes.
+# A marker is recorded evidence, not a claim of perpetual live health.
+day_one_phase_current() (
+  local required_phase="${1:-08}" runner
+  runner="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/setup.sh"
+  # shellcheck source=scripts/setup.sh
+  source "$runner"
+  required_load_recorded_choices
+  [[ "$(state_value track-schema-version)" == "$TRACK_SCHEMA_VERSION" ]] || return 1
+  phase_done "$required_phase"
+)

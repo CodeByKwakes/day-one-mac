@@ -58,7 +58,7 @@ expect_failure 10 run optional --module 12 --apply --manifest "$TEST_ROOT/profil
 expect_failure 2 run optional --module 14 --apply --manifest "$TEST_ROOT/profile.tsv" --yes
 expect_failure 2 run optional --module 12 --resume --manifest "$TEST_ROOT/profile.tsv"
 mkdir -p "$TEST_STATE/completed"
-for phase in 01 02 03 04 05 06 07 08; do printf 'fixture\n' > "$TEST_STATE/completed/$phase"; done
+"$SCRIPT_DIR/tests/seed-required-state.sh" "$TEST_STATE"
 run optional --module 12 --apply --manifest "$TEST_ROOT/profile.tsv" --yes > "$TEST_ROOT/profile-apply"
 first_profile="$(artifact_path 12)"
 python3 -c 'import json,sys; p=json.load(open(sys.argv[1])); assert p["name"]=="Work Review"; assert isinstance(p["extensions"],str); assert json.loads(p["extensions"])==[{"identifier":{"id":"esbenp.prettier-vscode"}}]; assert set(p)=={"name","extensions"}' \
@@ -109,8 +109,10 @@ before="$(state_hashes)"
 MOCK_READ_ONLY=1 run advanced --module 21 --check > "$TEST_ROOT/audit-check"
 MOCK_READ_ONLY=1 run advanced --module 21 --plan > "$TEST_ROOT/audit-plan"
 [[ "$before" == "$(state_hashes)" ]] || fail 'audit preview/check wrote records'
-printf 'core\n' > "$TEST_STATE/preset"
+printf 'recommended-productivity\n' > "$TEST_STATE/preset"
 expect_failure 1 run advanced --module 21 --check
+expect_failure 10 run advanced --module 21 --apply --yes
+"$SCRIPT_DIR/tests/seed-required-state.sh" "$TEST_STATE"
 run advanced --module 21 --apply --yes > "$TEST_ROOT/audit-accept"
 grep -Fq 'selection-preset' "$(artifact_path 21)/report.md" || fail 'audit comparison missing'
 [[ -f "$audit_artifact/evidence.tsv" ]] || fail 'old audit snapshot lost'

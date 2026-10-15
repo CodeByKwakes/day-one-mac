@@ -405,6 +405,21 @@ Do not move a path merely to make the tree look identical. Confirm dynamic
 locations with `brew --prefix`, `chezmoi source-path`, `pnpm store path`, and
 `uv python dir`; then investigate only meaningful ownership or safety drift.
 
+## Workstation policy and recovery evidence
+
+Phase 8 now runs `day-one-mac readiness --check`. The default personal policy
+requires FileVault, Gatekeeper, firewall, SIP and current recovery evidence;
+managed mode also requires the approved policy's account, network, software,
+hardware and onboarding controls. See [workstation readiness](../20-reference/WORKSTATION-READINESS.md)
+for private templates, current evidence and explicit exceptions. UNKNOWN does
+not pass. Default editor-file checks do not establish effective workspace,
+profile or enterprise policy settings; review those scopes separately.
+
+Private Git recovery now queries the exact live origin branch. A cached tracking
+ref, deleted branch or different remote commit cannot satisfy the pushed gate.
+The upstream must point to the same private origin whose visibility was checked.
+Reconcile changes deliberately; verification does not fetch or push for you.
+
 ## Troubleshooting
 
 | Symptom | Resolution |

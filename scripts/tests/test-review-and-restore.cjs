@@ -51,7 +51,7 @@ try {
   run('20', 'plan', ['--manifest', noRestore]);
   run('20', 'apply', ['--manifest', noRestore, '--yes'], 10);
   assert(!fs.existsSync(state));
-  write(path.join(state, 'completed/08'), 'fixture');
+  cmd('/bin/bash', [path.join(__dirname, 'seed-required-state.sh'), state]);
   run('18', 'apply', ['--manifest', identities, '--yes']);
   const first = currentArtifact('18');
   assert(fs.existsSync(path.join(first, 'identity-1.gitconfig')));

@@ -8,6 +8,30 @@ In this guide, a Docker **volume** means persistent database data stored
 separately from its container. It is not the encrypted external backup volume
 used by Stage 0.
 
+## Current safety contract
+
+The script-assisted module is for **synthetic disposable data only**. Review a
+plan, then pass `--disposable-data` to acknowledge its fixed development
+credentials. Saved acknowledgement is reused on resume. Use separately managed
+services for sensitive data. The guided picker states the same restriction.
+
+```bash
+day-one-mac optional --module 09 --plan --services postgres
+day-one-mac optional --module 09 --apply --services postgres --disposable-data
+```
+
+Apply requires current Phase 8 evidence. Docker endpoint overrides are refused;
+all operations use an inspected, recorded local Unix-socket context. Context
+changes require a deliberate migration review. Existing unlabelled resources
+are refused, preserved and never silently adopted. Export and test restoration
+before planning any migration; see [recovery acceptance](../04-operations/WORKSTATION-ACCEPTANCE.md).
+
+Images resolve to recorded registry digests on first apply. Each service has
+2 GiB/two CPU limits, no automatic restart and launch-specification drift checks.
+Commands below that use `unless-stopped` describe manual examples; they are not
+accepted automatically as script-owned resources. Keep manual and assisted
+ownership separate. Credentials in this guide are development examples only.
+
 ## Outcome
 
 A selected database runs in an isolated container with a named volume, a health

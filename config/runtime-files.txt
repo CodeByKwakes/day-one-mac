@@ -355,3 +355,10 @@ config/shortcuts/Open in VS Code.shortcut
 config/shortcuts/open-in-vscode.plist
 scripts/configure-shortcuts.sh
 config/shortcuts/README.md
+scripts/lib/report-safety.sh
+scripts/lib/editor-settings.py
+scripts/lib/workstation-readiness.py
+scripts/workstation-readiness.sh
+config/managed-policy.example.json
+docs/20-reference/WORKSTATION-READINESS.md
+docs/04-operations/WORKSTATION-ACCEPTANCE.md

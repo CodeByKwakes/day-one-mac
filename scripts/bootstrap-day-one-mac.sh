@@ -576,6 +576,8 @@ save_wizard_choices() {
   folders_save_choices || return $?
   save_state_value git-name "$GIT_NAME"
   save_state_value git-email "$GIT_EMAIL"
+  save_state_value deployment-mode "${DEPLOYMENT_MODE:-personal}"
+  save_state_value workstation-policy "${WORKSTATION_POLICY:-}"
   save_state_value preset "$PRESET"
   save_state_value primary-ide "$PRIMARY_IDE"
   save_state_value dotfiles-repo "$DOTFILES_REPO"
@@ -982,7 +984,7 @@ run_optional_center() {
       )
       select_one 'Databases are selected. Continue now?' 0 || return $?
       if [[ "$SINGLE_RESULT" == install ]]; then
-        bash "$HERE/configure-databases.sh" --services "$DATABASE_SERVICES"
+        bash "$HERE/configure-databases.sh" --services "$DATABASE_SERVICES" --disposable-data
       else
         info "Resume later: day-one-mac databases --saved"
       fi
@@ -1045,9 +1047,24 @@ choose_git_identity() {
   prompt_email "$default_email" || return $?
 }
 
+choose_deployment() {
+  local default_index=0
+  [[ "${DEPLOYMENT_MODE:-personal}" != managed ]] || default_index=1
+  SINGLE_VALUES=(personal managed)
+  SINGLE_LABELS=('Personal Mac — local ownership and recovery evidence' 'Managed Mac — approved MDM/account policy required')
+  select_one 'Who manages this Mac?' "$default_index" || return $?
+  DEPLOYMENT_MODE="$SINGLE_RESULT"
+  WORKSTATION_POLICY=''
+  if [[ "$DEPLOYMENT_MODE" == managed ]]; then
+    prompt_value 'Approved workstation policy JSON path (from IT)' '' || return $?
+    WORKSTATION_POLICY="$PROMPT_RESULT"
+    [[ -r "$WORKSTATION_POLICY" ]] || { warn 'The approved policy must be readable. See the managed workstation guide.'; return 11; }
+  fi
+}
+
 configure_wizard() {
   local step=0 status WIZARD_BACK_ENABLED=1
-  local steps=(choose_track choose_stack choose_folders choose_git_identity choose_preset choose_primary_ide choose_auth_mode choose_verification_repos choose_dotfiles choose_shell_and_prompt)
+  local steps=(choose_track choose_stack choose_folders choose_git_identity choose_preset choose_primary_ide choose_auth_mode choose_verification_repos choose_dotfiles choose_shell_and_prompt choose_deployment)
   while [[ "$step" -lt "${#steps[@]}" ]]; do
     # Core has no editor question; Track 4 has no provider access question.
     if [[ "$step" == 5 && "$PRESET" == core ]]; then PRIMARY_IDE=other; step=$((step + 1)); continue; fi
@@ -1091,6 +1108,9 @@ load_saved_choices() {
   FOLDER_GHQ_ROOT="$(state_value folder-ghq-root)"
   GIT_NAME="$(state_value git-name)"
   GIT_EMAIL="$(state_value git-email)"
+  DEPLOYMENT_MODE="$(state_value deployment-mode)"
+  DEPLOYMENT_MODE="${DEPLOYMENT_MODE:-personal}"
+  WORKSTATION_POLICY="$(state_value workstation-policy)"
   PRESET="$(state_value preset)"
   PRESET="${PRESET:-recommended-productivity}"
   PRIMARY_IDE="$(state_value primary-ide)"
@@ -1195,7 +1215,8 @@ run_wizard() {
   if [[ -n "$DOTFILES_REPO" ]]; then setup_args+=(--dotfiles-repo "$DOTFILES_REPO")
   else setup_args+=(--new-dotfiles)
   fi
-  setup_args+=(--preset "$PRESET" --auth-mode "$AUTH_MODE")
+  setup_args+=(--deployment "${DEPLOYMENT_MODE:-personal}" --preset "$PRESET" --auth-mode "$AUTH_MODE")
+  [[ -z "${WORKSTATION_POLICY:-}" ]] || setup_args+=(--policy "$WORKSTATION_POLICY")
   setup_args+=(--https-helper "$HTTPS_HELPER")
   [[ -z "$GITHUB_REPO" ]] || setup_args+=(--github-repo "$GITHUB_REPO")
   [[ -z "$AZURE_REPO" ]] || setup_args+=(--azure-repo "$AZURE_REPO")

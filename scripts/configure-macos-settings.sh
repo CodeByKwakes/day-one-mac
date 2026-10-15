@@ -441,6 +441,12 @@ done
 day_one_require_apple_silicon || exit 2
 validate_option_catalog || exit $?
 
+if [[ "$(cat "$STATE_DIR/deployment-mode" 2>/dev/null || true)" == managed ]]; then
+  case "${MODE:-${ACTION:-}}" in
+    wizard|apply|resume|restore) printf 'Managed preferences belong to the policy owner; use MDM/IT to change them.\n' >&2; exit 10 ;;
+  esac
+fi
+
 case "$MODE" in
   wizard|apply|restore) day_one_serialize operation "$0" "${ORIGINAL_ARGS[@]}" ;;
 esac

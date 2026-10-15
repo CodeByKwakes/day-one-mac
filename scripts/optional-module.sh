@@ -4,12 +4,14 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/lib/project-paths.sh"
+source "$SCRIPT_DIR/lib/module-execution.sh"
 STATE_ROOT="$(day_one_state_root)"
 STATE_DIR="$(day_one_state_dir "$STATE_ROOT")"
 MODULE="" ACTION="" SELECTION="" SELECTOR="" ASSUME_YES=0 LIST=0
 APP_POLICY=""
 CONTAINER_RUNTIME=""
 SETUP_ALIASES=0
+DISPOSABLE_DATA=0
 
 usage() {
   cat <<'EOF'
@@ -26,6 +28,7 @@ Usage: day-one-mac optional --module ID --plan|--apply|--check|--resume [selecti
   --resume           apply the last saved selection; cannot change selection
   --container-runtime auto|docker|orbstack
                      Module 09 engine selection
+  --disposable-data Module 09: acknowledge synthetic data and fixed credentials
   --services CSV     Module 09 services; otherwise use saved database selection
   --packages CSV     Module 13 formulae; otherwise use saved CLI selection
   --clients CSV      Module 10 client IDs; otherwise use saved AI selection
@@ -59,6 +62,7 @@ while (( $# )); do
       [[ $# -ge 2 && -z "$APP_POLICY" ]] || die '--app-install-policy needs one value'
       APP_POLICY="$2"; shift 2 ;;
     --aliases) SETUP_ALIASES=1; shift ;;
+    --disposable-data) DISPOSABLE_DATA=1; shift ;;
     --yes) ASSUME_YES=1; shift ;;
     --list) LIST=1; shift ;;
     -h|--help) usage; exit 0 ;;
@@ -81,6 +85,7 @@ if [[ "$mode" != executable ]]; then
 fi
 if [[ "$ACTION" == resume && -n "$SELECTOR" ]]; then die '--resume uses saved choices; use --apply to change them'; fi
 if [[ "$ASSUME_YES" == 1 && "$ACTION" != apply && "$ACTION" != resume ]]; then die '--yes is only valid with --apply or --resume'; fi
+[[ "$DISPOSABLE_DATA" == 0 || "$MODULE" == 09 ]] || die '--disposable-data is only for Module 09'
 [[ -z "$CONTAINER_RUNTIME" || "$MODULE" == 09 ]] || die 'container runtime is only supported for 09'
 [[ -z "$APP_POLICY" || "$MODULE" == 10 || "$MODULE" == 16 ]] || die 'application policy is only supported for 10 and 16'
 [[ "$SETUP_ALIASES" == 0 || ( "$MODULE" == 13 && "$ACTION" != check ) ]] || die '--aliases is supported for Module 13 plan/apply/resume only'
@@ -124,13 +129,14 @@ if [[ "$MODULE" == 10 || "$MODULE" == 16 ]]; then
   exec /bin/bash "$script" "${software_args[@]}"
 fi
 if [[ "$ACTION" == apply || "$ACTION" == resume ]]; then
-  [[ -s "$STATE_DIR/completed/$prerequisite" ]] || {
-    printf 'Required Phase %s is not recorded complete; apply is blocked. Use --plan to preview.\n' "$prerequisite" >&2
+  day_one_phase_current "$prerequisite" || {
+    printf 'Required Phase %s is not recorded current; apply is blocked. Use --plan to preview.\n' "$prerequisite" >&2
     exit 10
   }
 fi
 # Underlying installers read saved selections after acquiring the apply lock.
 args=()
+[[ "$DISPOSABLE_DATA" == 0 ]] || { [[ "$MODULE" == 09 ]] || die '--disposable-data is only for Module 09'; args+=(--disposable-data); }
 [[ "$SETUP_ALIASES" == 0 ]] || args+=(--aliases)
 [[ -z "$CONTAINER_RUNTIME" ]] || args+=(--container-runtime "$CONTAINER_RUNTIME")
 if [[ -n "$SELECTION" ]]; then args+=("$SELECTOR" "$SELECTION"); else args+=(--saved); fi

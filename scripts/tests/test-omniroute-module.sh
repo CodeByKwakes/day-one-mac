@@ -98,7 +98,7 @@ run --plan --manifest "$TEST_ROOT/gateway.tsv" > "$TEST_ROOT/plan"
 [[ ! -e "$TEST_STATE" && ! -e "$MOCK_ROOT/calls" ]] || fail 'plan touched state or Docker'
 expect_failure 10 run --apply --manifest "$TEST_ROOT/gateway.tsv" --yes
 mkdir -p "$TEST_STATE/completed"
-printf fixture > "$TEST_STATE/completed/08"
+"$SCRIPT_DIR/tests/seed-required-state.sh" "$TEST_STATE"
 MOCK_ENDPOINT=tcp://remote:2375 expect_failure 1 run --apply --manifest "$TEST_ROOT/gateway.tsv" --yes
 MOCK_INVENTORY_FAIL=1 expect_failure 1 run --apply --manifest "$TEST_ROOT/gateway.tsv" --yes
 touch "$MOCK_ROOT/volume"

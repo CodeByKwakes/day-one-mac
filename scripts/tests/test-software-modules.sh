@@ -97,7 +97,7 @@ run advanced --module 16 > "$TEST_ROOT/guide"
 grep -Fq '# Advanced 16' "$TEST_ROOT/guide" || fail 'guide-only call changed meaning'
 
 mkdir -p "$TEST_STATE/completed"
-printf 'fixture\n' > "$TEST_STATE/completed/08"
+DAY_ONE_MAC_APPLICATION_CATALOG="$TEST_ROOT/apps.tsv" "$SCRIPT_DIR/tests/seed-required-state.sh" "$TEST_STATE"
 expect_failure 10 run optional --module 10 --apply --clients claude,codex --yes
 [[ ! -s "$MOCK_DATA/casks" ]] || fail '--yes chose Homebrew ownership'
 MOCK_INSTALL_FAIL=codex expect_failure 7 run optional --module 10 --resume --yes --app-install-policy homebrew

@@ -384,6 +384,11 @@ printf 'ROOT:%s\\n' "$FOLDER_GHQ_ROOT"
     exercise(env, b"j \rn\n", "Selected: eza", status=10, args=())
     assert not (home / "state").exists(), "cancelled selector saved state"
     assert not (home / "state.operation.lock").exists(), "cancelled selector leaked lock"
+    blocked = subprocess.run(["/bin/bash", str(SCRIPT), "--packages", "eza", "--yes"],
+                             env=env, capture_output=True, text=True)
+    assert blocked.returncode == 10 and "Current Phase 8" in blocked.stdout + blocked.stderr
+    assert not (home / "state").exists(), "blocked installation saved state"
+    subprocess.run(["/bin/bash", str(SCRIPT.parent / "tests/seed-required-state.sh"), env["DAY_ONE_MAC_STATE_ROOT"]], env=env, check=True)
     subprocess.run(["/bin/bash", str(SCRIPT), "--packages", "eza", "--yes"],
                    env=env, check=True, capture_output=True, text=True)
     assert (home / "state/optional-cli-packages").read_text().strip() == "eza"

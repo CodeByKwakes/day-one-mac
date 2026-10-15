@@ -71,7 +71,9 @@ run_status > "$TEST_ROOT/status.txt"
 run_status --details > "$TEST_ROOT/status-details.txt"
 grep -Fq 'Next:' "$TEST_ROOT/status-details.txt"
 [[ "$(wc -l < "$TEST_ROOT/status-details.txt")" -gt "$(wc -l < "$TEST_ROOT/status.txt")" ]]
-grep -Eq 'ready +09 — Local databases' "$TEST_ROOT/status.txt"
+# A healthy legacy container without recorded ownership must require review.
+grep -Eq 'review +09 — Local databases' "$TEST_ROOT/status.txt"
+grep -Fq 'database health or configuration verification failed' "$TEST_ROOT/status.txt"
 grep -Eq 'partial +10 — AI clients' "$TEST_ROOT/status.txt"
 grep -Eq 'not selected +10A — OmniRoute AI gateway' "$TEST_ROOT/status.txt"
 grep -Eq 'ready +13 — Enhanced CLI tools' "$TEST_ROOT/status.txt"
@@ -94,19 +96,19 @@ grep -Eq 'partial +13 — Enhanced CLI tools' "$TEST_ROOT/cli-breakdown.txt"
 rm "$TEST_STATE/optional-cli-packages"
 
 run_public_status > "$TEST_ROOT/public-status.txt"
-grep -Eq 'ready +09 — Local databases' "$TEST_ROOT/public-status.txt"
+grep -Eq 'review +09 — Local databases' "$TEST_ROOT/public-status.txt"
 HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE" \
   DAY_ONE_MAC_APPLICATIONS_ROOT="$TEST_ROOT/no-applications" \
   DAY_ONE_MAC_APPLICATION_BREW_LOOKUP=disabled \
   PATH="$MOCK_BIN:/usr/bin:/bin:/usr/sbin:/sbin" \
   "$SCRIPT_DIR/day-one-mac" optional-status > "$TEST_ROOT/compatibility-status.txt"
-grep -Eq 'ready +09 — Local databases' "$TEST_ROOT/compatibility-status.txt"
+grep -Eq 'review +09 — Local databases' "$TEST_ROOT/compatibility-status.txt"
 HOME="$TEST_HOME" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE" \
   DAY_ONE_MAC_APPLICATIONS_ROOT="$TEST_ROOT/no-applications" \
   DAY_ONE_MAC_APPLICATION_BREW_LOOKUP=disabled \
   PATH="$MOCK_BIN:/usr/bin:/bin:/usr/sbin:/sbin" \
   "$SCRIPT_DIR/day-one-mac" modules > "$TEST_ROOT/modules-status.txt"
-grep -Eq 'ready +09 — Local databases' "$TEST_ROOT/modules-status.txt"
+grep -Eq 'review +09 — Local databases' "$TEST_ROOT/modules-status.txt"
 
 if run_public_status --check >/dev/null 2>&1; then
   printf 'FAIL: --check accepted selected partial and pending modules\n' >&2
@@ -121,7 +123,7 @@ fi
 [[ -s "$TEST_ROOT/module-audit.md" ]]
 [[ -s "$TEST_ROOT/advanced-audit.md" ]]
 [[ -s "$TEST_ROOT/repository-audit.tsv" ]]
-grep -Fq '| 09 · Local databases | ready |' "$TEST_ROOT/module-audit.md"
+grep -Fq '| 09 · Local databases | review |' "$TEST_ROOT/module-audit.md"
 grep -Fq 'Status meanings' "$TEST_ROOT/module-audit.md"
 grep -Fq "module audit: $TEST_ROOT/module-audit.md" "$TEST_ROOT/audit.txt"
 

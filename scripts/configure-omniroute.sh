@@ -38,7 +38,7 @@ done
 [[ "$YES" == 0 || "$ACTION" == apply || "$ACTION" == resume ]] || die '--yes is apply/resume only.' 2
 if [[ "$ACTION" == apply || "$ACTION" == resume ]]; then
   day_one_serialize omniroute "$0" "${ORIGINAL_ARGS[@]}"
-  [[ -s "$STATE_DIR/completed/08" ]] || die 'Complete required Phase 8 first; planning is available.' 10
+  day_one_phase_current 08 || die 'Complete current required Phase 8 first; planning is available.' 10
 fi
 safe_path() {
   local path="$1"
@@ -70,7 +70,7 @@ if [[ "$ACTION" == plan ]]; then
   printf 'Plan only; Docker availability, collisions and image healthcheck are validated on apply.\n%s\n' "$SELECTION"
   printf 'Create owned %s + volume %s, bind 127.0.0.1:%s:20128, limit memory to 10 GiB (runtime 8192 MiB).\n' "$NAME" "$VOLUME" "$PORT"
   printf 'Require API keys; no credentials are generated or forwarded. Preserve existing resources; refuse unowned names.\n'
-  [[ -s "$STATE_DIR/completed/08" ]] || printf 'Blocked on apply: complete Phase 8.\n'
+  day_one_phase_current 08 || printf 'Blocked on apply: complete Phase 8.\n'
   exit 0
 fi
 [[ ! -d "$HOME/.orbstack/bin" ]] || export PATH="$PATH:$HOME/.orbstack/bin"

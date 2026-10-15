@@ -41,11 +41,12 @@ rg_scan() {
 # with nothing to act on.
 run_fixture() {
   local pass_label="$1" fail_label="$2" script="$3" output status
+  shift 2
   set +e
   # </dev/null as well as the fixture's own guard: a fixture that blocks on a
   # prompt would hang the validator, and Phase 8 runs this from a real
   # terminal where stdin is a TTY.
-  output="$("$script" 2>&1 </dev/null)"
+  output="$("$@" 2>&1 </dev/null)"
   status=$?
   set -e
   if [[ "$status" -eq 0 ]]; then
@@ -568,9 +569,9 @@ elif grep -Fq 'workflows: [Validate]' "$PROJECT_DIR/.github/workflows/release.ym
    && grep -Fq "github.event.workflow_run.conclusion == 'success'" "$PROJECT_DIR/.github/workflows/release.yml" \
    && grep -Fq 'googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7' "$PROJECT_DIR/.github/workflows/release.yml" \
    && grep -Fq 'token: ${{ secrets.RELEASE_PLEASE_TOKEN }}' "$PROJECT_DIR/.github/workflows/release.yml" \
-   && grep -Fq 'steps.release.outputs.release_created' "$PROJECT_DIR/.github/workflows/release.yml" \
+   && grep -Fq 'steps.candidate.outputs.ready' "$PROJECT_DIR/.github/workflows/release.yml" \
    && grep -Fq 'gh release upload "$RELEASE_TAG"' "$PROJECT_DIR/.github/workflows/release.yml"; then
-  pass "Release Please runs after main validation and owns release publication"
+  pass "Release Please drafts candidates; exact-candidate validation gates publication"
 else
   fail "Release Please validation gate, action pin, or asset publication has drifted"
   semantic_failed=1
@@ -941,6 +942,14 @@ if grep -Fq $'core\talways\tstatus\tDay One · Status\td1s\t' "$PROJECT_DIR/conf
 else
   fail "Raycast command manager, extension catalogue, or safety boundary is incomplete"
 fi
+
+run_fixture "all 96 base selection plans preserve read-only behavior" \
+  "selection matrix failed" \
+  /usr/bin/env python3 -I -B "$SCRIPT_DIR/tests/test-selection-matrix.py" || true
+
+run_fixture "audit remediation gates preserve current, credential-free evidence" \
+  "audit remediation regression failed" \
+  "$SCRIPT_DIR/tests/test-audit-remediation.sh" || true
 
 run_fixture "Day One Mac regression fixture passes" \
   "Day One Mac regression fixture failed" \

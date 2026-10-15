@@ -56,7 +56,7 @@ scan_source_for_secrets() {
 }
 
 verify_dotfiles_remote() {
-  local source remote_url provider repo_slug visibility azure_path azure_org azure_project secret_matches behind ahead
+  local source remote_url provider repo_slug visibility azure_path azure_org azure_project secret_matches branch remote_ref remote_name observed local_oid output
   source="$(chezmoi source-path 2>/dev/null || true)"
   phase_next "private dotfiles repository" "Commit the reviewed chezmoi source, add a private origin remote for the selected track, push it, then rerun Phase 8."
 
@@ -106,6 +106,11 @@ verify_dotfiles_remote() {
     return "$EX_MANUAL"
   }
 
+  # Refuse embedded URL credentials before provider arguments or diagnostics.
+  if [[ "$remote_url" == http*://*@* || "$remote_url" == *\?* || "$remote_url" == *\#* ]]; then
+    warn 'Remove embedded credentials/query data from origin and use a credential helper.'
+    return "$EX_MANUAL"
+  fi
   case "$remote_url" in
     *github.com:*.git|*github.com/*.git|*github.com:*|*github.com/*)
       provider=github
@@ -137,7 +142,7 @@ verify_dotfiles_remote() {
       azure_project="${azure_path%%/*}"
       azure_project="${azure_project//%20/ }"
       [[ -n "$azure_org" && -n "$azure_project" && "$azure_org" != "$azure_path" ]] || {
-        err "Could not identify the Azure organisation and project from origin: $remote_url"
+        err "Could not identify the Azure organisation and project from the reviewed origin"
         return "$EX_MANUAL"
       }
       visibility="$(az devops project show --org "https://dev.azure.com/$azure_org" \
@@ -151,29 +156,39 @@ verify_dotfiles_remote() {
       ;;
     *)
       printf '| Private dotfiles origin | REVIEW |\n' >> "$STATE_DIR/verification.md"
-      warn "The origin host is not one this playbook can verify automatically: $remote_url"
+      warn "The origin host is not one this playbook can verify automatically"
       warn "Use a GitHub or Azure DevOps private remote that matches the selected track."
       return "$EX_MANUAL"
       ;;
   esac
 
-  git -C "$source" ls-remote origin >/dev/null 2>&1 || {
-    printf '| Dotfiles remote reachable | FAIL |\n' >> "$STATE_DIR/verification.md"
-    err "The dotfiles origin is not reachable with the current authentication: $remote_url"
-    return "$EX_GATE"
-  }
-  git -C "$source" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' >/dev/null 2>&1 || {
-    printf '| Dotfiles branch pushed | REVIEW |\n' >> "$STATE_DIR/verification.md"
-    warn "The current dotfiles branch has no upstream. Push it with -u, then rerun Phase 8."
-    return "$EX_MANUAL"
-  }
-  read -r behind ahead <<<"$(git -C "$source" rev-list --left-right --count '@{upstream}...HEAD')"
-  if [[ "$behind" != 0 || "$ahead" != 0 ]]; then
-    printf '| Dotfiles branch pushed | REVIEW — behind %s, ahead %s |\n' "$behind" "$ahead" >> "$STATE_DIR/verification.md"
-    warn "The dotfiles branch and its upstream differ (behind $behind, ahead $ahead)."
-    warn "Review, reconcile and push the branch before rerunning Phase 8."
+  branch="$(git -C "$source" symbolic-ref --quiet --short HEAD)" || return "$EX_MANUAL"
+  remote_name="$(git -C "$source" config --get "branch.$branch.remote" || true)"
+  remote_ref="$(git -C "$source" config --get "branch.$branch.merge" || true)"
+  if [[ "$remote_name" != origin || "$remote_ref" != refs/heads/* ]]; then
+    printf '| Dotfiles branch pushed | REVIEW — private origin upstream required |\n' >> "$STATE_DIR/verification.md"
+    warn 'Configure this branch to track the reviewed private origin, then push it.'
     return "$EX_MANUAL"
   fi
+  output="$(mktemp "${TMPDIR:-/tmp}/day-one-remote.XXXXXX")" || return "$EX_GATE"
+  chmod 600 "$output"
+  if ! run_with_deadline "$output" 30 env GIT_TERMINAL_PROMPT=0 GCM_INTERACTIVE=Never \
+      GIT_SSH_COMMAND='ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=10' \
+      git -C "$source" ls-remote --exit-code --refs origin "$remote_ref"; then
+    rm -f "$output"
+    printf '| Dotfiles branch pushed | FAIL — live remote ref unavailable |\n' >> "$STATE_DIR/verification.md"
+    err 'The exact upstream ref could not be read. Check authentication and push the branch; no cached ref was accepted.'
+    return "$EX_GATE"
+  fi
+  observed="$(awk -v ref="$remote_ref" '$2 == ref {n++; oid=$1} END {if (n == 1) print oid}' "$output")"
+  rm -f "$output"
+  local_oid="$(git -C "$source" rev-parse HEAD)"
+  if [[ -z "$observed" || "$observed" != "$local_oid" ]]; then
+    printf '| Dotfiles branch pushed | REVIEW — live remote commit differs |\n' >> "$STATE_DIR/verification.md"
+    warn 'The live private origin branch differs from HEAD. Review, reconcile and push before retrying.'
+    return "$EX_MANUAL"
+  fi
+  printf '| Remote observation UTC | %s |\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" >> "$STATE_DIR/verification.md"
   printf '| Dotfiles remote provider | PASS — %s |\n' "$provider" >> "$STATE_DIR/verification.md"
   printf '| Dotfiles remote privacy | PASS |\n' >> "$STATE_DIR/verification.md"
   printf '| Dotfiles remote reachable | PASS |\n' >> "$STATE_DIR/verification.md"
@@ -417,7 +432,9 @@ phase_08() {
   done < <(required_application_ids)
   if [[ "${PRESET:-recommended-productivity}" != core ]]; then
     report_check "VS Code CLI" code --version
+    report_check "VS Code default user-file approval settings" verify_editor_settings
   fi
+  report_check "Workstation policy and current manual evidence (day-one-mac readiness --check)" "$SCRIPT_DIR/workstation-readiness.sh" --check
   report_check "FileVault" bash -c "fdesetup status 2>/dev/null | grep -q 'FileVault is On'"
   report_check "Gatekeeper" bash -c "spctl --status 2>/dev/null | grep -q 'assessments enabled'"
   # Load login/interactive startup files, but leave terminal job control with

@@ -589,3 +589,19 @@ the bundled Finder **Open in VS Code** action by default. `--import` opens
 Apple Shortcuts for review and **Add Shortcut**; `--guided` asks before opening.
 `--dry-run` opens nothing. The command does not mark the workflow installed.
 See the [shortcut guide](../10-app-guides/MACOS-SHORTCUTS.md).
+
+## Workstation readiness
+
+`day-one-mac readiness --plan` lists controls without writing state.
+`--check` reports current local and manual evidence; unresolved controls return
+10, invalid policy/input returns 2. Managed checks accept `--mode managed
+--policy PATH`. `--init-evidence NEW_PATH`, `--software-inventory NEW_PATH` and
+`--snapshot NEW_PATH` create private, non-overwriting records. `--compare PATH`
+compares observed versions. `--benchmark-shell NEW_PATH --shell /bin/zsh`
+explicitly executes twenty login-shell launches and records timings.
+
+See [the policy and evidence contract](WORKSTATION-READINESS.md) before use.
+Setup accepts `--deployment personal|managed` and `--policy PATH`; resume reuses
+saved selections. Optional apply requires a current Phase 8 fingerprint.
+Module 09 also requires `--disposable-data` for its fixed-credential synthetic
+workloads; it does not silently adopt older containers or volumes.

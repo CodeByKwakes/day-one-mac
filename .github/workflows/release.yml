@@ -5,6 +5,11 @@ on:
     workflows: [Validate]
     types: [completed]
   workflow_dispatch:
+    inputs:
+      draft_tag:
+        description: 'Retry an existing draft tag after a failed candidate run (optional)'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -24,52 +29,127 @@ jobs:
       id-token: write
       attestations: write
     if: >-
-      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
       (github.event.workflow_run.conclusion == 'success' &&
        github.event.workflow_run.event == 'push' &&
        github.event.workflow_run.head_branch == 'main')
     runs-on: macos-26
     steps:
-      - name: Update the release pull request or create the GitHub release
+      - name: Update the release pull request or prepare a draft release
         id: release
+        if: inputs.draft_tag == ''
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
+      - name: Resolve one immutable draft candidate
+        id: candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RETRY_TAG: ${{ inputs.draft_tag }}
+          CREATED_TAG: ${{ steps.release.outputs.tag_name }}
+          CREATED_SHA: ${{ steps.release.outputs.sha }}
+        run: |
+          tag="${RETRY_TAG:-$CREATED_TAG}"
+          if [[ -z "$tag" ]]; then exit 0; fi
+          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$ ]]
+          test "$(gh release view "$tag" --json isDraft --jq .isDraft)" = true
+          sha="$(gh api "repos/$GH_REPO/commits/$tag" --jq .sha)"
+          [[ "$sha" =~ ^[a-f0-9]{40}$ ]]
+          if [[ -n "$CREATED_SHA" ]]; then test "$sha" = "$CREATED_SHA"; fi
+          printf 'ready=true\ntag=%s\nsha=%s\n' "$tag" "$sha" >> "$GITHUB_OUTPUT"
+
       - name: Check out the released commit
-        if: steps.release.outputs.release_created == 'true'
+        if: steps.candidate.outputs.ready == 'true'
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
-          ref: ${{ steps.release.outputs.sha }}
+          ref: ${{ steps.candidate.outputs.sha }}
+          persist-credentials: false
 
       - name: Require the release tag and VERSION to agree
-        if: steps.release.outputs.release_created == 'true'
+        if: steps.candidate.outputs.ready == 'true'
         env:
-          RELEASE_TAG: ${{ steps.release.outputs.tag_name }}
+          RELEASE_TAG: ${{ steps.candidate.outputs.tag }}
         run: test "v$(sed -n '1p' VERSION)" = "$RELEASE_TAG"
 
+      - name: Require a draft tied to this exact candidate
+        if: steps.candidate.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.candidate.outputs.tag }}
+          CANDIDATE_SHA: ${{ steps.candidate.outputs.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test "$(gh release view "$RELEASE_TAG" --json isDraft --jq .isDraft)" = true
+          git fetch origin "refs/tags/$RELEASE_TAG"
+          test "$(git rev-parse 'FETCH_HEAD^{commit}')" = "$CANDIDATE_SHA"
+
+      - name: Install candidate validation tools
+        if: steps.candidate.outputs.ready == 'true'
+        run: brew install actionlint pnpm ripgrep shellcheck
+
+      - name: Validate the candidate before publication
+        if: steps.candidate.outputs.ready == 'true'
+        env:
+          HUSKY: 0
+        run: |
+          pnpm install --frozen-lockfile
+          actionlint
+          pnpm run lint
+          scripts/validate.sh
+
       - name: Build verified runtime assets
-        if: steps.release.outputs.release_created == 'true'
+        if: steps.candidate.outputs.ready == 'true'
         run: scripts/build-release.sh
 
+      - name: Test the exact archive to be published
+        if: steps.candidate.outputs.ready == 'true'
+        run: scripts/tests/test-packaged-modules.sh --archive "$PWD/dist/day-one-mac-runtime.tar.gz"
+
+      - name: Record candidate evidence
+        if: steps.candidate.outputs.ready == 'true'
+        env:
+          CANDIDATE_SHA: ${{ steps.candidate.outputs.sha }}
+        run: |
+          archive_hash="$(shasum -a 256 dist/day-one-mac-runtime.tar.gz | awk '{print $1}')"
+          jq -n --arg sha "$CANDIDATE_SHA" --arg archive "$archive_hash" \
+            --arg run "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            '{schema:1,candidate_sha:$sha,archive_sha256:$archive,validation_run:$run,scope:"source checks and packaged acceptance; hardware pilots tracked separately"}' \
+            > dist/release-evidence.json
+
       - name: Attest runtime and installer provenance
-        if: steps.release.outputs.release_created == 'true'
+        if: steps.candidate.outputs.ready == 'true'
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
         with:
           subject-path: |
             dist/day-one-mac-runtime.tar.gz
             dist/install-day-one-mac
+            dist/release-evidence.json
 
       - name: Attach runtime assets to the GitHub release
-        if: steps.release.outputs.release_created == 'true'
+        if: steps.candidate.outputs.ready == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ steps.release.outputs.tag_name }}
+          RELEASE_TAG: ${{ steps.candidate.outputs.tag }}
         run: >-
           gh release upload "$RELEASE_TAG"
           dist/day-one-mac-runtime.tar.gz
           dist/day-one-mac-runtime.tar.gz.sha256
           dist/install-day-one-mac
+          dist/release-evidence.json
           --clobber
+
+      - name: Publish only the validated draft
+        if: steps.candidate.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.candidate.outputs.tag }}
+          CANDIDATE_SHA: ${{ steps.candidate.outputs.sha }}
+        run: |
+          git fetch origin "refs/tags/$RELEASE_TAG"
+          test "$(git rev-parse 'FETCH_HEAD^{commit}')" = "$CANDIDATE_SHA"
+          test "$(gh release view "$RELEASE_TAG" --json isDraft --jq .isDraft)" = true
+          gh release edit "$RELEASE_TAG" --draft=false
