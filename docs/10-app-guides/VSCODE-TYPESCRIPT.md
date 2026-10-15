@@ -967,7 +967,7 @@ make a generic filesystem or shell MCP server redundant.
 | Azure DevOps MCP | Microsoft; work items, PRs, builds | Copilot HTTP: `https://mcp.dev.azure.com/YOUR_ORGANIZATION`; local: `npx -y @azure-devops/mcp YOUR_ORGANIZATION` | Organization-global or project; remote Entra prerequisites; local needs Node 20+ |
 | Playwright MCP | Microsoft; interactive browser tools | `npx -y @playwright/mcp@latest` | Global or project; supported Node/browser setup; distinct from Playwright CLI skill |
 | Postgres MCP Pro | Crystal DBA community; SQL, schema, EXPLAIN | `uvx --python 3.12 postgres-mcp --access-mode=restricted` | Project; Python/uv, `DATABASE_URI`, database permissions; optional, not Microsoft PostgreSQL extension |
-| DataGrip MCP | Built into DataGrip 2025.2+; existing database connections and IDE tools | Copy the generated client configuration from DataGrip Settings → Tools → MCP Server | Personal/global initially; local/dev/test, restricted DB role; see final setup |
+| DataGrip MCP | Built into DataGrip 2025.2+; existing database connections and IDE tools | Copy the generated client configuration from DataGrip Settings → Tools → MCP Server | Personal/global initially; local/dev/test, restricted DB role; [database AI setup](DATAGRIP.md#12-optional-sql-handoff-and-ai-access) |
 | GitHub MCP | Official GitHub; GitHub PR/issues/repository context | `https://api.githubcopilot.com/mcp/` | Optional global; GitHub auth; not an Azure Repos substitute |
 
 Sources: [Angular MCP](https://angular.dev/ai/mcp),
@@ -1178,8 +1178,8 @@ For Claude CLI installation, use the same launcher with `--scope project` or
 
 ### PostgreSQL: optional project connection
 
-Since DataGrip is already installed, prefer the
-[DataGrip/PostgreSQL workflow](VSCODE-PROFILES.md#6-configure-datagrip-and-postgresql-connections)
+If you use DataGrip, follow the
+[DataGrip/PostgreSQL workflow](DATAGRIP.md)
 for your normal setup. The independent server below is an alternative when you
 specifically need it; do not add a duplicate database MCP by default.
 
@@ -1577,109 +1577,21 @@ in the environment where the tools actually run.
 
 ## 14. DataGrip and PostgreSQL connections
 
-Use DataGrip for substantial database work and Microsoft's PostgreSQL extension
-for in-editor browsing. Both connect to the same servers independently; saved
-connections, passwords, and SSH tunnels do not automatically synchronize.
-Use the approved DataGrip version installed on your Mac.
+The dedicated [PostgreSQL setup guide with DataGrip and VS Code](DATAGRIP.md)
+owns the complete database workflow. Start with its local tutorial, then add
+only the shared development, test and production connections your work requires.
 
-### Name connections consistently
+| Task | Instructions |
+|---|---|
+| Create the local database and application roles | [Local setup](DATAGRIP.md#3-start-a-local-postgresql-server) |
+| Configure DataGrip for local or remote servers | [Local connection](DATAGRIP.md#5-connect-datagrip-to-local-postgresql) · [Remote connections](DATAGRIP.md#7-connect-datagrip-to-remote-environments) |
+| Configure VS Code's own PostgreSQL connections | [VS Code setup](DATAGRIP.md#8-connect-vs-code-to-the-same-databases) |
+| Set application credentials and deploy schema changes | [Applications and migrations](DATAGRIP.md#9-configure-applications-and-promote-migrations) |
+| Verify access and recover data | [Session checks](DATAGRIP.md#10-use-and-verify-connections-safely) · [Backup and restore](DATAGRIP.md#11-back-up-and-rehearse-a-restore) |
+| Open SQL files in DataGrip or configure MCP | [Optional handoff and AI access](DATAGRIP.md#12-optional-sql-handoff-and-ai-access) |
 
-| Environment | Suggested name in both clients | Normal permission | DataGrip colour |
-|---|---|---|---|
-| Local | LOCAL • app • developer | Read/write to local development data | Blue |
-| Development | DEV • app • developer | Team-approved development privileges | Green |
-| Test | TEST • app • reader | Read-only initially; separate writer when needed | Amber |
-| Production | PROD • app • READ ONLY | Database-enforced read-only role | Red |
-| Production maintenance | PROD • app • MAINTENANCE | Separate deliberate maintenance access | Red |
-
-Use personal, identifiable database accounts. Do not reuse application service
-accounts. A production read replica can suit investigation; account for lag
-when checking a recent write. A profile name or connection colour is a visual
-cue, not a permission boundary.
-
-### Configure the VS Code client at User scope
-
-1. Run **PGSQL: Add New Connection** in Full Stack or Operations.
-2. Enter the real server, database, authentication, and friendly connection name.
-3. Open **Advanced**. Set **Scope → User**, the correct port, and required SSL.
-4. Use server groups to separate environments. Test before saving.
-5. Choose **Save Password** only when appropriate; the extension uses VS Code
-   SecretStorage, backed by macOS Keychain, rather than plaintext settings.
-6. Keep local/dev/test work in Full Stack and production investigation in
-   Operations. Other extensions and clients can still access what their own
-   configured credentials allow.
-
-User scope avoids a committed `.vscode/settings.json` connection. Azure-hosted
-PostgreSQL can use Entra authentication when the server and roles support it;
-Azure DevOps usage alone does not identify your database host.
-[Connections and credential storage](https://learn.microsoft.com/en-us/azure/postgresql/development/vs-code-extension/connections).
-
-For a local Docker database, use its published host port, preferably bound to
-`127.0.0.1`. For remote servers, use approved private networking/VPN or an SSH
-bastion. Both clients support tunnelling and TLS; match the actual server's
-certificate requirements. Prefer hostname/CA verification through **Verify
-Full** rather than disabling verification to make a connection work.
-[VS Code advanced connections](https://learn.microsoft.com/en-us/azure/postgresql/development/vs-code-extension/advanced-connection-options),
-[DataGrip SSH/TLS](https://www.jetbrains.com/help/datagrip/configuring-ssh-and-ssl.html).
-
-### Configure DataGrip and production sessions
-
-In **Data Sources and Drivers**, set friendly names, colours, selected schemas,
-and the connection's read-only option. Use a restricted database role for the
-normal production connection. Manual transaction mode is useful for deliberate
-maintenance, but does not make every operation reversible. Keep the maintenance
-connection separate and disconnect after use.
-[DataGrip connection configuration](https://www.jetbrains.com/help/datagrip/configuring-database-connections.html).
-
-Before important work, confirm the actual connection:
-
-```sql
-SELECT
-  current_database() AS database_name,
-  current_user AS database_user,
-  inet_server_addr() AS server_address,
-  inet_server_port() AS server_port;
-```
-
-Use filters/row limits and sensible statement/lock timeouts for investigation.
-Do not leave transactions open while switching tasks. Keep production data and
-schema changes as reviewed SQL/migrations rather than casual grid edits.
-
-### DataGrip MCP and AI access
-
-In DataGrip, open **Settings → Tools → MCP Server**, enable it, and inspect
-**Exposed Tools**. Use its **Copy Config** or detected-client configuration for
-your chosen client, preferring personal/global configuration. Restart the
-client and test listing database connections before querying. Keep DataGrip
-open with the intended project. Do not guess a permanent MCP port or command.
-[JetBrains MCP setup](https://www.jetbrains.com/help/datagrip/mcp-server.html).
-
-Initially use agent tools for local/dev/test only. Leave production out of the
-agent workflow. For any later production agent access, database-enforced
-read-only credentials are required for guaranteed write restriction. DataGrip
-read-only UI flags, VS Code profiles, and MCP tool selection are not substitutes.
-Leave DataGrip's command-execution-without-confirmation setting disabled.
-
-The PostgreSQL extension's per-connection **Copilot access mode → Read Only**
-is an additional control for that integration; it does not govern Codex,
-Claude, or DataGrip MCP. Configure and verify each path independently.
-
-### Optional SQL-file handoff
-
-If you install Switch to DataGrip, set its User Settings to the actual application path. For an app installed
-in the system Applications folder, the example is:
-
-```json
-{
-  "switch2datagrip.dataGripPath": "/Applications/DataGrip.app"
-}
-```
-
-Open the intended DataGrip project first, then use **Open in DataGrip** from
-VS Code's editor context menu. This opens the file in DataGrip; it does not
-mirror its database tree. Avoid its default Cmd+Shift+D if it conflicts with
-VS Code's debugging shortcut.
-[Extension listing](https://marketplace.visualstudio.com/items?itemName=MaxPowerEngine.switch2datagrip).
+DataGrip and VS Code connect independently. Profiles and connection colours
+organize work; server permissions enforce access.
 
 ---
 

@@ -831,8 +831,10 @@ profiles and review any project files before committing them.
 ## 6. Configure DataGrip and PostgreSQL connections
 
 Database connections and credentials are a separate manual step. Use the
-[DataGrip and PostgreSQL reference](VSCODE-TYPESCRIPT.md#14-datagrip-and-postgresql-connections)
-for naming, User-scope connections, TLS, restricted production access and MCP.
+[DataGrip and PostgreSQL setup guide](DATAGRIP.md)
+for local provisioning, dev/test/prod roles and connections, TLS, migrations,
+backups and optional MCP. Its [VS Code steps](DATAGRIP.md#8-connect-vs-code-to-the-same-databases)
+configure the editor's own User-scope connections.
 Choose only the environments your work requires. A profile or connection
 colour does not enforce database permissions.
 

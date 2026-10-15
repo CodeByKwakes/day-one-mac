@@ -180,9 +180,8 @@ without exposing additional internal ports.
 
 ## Step 9.4 — Manual path: PostgreSQL option
 
-This uses `postgres` for the development-only username, password, and default
-database, matching the common one-line setup while adding persistence and a
-health check:
+This uses `postgres` for the username, password and default database in a
+disposable local container, with persistence and a health check:
 
 ```bash
 docker volume inspect dev-pgdata >/dev/null 2>&1 || \
@@ -205,8 +204,9 @@ docker run -d \
   postgres:17-alpine
 ```
 
-These credentials are acceptable only for local development. Do not reuse them
-in a deployed environment.
+These fixed credentials permit only synthetic disposable local data. Do not
+use this container for sensitive or retained data, or reuse its credentials in
+a deployed environment.
 
 Verify:
 
@@ -279,6 +279,11 @@ docker exec dev-mongo mongosh \
 ```
 
 ## Optional graphical database client
+
+For DataGrip, follow the [PostgreSQL setup guide](../10-app-guides/DATAGRIP.md).
+It continues from these local containers with application roles, DataGrip and
+VS Code connections, and separate dev/test/prod procedures. DataGrip is installed
+through JetBrains or the approved company installer; this module does not install it.
 
 DBeaver Community is available when a project benefits from browsing schemas,
 running reviewed queries, or comparing more than one database engine. It is not
@@ -361,7 +366,7 @@ existing automation still uses an earlier flag name.
 - [ ] Every selected container is healthy or responds to its ping query.
 - [ ] Ports are bound to localhost and do not conflict with another service.
 - [ ] Development credentials are not reused outside this Mac.
-- [ ] DBeaver is installed only if a graphical client is useful, and its saved
+- [ ] DataGrip or DBeaver is installed only if a graphical client is useful, and its saved
       connections contain no committed or exported production secrets.
 - [ ] A backup and explicit volume-deletion procedure are understood.
 - [ ] `day-one-mac databases --saved --check` passes (script-assisted path), or each manual ping query passes.

@@ -57,6 +57,11 @@ The [TypeScript full-stack reference](VSCODE-TYPESCRIPT.md)
 covers Angular, NestJS, Nx, Prisma, Copilot/Codex/Claude, personal settings and
 shortcuts, environment files, icons, worktrees, project skills, and MCP servers.
 
+For PostgreSQL, use the optional [DataGrip and VS Code database setup guide](DATAGRIP.md).
+It covers local provisioning, separate dev/test/prod connections, roles, TLS,
+migrations, backups and troubleshooting. DataGrip is installed separately through
+JetBrains or the approved company installer; it is not a required baseline app.
+
 For optional desktop utilities, the [Vorssaint developer guide](VORSSAINT.md)
 covers personal window layouts, resource and port monitoring, shortcut
 ownership, clipboard/snippet alternatives, and optional agent status. Vorssaint
