@@ -111,11 +111,11 @@ case "${1:-}" in
     case "${1:-}" in
       obsidian)
         shift
-        exec /bin/bash "$PROJECT_ROOT/second-brain/obsidian/scripts/second-brain-manager.sh" "$@"
+        exec /bin/bash "$PROJECT_ROOT/extensions/second-brain/obsidian/scripts/second-brain-manager.sh" "$@"
         ;;
       notion)
         shift
-        exec /bin/bash "$PROJECT_ROOT/second-brain/notion/scripts/notion-second-brain-manager.sh" "$@"
+        exec /bin/bash "$PROJECT_ROOT/extensions/second-brain/notion/scripts/notion-second-brain-manager.sh" "$@"
         ;;
       ''|help|-h|--help)
         printf '%s\n' \

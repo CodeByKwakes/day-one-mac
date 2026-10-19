@@ -99,15 +99,15 @@ jobs:
           pnpm install --frozen-lockfile
           actionlint
           pnpm run lint
-          scripts/validate.sh
+          tools/validate.sh
 
       - name: Build verified runtime assets
         if: steps.candidate.outputs.ready == 'true'
-        run: scripts/build-release.sh
+        run: tools/build-release.sh
 
       - name: Test the exact archive to be published
         if: steps.candidate.outputs.ready == 'true'
-        run: scripts/tests/test-packaged-modules.sh --archive "$PWD/dist/day-one-mac-runtime.tar.gz"
+        run: tests/integration/test-packaged-modules.sh --archive "$PWD/dist/day-one-mac-runtime.tar.gz"
 
       - name: Record candidate evidence
         if: steps.candidate.outputs.ready == 'true'

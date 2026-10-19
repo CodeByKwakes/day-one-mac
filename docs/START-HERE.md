@@ -1,4 +1,4 @@
-[← Day One Mac home](README.md) · [Complete command reference](20-reference/COMMAND-REFERENCE.md) · [Manual and script-assisted routes](20-reference/MANUAL-SETUP-GUIDE.md) · [Whole process overview](PROCESS-OVERVIEW.md) · [Glossary](20-reference/GLOSSARY.md) · [Start Phase 1 →](01-required/01-first-boot-and-decisions.md)
+[← Day One Mac home](README.md) · [Complete command reference](reference/COMMAND-REFERENCE.md) · [Manual and script-assisted routes](setup/manual/MANUAL-SETUP-GUIDE.md) · [Whole process overview](explanation/PROCESS-OVERVIEW.md) · [Glossary](reference/GLOSSARY.md) · [Start Phase 1 →](setup/assisted/01-first-boot-and-decisions.md)
 
 # Start here
 
@@ -16,12 +16,12 @@ files with your selected owner, optionally set up the Starship prompt, install t
 programming languages, prepare VS Code, and verify that the result can be
 rebuilt.
 
-Choose from [four developer layouts with optional ghq](manual/developer-folders.md).
+Choose from [four developer layouts with optional ghq](setup/manual/developer-folders.md).
 The wizard collects these choices separately; ghq is not preselected. Existing
 setups must review them before resuming affected phases. Non-interactive setup
 must supply `--layout none|repository|purpose|existing` and `--ghq no|yes`, or
 have saved choices. Configuration ownership, shell, and prompt are also
-independent choices: see [Phase 5 choices](01-required/05-dotfiles-and-shell.md#choose-ownership-shell-and-prompt-first).
+independent choices: see [Phase 5 choices](setup/assisted/05-dotfiles-and-shell.md#choose-ownership-shell-and-prompt-first).
 Fresh direct runs must supply `--dotfiles-versioning none|local|git`,
 `--shell keep|apple|homebrew`, and `--prompt none|starship`.
 
@@ -30,7 +30,7 @@ phase stops, earlier completed phases stay saved and the screen explains what
 is complete, what remains, and what to do next.
 
 For a one-page map of Stage 0, every required phase, optional modules, advanced
-setup, saved state, and rollback, read the [whole process overview](PROCESS-OVERVIEW.md).
+setup, saved state, and rollback, read the [whole process overview](explanation/PROCESS-OVERVIEW.md).
 
 ## Before you begin
 
@@ -51,7 +51,7 @@ You need:
 
 Stop if the Mac still contains the only copy of an important file. This setup
 does not migrate or recover old data. If the Mac is not new or factory-reset,
-start with [Stage 0 — Safely prepare an existing Mac](00-preflight/README.md). Its
+start with [Stage 0 — Safely prepare an existing Mac](setup/existing-mac/README.md). Its
 wizard first shows Route A (erase with Apple) and Route B (keep the account),
 then makes the read-only safety report the first step for either route.
 
@@ -60,8 +60,8 @@ then makes the read-only safety report the first step for either route.
 Choose the deployment mode in the wizard. A managed Mac needs an approved
 policy, standard daily account and current enrollment/elevation evidence before
 developer setup. IT owns managed settings. Personal setup also requires current
-recovery evidence at Phase 8. Read [workstation readiness](20-reference/WORKSTATION-READINESS.md)
-for policy/evidence commands and [pilot acceptance](04-operations/WORKSTATION-ACCEPTANCE.md)
+recovery evidence at Phase 8. Read [workstation readiness](reference/WORKSTATION-READINESS.md)
+for policy/evidence commands and [pilot acceptance](how-to/recovery/WORKSTATION-ACCEPTANCE.md)
 for hardware, migration and performance checks. Local evidence is not independent
 compliance certification.
 
@@ -119,7 +119,7 @@ steps. Browsing the centre does not save choices or acquire an operation lock.
 
 Use this route when policy prohibits the project scripts or when you want to
 perform and record every underlying change yourself. Do not install the
-standalone runtime. Follow the [complete manual setup flow](20-reference/MANUAL-SETUP-GUIDE.md#manual-setup-flow)
+standalone runtime. Follow the [complete manual setup flow](setup/manual/MANUAL-SETUP-GUIDE.md#manual-setup-flow)
 from Manual 1 through Manual 8, including every checkpoint. The manual route
 does not create phase markers, ownership manifests, or precise automated
 rollback evidence, so keep your own completion record.
@@ -131,14 +131,14 @@ the final checklist states exactly what must be true before continuing.
 
 ## Terminal basics used in this guide
 
-New to Terminal? Read [Terminal basics](20-reference/TERMINAL-BASICS.md) before
+New to Terminal? Read [Terminal basics](reference/TERMINAL-BASICS.md) before
 copying commands. It explains passwords, placeholders, stopping commands, and
 colour-independent status symbols.
 
 ## Terminal colours and symbols
 
 A ✓ means a check passed; ⚠ means review is needed. See the
-[full symbol reference](20-reference/TERMINAL-BASICS.md#terminal-colours-and-symbols).
+[full symbol reference](reference/TERMINAL-BASICS.md#terminal-colours-and-symbols).
 
 ## Install the standalone command for the script-assisted route
 
@@ -174,16 +174,16 @@ Read the file in `less`, then press `q` before running it. The installer
 downloads a release archive and its SHA-256 checksum separately and refuses to
 install them when verification fails. A checksum detects corruption; it does
 not independently prove who published the download. See
-[release trust and optional provenance checks](20-reference/PORTABLE-COMMAND.md#release-trust-and-provenance).
+[release trust and optional provenance checks](reference/PORTABLE-COMMAND.md#release-trust-and-provenance).
 The `export` affects only this Terminal
 window; future login shells load the saved path automatically.
 
 Downloads use `curl` when available, otherwise GNU `wget` with HTTPS support.
 Choose one download command above. Local `--archive` and `--source` installs
-need neither tool; see [portable installation](20-reference/PORTABLE-COMMAND.md).
+need neither tool; see [portable installation](reference/PORTABLE-COMMAND.md).
 
 The Git clone route remains available for contributors. See
-[Install and manage the standalone runtime](20-reference/PORTABLE-COMMAND.md).
+[Install and manage the standalone runtime](reference/PORTABLE-COMMAND.md).
 
 ## Run the recommended route
 
@@ -212,13 +212,13 @@ switching to core does not uninstall previously installed applications.
 Choose your hosting account, language stack, Git identity, authentication mode,
 and dotfiles protection. Private Git provides a remote copy; local-only
 chezmoi needs an encrypted backup. Compare authentication modes in
-[Phase 3](01-required/03-security-and-ssh.md).
+[Phase 3](setup/assisted/03-security-and-ssh.md).
 
 For HTTPS, the wizard also asks which credential helper to use. GCM is
 recommended for Azure browser sign-in. CLI login and Git access are separate:
 Phase 4 reads your selected repository without cloning it, and Phase 8 repeats
 the check. Complete the first browser sign-in or PAT entry in your own terminal
-when prompted; see [HTTPS setup and recovery](01-required/04-core-tools-and-hosting.md#step-46--run-or-resume-the-phase).
+when prompted; see [HTTPS setup and recovery](setup/assisted/04-core-tools-and-hosting.md#step-46--run-or-resume-the-phase).
 
 Follow this sequence:
 
@@ -231,7 +231,7 @@ Follow this sequence:
 5. Phase 8 verifies the result. Choose **Finish and exit**; extras remain
    available through `day-one-mac optional --guided`.
 
-Read [the whole process](PROCESS-OVERVIEW.md) only when you need the detailed
+Read [the whole process](explanation/PROCESS-OVERVIEW.md) only when you need the detailed
 map; you do not need to repeat phase reference commands after the runner passes.
 
 ## Understand preview and apply
@@ -260,7 +260,7 @@ day-one-mac safety-report --guided
 
 Use the current command names shown above. Upgrade-only aliases and retired
 state names are documented separately in
-[Upgrade notes](20-reference/UPGRADE-NOTES.md), so a first-time setup does not
+[Upgrade notes](reference/UPGRADE-NOTES.md), so a first-time setup does not
 need to learn them.
 
 ## One change that needs your password
@@ -317,7 +317,7 @@ a permanent clone. The standalone runtime remains its sole owner; Phase 5
 keeps it out of chezmoi and safely migrates older managed copies. If the
 portable command is unavailable, run
 the matching script from this repository. The
-[complete command reference](20-reference/COMMAND-REFERENCE.md) shows both forms and when to
+[complete command reference](reference/COMMAND-REFERENCE.md) shows both forms and when to
 use every setup, report, workspace, finalisation, rollback, and removal command.
 
 ## Set up the required applications
@@ -329,13 +329,13 @@ keeps it and reports that Homebrew does not own it. Only missing applications
 trigger a choice: install with Homebrew, use another approved installer and
 recheck, or stop safely and resume later.
 
-Open the [required application setup hub](10-app-guides/README.md) after Phase 4.
+Open the [required application setup hub](how-to/apps/README.md) after Phase 4.
 It gives a beginner-safe order and full setup, settings, import, export, backup,
 and later-change instructions for each app. Complete the VS Code guide alongside
 Phase 7. Optional extensions, AI features, profiles, and Warp Drive imports do
 not block the required setup.
 
-Read [Application ownership](20-reference/APPLICATION-OWNERSHIP.md) if this is a managed
+Read [Application ownership](reference/APPLICATION-OWNERSHIP.md) if this is a managed
 work Mac or if you want to understand what rollback can remove.
 
 ## After Phase 8
@@ -354,10 +354,10 @@ and rollback support. Preview this optional action first:
 day-one-mac finalize
 ```
 
-Read [Finalise or detach Day One Mac](04-operations/FINALIZE.md) before executing it or
+Read [Finalise or detach Day One Mac](how-to/recovery/FINALIZE.md) before executing it or
 removing `~/.day-one-mac`. Deleting that folder manually would discard
 ownership manifests, captured originals, and settings-restore evidence.
 
 ---
 
-[Command reference](20-reference/COMMAND-REFERENCE.md) · [Glossary](20-reference/GLOSSARY.md) · [Start Phase 1 →](01-required/01-first-boot-and-decisions.md)
+[Command reference](reference/COMMAND-REFERENCE.md) · [Glossary](reference/GLOSSARY.md) · [Start Phase 1 →](setup/assisted/01-first-boot-and-decisions.md)

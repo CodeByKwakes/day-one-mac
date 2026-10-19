@@ -5,4 +5,4 @@ for git_env_name in $git_local_env; do
   unset "$git_env_name"
 done
 unset git_env_name git_local_env
-scripts/validate.sh
+tools/validate.sh

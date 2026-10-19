@@ -1,0 +1,8 @@
+{
+  "config/applications.tsv": "config/catalogs/applications.tsv",
+  "config/modules.tsv": "config/catalogs/modules.tsv",
+  "config/optional-formulae.tsv": "config/catalogs/optional-formulae.tsv",
+  "config/raycast-commands.tsv": "config/catalogs/raycast-commands.tsv",
+  "config/raycast-extensions.tsv": "config/catalogs/raycast-extensions.tsv",
+  "config/managed-policy.example.json": "config/policies/managed-policy.example.json"
+}

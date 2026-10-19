@@ -37,13 +37,13 @@ jobs:
         run: |
           while IFS= read -r -d '' script; do
             bash -n "$script"
-          done < <(find scripts -type f -name '*.sh' -print0)
+          done < <(find scripts src tools tests extensions -type f -name '*.sh' -print0)
           bash -n install-day-one-mac
           bash -n scripts/day-one-mac
       - name: Run complete validation
-        run: scripts/validate.sh
+        run: tools/validate.sh
       - name: Rehearse executable modules from the release archive
-        run: scripts/tests/test-packaged-modules.sh
+        run: tests/integration/test-packaged-modules.sh
 
   validate:
     name: validate

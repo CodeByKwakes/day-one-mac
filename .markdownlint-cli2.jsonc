@@ -4,7 +4,7 @@
     ".claude/skills/**",
     "CHANGELOG.md",
     "node_modules/**",
-    "second-brain/obsidian/assets/**"
+    "extensions/second-brain/obsidian/assets/**"
   ],
   "config": {
     "default": false,

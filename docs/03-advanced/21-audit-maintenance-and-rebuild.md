@@ -1,356 +1,81 @@
-[← Advanced 20](20-restore-and-migrate.md) · **🤖 ⚙️ Advanced 21** · [Advanced 22 →](22-ai-skills-and-mcp-operations.md)
-
 # Advanced 21 — Audit, maintenance, and rebuild
 
-**Time:** 30–90 minutes initially; 20–30 minutes monthly · **Required:** no
+This guide moved to [21-audit-maintenance-and-rebuild](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md). Use that page for the maintained instructions.
+
+<!-- day-one-mac:compatibility-guide -->
 
 ## Outcome
 
-The expanded environment has a repeatable audit, updates happen in small
-reviewable layers, dotfiles and Brewfile changes are committed privately, and
-a clean-Mac rebuild is rehearsed without relying on remembered manual steps.
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#outcome).
 
 ## Step 21.1 — Revalidate the project and required base
 
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#step-211--revalidate-the-project-and-required-base).
+
 ### Snapshot bounded setup evidence
 
-Use the executable Module 21 route for a write-free preview and a versioned
-comparison of recorded setup evidence:
-
-```bash
-day-one-mac advanced --module 21 --plan
-day-one-mac advanced --module 21 --apply
-day-one-mac advanced --module 21 --check
-```
-
-Plan and check write no records, reports or temporary files. Apply requires
-Phase 8 and confirmation, then prints a private artifact path containing
-`report.md`, stable `evidence.tsv` and the remaining manual steps. Subsequent
-applies compare against the previous snapshot and keep every older version.
-Check returns nonzero for changed evidence, a failing gate, a damaged snapshot
-or no saved baseline. Review the differences before applying a new baseline.
-
-The scope is deliberately bounded: runtime verification, presence and hashes
-of required completion records, explicit non-secret selection hashes,
-checks for saved executable-module selections, and recorded Advanced guide
-fingerprints. Module 21 excludes its own guide marker to avoid self-generated
-drift. A development checkout receives entry-point checks, not a packaged
-checksum guarantee. Phase record presence does **not** prove the phase is still
-current or the machine healthy; use the existing required status and Phase 8
-verification below for that.
-
-No account clients, login shells, package upgrades, Brewfile evaluation,
-repository cleanup or rebuild commands are launched by this snapshot route.
-It is not the broader environment audit in Step 21.2 and does not verify
-FileVault, accounts, repository backups or recovery readiness.
-
-A failing audit still saves its diagnostic snapshot and returns nonzero.
-Fix the reported issue, then use `day-one-mac advanced --module 21 --resume`
-to capture fresh evidence. Resume never performs the fix. Generating a healthy
-report does not mark this guide complete; record completion separately only
-after reviewing the applicable checklist.
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#snapshot-bounded-setup-evidence).
 
 ### Recheck the full required setup
 
-```bash
-day-one-mac validate
-day-one-mac --status
-day-one-mac advanced --status
-```
-
-The required eight phases must remain current. An advanced marker becoming
-`review` means its guide changed after completion; read the updated module and
-repeat only its affected checks.
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#recheck-the-full-required-setup).
 
 ## Step 21.2 — Generate the extended audit
 
-This is an **optional after-setup health report**. Use it after Phase 8 when you
-have adopted advanced Modules 15–22, and repeat it during monthly maintenance.
-It is not the Stage 0 safety report used before erasing or cleaning an existing
-Mac.
-
-Run the bundled read-only report:
-
-```bash
-day-one-mac advanced-audit
-```
-
-It writes `~/.day-one-mac/advanced-audit.md` and checks the base command
-surface, Brewfile drift, chezmoi state, ghq repositories, selected track and
-stack, optional containers, and discovered AI clients without printing tokens.
-
-Open the report locally:
-
-```bash
-sed -n '1,260p' "$HOME/.day-one-mac/advanced-audit.md"
-```
-
-An optional component is reported as absent, not failed, unless its advanced
-module is recorded complete.
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#step-212--generate-the-extended-audit).
 
 ## Step 21.3 — Review Homebrew updates in layers
 
-```bash
-brew update
-brew outdated --greedy
-brew bundle check --file="$HOME/Brewfile" --no-upgrade
-```
-
-Before upgrading:
-
-1. Review major runtime, database, container, and editor changes.
-2. Commit or preserve dirty repositories.
-3. Confirm an application is not in the middle of a critical task.
-4. Upgrade a risky formula/cask individually before broad upgrades.
-
-After approved upgrades:
-
-```bash
-brew cleanup --dry-run
-brew autoremove --dry-run
-brew doctor
-```
-
-Run non-preview cleanup only after reading its candidates. `brew doctor`
-warnings are context-dependent; do not recursively change ownership or delete
-paths simply to produce an empty report.
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#step-213--review-homebrew-updates-in-layers).
 
 ### Optional GUI cleanup with Purge
 
-Purge is an optional, third-party maintenance application. It complements the
-Day One Mac cleanup previews; it does not replace the backup-gated Stage 0
-cleanup or the ownership-aware rollback commands.
-
-Inspect ownership first, then install it only when wanted:
-
-```bash
-day-one-mac applications --id purge
-day-one-mac applications --id purge --install-missing
-```
-
-The Homebrew route uses the fully qualified third-party cask
-`jithin-sabu/tap/purge`. Review that tap and the displayed cask before granting
-Purge Full Disk Access. After installation:
-
-1. Leave scheduled cleaning disabled.
-2. Review every selected path and keep all removals recoverable in Trash.
-3. Do not enable its privileged uninstall helper unless a root-owned
-   application must be removed and its complete footprint has been reviewed.
-4. When Homebrew owns Purge, disable automatic update checks in Purge and use
-   `brew upgrade --cask jithin-sabu/tap/purge` as the update route rather than
-   allowing two update owners to drift.
-5. Choose Purge or another general-purpose app cleaner, not both.
-6. Confirm the Mac works normally before emptying Trash.
-
-Purge is never invoked by a Day One Mac script, Raycast command, scheduled
-task, audit, or maintenance alias. Full Disk Access and every cleanup approval
-remain manual security decisions.
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#optional-gui-cleanup-with-purge).
 
 ## Step 21.4 — Maintain Node, npm, and pnpm ownership
 
-The base ownership model is:
-
-```text
-fnm       installed by Homebrew, owns Node versions
-Node      installed under fnm
-npm       supplied by the active Node release
-pnpm      installed/upgraded by Homebrew
-projects  own exact runtime/manager constraints and lockfiles
-```
-
-Review current versions:
-
-```bash
-fnm current
-fnm list
-node --version
-npm --version
-pnpm --version
-```
-
-Install a new LTS through fnm, test active projects, then change the default:
-
-```bash
-fnm install --lts --use
-fnm default "$(fnm current)"
-```
-
-Do not globally force the newest npm or pnpm merely because a registry offers
-it. Repositories with a `packageManager` field and lockfile must be tested
-against their declared version policy.
-
-Audit projects using the commands in Advanced 17. Resolve multiple lockfiles
-repository by repository.
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#step-214--maintain-node-npm-and-pnpm-ownership).
 
 ## Step 21.5 — Maintain Python through uv
 
-```bash
-uv self version
-uv python list
-```
-
-Homebrew owns the `uv` executable when installed by the base. Projects own
-their interpreter constraint and lockfile:
-
-```bash
-cd <python-project>
-uv sync --locked
-uv run python --version
-uv run pytest
-```
-
-Do not install a second uv through pip or its standalone installer on the same
-Mac without intentionally changing ownership.
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#step-215--maintain-python-through-uv).
 
 ## Step 21.6 — Review chezmoi and Brewfile drift
 
-```bash
-chezmoi doctor
-chezmoi status
-chezmoi --use-builtin-diff diff --no-pager
-chezmoi verify
-brew bundle check --file="$HOME/Brewfile" --no-upgrade
-```
-
-When changing a target, edit source first:
-
-```bash
-chezmoi edit <target>
-chezmoi diff
-chezmoi apply <target>
-```
-
-Commit only reviewed, secret-free source changes:
-
-```bash
-cd "$(chezmoi source-path)"
-git status --short
-git diff
-git add <reviewed-files>
-git diff --cached
-git commit -m "chore: maintain development environment"
-git push
-```
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#step-216--review-chezmoi-and-brewfile-drift).
 
 ## Step 21.7 — Review every repository before system work
 
-Generate the Advanced 17 repository audit and investigate:
-
-- `DIRTY` repositories;
-- `NO-REMOTE` repositories;
-- local branches ahead of their upstream;
-- remote URLs that no longer match the intended provider/account;
-- worktrees with uncommitted changes.
-
-Useful read-only commands:
-
-```bash
-git -C <repository> status --short --branch
-git -C <repository> remote --verbose
-git -C <repository> branch --verbose --verbose
-git -C <repository> worktree list
-```
-
-Never bulk-reset or delete branches as a maintenance step.
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#step-217--review-every-repository-before-system-work).
 
 ## Step 21.8 — Verify optional services
 
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#step-218--verify-optional-services).
+
 ### Containers and databases
 
-```bash
-docker version
-docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
-docker volume ls
-```
-
-Run a harmless ping/query for each selected service. Create a logical backup
-before image upgrades or schema changes. Do not run global prune commands from
-a maintenance alias.
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#containers-and-databases).
 
 ### AI and MCP
 
-For installed clients, verify version and account independently, then list MCP
-servers with the client's supported command. Confirm the intended account and
-workspace before a billable or state-changing tool call. Keep auto-approval
-disabled.
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#ai-and-mcp).
 
 ### VS Code and GUI applications
 
-Check Settings Sync account, active profile, declared extensions, login items,
-and privacy permissions. Do not treat cloud sync as a complete settings backup.
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#vs-code-and-gui-applications).
 
 ## Step 21.9 — Use a maintenance cadence
 
-| Frequency | Review |
-|---|---|
-| Weekly | repository status, security updates, active container health |
-| Monthly | full advanced audit, Homebrew drift/outdated list, chezmoi diff, application inventory |
-| Quarterly | unused applications/extensions, privacy permissions, login items, SSH keys, recovery contacts |
-| Before major macOS upgrade | verified independent backup, clean/remote-backed repos, database dumps, fresh audit report |
-| After major upgrade | Xcode tools, Homebrew doctor, shell startup, container runtime, editor, provider authentication |
-
-Automate reminders if useful, but keep upgrades interactive. A scheduled task
-should report available changes, not install or delete them unattended.
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#step-219--use-a-maintenance-cadence).
 
 ## Step 21.10 — Rehearse the rebuild
 
-Write down the inputs a different clean Mac needs:
-
-```text
-1. The public Day One Mac release installer, or an offline release archive and checksum
-2. Selected track and stack
-3. Git name/email and provider accounts
-4. 1Password account and Emergency Kit/recovery process
-5. Private dotfiles repository URL
-6. Project repository URLs
-7. Optional module choices
-8. Separately verified document/database backup when applicable
-```
-
-Rehearsal sequence:
-
-```bash
-day-one-mac setup --dry-run --track <1|2|3|4> --stack <node|python|both>
-day-one-mac setup --track <1|2|3|4> --stack <node|python|both> \
-  --dotfiles-repo <private-url>
-day-one-mac validate
-day-one-mac advanced-audit
-```
-
-Then install only the selected optional/advanced modules. The goal is not a
-literal ten-minute stopwatch; it is a short, deterministic operator sequence
-with no undisclosed source files or remembered commands.
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#step-2110--rehearse-the-rebuild).
 
 ## Step 21.11 — Test rollback without executing it
 
-```bash
-day-one-mac rollback
-day-one-mac clean
-```
-
-Review the preview output and recovery archive plan. Do not run `--execute` as
-a routine test. A useful rollback rehearsal proves exact ownership and backup
-destinations without deleting the working environment.
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#step-2111--test-rollback-without-executing-it).
 
 ## Advanced 21 completion checklist 🚦
 
-- [ ] Required and advanced progress reports contain no unexplained review state.
-- [ ] The extended audit has no unexplained failure.
-- [ ] Homebrew updates are reviewed before upgrade or cleanup.
-- [ ] If Purge is selected, scheduling is disabled, Full Disk Access is
-      understood, and no overlapping general-purpose cleaner is installed.
-- [ ] fnm/Node/npm/pnpm and uv have one owner each.
-- [ ] chezmoi and Brewfile drift are understood and privately committed.
-- [ ] Dirty, ahead, and `NO-REMOTE` repositories are resolved or documented.
-- [ ] Optional services pass harmless smoke tests.
-- [ ] A maintenance cadence and pre-upgrade backup gate are recorded.
-- [ ] The rebuild inputs and sequence are complete.
-- [ ] Both cleanup modes have been previewed and understood.
-
-```bash
-day-one-mac advanced --complete 21
-```
-
----
-
-[← Advanced 20](20-restore-and-migrate.md) · [Continue to Advanced 22 →](22-ai-skills-and-mcp-operations.md)
+Continue at [this section](../how-to/modules/advanced/21-audit-maintenance-and-rebuild.md#advanced-21-completion-checklist-).

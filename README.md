@@ -8,13 +8,13 @@ base is working.
 ## Start here
 
 - **New or factory-reset Mac, using the guided scripts:** [open the beginner-safe start page](docs/START-HERE.md).
-- **New or factory-reset Mac, without Day One Mac scripts:** [follow the complete manual route](docs/20-reference/MANUAL-SETUP-GUIDE.md#manual-setup-flow).
-- **Existing Mac with files or settings:** [start with the read-only safety process](docs/00-preflight/README.md).
-- **Need the complete map first:** [read the process overview](docs/PROCESS-OVERVIEW.md).
-- **Need one specific command:** [open the command reference](docs/20-reference/COMMAND-REFERENCE.md).
-- **Need to learn or maintain chezmoi:** [open the complete chezmoi setup tutorial](docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md).
+- **New or factory-reset Mac, without Day One Mac scripts:** [follow the complete manual route](docs/setup/manual/MANUAL-SETUP-GUIDE.md#manual-setup-flow).
+- **Existing Mac with files or settings:** [start with the read-only safety process](docs/setup/existing-mac/README.md).
+- **Need the complete map first:** [read the process overview](docs/explanation/PROCESS-OVERVIEW.md).
+- **Need one specific command:** [open the command reference](docs/reference/COMMAND-REFERENCE.md).
+- **Need to learn or maintain chezmoi:** [open the complete chezmoi setup tutorial](docs/setup/manual/CHEZMOI-SETUP-TUTORIAL.md).
 - **Need to browse everything:** [open the documentation index](docs/README.md).
-- **Need manual application steps or chezmoi workflows:** [open the manual handbook](docs/manual/README.md).
+- **Need manual application steps or chezmoi workflows:** [open the manual handbook](docs/setup/manual/README.md).
 
 ## Install without keeping a repository
 
@@ -56,7 +56,7 @@ phases and tells you which
 guide to open when a manual action is required. It also asks whether VS Code
 should become Git's primary editor, diff viewer, and merge tool; choosing
 another primary IDE leaves those Git settings unchanged. Read the
-[portable installation guide](docs/20-reference/PORTABLE-COMMAND.md) for
+[portable installation guide](docs/reference/PORTABLE-COMMAND.md) for
 updates, rollback, migration from an older Phase 8 installation, and
 source-checkout development.
 
@@ -64,19 +64,24 @@ source-checkout development.
 
 ```text
 day-one-mac/
-├── install-day-one-mac  Reviewed standalone installer
-├── README.md            This short entry point
-├── docs/                Setup guides, navigation, and reference material
-├── scripts/             Setup, verification, runtime and recovery commands
-├── config/              Application and optional-tool catalogues
-├── second-brain/        Independent knowledge-system builders
-└── warp-drive/          Importable Warp workflows
+├── install-day-one-mac   Public release installer
+├── scripts/             Public launcher and compatibility entry points
+├── src/                 Runtime implementation, grouped by responsibility
+├── config/              Catalogues, policy examples and VS Code profile data
+├── docs/                Setup journeys, how-to guides, reference, explanation
+├── templates/           Shell files and reusable configuration templates
+├── integrations/        Warp and macOS Shortcuts assets
+├── extensions/          Independent Second Brain builders
+├── tests/               Regression tests and isolated fixtures
+├── tools/               Contributor validation, packaging and acceptance
+├── maintainers/         Architecture, plans, audits and release evidence
+└── .agents/skills/      Contributor skills; excluded from runtime packages
 ```
 
-Start with the [chezmoi learning path](docs/manual/chezmoi.md) for first setup,
+Start with the [chezmoi learning path](docs/setup/manual/chezmoi.md) for first setup,
 everyday edits, ownership, templates, secrets and recovery. For offline HTML,
 Markdown exports and browser printing, use the
-[documentation commands](docs/20-reference/DOCUMENTATION-COMMANDS.md).
+[documentation commands](docs/reference/DOCUMENTATION-COMMANDS.md).
 It links the Phase 5 baseline, script-assisted and fully manual routes, daily
 maintenance, command reference, ownership boundaries, private Git, and
 local-only backups.

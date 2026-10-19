@@ -10,15 +10,19 @@
   },
   "scripts": {
     "prepare": "husky",
-    "lint": "scripts/lint.sh && markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.agents\"",
-    "lint:shell": "scripts/lint.sh",
+    "lint": "tools/lint.sh && markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.agents\"",
+    "lint:shell": "tools/lint.sh",
     "lint:markdown": "markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.agents\"",
-    "validate": "scripts/validate.sh",
-    "test:vscode-profiles": "node scripts/tests/test-vscode-profiles.cjs",
-    "acceptance:plan": "scripts/release-readiness.sh --plan",
-    "acceptance:package": "scripts/tests/test-packaged-modules.sh",
-    "acceptance:native:plan": "scripts/rehearse-mounted-restore.sh --plan",
-    "commitlint": "commitlint"
+    "validate": "tools/validate.sh",
+    "test:vscode-profiles": "node tests/integration/test-vscode-profiles.cjs",
+    "acceptance:plan": "tools/release-readiness.sh --plan",
+    "acceptance:package": "tests/integration/test-packaged-modules.sh",
+    "acceptance:native:plan": "tools/rehearse-mounted-restore.sh --plan",
+    "commitlint": "commitlint",
+    "validate:static": "tools/validate.sh --static",
+    "test:integration": "tools/validate.sh --regressions",
+    "docs:sync": "node tools/sync-vscode-reference.cjs",
+    "docs:check": "node tools/sync-vscode-reference.cjs --check"
   },
   "lint-staged": {
     "*.{md,mdx}": "markdownlint-cli2",

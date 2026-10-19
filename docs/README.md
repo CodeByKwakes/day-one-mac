@@ -10,37 +10,37 @@ folder before starting.
 | Your situation | Open this |
 |---|---|
 | New or factory-reset Mac; use the guided scripts | [Start Here](START-HERE.md) |
-| New or factory-reset Mac; do not use Day One Mac scripts | [Complete manual route](20-reference/MANUAL-SETUP-GUIDE.md#manual-setup-flow) |
-| Existing Mac that still contains data or settings | [Stage 0 preflight](00-preflight/README.md) |
-| Want a one-page map of the complete process | [Process overview](PROCESS-OVERVIEW.md) |
-| Configuring a new developer Mac and want an audit-backed blueprint | [New-device development environment blueprint](NEW-DEVICE-SETUP-BLUEPRINT.md) |
-| Following the required setup | [Required phases 1–8](01-required/README.md) |
-| Required Phase 8 has passed and you want extras | [Optional modules](02-optional/README.md) |
-| Need one status or audit view for Modules 09–22 | [Optional and advanced status dashboard](20-reference/OPTIONAL-STATUS.md) |
-| Need power-user automation or migration | [Advanced modules](03-advanced/README.md) |
-| Need help configuring an installed application | [Application guides](10-app-guides/README.md) |
-| Need PostgreSQL in local, dev, test or production, with a desktop client and VS Code | [DataGrip setup](10-app-guides/DATAGRIP.md) · [DBeaver Community setup](10-app-guides/DBEAVER.md) |
-| Want a personal VS Code setup for Angular, NestJS, Nx, and AI agents | [Profile setup and settings](10-app-guides/VSCODE-PROFILES.md) · [Advanced reference](10-app-guides/VSCODE-TYPESCRIPT.md) |
-| Want developer window layouts, port monitoring, and desktop utilities | [Vorssaint developer guide](10-app-guides/VORSSAINT.md) |
-| Want human decisions and manual tasks grouped together | [Manual Setup Handbook](manual/README.md) |
-| Want first setup, daily use, templates or recovery for dotfiles | [Chezmoi learning path](manual/chezmoi.md) |
-| Want an Obsidian or Notion knowledge system with backup and recovery | [Second Brain walkthrough](manual/second-brain.md) |
-| Need 1Password, Keychain, SSH, signing or account recovery | [Security learning path](manual/security.md) |
-| A project needs private npm packages from Azure Artifacts | [Manual npm authentication](manual/azure-artifacts-npm.md) |
-| Want to know what each app/formula does and whether it is required | [Software catalogue](20-reference/SOFTWARE-CATALOGUE.md) |
-| Want browser reading, an offline export or a printable guide | [Documentation commands](20-reference/DOCUMENTATION-COMMANDS.md) |
-| Need to undo, finalise, or remove setup changes | [Operations](04-operations/README.md) |
-| Need a command, definition, or configuration example | [Reference library](20-reference/README.md) |
-| Need to set up or learn when to use chezmoi | [Complete chezmoi setup tutorial](20-reference/CHEZMOI-SETUP-TUTORIAL.md) |
-| Updating a Mac created before the standalone runtime | [Upgrade notes](20-reference/UPGRADE-NOTES.md) |
-| Contributing code or documentation | [Git workflow](GIT-WORKFLOW.md) |
-| Installing contributor linting and Git hooks | [Contributor tooling](CONTRIBUTOR-TOOLING.md) |
-| Configuring a release automation credential | [Release-token setup](RELEASE-TOKEN-SETUP.md) |
-| Protecting `main` with the recommended GitHub ruleset | [`main` protection checklist](MAIN-PROTECTION-CHECKLIST.md) |
-| Maintaining the project documentation | [Maintenance](99-maintenance/README.md) |
+| New or factory-reset Mac; do not use Day One Mac scripts | [Complete manual route](setup/manual/MANUAL-SETUP-GUIDE.md#manual-setup-flow) |
+| Existing Mac that still contains data or settings | [Stage 0 preflight](setup/existing-mac/README.md) |
+| Want a one-page map of the complete process | [Process overview](explanation/PROCESS-OVERVIEW.md) |
+| Configuring a new developer Mac and want an audit-backed blueprint | [New-device development environment blueprint](reference/NEW-DEVICE-SETUP-BLUEPRINT.md) |
+| Following the required setup | [Required phases 1–8](setup/assisted/README.md) |
+| Required Phase 8 has passed and you want extras | [Optional modules](how-to/modules/optional/README.md) |
+| Need one status or audit view for Modules 09–22 | [Optional and advanced status dashboard](reference/OPTIONAL-STATUS.md) |
+| Need power-user automation or migration | [Advanced modules](how-to/modules/advanced/README.md) |
+| Need help configuring an installed application | [Application guides](how-to/apps/README.md) |
+| Need PostgreSQL in local, dev, test or production, with a desktop client and VS Code | [Database setup hub](how-to/databases/README.md) · [DBeaver Community setup](how-to/databases/DBEAVER.md) |
+| Want a personal VS Code setup for Angular, NestJS, Nx, and AI agents | [Profile setup and settings](how-to/apps/VSCODE-PROFILES.md) · [Advanced reference](how-to/development/VSCODE-TYPESCRIPT.md) |
+| Want developer window layouts, port monitoring, and desktop utilities | [Vorssaint developer guide](how-to/apps/VORSSAINT.md) |
+| Want human decisions and manual tasks grouped together | [Manual Setup Handbook](setup/manual/README.md) |
+| Want first setup, daily use, templates or recovery for dotfiles | [Chezmoi learning path](setup/manual/chezmoi.md) |
+| Want an Obsidian or Notion knowledge system with backup and recovery | [Second Brain walkthrough](setup/manual/second-brain.md) |
+| Need 1Password, Keychain, SSH, signing or account recovery | [Security learning path](setup/manual/security.md) |
+| A project needs private npm packages from Azure Artifacts | [Manual npm authentication](setup/manual/azure-artifacts-npm.md) |
+| Want to know what each app/formula does and whether it is required | [Software catalogue](reference/SOFTWARE-CATALOGUE.md) |
+| Want browser reading, an offline export or a printable guide | [Documentation commands](reference/DOCUMENTATION-COMMANDS.md) |
+| Need to undo, finalise, or remove setup changes | [Operations](how-to/recovery/README.md) |
+| Need a command, definition, or configuration example | [Reference library](reference/README.md) |
+| Need to set up or learn when to use chezmoi | [Complete chezmoi setup tutorial](setup/manual/CHEZMOI-SETUP-TUTORIAL.md) |
+| Updating a Mac created before the standalone runtime | [Upgrade notes](reference/UPGRADE-NOTES.md) |
+| Contributing code or documentation | [Git workflow](https://github.com/CodeByKwakes/day-one-mac/blob/main/maintainers/contributing/GIT-WORKFLOW.md) |
+| Installing contributor linting and Git hooks | [Contributor tooling](https://github.com/CodeByKwakes/day-one-mac/blob/main/maintainers/contributing/CONTRIBUTOR-TOOLING.md) |
+| Configuring a release automation credential | [Release-token setup](https://github.com/CodeByKwakes/day-one-mac/blob/main/maintainers/releasing/RELEASE-TOKEN-SETUP.md) |
+| Protecting `main` with the recommended GitHub ruleset | [`main` protection checklist](https://github.com/CodeByKwakes/day-one-mac/blob/main/maintainers/releasing/MAIN-PROTECTION-CHECKLIST.md) |
+| Maintaining the project documentation | [Maintenance](https://github.com/CodeByKwakes/day-one-mac/blob/main/maintainers/audits/README.md) |
 
 For the long-form project explanation, assumptions, tracks, stacks, and
-implementation details, read the [complete project guide](PROJECT-GUIDE.md).
+implementation details, read the [complete project guide](explanation/PROJECT-GUIDE.md).
 
 ## Documentation conventions
 
@@ -57,7 +57,7 @@ The documentation uses these terms consistently:
 
 When a phase guide discusses what the runner does, manual-route readers should
 use the corresponding numbered section in the
-[complete manual and script-assisted setup guide](20-reference/MANUAL-SETUP-GUIDE.md).
+[complete manual and script-assisted setup guide](setup/manual/MANUAL-SETUP-GUIDE.md).
 Do not alternate between routes unless a troubleshooting instruction explicitly
 requires it.
 
@@ -82,27 +82,26 @@ new or clean.
 
 ```text
 docs/
-├── README.md              This index
-├── START-HERE.md          Short, beginner-safe route
-├── PROCESS-OVERVIEW.md    Full process and decision map
-├── NEW-DEVICE-SETUP-BLUEPRINT.md
-│                           Audit-backed fresh-device plan
-├── PROJECT-GUIDE.md       Detailed project explanation
-├── GIT-WORKFLOW.md        Branch, pull-request, and release workflow
-├── CONTRIBUTOR-TOOLING.md Local linting and shared Git hooks
-├── RELEASE-TOKEN-SETUP.md Release automation credential setup
-├── MAIN-PROTECTION-CHECKLIST.md
-│                           GitHub `main` ruleset checklist
-├── 00-preflight/          Existing-Mac safety before the setup flow
-├── 01-required/           Phases 1–8 and required checkpoints
-├── 02-optional/           Modules 9–14, only after Phase 8
-├── 03-advanced/           Modules 15–22 for power users
-├── 04-operations/         Finalisation, rollback, reset, and removal
-├── manual/               Handbook: chezmoi, Second Brain, security and SSH
-├── 10-app-guides/         1Password, Raycast, VS Code, Warp, shortcuts
-├── 20-reference/          Commands, layouts, dotfiles, glossary, examples
-└── 99-maintenance/        Documentation audits and maintainer notes
+├── README.md           This index
+├── START-HERE.md       Beginner-safe entry point
+├── setup/
+│   ├── existing-mac/   Safety preparation before setup
+│   ├── assisted/       Required phases and checkpoints
+│   └── manual/         Complete manual route and learning guides
+├── how-to/
+│   ├── apps/           Application-specific instructions
+│   ├── databases/      PostgreSQL, DataGrip, DBeaver and VS Code
+│   ├── development/    Editors, AI workflows, terminals and worktrees
+│   ├── modules/        Optional and advanced module procedures
+│   └── recovery/       Finalisation, rollback, reset and removal
+├── reference/          Commands, catalogues, layouts and generated data
+└── explanation/        Architecture, concepts and process overview
 ```
+
+Earlier numbered folders contain compatibility pages for existing bookmarks.
+Maintain the canonical pages above; the offline reader follows the aliases.
+Contributor plans, historical audits and release evidence live separately in
+[`maintainers/`](https://github.com/CodeByKwakes/day-one-mac/tree/main/maintainers).
 
 ## When the wizard stops
 
@@ -116,4 +115,4 @@ its verification gates pass.
 
 ---
 
-[Start Here →](START-HERE.md) · [Required phases](01-required/README.md) · [Command reference](20-reference/COMMAND-REFERENCE.md)
+[Start Here →](START-HERE.md) · [Required phases](setup/assisted/README.md) · [Command reference](reference/COMMAND-REFERENCE.md)

@@ -18,14 +18,33 @@ Thank you for improving Day One Mac.
 7. Treat the public release installer and versioned standalone runtime as the
    normal distribution path. A source checkout is optional development state.
 
+## Source ownership
+
+Runtime behavior lives in `src/`; `scripts/` preserves the public launcher and
+old entry points. Edit canonical guides in `docs/setup`, `docs/how-to`,
+`docs/reference` and `docs/explanation`. Old numbered guide folders are aliases.
+Contributor history and release procedures belong in `maintainers/`.
+
+Application, module, phase and dependency catalogues live in `config/catalogs/`.
+VS Code profile data lives in `config/profiles/vscode/profiles.json`; run
+`pnpm run docs:sync` after editing it. Do not edit the generated reference.
+Add every runtime file to `config/runtime-files.txt`. Keep contributor skills,
+tests, audit history and private machine data outside that allowlist.
+
 ## Validate a change
 
 ```bash
 pnpm install --frozen-lockfile
 pnpm run lint
-bash -n scripts/*.sh scripts/lib/*.sh scripts/tests/*.sh install-day-one-mac
-scripts/validate.sh
+pnpm run validate:static
+pnpm run test:integration
+pnpm run acceptance:package
 ```
+
+The static gate checks syntax, navigation, ownership catalogues and generated
+reference drift. Integration tests use isolated temporary homes. The combined
+`tools/validate.sh --all` remains the CI gate; native acceptance requires real
+Mac and managed-device evidence separately.
 
 Also inspect:
 
@@ -36,7 +55,7 @@ git status --short
 
 Run `pnpm install --frozen-lockfile` once after cloning to install the
 contributor tools and activate the shared Husky hooks. See the
-[contributor-tooling setup guide](docs/CONTRIBUTOR-TOOLING.md)
+[contributor-tooling setup guide](https://github.com/CodeByKwakes/day-one-mac/blob/main/maintainers/contributing/CONTRIBUTOR-TOOLING.md)
 for prerequisites, hook behaviour, troubleshooting, and safe bypasses.
 
 ## Release workflow
@@ -56,7 +75,7 @@ manifest. Review and merge that pull request when the changes are ready to
 publish. The workflow creates the tag and a draft release, validates that exact
 candidate and archive, then attaches the runtime, checksum, installer and
 provenance/evidence before publishing. Failed candidates remain drafts; see the
-[release and retry procedure](docs/GIT-WORKFLOW.md#release-lifecycle-and-failed-draft-retry).
+[release and retry procedure](https://github.com/CodeByKwakes/day-one-mac/blob/main/maintainers/contributing/GIT-WORKFLOW.md#release-lifecycle-and-failed-draft-retry).
 
 Repository maintainers must keep the narrowly scoped `RELEASE_PLEASE_TOKEN`
 Actions secret available so the generated release pull request receives the

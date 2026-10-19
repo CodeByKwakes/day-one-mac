@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
+# Compatibility entry point; implementation: tools/release-readiness.sh
 set -euo pipefail
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/lib/review-node.sh"
-day_one_review_node "$SCRIPT_DIR/lib/release-readiness.cjs" "$@"
+if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
+  source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/tools/release-readiness.sh"
+else
+  exec /bin/bash "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/tools/release-readiness.sh" "$@"
+fi

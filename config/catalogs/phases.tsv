@@ -1,0 +1,9 @@
+# id	title	guide	implementation
+01	First boot and decisions	docs/setup/assisted/01-first-boot-and-decisions.md	src/setup/phases/01-decisions.sh
+02	Command-line foundation	docs/setup/assisted/02-command-line-foundation.md	src/setup/phases/02-foundation.sh
+03	Security and SSH	docs/setup/assisted/03-security-and-ssh.md	src/setup/phases/03-security.sh
+04	Core tools and hosting	docs/setup/assisted/04-core-tools-and-hosting.md	src/setup/phases/04-hosting.sh
+05	Configuration ownership, shell and prompt	docs/setup/assisted/05-dotfiles-and-shell.md	src/setup/phases/05-dotfiles.sh
+06	Language toolchains and pnpm	docs/setup/assisted/06-language-toolchains.md	src/setup/phases/06-toolchains.sh
+07	VS Code base	docs/setup/assisted/07-vscode-base.md	src/setup/phases/07-editor.sh
+08	Verify and reproduce	docs/setup/assisted/08-verify-and-reproduce.md	src/setup/phases/08-verification.sh
