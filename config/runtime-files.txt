@@ -547,6 +547,7 @@ docs/how-to/databases/README.md
 docs/how-to/development/AI-WORKFLOWS.md
 docs/how-to/development/PROJECT-INSTRUCTIONS-AND-SKILLS.md
 docs/how-to/development/MCP-CONNECTIONS.md
+docs/how-to/development/MCP-DOCKER.md
 docs/how-to/development/ZSH-AND-TERMINALS.md
 src/setup/choices.sh
 src/setup/installation.sh

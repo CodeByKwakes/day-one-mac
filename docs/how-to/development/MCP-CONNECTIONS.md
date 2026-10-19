@@ -4,6 +4,12 @@ This focused reference was extracted from the advanced VS Code guide.
 Follow the [base editor setup](../apps/VSCODE.md) and [profile guide](../apps/VSCODE-PROFILES.md) first.
 [Advanced development reference](VSCODE-TYPESCRIPT.md).
 
+For container-managed servers, use the [Docker MCP setup guide](MCP-DOCKER.md).
+It owns Docker Desktop prerequisites, named profiles, credentials, client
+launchers and verification. This page owns direct project/IDE launchers and
+hosted connections. Choose one route per server; do not enable duplicate direct
+and Docker definitions. Module 11's artifact generator remains HTTPS-only.
+
 ## 11. Configure project and global MCP servers
 
 MCP adds live tools and data. Skills add workflow instructions. An extension,
@@ -47,7 +53,10 @@ every repository. Some Nx CI capabilities require Nx Cloud access.
 | Codex extension/CLI | `.codex/config.toml`, `[mcp_servers.NAME]` tables; trusted project | `~/.codex/config.toml`; `codex mcp add` edits personal configuration |
 | Claude Code | `.mcp.json`; `claude mcp add --scope project` | `~/.claude.json`; `claude mcp add --scope user` |
 
-Current VS Code recommends the portable destinations for new servers. Profile
+Current VS Code's Copilot flow offers portable destinations for new servers.
+Workspace-root `.mcp.json` requires `chat.mcp.workspaceRootConfig.enabled`;
+use the Local harness compatibility destination if that option is unavailable
+or disallowed. Profile
 MCP storage is distinct from portable global storage: the latter is shared
 across profiles. Root JSON can be shared by compatible Copilot/Claude clients,
 but Codex uses its own TOML configuration. Do not symlink JSON to TOML.
@@ -57,8 +66,9 @@ but Codex uses its own TOML configuration. Do not symlink JSON to TOML.
 
 MCP configuration is not ordinary VS Code `settings.json`. Your preference for
 User Settings covers editor settings; MCP definitions still need the client's
-MCP file. Keep project configuration local through section 9's exclusions if
-you do not want to commit it. Never include literal credentials in a shared file.
+MCP file. Use the [local Git exclusions](PROJECT-INSTRUCTIONS-AND-SKILLS.md#keep-local-project-ai-files-out-of-git)
+if you do not want to commit project configuration. Never include literal
+credentials in a shared file.
 
 ### Copilot and Claude: project installation
 

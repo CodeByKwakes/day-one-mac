@@ -427,6 +427,8 @@ Follow the maintained [procedure](PROJECT-INSTRUCTIONS-AND-SKILLS.md#10-choose-a
 ## 11. Configure project and global MCP servers
 
 Follow the maintained [procedure](MCP-CONNECTIONS.md#11-configure-project-and-global-mcp-servers).
+For container-managed tools, follow [Docker MCP setup](MCP-DOCKER.md), including
+the VS Code configuration format and client verification steps.
 
 ## 12. Use Zsh consistently in VS Code and Warp
 

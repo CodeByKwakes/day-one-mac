@@ -35,6 +35,12 @@ manifest from [Module 11](../optional/11-mcp-servers.md#executable-workspace-sni
 not `.mcp.json` or a live client configuration. Symlinks are rejected; select
 the canonical source instead of a compatibility link.
 
+Docker profiles and their exported JSON are outside this manifest format.
+Record their owner, reviewed image references and client verification manually
+using the [Docker MCP guide](../../development/MCP-DOCKER.md); do not treat a
+passing Module 22 snapshot as evidence that a Docker gateway is restricted or
+working.
+
 ```bash
 day-one-mac advanced --module 22 --plan --manifest ./governance.tsv
 day-one-mac advanced --module 22 --apply --manifest ./governance.tsv

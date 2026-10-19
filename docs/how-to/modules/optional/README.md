@@ -22,6 +22,10 @@ complete development foundation.
 VS Code profile setup lives in the [application guide](../../apps/VSCODE-PROFILES.md).
 Module 12 is retired; its number is reserved and other module IDs are unchanged.
 
+For Module 11's container route, follow [Docker MCP setup](../../development/MCP-DOCKER.md).
+Docker profiles and client activation are shared manual actions; the module's
+snippet generator accepts HTTPS endpoints only.
+
 You can also run `day-one-mac --wizard`, choose **Optional modules**, and open
 a module's guide, preview, component check, or configuration action. The setup
 centre runs the existing module commands and keeps application gated by Phase 8.

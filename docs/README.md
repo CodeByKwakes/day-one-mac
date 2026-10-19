@@ -21,6 +21,7 @@ folder before starting.
 | Need help configuring an installed application | [Application guides](how-to/apps/README.md) |
 | Need PostgreSQL in local, dev, test or production, with a desktop client and VS Code | [Database setup hub](how-to/databases/README.md) · [DBeaver Community setup](how-to/databases/DBEAVER.md) |
 | Want a personal VS Code setup for Angular, NestJS, Nx, and AI agents | [Profile setup and settings](how-to/apps/VSCODE-PROFILES.md) · [Advanced reference](how-to/development/VSCODE-TYPESCRIPT.md) |
+| Want MCP tools running through Docker for VS Code, Claude Code or Codex | [Docker MCP setup](how-to/development/MCP-DOCKER.md) · [All MCP routes](how-to/modules/optional/11-mcp-servers.md) |
 | Want developer window layouts, port monitoring, and desktop utilities | [Vorssaint developer guide](how-to/apps/VORSSAINT.md) |
 | Want human decisions and manual tasks grouped together | [Manual Setup Handbook](setup/manual/README.md) |
 | Want first setup, daily use, templates or recovery for dotfiles | [Chezmoi learning path](setup/manual/chezmoi.md) |

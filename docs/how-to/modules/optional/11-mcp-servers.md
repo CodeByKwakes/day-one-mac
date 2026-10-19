@@ -20,12 +20,29 @@ This guide uses two connection types. **HTTP** connects to a hosted web address.
 communicates with it directly. In either case, review the server's permissions
 and keep approval prompts enabled.
 
+## Choose your setup route
+
+| Need | Follow |
+|---|---|
+| Run selected MCP servers through Docker Desktop | [Docker MCP setup](../../development/MCP-DOCKER.md): profiles, secrets, client connections and verification |
+| Generate private HTTPS connection snippets | The executable workspace-snippet route below |
+| Configure a hosted service or direct local launcher yourself | Steps 11.1–11.9 below |
+| Use framework, IDE or database-specific launchers | [Project and global MCP reference](../../development/MCP-CONNECTIONS.md) |
+
+Docker MCP is a **shared manual action** for both setup routes. It uses a stdio
+gateway connection and does not fit the HTTPS manifest below. The Docker guide
+owns Docker-specific instructions; follow only your selected route per server.
+Containerization does not remove client trust, service permissions or tool
+approval requirements.
+
 ## Executable workspace-snippet route
 
 After Phase 8, Module 11 can generate private configuration snippets for Claude
 Code, Codex and VS Code. It does **not** connect to servers, read tokens, launch
 clients, edit live configuration or approve trust. Other clients, local stdio
-commands and user/global scope still use the manual sections below.
+commands and user/global scope still use the manual sections below. Docker
+profiles and gateway launchers use the linked Docker guide; do not put a
+`docker` command or `docker://` reference into this five-field HTTPS manifest.
 
 Create a new manifest with your editor. Use five **tab-separated** fields per
 row: client, server name, scope, HTTPS endpoint and token environment-variable
@@ -210,14 +227,17 @@ and that is safer than hand-editing JSON for a first setup.
 2. Run **MCP: Add Server**.
 3. Choose **HTTP** for a hosted endpoint or **Command (stdio)** for a local
    process.
-4. Prefer **Copilot Global** for a general server or **.mcp.json** for the
-   current repository. Older releases offer **User** or **Workspace** instead.
+4. Prefer **Global → Copilot Global** for a general server or **Workspace →
+   .mcp.json** for the current repository. The latter requires
+   `chat.mcp.workspaceRootConfig.enabled` in current VS Code. Use the available
+   Local harness/User/Workspace format when that experimental option is absent
+   or prohibited by policy.
 5. Review the generated configuration before starting the server.
 6. Accept the first-use trust prompt only when the URL, command, arguments,
    and scope match what you intended.
 7. Run **MCP: List Servers** and use **Show Output** on any failure.
 
-For new servers, current VS Code guidance prefers portable workspace
+For new Copilot servers, current VS Code guidance offers portable workspace
 `.mcp.json` (`mcpServers`) or user `${COPILOT_HOME:-$HOME/.copilot}/mcp-config.json`.
 The VS Code compatibility format uses `.vscode/mcp.json` (`servers`). Open
 profile-specific compatibility settings with **MCP: Open User Configuration**.
