@@ -5,7 +5,8 @@ account access and permissions belong to the parent session.
 
 ## Prerequisites and steps
 
-1. Complete [bootstrap](../bootstrap.md) and [workspace preparation](../operation.md).
+1. Complete [bootstrap](../bootstrap.md), then install the [main skill](../../manual/ai/day-one-skills.md)
+   or export an [assistant workspace](../operation.md).
 
    Expected result: an approved Codex installation and a verified directory.
 
@@ -19,8 +20,9 @@ account access and permissions belong to the parent session.
    Expected result: a read-only planning session rooted in the setup workspace.
    Check your installed CLI help if a managed client restricts this option.
 
-3. Ask Codex to read `AGENTS.md` and use `$day-one-setup` for a plan.
-   If custom agents are available, request `day-one-planner`.
+3. Ask Codex to follow any project instructions and use `$day-one-mac` for a plan.
+   If you installed only a specialist, use its name instead. Request
+   `day-one-planner` only if you activated the optional project roles.
 
    Expected result: the plan cites the bundled guides and makes no changes.
 

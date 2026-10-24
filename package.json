@@ -23,7 +23,11 @@
     "validate:static": "tools/validate.sh --static",
     "test:integration": "tools/validate.sh --regressions",
     "docs:sync": "node tools/sync-vscode-reference.cjs",
-    "docs:check": "node tools/sync-vscode-reference.cjs --check"
+    "docs:check": "node tools/sync-vscode-reference.cjs --check",
+    "skills:build": "node tools/build-skills.cjs",
+    "skills:check": "node tools/build-skills.cjs --check",
+    "test:skills": "node tests/integration/test-skills-package.cjs",
+    "test:skills-cli": "node tests/integration/test-skills-cli.cjs"
   },
   "lint-staged": {
     "*.{md,mdx}": "markdownlint-cli2",

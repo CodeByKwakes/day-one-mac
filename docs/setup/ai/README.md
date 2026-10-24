@@ -18,10 +18,11 @@ extension does not guarantee access to every model or tool.
    Expected result: one working client, an explicit direct-provider or OmniRoute
    choice and a successful harmless request.
 
-2. Prepare the [assistant workspace](operation.md#prepare-a-workspace).
+2. Install the [main skill](../manual/ai/day-one-skills.md), or prepare the
+   optional [assistant workspace](operation.md#prepare-a-workspace).
 
-   Expected result: shared skills, your client's role definitions and local
-   guides are available in a private directory.
+   Expected result: the main skill and bundled references are available in a
+   private directory. Native role definitions are optional with skill installation.
 
 3. Follow the selected client guide: [Codex](clients/codex.md),
    [Claude Code](clients/claude.md) or [GitHub Copilot](clients/copilot.md).

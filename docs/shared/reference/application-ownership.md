@@ -24,7 +24,7 @@ the application. It does not mean the application account or software licence.
 
 “External installation” may mean Company Portal, a signed company package, a
 manual download, or another approved system. macOS does not always expose a
-reliable link from an application back to Company Portal, so the runner does
+reliable link from an application back to Company Portal, so the ownership check does
 not pretend to know more than it can verify.
 
 ## When the checks happen
@@ -89,8 +89,8 @@ ordinary `--yes` flag does not silently choose Homebrew ownership.
 
 ## Required and optional selections behave differently
 
-Required applications are locked in the base setup. A valid external copy
-satisfies the requirement; “required” does not mean “Homebrew must own it.”
+Required applications are a catalogue group. Select the tools needed for your
+work; a valid external copy satisfies an ownership check without Homebrew adoption.
 
 Optional applications are installed only after explicit selection. If an
 optional app already exists externally, selecting it accepts that copy. If the
@@ -115,8 +115,8 @@ the precise recorded rollback may remove it.
 
 Only a cask actually installed by Day One Mac is added to
 `install-manifest.tsv`. An external or pre-existing Homebrew installation is
-preserved by the precise rollback. The separate broad cleanup tool can remove
-all Homebrew casks, so always read its preview before approving it.
+preserved by the precise rollback. Use each application's existing installer
+for separately selected removal; broad cleanup commands are retired.
 
 ## If an application needs review
 

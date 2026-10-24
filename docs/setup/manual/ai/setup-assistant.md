@@ -134,19 +134,24 @@ unrestricted execution mode merely to make setup prompts disappear.
 
 ## 4. Prepare a private setup task
 
-1. Follow the [manual workspace procedure](day-one-skills.md) using a reviewed
-   archive. It copies the six current shared skills and client-specific roles.
+1. Follow [skill installation](day-one-skills.md) in a new private setup folder.
+   Install the single `day-one-mac` skill for your selected client. Its six
+   workflows and supporting guides are included; native agent roles are optional.
 
-   Expected result: a new private directory containing `START.md`, `AGENTS.md`,
-   guides, skills and agent definitions. Existing destinations remain untouched.
+   Expected result: `.agents/skills/day-one-mac/SKILL.md` and its bundled
+   references exist. A Claude-only install uses `.claude/skills/day-one-mac`.
+   Installing for Claude alongside Codex or Copilot links Claude to the shared copy.
 
-2. Open `START.md` and the matching guide under `docs/setup/ai/clients/`.
+2. Open the setup folder in your client and ask it to read the installed skill.
 
-   Expected result: your selected client discovers the correct shared skills and
-   its own agent format. Claude's project skill link points to `.agents/skills`.
+   Expected result: the client can explain its setup and checking workflows and
+   open the bundled guides. This installation does not require root-level
+   `START.md` or `AGENTS.md`. The optional [workspace export](../../ai/operation.md)
+   supplies those files and configured agent directories if you prefer that layout.
 
-3. In a browser-only session, attach the relevant guide and skill, then request
-   guidance without execution. Do not attach private progress notes by default.
+3. In a browser-only session, attach the relevant bundled guide and workflow,
+   then request guidance without execution. Do not attach private progress notes
+   by default.
 
    Expected result: the client can cite the supplied procedure and explain its
    prerequisites. If the documents are unavailable, stop instead of guessing.

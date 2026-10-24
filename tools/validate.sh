@@ -325,6 +325,7 @@ else
   semantic_failed=1
 fi
 run_fixture "runtime inventory and guide ownership are consistent" "project layout failed" node "$PROJECT_DIR/tools/check-project-layout.cjs" || true
+run_fixture "portable skill packages match their maintained sources" "portable skill packages are stale" node "$PROJECT_DIR/tools/build-skills.cjs" --check || true
 run_fixture "VS Code reference matches configuration" "VS Code reference drift" node "$PROJECT_DIR/tools/sync-vscode-reference.cjs" --check || true
 run_fixture "Warp workflows use current, bounded commands" "Warp workflow validation failed" "$PROJECT_DIR/src/modules/validate-warp-drive.sh" || true
 if [[ "$VALIDATION_MODE" == --all ]]; then

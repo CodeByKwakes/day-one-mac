@@ -1,7 +1,7 @@
 # Use the setup workspace with GitHub Copilot
 
 Open the private workspace in VS Code and use the Copilot harness with the
-bundled `.github/agents/*.agent.md` definitions. Copilot account access and
+installed skills and optional `.github/agents/*.agent.md` definitions. Copilot account access and
 organisation policy still apply.
 
 ## Prerequisites and steps
@@ -11,23 +11,25 @@ organisation policy still apply.
 
    Expected result: Copilot can answer a harmless request in the selected editor.
 
-2. Open the prepared workspace:
+2. Install the [main skill](../../manual/ai/day-one-skills.md) or export an
+   [assistant workspace](../operation.md), then open its directory:
 
    ```bash
    code "$SETUP_WORKSPACE"
    ```
 
-   Expected result: `START.md`, `.agents/skills` and `.github/agents` are visible
-   in the workspace. Review Workspace Trust before enabling execution.
+   Expected result: `.agents/skills/day-one-mac` is available. An exported
+   workspace also contains `START.md` and project roles. Review Workspace Trust.
 
 3. Choose Copilot as the session harness. Open **Chat: Open Customizations**
    from the Command Palette and inspect the available agents and skills.
 
-   Expected result: the Day One roles and shared skills are discoverable.
+   Expected result: the installed skill and any activated roles are discoverable.
    Menu availability varies with the installed VS Code release and harness.
 
-4. Select `day-one-planner` and ask for a plan. After approving it, select
-   `day-one-operator` for the bounded execution scope.
+4. Ask `day-one-mac` for a read-only plan, or select `day-one-planner` if
+   activated. After approval, execute the selected scope using normal tool
+   confirmations or the optional `day-one-operator` role.
 
    Expected result: the planner has read/search tools only. Operator execution
    remains subject to the editor's normal tool approvals and organisation policy.

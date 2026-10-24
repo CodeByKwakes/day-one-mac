@@ -19,10 +19,10 @@ try {
   assert.equal(run(['--check', output]).status, 0);
   assert.equal(fs.readlinkSync(path.join(output, '.claude/skills')), '../.agents/skills');
   const skills = fs.readdirSync(path.join(output, '.agents/skills'));
-  assert.equal(skills.length, 6);
+  assert.equal(skills.length, 7);
   for (const name of skills) {
     const text = fs.readFileSync(path.join(output, '.agents/skills', name, 'SKILL.md'), 'utf8');
-    for (const match of text.matchAll(/\]\((\.\.\/[^)]+)\)/g)) {
+    for (const match of text.matchAll(/\]\(((?:references|assets)\/[^)]+)\)/g)) {
       assert(fs.existsSync(path.resolve(output, '.agents/skills', name, match[1])), `${name}: ${match[1]}`);
     }
   }

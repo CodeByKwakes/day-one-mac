@@ -3,6 +3,10 @@
 Use a private workspace to keep guides, skills, client roles and session notes
 together. Export never changes global client settings or starts an AI session.
 
+For a smaller installation, use the [portable skill](../manual/ai/day-one-skills.md).
+The single `day-one-mac` skill includes all workflows. An installed skill can
+start immediately; the workspace export below is an optional alternative.
+
 ## Prepare a workspace
 
 Prerequisites: a working client from [bootstrap](bootstrap.md). The optional
@@ -34,7 +38,7 @@ not contain it. See [runtime availability](../../shared/tools/runtime.md).
    day-one-mac assistant --export "$SETUP_WORKSPACE"
    ```
 
-   Expected result: a private workspace with `START.md`, `AGENTS.md`, six skills,
+   Expected result: a private workspace with `START.md`, `AGENTS.md`, seven skills,
    client roles, guides and an integrity manifest. Existing destinations are refused.
 
 4. Verify the export:
@@ -60,7 +64,7 @@ not install or invoke Day One Mac scripts. It requires no permanent Git checkout
 1. Start with this prompt:
 
    ```text
-   Use day-one-setup to inspect my Mac and propose setup for the capabilities
+   Use day-one-mac to inspect my Mac and propose setup for the capabilities
    in my worksheet. Do not make changes. Offer direct access, existing
    OmniRoute, local OmniRoute or gateway setup later. Include exact commands,
    affected paths, prerequisites, human steps and recovery.

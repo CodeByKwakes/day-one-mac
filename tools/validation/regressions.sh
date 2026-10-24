@@ -142,6 +142,7 @@ run_fixture "restructure safety regressions fail closed" \
 
 run_fixture "retired setup commands are inert; tools work without phase markers" "AI/manual route contract failed" node "$PROJECT_DIR/tests/integration/test-ai-manual-contract.cjs" || true
 run_fixture "assistant exports preserve scope, integrity and client separation" "assistant workspace contract failed" node "$PROJECT_DIR/tests/integration/test-assistant-workspace.cjs" || true
+run_fixture "portable skills work independently with contained references" "portable skill package contract failed" node "$PROJECT_DIR/tests/integration/test-skills-package.cjs" || true
 run_fixture "archive integrity, path safety and locks fail closed" "runtime safety regression failed" "$PROJECT_DIR/tests/integration/test-audit-regressions.sh" || true
 
 run_fixture "retained scalar settings and recorded rollback preserve recovery" "retained operation regression failed" "$PROJECT_DIR/tests/integration/test-retained-operations.sh" || true

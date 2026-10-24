@@ -49,7 +49,7 @@ function exportWorkspace(destination) {
     if (relative.startsWith('docs/') || relative.startsWith('config/') || relative === 'README.md' || relative === 'CONTRIBUTING.md' || relative === 'LICENSE'
       || relative.startsWith('templates/phase-05-shell-files/')) copy(path.join(root, relative), relative);
   }
-  for (const [source, target] of [['templates/skills', '.agents/skills'], ['templates/agents/codex', '.codex/agents'],
+  for (const [source, target] of [['skills', '.agents/skills'], ['templates/agents/codex', '.codex/agents'],
     ['templates/agents/claude', '.claude/agents'], ['templates/agents/copilot', '.github/agents'], ['templates/setup-assistant', '']]) {
     const listed = fs.readFileSync(path.join(root, 'config/runtime-files.txt'), 'utf8').split('\n').filter(file => file.startsWith(`${source}/`));
     if (!listed.length) throw new Error(`Missing assistant assets: ${source}`);
@@ -97,7 +97,7 @@ try {
   const args = process.argv.slice(2);
   if (args.length === 0 || (args.length === 1 && ['--help', '--plan'].includes(args[0]))) {
     console.log('Usage: day-one-mac assistant --plan | --export NEW_ABSOLUTE_DIRECTORY | --check ABSOLUTE_DIRECTORY\n'
-      + 'Requires Node.js 22+. Export creates a private workspace with guides, six shared skills and Codex/Claude/Copilot roles.\n'
+      + 'Requires Node.js 22+. Export creates a private workspace with guides, seven portable skills and Codex/Claude/Copilot roles.\n'
       + 'It never installs or launches a client, changes global settings or installs development tools.\n'
       + 'Choose direct provider access, an existing OmniRoute gateway, local OmniRoute, or defer the gateway.\n'
       + 'Updates use a new export; retain session notes separately. Plan/check do not write.');

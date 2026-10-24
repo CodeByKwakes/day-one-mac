@@ -1,12 +1,13 @@
 # Use the setup workspace with Claude Code
 
-Claude Code reads the shared instructions through `CLAUDE.md` and accesses the
-canonical skills through `.claude/skills`. Its agent definitions remain in
-Claude's own format.
+Claude Code accesses installed skills through `.claude/skills`. The optional
+workspace export also supplies shared instructions through `CLAUDE.md` and
+agent definitions in Claude's own format.
 
 ## Prerequisites and steps
 
-1. Complete [bootstrap](../bootstrap.md) and [workspace preparation](../operation.md).
+1. Complete [bootstrap](../bootstrap.md), then install the [main skill](../../manual/ai/day-one-skills.md)
+   or export an [assistant workspace](../operation.md).
 
    Expected result: an approved Claude Code installation and a verified workspace.
 
@@ -19,13 +20,13 @@ Claude's own format.
 
    Expected result: a session rooted in the setup workspace. Review any trust prompt.
 
-3. Use `/agents` to inspect `day-one-planner`, `day-one-operator`,
+3. If you activated the optional roles, use `/agents` to inspect `day-one-planner`, `day-one-operator`,
    `day-one-verifier` and `day-one-maintainer`.
 
-   Expected result: four project roles are visible. Restart the session if newly
-   copied files are not discovered.
+   Expected result: the four activated project roles are visible. Without role
+   activation, ask the main session to use `day-one-mac` for a read-only plan.
 
-4. Request the planner and review its plan before using the operator.
+4. Review the plan before approved execution, using the operator if available.
 
    Expected result: the planner reads files without a shell or editing tool.
    The operator retains normal permission prompts for approved changes.

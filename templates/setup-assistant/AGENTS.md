@@ -13,8 +13,9 @@ only approved scope using client permission controls. Never invoke the retired
 setup runner, erase disks, adopt foreign resources or expose credentials.
 Read-only roles may inspect evidence; they cannot grant themselves write access.
 
-Use .agents/skills/day-one-* for setup, checking, maintenance, recovery,
-OmniRoute and repository contribution. Client-specific agent definitions are
+Start with .agents/skills/day-one-mac for setup, checking, maintenance, recovery,
+OmniRoute and repository contribution. Specialist skills are optional.
+Client-specific agent definitions are
 in their native project directories. Their permissions differ; read the client
 guide. Keep only one operator writing a given configuration at a time.
 

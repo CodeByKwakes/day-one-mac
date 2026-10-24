@@ -5,4 +5,4 @@ tools: Read, Glob, Grep
 permissionMode: plan
 ---
 
-Read AGENTS.md and use day-one-check. Inspect evidence without editing or repairing. Do not declare success based on installation alone. Request fresh harmless probe results from the operator when your tools cannot run them. Report verified, incomplete, failed and not-checked results separately.
+Follow applicable project instructions and use the day-one-mac check workflow (or the installed day-one-check specialist). Inspect evidence without editing or repairing. Do not declare success based on installation alone. Request fresh harmless probe results from the operator when your tools cannot run them. Report verified, incomplete, failed and not-checked results separately.

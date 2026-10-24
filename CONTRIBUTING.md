@@ -15,8 +15,8 @@ Thank you for improving Day One Mac.
 6. Use the `day-one-mac` portable command in user-facing instructions. Show
    direct scripts only in contributor, low-level troubleshooting, or recovery
    sections, and state why the direct form is needed.
-7. Treat the public release installer and versioned standalone runtime as the
-   normal distribution path. A source checkout is optional development state.
+7. Distribute setup skills through `skills/` and optional utilities through the
+   versioned standalone runtime. A source checkout is optional development state.
 
 ## Source ownership
 
@@ -29,6 +29,19 @@ VS Code profile data lives in `config/profiles/vscode/profiles.json`; run
 `pnpm run docs:sync` after editing it. Do not edit the generated reference.
 Add every runtime file to `config/runtime-files.txt`. Keep contributor skills,
 tests, audit history and private machine data outside that allowlist.
+
+Skill instructions live in `templates/skills/`. The catalogue at
+`config/catalogs/assistant-skills.json` declares portable packages and extra
+assets. Run `pnpm run skills:build` after changing a skill or its linked guides.
+The builder copies required references, resolves compatibility links and keeps
+the generated runtime inventory current. Do not edit `skills/` by hand.
+
+`pnpm run test:skills` verifies independent packages and contained references.
+To test the actual pinned CLI, obtain `skills@1.7.4` through npm and pass its
+absolute `bin/cli.mjs` path to `pnpm run test:skills-cli /path/to/bin/cli.mjs`.
+The test creates temporary homes and exercises project/global installation,
+reinstallation and removal for Codex, Copilot and Claude. It does not configure
+real accounts. GitHub publication and live client discovery are separate checks.
 
 ## Validate a change
 
