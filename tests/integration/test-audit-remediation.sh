@@ -55,6 +55,8 @@ git() {
     command git -C "$2" config --get remote.origin.url
   else command git "$@"; fi
 }
+# Called by verify_dotfiles_remote in the sourced verification helper.
+# shellcheck disable=SC2329
 chezmoi() { printf '%s\n' "$fixture/working"; }
 gh() { printf 'PRIVATE\n'; }
 phase_next() { :; }
@@ -72,15 +74,6 @@ git -C "$fixture/working" commit -q --allow-empty -m newer
 if verify_dotfiles_remote; then fail 'different remote commit passed'; exit 1; fi
 unset -f git
 
-# Current fingerprints work; stale/malformed ones do not.
-"$SCRIPT_DIR/../tests/integration/seed-required-state.sh" "$fixture/state"
-export DAY_ONE_MAC_STATE_ROOT="$fixture/state" DAY_ONE_MAC_STATE_DIR="$fixture/state"
-source "$SCRIPT_DIR/../src/core/module-execution.sh"
-day_one_phase_current 08
-printf 'starship\n' > "$fixture/state/prompt-choice"
-if day_one_phase_current 08; then fail 'changed selection accepted'; exit 1; fi
-printf 'fixture\n' > "$fixture/state/completed/08"
-if day_one_phase_current 08; then fail 'arbitrary marker accepted'; exit 1; fi
 # Run actual audit helper bodies with failing probes and declined tools.
 source "$SCRIPT_DIR/../src/core/configuration-choices.sh"
 for helper in audit_selected_commands audit_brew_updates audit_chezmoi_status; do

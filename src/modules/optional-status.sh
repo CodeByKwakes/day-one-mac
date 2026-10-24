@@ -7,6 +7,7 @@ DAY_ONE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SCRIPT_DIR="$DAY_ONE_ROOT/scripts"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/../src/core/project-paths.sh"
+source "$SCRIPT_DIR/../src/core/state.sh"
 source "$SCRIPT_DIR/../src/core/container-runtime.sh"
 day_one_container_cli_path
 source "$SCRIPT_DIR/../src/core/terminal-ui.sh"
@@ -83,20 +84,20 @@ module_title() {
 
 module_doc() {
   case "$1" in
-    09) printf '%s/docs/setup/assisted/optional/09-databases.md\n' "$PROJECT_DIR" ;;
-    10) printf '%s/docs/setup/assisted/optional/10-ai-agents.md\n' "$PROJECT_DIR" ;;
-    10A) printf '%s/docs/setup/assisted/optional/10a-omniroute.md\n' "$PROJECT_DIR" ;;
-    11) printf '%s/docs/setup/assisted/optional/11-mcp-servers.md\n' "$PROJECT_DIR" ;;
-    13) printf '%s/docs/setup/assisted/optional/13-enhanced-cli-tools.md\n' "$PROJECT_DIR" ;;
-    14) printf '%s/docs/setup/assisted/optional/14-warp-drive.md\n' "$PROJECT_DIR" ;;
-    15) printf '%s/docs/setup/assisted/advanced/15-full-dotfiles-and-bootstrap.md\n' "$PROJECT_DIR" ;;
-    16) printf '%s/docs/setup/assisted/advanced/16-brewfile-apps-and-editor.md\n' "$PROJECT_DIR" ;;
-    17) printf '%s/docs/setup/assisted/advanced/17-shell-and-package-automation.md\n' "$PROJECT_DIR" ;;
-    18) printf '%s/docs/setup/assisted/advanced/18-hosting-identities-azure-and-worktrees.md\n' "$PROJECT_DIR" ;;
-    19) printf '%s/docs/setup/assisted/advanced/19-macos-gui-and-local-https.md\n' "$PROJECT_DIR" ;;
-    20) printf '%s/docs/setup/assisted/advanced/20-restore-and-migrate.md\n' "$PROJECT_DIR" ;;
-    21) printf '%s/docs/setup/assisted/advanced/21-audit-maintenance-and-rebuild.md\n' "$PROJECT_DIR" ;;
-    22) printf '%s/docs/setup/assisted/advanced/22-ai-skills-and-mcp-operations.md\n' "$PROJECT_DIR" ;;
+    09) printf '%s/docs/shared/tools/09-databases.md\n' "$PROJECT_DIR" ;;
+    10) printf '%s/docs/shared/tools/10-ai-agents.md\n' "$PROJECT_DIR" ;;
+    10A) printf '%s/docs/shared/tools/10a-omniroute.md\n' "$PROJECT_DIR" ;;
+    11) printf '%s/docs/shared/tools/11-mcp-servers.md\n' "$PROJECT_DIR" ;;
+    13) printf '%s/docs/shared/tools/13-enhanced-cli-tools.md\n' "$PROJECT_DIR" ;;
+    14) printf '%s/docs/shared/tools/14-warp-drive.md\n' "$PROJECT_DIR" ;;
+    15) printf '%s/docs/shared/tools/15-full-dotfiles-and-bootstrap.md\n' "$PROJECT_DIR" ;;
+    16) printf '%s/docs/shared/tools/16-brewfile-apps-and-editor.md\n' "$PROJECT_DIR" ;;
+    17) printf '%s/docs/shared/tools/17-shell-and-package-automation.md\n' "$PROJECT_DIR" ;;
+    18) printf '%s/docs/shared/tools/18-hosting-identities-azure-and-worktrees.md\n' "$PROJECT_DIR" ;;
+    19) printf '%s/docs/shared/tools/19-macos-gui-and-local-https.md\n' "$PROJECT_DIR" ;;
+    20) printf '%s/docs/shared/tools/20-restore-and-migrate.md\n' "$PROJECT_DIR" ;;
+    21) printf '%s/docs/shared/tools/21-audit-maintenance-and-rebuild.md\n' "$PROJECT_DIR" ;;
+    22) printf '%s/docs/shared/tools/22-ai-skills-and-mcp-operations.md\n' "$PROJECT_DIR" ;;
   esac
 }
 
@@ -134,7 +135,7 @@ module_is_selected() {
   esac
   if [[ "$id" =~ ^(15|16|17|18|19|20|21|22)$ ]]; then
     marker="$STATE_ROOT/advanced/completed/$id"
-    [[ -f "$marker" ]] && return 0
+    [[ -e "$marker" || -L "$marker" ]] && return 0
   fi
   return 1
 }
@@ -305,16 +306,14 @@ check_14() {
 }
 
 check_advanced() {
-  local id="$1" marker document expected recorded
+  local id="$1" marker
   marker="$STATE_ROOT/advanced/completed/$id"
-  document="$(module_doc "$id")"
-  [[ -f "$marker" ]] || { set_result pending 'no verified completion fingerprint is recorded' "Run \`day-one-mac advanced --module $id\`, complete its checklist, then record it."; return; }
-  expected="$(shasum -a 256 "$document" | awk '{print $1}')"
-  recorded="$(sed -n '1p' "$marker")"
-  if [[ "$expected" == "$recorded" ]]; then
-    set_result ready 'completion fingerprint matches the current guide' 'No action required.'
+  if [[ ! -e "$marker" && ! -L "$marker" ]]; then
+    set_result pending 'no current capability verification is recorded' "Read the guide with day-one-mac tool --module $id and verify its manual steps."
+  elif ! day_one_safe_state_path "$marker" || [[ ! -f "$marker" || ! -r "$marker" ]]; then
+    set_result review 'unsafe or unreadable historical record' 'Preserve the record and review its ownership before continuing.'
   else
-    set_result review 'the guide changed after completion was recorded' "Review Module $id and record completion again only after its checklist passes."
+    set_result partial 'historical guide record only; current manual verification is required' 'Keep the old record; verify the capability using its current guide.'
   fi
 }
 
@@ -322,12 +321,7 @@ check_artifact() {
   local id="$1"
   if "$SCRIPT_DIR/../src/modules/configure-artifacts.sh" --module "$id" --check >/dev/null 2>&1; then
     set_result partial 'generated artifact is verified; activation, trust or maintenance checklist remains manual' "Review Module $id and its generated manual-steps.txt."
-    if [[ "$id" == 21 && -f "$STATE_ROOT/advanced/completed/21" ]]; then
-      check_advanced 21
-      if [[ "$RESULT_STATUS" == ready ]]; then
-        set_result ready 'bounded audit passes without drift; current guide checklist is user-attested' 'This is not a full machine-health or rebuild verification.'
-      fi
-    fi
+
   else
     set_result review 'artifact integrity, selection, or audit evidence needs review' "Run --module $id --check for details, then review --plan before applying."
   fi
@@ -342,14 +336,7 @@ check_21() {
 check_16() {
   if [[ ! -s "$STATE_DIR/software-16.tsv" ]]; then check_advanced 16; return; fi
   if "$SCRIPT_DIR/../src/modules/configure-software.sh" --module 16 --check >/dev/null 2>&1; then
-    if [[ -f "$STATE_ROOT/advanced/completed/16" ]]; then
-      check_advanced 16
-      if [[ "$RESULT_STATUS" == ready ]]; then
-        set_result ready 'selected payloads pass live checks and the user-confirmed guide fingerprint is current' 'Manual checklist completion is user-attested, not machine-verified.'
-      fi
-    else
-      set_result partial 'selected software payloads are verified; Brewfile, licences and guide checklist remain separately reviewed' 'Review Advanced 16; payload installation does not complete the whole guide.'
-    fi
+    set_result partial 'selected software payloads are verified; Brewfile, licences and guide checklist remain separately reviewed' 'Review the current guide; historical markers do not prove completion.'
   else
     set_result review 'saved software selection is missing or cannot be verified' 'Run day-one-mac advanced --module 16 --check; resolve the reported issue before resuming.'
   fi

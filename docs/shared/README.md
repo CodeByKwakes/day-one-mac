@@ -1,7 +1,7 @@
 # Shared library
 
 These references support both setup routes. They define common choices and
-criteria; start a procedure from [Assisted Setup](../setup/assisted/README.md)
+criteria; start a procedure from [Assisted Setup](../START-HERE.md)
 or [Manual Setup](../setup/manual/README.md).
 
 | Reference | Purpose |

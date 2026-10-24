@@ -27,8 +27,8 @@ Usage: ./preflight-audit.sh [options]
 
 Create the Stage 0 safety report before choosing either transition:
 
-  Route A — erase the Mac with Apple's Erase All Content and Settings
-  Route B — keep the user account and clean the known development setup
+  AI-assisted setup — review and approve bounded changes
+  Manual setup — follow the canonical recipes yourself
 
 This read-only inventory is called a "preflight audit" in the script filename.
 Here, audit simply means inspect and report. It does not remove applications,
@@ -119,7 +119,7 @@ done
 
 if [[ "$PLAN_ONLY" == 1 ]]; then
   ui_title '🛡️' 'Stage 0 Step 1 — safety report preview'
-  printf 'Use this before Route A or Route B. It would create one private report containing:\n\n'
+  printf 'Use this before AI-assisted or manual setup. It would create one private report containing:\n\n'
   printf '  • macOS, hardware, storage and FileVault status\n'
   printf '  • application bundles and Homebrew/package-manager inventory\n'
   printf '  • Git repositories, dirty worktrees and missing remotes\n'
@@ -128,7 +128,7 @@ if [[ "$PLAN_ONLY" == 1 ]]; then
   printf 'It does not read personal-document or configuration contents, reveal environment-variable values,\n'
   printf 'mount Time Machine by default, stop software, or remove anything.\n'
   printf 'It is an inventory checklist, not a copy of your data and not proof of a usable backup.\n'
-  printf '\nRecommended next command:\n  %s/prepare-existing-mac.sh --guided\n' "$SCRIPT_DIR"
+  printf '\nNext: read docs/setup/manual/backup-and-restore.md and test a backup.\n'
   exit 0
 fi
 
@@ -152,8 +152,8 @@ if [[ "$GUIDED" == 1 ]]; then
   ui_title '🛡️' 'Stage 0 Step 1 — create the safety report'
   printf '\n'
   printf 'Use this step before either route:\n'
-  printf '  Route A — erase the Mac and start with a blank account\n'
-  printf '  Route B — keep this account and clean the development setup\n\n'
+  printf '  AI-assisted setup — approved changes with a selected client\n'
+  printf '  Manual setup — reviewed steps performed by you\n\n'
   printf '"Audit" in the filename means inspect and report. This step only creates\n'
   printf 'a private inventory; it does not clean, reset, or back up the Mac.\n\n'
   printf 'Report destination:\n  %s\n\n' "$OUTPUT_DIR"
@@ -604,19 +604,15 @@ done
   printf -- '- [ ] I reviewed every report link above.\n'
   printf -- '- [ ] I resolved or made a recovery plan for every `DIRTY` repository.\n'
   printf -- '- [ ] I resolved or backed up every `NO-REMOTE` repository.\n'
-  printf -- '- [ ] Guided Step 2 copied this complete report to an encrypted external drive.\n'
-  printf -- '- [ ] Route B Step 3 copied the selected development snapshot, or Route A has a complete separate backup.\n'
+  printf -- '- [ ] I copied this report to the selected encrypted backup.\n'
+  printf -- '- [ ] The selected development data has a separate, tested backup.\n'
   printf -- '- [ ] I verified the copied report with `shasum -a 256 -c SHA256SUMS.txt`.\n'
   printf -- '- [ ] I restored and opened representative files from the backup.\n'
   printf -- '- [ ] I tested any important database or container exports.\n'
   printf -- '- [ ] I confirmed required accounts and recovery information on another trusted device.\n\n'
 
   printf '## Continue only after the checklist passes\n\n'
-  printf 'Run:\n\n```bash\n%s/prepare-existing-mac.sh --guided\n```\n\n' "$SCRIPT_DIR"
-  printf 'The progress dashboard rechecks saved work and highlights the next incomplete\n'
-  printf 'step. Route B requires the report copy, development snapshot, restore test, and\n'
-  printf 'cleanup preview before apply. Route A requires a complete separate backup and\n'
-  printf 'restore test before the Apple erase handoff.\n\n'
+  printf 'Choose AI-assisted or manual setup after verifying the backup. See docs/START-HERE.md.\n'
   printf 'Backup instructions: `%s/preflight/02-backup-readiness.md`  \n' "$PROJECT_DIR"
   printf 'Encrypted-drive instructions: `%s/preflight/ENCRYPTED-BACKUP-DRIVE.md`\n\n' "$PROJECT_DIR"
 
@@ -641,8 +637,8 @@ info "start with: $OUTPUT_DIR/SUMMARY.md"
 info "verify later: cd \"$OUTPUT_DIR\" && shasum -a 256 -c SHA256SUMS.txt"
 warn 'Next: review the report, make an encrypted backup, and test a restore.'
 if [[ "${DAY_ONE_MAC_EMBEDDED_PREFLIGHT:-0}" == 1 ]]; then
-  info 'When report review closes, the Stage 0 progress dashboard will continue automatically.'
+  info 'Keep the report with your private setup notes.'
 else
-  info "Then rerun: $SCRIPT_DIR/../src/preflight/prepare-existing-mac.sh --guided"
+  info "Next: read docs/START-HERE.md and choose AI-assisted or manual setup."
 fi
 review_completed_report

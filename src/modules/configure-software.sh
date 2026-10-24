@@ -55,7 +55,7 @@ done
 [[ "$YES" == 0 || "$ACTION" == apply || "$ACTION" == resume ]] || die '--yes is only for apply/resume'
 if [[ "$ACTION" == apply || "$ACTION" == resume ]]; then
   day_one_serialize software "$0" "${ORIGINAL_ARGS[@]}"
-  day_one_phase_current 08 || die 'Required Phase 8 is not recorded current; use --plan first.' 10
+  day_one_operation_ready || die 'The apply environment is unsupported; use --plan first.' 10
 fi
 SAVED="$STATE_DIR/software-$MODULE.tsv"
 CLIENT_FILE="$STATE_DIR/software-10-clients"
@@ -271,7 +271,7 @@ if [[ "$ACTION" == plan ]]; then
   [[ "$NEED_APP" == 0 ]] || printf 'Missing apps require an explicit installation route; --yes does not choose Homebrew.\n'
   [[ "$NEED_CODE" == 0 ]] || printf 'Blocked on apply: install/enable the VS Code CLI before selecting extensions.\n'
   [[ "$NEED_BREW" == 0 || -n "$BREW_BIN" ]] || printf 'Blocked on apply: Homebrew is required for selected formulae.\n'
-  day_one_phase_current 08 || printf 'Blocked on apply: complete required Phase 8.\n'
+  day_one_operation_ready || printf 'Apply requires a supported native Apple-silicon environment.\n'
   exit 0
 fi
 [[ "$NEED_CODE" == 0 ]] || die 'VS Code CLI is required before applying extensions.' 10

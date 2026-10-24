@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Standalone capability; reuse setup's journal, lock and package ownership helpers.
+# Standalone folder capability with explicit ownership and prerequisite checks.
 set -euo pipefail
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../setup/setup.sh"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../core/folder-operation.sh"
 FOLDER_LAYOUT='' GHQ_CHOICE='' FOLDER_GHQ_ROOT='' INSTALL_GHQ=0
 action='' choices_explicit=0
 while [[ $# -gt 0 ]]; do

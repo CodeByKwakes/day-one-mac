@@ -1,4 +1,4 @@
-[← Raycast setup](raycast.md) · **Raycast AI providers** · [Day One commands](../../assisted/integrations/raycast.md) · [AI clients](../../assisted/optional/10-ai-agents.md)
+[← Raycast setup](raycast.md) · **Raycast AI providers** · [Day One commands](../../../shared/tools/raycast.md) · [AI clients](../../../shared/tools/10-ai-agents.md)
 
 # Choose and configure a Raycast AI provider
 
@@ -33,7 +33,7 @@ This is a complete and supported Day One outcome:
 1. Do not add an API key or provider file.
 2. Do not assign the optional Quick AI hotkey.
 3. Keep using Claude Code, Codex or Copilot independently from Warp or VS Code.
-4. Use [Day One Script Commands](../../assisted/integrations/raycast.md) for setup checks and
+4. Use [Day One Script Commands](../../../shared/tools/raycast.md) for setup checks and
    documentation; they do not need Raycast AI.
 
 ## Option 2 - Use built-in Raycast AI
@@ -158,7 +158,7 @@ must also pass that feature correctly.
 
 ## Option 5 - Connect OmniRoute running through OrbStack
 
-Complete [Optional 10A - OmniRoute](../../assisted/optional/10a-omniroute.md) first. OrbStack
+Complete [Optional 10A - OmniRoute](../../../shared/tools/10a-omniroute.md) first. OrbStack
 provides the Docker engine; Raycast connects to the port published by the
 OmniRoute container on macOS.
 
@@ -275,4 +275,4 @@ Official references: [Custom Providers](https://manual.raycast.com/ai/custom-pro
 
 ---
 
-[← Raycast setup](raycast.md) · [Configure Day One commands](../../assisted/integrations/raycast.md) · [Configure AI clients →](../../assisted/optional/10-ai-agents.md)
+[← Raycast setup](raycast.md) · [Configure Day One commands](../../../shared/tools/raycast.md) · [Configure AI clients →](../../../shared/tools/10-ai-agents.md)

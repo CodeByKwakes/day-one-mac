@@ -239,37 +239,3 @@ GITHUB_CLONE_DIR='' AZURE_CLONE_DIR=''
 hosting_load_choices
 [[ "$GITHUB_CLONE_DIR" == "$HOME/github-clone" && "$AZURE_CLONE_DIR" == none ]] || fail_test 'clone choices did not resume'
 printf 'PASS: optional clones, consent, preview, verification, preservation and resume\n'
-
-# Exercise the actual wizard functions with person-input on stdin. Provider
-# enumeration must not steal menu choices or URL/destination responses.
-sed -n '/^prompt_value()/,/^}/p' "$SCRIPT_DIR/../src/cli/bootstrap-day-one-mac.sh" > "$TEST_ROOT/wizard-functions.sh"
-sed -n '/^choose_verification_repos()/,/^}/p' "$SCRIPT_DIR/../src/cli/bootstrap-day-one-mac.sh" >> "$TEST_ROOT/wizard-functions.sh"
-# The extracted functions are linted in bootstrap-day-one-mac.sh itself.
-# shellcheck source=/dev/null
-source "$TEST_ROOT/wizard-functions.sh"
-select_one() {
-  printf 'QUESTION: %s\n' "$1"
-  IFS= read -r SINGLE_RESULT || fail_test 'wizard read provider stream instead of person-input'
-  case "$SINGLE_RESULT" in none|clone) ;; *) fail_test 'wizard consumed responses out of order' ;; esac
-}
-TRACK=2 AUTH_MODE=https GITHUB_REPO='' AZURE_REPO='' AZURE_CLONE_DIR=none
-choose_verification_repos > "$TEST_ROOT/wizard" <<EOF
-clone
-https://dev.azure.com/ORG/PROJECT/_git/REPO
-$HOME/wizard clone
-EOF
-[[ "$AZURE_REPO" == 'https://dev.azure.com/ORG/PROJECT/_git/REPO' && "$AZURE_CLONE_DIR" == "$HOME/wizard clone" ]] || fail_test 'wizard clone responses lost'
-grep -Fq 'Would you like to clone a repository from Azure DevOps to verify access?' "$TEST_ROOT/wizard" || fail_test 'clone question missing'
-[[ ! -e "$HOME/wizard clone" ]] || fail_test 'wizard cloned before review'
-TRACK=3 GITHUB_REPO='' AZURE_REPO=''
-choose_verification_repos > "$TEST_ROOT/wizard" <<EOF
-none
-https://github.com/OWNER/REPO
-none
-https://dev.azure.com/ORG/PROJECT/_git/REPO
-EOF
-[[ "$GITHUB_REPO" == 'https://github.com/OWNER/REPO' && "$AZURE_REPO" == 'https://dev.azure.com/ORG/PROJECT/_git/REPO' ]] || fail_test 'wizard lost a provider response'
-[[ "$GITHUB_CLONE_DIR" == none && "$AZURE_CLONE_DIR" == none ]] || fail_test 'verify-only wizard selected cloning'
-printf 'PASS: wizard clone question precedes URL entry and provider enumeration preserves stdin\n'
-
-printf 'PASS: GCM selection, scoped helpers, URL validation and real Git access gates\n'

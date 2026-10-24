@@ -25,6 +25,7 @@ SELECT_ALL=0
 PACKAGE_CSV=""
 USE_SAVED=0
 SETUP_ALIASES=0
+ALIASES_OWNER=""
 ALIASES_TARGET=""
 ALIASES_SOURCE=""
 
@@ -40,7 +41,8 @@ Without selection options, an interactive grouped selector is shown.
   --packages A,B,C       select only these formula tokens
   --saved                use the last applied selection, including failed runs
   --dry-run              print the brew commands without running them
-  --aliases              add guarded eza aliases using the Phase 5 owner
+  --aliases              add guarded eza aliases using the configuration owner
+  --aliases-owner OWNER  unmanaged or chezmoi; required without a saved owner
   --yes                  skip installation confirmation; does not select aliases
   -h, --help             show this help
 
@@ -65,12 +67,17 @@ while [[ $# -gt 0 ]]; do
     --packages) shift; [[ $# -gt 0 ]] || { err "--packages needs a comma-separated list"; exit 2; }; PACKAGE_CSV="$1" ;;
     --dry-run) DRY_RUN=1 ;;
     --aliases) SETUP_ALIASES=1 ;;
+    --aliases-owner)
+      shift; [[ $# -gt 0 && -z "$ALIASES_OWNER" ]] || { err '--aliases-owner needs one owner'; exit 2; }
+      case "$1" in unmanaged|chezmoi) ALIASES_OWNER="$1" ;; *) err 'Owner must be unmanaged or chezmoi'; exit 2 ;; esac ;;
     --yes) ASSUME_YES=1 ;;
     -h|--help) usage; exit 0 ;;
     *) err "unknown option: $1"; usage >&2; exit 2 ;;
   esac
   shift
 done
+
+[[ -z "$ALIASES_OWNER" || "$SETUP_ALIASES" == 1 ]] || { err '--aliases-owner requires --aliases'; exit 2; }
 
 [[ "$SETUP_ALIASES" == 0 || ( "$CHECK_ONLY" == 0 && "$LIST_ONLY" == 0 ) ]] || {
   err '--aliases is an apply/preview option; --check verifies packages only.'; exit 2;
@@ -97,9 +104,9 @@ if have brew; then
     err 'Cannot inspect Homebrew inventory; refusing to guess what is installed.'; exit 1;
   }
 elif [[ "$DRY_RUN" == 1 ]]; then
-  warn 'Homebrew is missing; this is a conditional plan. Complete Phase 2 before applying.'
+  warn 'Homebrew is missing; this is a conditional plan. Install Homebrew before applying.'
 else
-  err "Homebrew is required; complete day-one-mac Phase 2 first."; exit 1
+  err "Homebrew is required; install Homebrew first."; exit 1
 fi
 
 TOOL_GROUPS=()
@@ -120,7 +127,7 @@ is_installed() { grep -Fqx "$1" <<<"$INSTALLED_FORMULAE"; }
 print_catalogue() {
   local i last_group="" state
   ui_title '🧰' 'Optional command-line tools'
-  printf 'Required setup tools are managed by Phases 2–8 and are not toggled here.\n'
+  printf 'This selector installs only explicitly selected optional tools.\n'
   printf 'Optional ghq has its own selection: day-one-mac folders --help\n'
   for ((i=0; i<${#FORMULAE[@]}; i++)); do
     if [[ "${TOOL_GROUPS[$i]}" != "$last_group" ]]; then
@@ -211,13 +218,17 @@ EOF
 
 cli_aliases_prepare() {
   local COMPLETED_DIR="$STATE_DIR/completed" DOTFILES_VERSIONING='' SHELL_CHOICE='' PROMPT_CHOICE=''
-  configuration_load_choices
+  case "$ALIASES_OWNER" in
+    unmanaged) DOTFILES_VERSIONING=none ;;
+    chezmoi) DOTFILES_VERSIONING=local ;;
+    '') configuration_load_choices ;;
+  esac
   ALIASES_TARGET="$HOME/.config/zsh/aliases.zsh"
   ALIASES_SOURCE="$ALIASES_TARGET"
   day_one_safe_state_path "$HOME/.zshrc" && day_one_safe_state_path "$ALIASES_TARGET" || return 10
   [[ -f "$HOME/.zshrc" && -r "$HOME/.zshrc" ]] \
     && grep -Fq '.config/zsh/aliases.zsh' "$HOME/.zshrc" || {
-    err 'Complete the Phase 5 aliases.zsh source line in ~/.zshrc before adding aliases.'; return 10;
+    err 'Add the aliases.zsh source line in ~/.zshrc before adding aliases.'; return 10;
   }
   case "$DOTFILES_VERSIONING" in
     none) configuration_unmanaged_preflight || return $? ;;
@@ -228,7 +239,7 @@ cli_aliases_prepare() {
         && day_one_safe_state_path "$ALIASES_SOURCE" && cmp -s "$ALIASES_SOURCE" "$ALIASES_TARGET" || {
         err 'Merge aliases with chezmoi edit ~/.config/zsh/aliases.zsh: templates or source/live drift need manual review.'; return 10;
       } ;;
-    *) err 'Choose configuration ownership in Phase 5 before adding aliases.'; return 10 ;;
+    *) err 'Select --aliases-owner unmanaged or --aliases-owner chezmoi after reviewing the file owner.'; return 10 ;;
   esac
   [[ ! -e "$ALIASES_SOURCE" || ( -f "$ALIASES_SOURCE" && -r "$ALIASES_SOURCE" && -O "$ALIASES_SOURCE" ) ]] || {
     err 'The aliases source must be a readable regular file owned by you.'; return 10;
@@ -301,7 +312,8 @@ if [[ "$DRY_RUN" == 1 ]]; then
     ok "every selected optional formula is already installed"
   fi
   if [[ "$SETUP_ALIASES" == 1 ]]; then
-    ui_section '' 'Optional aliases for ~/.config/zsh/aliases.zsh (Phase 5 owner)'
+    ui_section '' 'Optional aliases for ~/.config/zsh/aliases.zsh (configuration owner)'
+    printf 'Owner: %s (checked before apply)\n' "${ALIASES_OWNER:-saved selection}"
     cli_aliases_block
   fi
   info 'Plan only; selection, shell configuration and Brewfile were not changed.'
@@ -314,7 +326,7 @@ if [[ "$ASSUME_YES" != 1 ]]; then
   [[ "$answer" == y || "$answer" == Y || "$answer" == yes || "$answer" == YES ]] || exit 10
 fi
 
-day_one_phase_current 08 || { err 'Current Phase 8 completion is required; use --dry-run first.'; exit 10; }
+day_one_operation_ready || { err 'A supported native Apple-silicon environment is required; use --dry-run first.'; exit 10; }
 selected_csv="$(IFS=,; printf '%s' "${CHOSEN[*]}")"
 day_one_module_begin 13 "$selected_csv" "$SELECTION_FILE" "$MANIFEST" "$LOG_FILE"
 day_one_write_state "$SELECTION_FILE" "$selected_csv"
@@ -376,7 +388,7 @@ if [[ "$SETUP_ALIASES" == 1 ]]; then cli_aliases_apply; fi
 MODULE_VERIFIED=1
 
 printf '\nOther shell integrations remain manual. Use --aliases for optional eza aliases.\n'
-printf 'Review docs/setup/assisted/optional/13-enhanced-cli-tools.md for eza, zoxide and Zsh plugin snippets.\n'
+printf 'Review docs/shared/tools/13-enhanced-cli-tools.md for eza, zoxide and Zsh plugin snippets.\n'
 if [[ -e "$HOME/Brewfile" ]]; then
   printf 'Add the selected declarations to the chezmoi-managed Brewfile after review:\n'
   for formula in "${CHOSEN[@]}"; do printf '  brew "%s"\n' "$formula"; done

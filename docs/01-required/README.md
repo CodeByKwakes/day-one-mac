@@ -2,12 +2,12 @@
 
 # Required Day One Mac setup
 
-Continue with the [current guide](../setup/assisted/README.md). This compatibility page preserves existing links.
+Continue with the [current guide](../START-HERE.md). This compatibility page preserves existing links.
 
 ## Required order
 
-See the [current instructions](../setup/assisted/README.md#required-order).
+See the [current instructions](../START-HERE.md).
 
 ## Preview, apply, check, and resume
 
-See the [current instructions](../setup/assisted/README.md#preview-apply-check-and-resume).
+See the [current instructions](../START-HERE.md).

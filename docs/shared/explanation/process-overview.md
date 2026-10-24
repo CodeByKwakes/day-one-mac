@@ -1,73 +1,41 @@
 # How setup fits together
 
-Day One Mac has two independent setup journeys. Shared references define the
-choices and completion criteria; each route owns its executable procedure.
-Use [Start here](../../START-HERE.md) to choose the journey.
+Day One Mac provides two journeys: AI-assisted setup and manual setup. Manual
+recipes own the commands and verification for each capability. AI guidance
+selects and applies those recipes within an approved scope.
 
-## Optional assistance before the base
+## Prepare the starting point
 
-The [AI choice](../../setup/manual/ai/setup-assistant.md) precedes Phase 1 for
-both routes. It can be skipped. Guidance uses an existing client; local
-execution needs a verified approved client. Neither mode changes the human
-checkpoints or grants blanket permission. The assisted checkpoint saves its
-choice separately and leaves required phase IDs unchanged. Module 10 adds
-clients later, after Phase 8. See the [coverage map](../reference/setup-coverage.md)
-for each phase and its manual capability.
+Check the supported Apple-silicon platform, device policy and independent
+backup. Record choices before installation. An existing configured Mac needs
+inspection so the plan can preserve working tools and their installation owners.
 
-## Scripted (Assisted) Setup
+AI users prepare a client and its provider connection first. Direct access is
+the simplest default; OmniRoute is an optional gateway. Its own prerequisites
+must be ready before a client can depend on it. Browser guidance remains useful
+while local execution is unavailable.
 
-The standalone runtime supplies `day-one-mac`. It needs no permanent Git
-checkout. Its eight required phases collect choices, prepare tools, establish
-authentication and configuration, install selected languages and verify results.
-The Installation Centre is a checkpoint after the foundation, not a ninth phase.
+## Perform and verify selected work
 
-The runner records its own changes and revalidates saved evidence before reuse.
-A current phase marker does not mean every optional application or account is
-configured. Optional and advanced apply operations use their own prerequisites,
-selection records and recovery rules.
+The manual journey orders foundational tasks and links optional capabilities.
+The AI journey adds a reviewed plan, execution, evidence and resumption. Neither
+uses a whole-machine runner. Account sign-in, licence acceptance, permissions
+and recovery tests remain explicit human actions.
 
-Follow the [assisted sequence](../../setup/assisted/README.md) for installation,
-pauses, resumption and completion. Use its recovery guides before deleting state.
+The optional command exposes bounded utilities. A utility verifies its own
+prerequisites instead of requiring an unrelated phase marker. Locks, recorded
+ownership and recovery protections remain part of each applicable operation.
 
-## Manual Setup
+## Keep intent separate from evidence
 
-The manual route uses macOS and the chosen tools directly. It requires no runtime,
-phase markers or Day One Mac ownership records. You record changes and keep
-recoverable backups yourself. Follow the [manual sequence](../../setup/manual/README.md)
-from operating-system checks through a real project and sample restore.
+Selected tools describe intent. Installed versions, configuration checks and
+functional results describe observed evidence. A saved selection or historical
+completion marker does not establish current readiness. Recheck when resuming.
 
-No broad manual account-preserving cleanup is provided. An existing populated
-Mac needs the approved backup/reset boundary described in the prerequisites.
+Private session notes record unresolved work and recovery locations. Never put
+credentials or private inventories into the public repository. A runtime update
+changes Day One Mac assets; it does not upgrade every developer application.
 
-## Shared manual actions
-
-Licences, account sign-in, provider key registration, macOS permission approval,
-client connections and recovery tests require deliberate human work. Their
-canonical task lives in Manual Setup. An assisted phase states which action to
-perform and when to return. Do not rerun an entire manual installation after a
-successful assisted installation.
-
-## Choices are independent
-
-The [decision worksheet](../decisions.md) owns the selection matrix. Hosting
-providers do not choose AI clients. User-owned configuration does not require
-chezmoi. Core does not require productivity desktop apps. An existing external
-application keeps its installation/update owner.
-
-## Evidence and recovery
-
-[Shared verification](../verification.md) defines acceptance criteria. Assisted
-state records, real application tests and hardware/managed-device pilots are
-different forms of evidence. Unknown or expired evidence is not a successful
-check. [Architecture and state](architecture-and-state.md) explains the runtime
-contract; the [troubleshooting index](../troubleshooting.md) routes failures.
-
-Keep setup state while relying on recorded rollback. A package list is not an
-application-data backup; a Git commit is not proof that it reached a remote.
-
-## Historical records
-
-Maintainer audits describe what was observed at their stated baseline. The
-September new-device blueprint is retained as a historical record under
-`maintainers/audits/2026-09-25-new-device-blueprint.md` in the source checkout.
-It is not bundled as current setup guidance or evidence of a later release.
+Use [Start here](../../START-HERE.md), [verification](../verification.md) and
+[migration](../migration/from-scripted-setup.md) for the relevant next action.
+Historical audits and accepted plans remain dated records under `maintainers/`.

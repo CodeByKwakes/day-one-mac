@@ -117,7 +117,7 @@ Git adds history, review, named rollback points, and recovery on another Mac.
 It does not make dotfiles safe to publish. A harmless source today can later
 gain an email address, host alias, internal domain, or template reference.
 
-Day One Mac therefore requires a **private** remote in Git mode. Phase 8 checks
+Use a **private** remote for personal configuration. Manually check
 that the selected provider repository is private, reachable, clean, and pushed.
 The review and secret scan still matter because private access reduces exposure;
 it does not correct bad source content.
@@ -149,7 +149,7 @@ chezmoi source → ~/Brewfile → brew bundle → installed software
 Chezmoi does not install every package merely because it applies the Brewfile.
 Homebrew acts only when `brew bundle` is run directly or by a reviewed hook.
 Likewise, dumping the current Homebrew state does not automatically make every
-package desirable. Phase 8 avoids `brew bundle dump --force` so an existing
+package desirable. Avoid `brew bundle dump --force` so an existing
 Brewfile is never silently overwritten.
 
 ## How 1Password and chezmoi differ

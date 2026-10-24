@@ -1,4 +1,4 @@
-[← Start here](../../../START-HERE.md) · [Day One Mac home](../../../README.md) · [Begin Phase 1 →](../../assisted/01-first-boot-and-decisions.md)
+[← Start here](../../../START-HERE.md) · [Day One Mac home](../../../README.md) · [Begin Phase 1 →](../macos.md)
 
 # Clone a private GitHub setup repository
 
@@ -156,12 +156,7 @@ The status should identify a branch without an authentication error. The remote
 should use `https://github.com/<github-owner>/<repository>.git` and must not
 contain the token.
 
-For Day One Mac itself, start the installed standalone wizard from any
-directory:
-
-```bash
-git status
-```
+Continue with the selected [manual setup recipe](../README.md).
 
 ## 9. move to SSH and revoke the token
 
@@ -204,4 +199,4 @@ Git checkout once GitHub CLI or SSH authentication is available.
 
 ---
 
-[← Start here](../../../START-HERE.md) · [Continue with Phase 1 →](../../assisted/01-first-boot-and-decisions.md)
+[← Start here](../../../START-HERE.md) · [Continue with Phase 1 →](../macos.md)

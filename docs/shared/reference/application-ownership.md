@@ -1,4 +1,4 @@
-[Project home](../../README.md) · [Start here](../../START-HERE.md) · [Rollback](../../setup/assisted/recovery/rollback.md)
+[Project home](../../README.md) · [Start here](../../START-HERE.md) · [Rollback](../tools/rollback.md)
 
 # Application ownership: Homebrew, Company Portal, or another installer
 
@@ -29,46 +29,22 @@ not pretend to know more than it can verify.
 
 ## When the checks happen
 
-1. The setup wizard shows a read-only ownership summary before saving choices.
-2. The required Installation Centre checks all required apps together, offers
-   one batch Homebrew choice or an item-by-item review, and installs the
-   selected track/stack formulae.
-3. Phase 3 rechecks 1Password and its CLI before security configuration.
-4. Phase 4 rechecks the font, Raycast, VS Code, Warp, and required formulae
-   before Git and hosting configuration.
-5. Phase 7 rechecks VS Code before configuring its settings and launcher.
-6. Phase 8 rechecks every required application and records its source in the
-   final verification report.
-7. Optional application commands use the same choice and recheck flow before
-   installing OrbStack, DBeaver Community, Obsidian, Purge, Claude Code, Codex,
-   the GitHub Copilot app, or GitHub Copilot CLI.
-
-The application version is reported for normal `.app` bundles, but an ordinary
-version update does not transfer ownership to Homebrew.
+Run an ownership inspection before installing a selected application. Retained
+application utilities reuse this check; the manual and AI routes use the result
+to keep the existing installation owner. There is no whole-machine Installation Centre.
 
 ## Run the check yourself
 
-The recommended form works from any directory once the early installer has run:
+With the optional utility bundle installed:
 
 ```bash
 day-one-mac applications --required
 day-one-mac applications --optional
 ```
 
-If the portable command is unavailable, use the project scripts directly:
-
-```bash
-day-one-mac applications --required
-day-one-mac applications --optional
-```
-
-Install or revalidate the complete required set after Phase 2:
-
-```bash
-day-one-mac install
-# Direct fallback:
-day-one-mac install
-```
+These groups are catalogue categories, not requirements to install every item.
+Choose only applications you need. Without the utility bundle, inspect the
+application, its installer receipt and organisation policy manually.
 
 Check one optional application and offer to install it only when missing:
 
@@ -159,4 +135,4 @@ an application supplied by the organisation.
 
 ---
 
-[Project home](../../README.md) · [Required Installation Centre](../../setup/assisted/INSTALLATION-CENTRE.md)
+[Project home](../../README.md) · [Required Installation Centre](../../setup/manual/apps/README.md)

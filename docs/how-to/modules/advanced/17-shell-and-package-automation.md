@@ -2,15 +2,15 @@
 
 # Advanced 17 — Shell and package automation
 
-Continue with the [current guide](../../../setup/assisted/advanced/17-shell-and-package-automation.md). This compatibility page preserves existing links.
+Continue with the [current guide](../../../shared/tools/17-shell-and-package-automation.md). This compatibility page preserves existing links.
 
 ## Outcome
 
-See the [current instructions](../../../setup/assisted/advanced/17-shell-and-package-automation.md#outcome).
+See the [current instructions](../../../shared/tools/17-shell-and-package-automation.md#outcome).
 
 ## Executable helper-bundle route
 
-See the [current instructions](../../../setup/assisted/advanced/17-shell-and-package-automation.md#executable-helper-bundle-route).
+See the [current instructions](../../../shared/tools/17-shell-and-package-automation.md#executable-helper-bundle-route).
 
 ## Step 17.1 — Measure before adding plugins
 
@@ -54,4 +54,4 @@ See the [current instructions](../../../setup/manual/shell/package-workflows.md#
 
 ## Advanced 17 completion checklist 🚦
 
-See the [current instructions](../../../setup/assisted/advanced/17-shell-and-package-automation.md#advanced-17-completion-checklist-).
+See the [current instructions](../../../shared/tools/17-shell-and-package-automation.md#advanced-17-completion-checklist-).

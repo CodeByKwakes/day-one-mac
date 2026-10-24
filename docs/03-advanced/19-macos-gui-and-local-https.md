@@ -2,31 +2,31 @@
 
 # Advanced 19 — macOS, GUI applications, and local HTTPS
 
-Continue with the [current guide](../setup/assisted/advanced/19-macos-gui-and-local-https.md). This compatibility page preserves existing links.
+Continue with the [current guide](../shared/tools/19-macos-gui-and-local-https.md). This compatibility page preserves existing links.
 
 ## Outcome
 
-See the [current instructions](../setup/assisted/advanced/19-macos-gui-and-local-https.md#outcome).
+See the [current instructions](../shared/tools/19-macos-gui-and-local-https.md#outcome).
 
 ## Executable selected-preference route
 
-See the [current instructions](../setup/assisted/advanced/19-macos-gui-and-local-https.md#executable-selected-preference-route).
+See the [current instructions](../shared/tools/19-macos-gui-and-local-https.md#executable-selected-preference-route).
 
 ## Step 19.1 — Separate preferences from security controls
 
-See the [current instructions](../setup/assisted/advanced/19-macos-gui-and-local-https.md).
+See the [current instructions](../shared/tools/19-macos-gui-and-local-https.md).
 
 ## Step 19.2 — Capture current defaults
 
-See the [current instructions](../setup/assisted/advanced/19-macos-gui-and-local-https.md).
+See the [current instructions](../shared/tools/19-macos-gui-and-local-https.md).
 
 ## Step 19.3 — Preview a conservative preference set
 
-See the [current instructions](../setup/assisted/advanced/19-macos-gui-and-local-https.md).
+See the [current instructions](../shared/tools/19-macos-gui-and-local-https.md).
 
 ## Step 19.4 — Apply only approved preferences
 
-See the [current instructions](../setup/assisted/advanced/19-macos-gui-and-local-https.md).
+See the [current instructions](../shared/tools/19-macos-gui-and-local-https.md).
 
 ## Step 19.5 — Complete manual security and permission review
 
@@ -54,8 +54,8 @@ See the [current instructions](../setup/manual/macos.md).
 
 ## Rollback
 
-See the [current instructions](../setup/assisted/advanced/19-macos-gui-and-local-https.md).
+See the [current instructions](../shared/tools/19-macos-gui-and-local-https.md).
 
 ## Advanced 19 completion checklist 🚦
 
-See the [current instructions](../setup/assisted/advanced/19-macos-gui-and-local-https.md).
+See the [current instructions](../shared/tools/19-macos-gui-and-local-https.md).

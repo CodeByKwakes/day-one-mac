@@ -243,7 +243,7 @@ set -euo pipefail
 day_one() {
   local command="$HOME/.local/bin/day-one-mac"
   [[ -x "$command" ]] || {
-    printf 'The portable day-one-mac command is unavailable. Complete Phase 5 or rerun it.\n' >&2
+    printf 'The portable day-one-mac command is unavailable. Install the optional Day One Mac utility bundle.\n' >&2
     exit 1
   }
   "$command" "$@"
@@ -260,7 +260,7 @@ uri_encode() {
   local jq_command
   jq_command="$(command -v jq 2>/dev/null || true)"
   [[ -n "$jq_command" ]] || jq_command=/opt/homebrew/bin/jq
-  [[ -x "$jq_command" ]] || { printf 'jq is required; rerun Day One Mac Phase 4.\n' >&2; exit 1; }
+  [[ -x "$jq_command" ]] || { printf 'jq is required; install jq and reopen the terminal.\n' >&2; exit 1; }
   printf '%s' "$1" | "$jq_command" -sRr @uri
 }
 
@@ -302,28 +302,28 @@ EOF
 write_action_body() {
   local file="$1" action="$2"
   case "$action" in
-    status) printf '%s\n' 'day_one --status' >> "$file" ;;
+    status) printf '%s\n' 'day_one runtime-status' >> "$file" ;;
     applications) printf '%s\n' 'day_one applications --required' >> "$file" ;;
     inventory) printf '%s\n' 'day_one inventory' >> "$file" ;;
     validate) printf '%s\n' 'day_one validate' >> "$file" ;;
-    finalize-status) printf '%s\n' 'day_one finalize --status' >> "$file" ;;
+    finalize-status) printf '%s\n' 'day_one assistant --plan' >> "$file" ;;
     open-start) printf '%s\n' 'open_code "$(day_one_project_root)/docs/START-HERE.md"' >> "$file" ;;
-    open-command-reference) printf '%s\n' 'open_code "$(day_one_project_root)/docs/setup/assisted/reference/command-reference.md"' >> "$file" ;;
+    open-command-reference) printf '%s\n' 'open_code "$(day_one_project_root)/docs/shared/reference/tools.md"' >> "$file" ;;
     open-project) printf '%s\n' 'open_code "$(day_one_project_root)"' >> "$file" ;;
     open-project-terminal) printf '%s\n' 'open_warp_path "$(day_one_project_root)"' >> "$file" ;;
-    open-optional) printf '%s\n' 'open_code "$(day_one_project_root)/docs/setup/assisted/optional/README.md"' >> "$file" ;;
-    removal-inventory) printf '%s\n' 'day_one remove --inventory' >> "$file" ;;
+    open-optional) printf '%s\n' 'open_code "$(day_one_project_root)/docs/shared/reference/tools.md"' >> "$file" ;;
+    removal-inventory) printf '%s\n' 'day_one applications' >> "$file" ;;
     rollback-preview) printf '%s\n' 'day_one rollback' >> "$file" ;;
-    cleanup-preview) printf '%s\n' 'day_one clean' >> "$file" ;;
+    cleanup-preview) printf '%s\n' 'day_one docs open docs/shared/migration/from-scripted-setup.md' >> "$file" ;;
     workspace-list) printf '%s\n' 'day_one workspace list' >> "$file" ;;
     workspace-folder) printf '%s\n' 'mkdir -p "$HOME/Developer/_Projectless/tasks"' 'open "$HOME/Developer/_Projectless/tasks"' >> "$file" ;;
-    workspace-guide) printf '%s\n' 'open_code "$(day_one_project_root)/docs/setup/assisted/optional/ai-workspaces.md"' >> "$file" ;;
+    workspace-guide) printf '%s\n' 'open_code "$(day_one_project_root)/docs/shared/tools/ai-workspaces.md"' >> "$file" ;;
     new-codex-task) printf '%s\n' 'create_ai_task codex "${1:-Untitled}"' >> "$file" ;;
     new-claude-task) printf '%s\n' 'create_ai_task claude "${1:-Untitled}"' >> "$file" ;;
     new-copilot-task) printf '%s\n' 'create_ai_task copilot "${1:-Untitled}"' >> "$file" ;;
     open-copilot-app) printf '%s\n' 'if [[ -d "/Applications/GitHub Copilot.app" ]]; then open -a "GitHub Copilot"; else open -a Copilot; fi' >> "$file" ;;
     raycast-ai-guide) printf '%s\n' 'open_code "$(day_one_project_root)/docs/setup/manual/ai/clients.md"' >> "$file" ;;
-    github-auth) printf '%s\n' 'command -v gh >/dev/null 2>&1 || { echo "gh is unavailable; rerun Phase 4." >&2; exit 1; }' 'gh auth status' >> "$file" ;;
+    github-auth) printf '%s\n' 'command -v gh >/dev/null 2>&1 || { echo "gh is unavailable; install the selected provider CLI." >&2; exit 1; }' 'gh auth status' >> "$file" ;;
     github-repository) cat >> "$file" <<'EOF'
 root="$(day_one_project_root)"
 remote="$(git -C "$(dirname "$root")" remote get-url origin 2>/dev/null || git -C "$root" remote get-url origin 2>/dev/null || true)"
@@ -335,8 +335,8 @@ esac
 open "${url%.git}"
 EOF
       ;;
-    azure-account) printf '%s\n' 'command -v az >/dev/null 2>&1 || { echo "az is unavailable; rerun Phase 4." >&2; exit 1; }' 'az account show --output table' >> "$file" ;;
-    azure-repositories) printf '%s\n' 'command -v az >/dev/null 2>&1 || { echo "az is unavailable; rerun Phase 4." >&2; exit 1; }' 'az repos list --output table' >> "$file" ;;
+    azure-account) printf '%s\n' 'command -v az >/dev/null 2>&1 || { echo "az is unavailable; install the selected provider CLI." >&2; exit 1; }' 'az account show --output table' >> "$file" ;;
+    azure-repositories) printf '%s\n' 'command -v az >/dev/null 2>&1 || { echo "az is unavailable; install the selected provider CLI." >&2; exit 1; }' 'az repos list --output table' >> "$file" ;;
     second-brain-guide) printf '%s\n' 'open_code "$(day_one_project_root)/docs/setup/manual/second-brain/README.md"' >> "$file" ;;
     *) die "unknown Raycast catalogue action: $action" ;;
   esac
@@ -403,7 +403,7 @@ save_launcher_mode() {
 
 apply_plan() {
   local track="$1" ai_clients="$2" launcher_mode="$3" temporary backup stamp count
-  [[ -x "$HOME/.local/bin/day-one-mac" ]] || die 'complete or rerun Phase 5 before applying Raycast commands; the portable day-one-mac command is required'
+  [[ -x "$HOME/.local/bin/day-one-mac" ]] || die 'the portable day-one-mac command is required'
   count="$(selected_count "$track" "$ai_clients")"
   [[ "$count" -gt 0 ]] || die 'no Raycast commands are selected'
   if [[ -d "$TARGET_DIR" && ! -f "$TARGET_DIR/$MANAGED_MARKER" ]]; then

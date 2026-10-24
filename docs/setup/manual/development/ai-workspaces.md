@@ -54,5 +54,5 @@ If an agent changed unrelated files, preserve the diff and restore only those
 changes after review; do not reset a whole dirty repository. Keep one editing
 agent per worktree and use a separate branch for independent code tasks.
 
-The [assisted workspace manager](../../assisted/optional/ai-workspaces.md) is an
+The [optional workspace utility](../../../shared/tools/ai-workspaces.md) is an
 optional alternative for users of that route; it is not needed for this task.

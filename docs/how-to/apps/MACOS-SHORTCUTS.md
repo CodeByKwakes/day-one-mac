@@ -62,7 +62,7 @@ See the [current instructions](../../setup/manual/apps/macos-shortcuts.md#add-op
 
 ## Add Open Setup Report
 
-See the [current instructions](../../setup/assisted/integrations/shortcuts.md#add-open-setup-report).
+See the [current instructions](../../shared/tools/shortcuts.md#add-open-setup-report).
 
 ## Use existing terminal services
 

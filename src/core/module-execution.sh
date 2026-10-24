@@ -11,7 +11,7 @@ day_one_retired_profile_module() {
     'Preview: day-one-mac vscode-profile full-stack --dry-run' \
     'Choose default, full-stack, ai or operations; import remains manual.' \
     'Existing Module 12 selections and generated files are preserved; they are not migrated or checked.' >&2
-  printf 'Guide: %s/docs/setup/assisted/optional/vscode-profiles.md\n' "$1" >&2
+  printf 'Guide: %s/docs/shared/tools/vscode-profiles.md\n' "$1" >&2
 }
 
 day_one_module_begin() {
@@ -69,14 +69,9 @@ day_one_module_finish() {
   exit "$status"
 }
 
-# Reuse the runner's fingerprint contract without setup, prompts or writes.
-# A marker is recorded evidence, not a claim of perpetual live health.
-day_one_phase_current() (
-  local required_phase="${1:-08}" runner
-  runner="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/src/setup/setup.sh"
-  # shellcheck source=src/setup/setup.sh
-  source "$runner"
-  required_load_recorded_choices
-  [[ "$(state_value track-schema-version)" == "$TRACK_SCHEMA_VERSION" ]] || return 1
-  phase_done "$required_phase"
-)
+# Apply checks the current platform. Each operation validates its own tools,
+# selected inputs and ownership; historical phase markers are never consulted.
+day_one_operation_ready() {
+  source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/platform.sh"
+  day_one_require_apple_silicon
+}

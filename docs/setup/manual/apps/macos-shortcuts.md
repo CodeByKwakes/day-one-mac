@@ -3,7 +3,7 @@
 # Optional macOS Shortcuts for development
 
 Use this guide to open projects and frequently used folders with fewer steps.
-The script-assisted route can open a bundled **Open in VS Code** shortcut for
+The optional utility workflow can open a bundled **Open in VS Code** shortcut for
 import; you review it and click **Add Shortcut** in Apple Shortcuts. The manual
 route can build the same action below. Folder-specific launchers still need
 local file selections. Each recipe is optional; choose the ones you use.
@@ -247,7 +247,7 @@ service. Warp must be installed to provide its services. Do not use the
 not guarantee that its shell starts in the selected directory.
 
 For Day One command launchers, use the existing
-[Raycast command pack](../../assisted/integrations/raycast.md). It already covers project workflows
+[Raycast command pack](../../../shared/tools/raycast.md). It already covers project workflows
 and setup commands without requiring a permanent checkout.
 
 ## Copy a folder path without creating a shortcut

@@ -217,7 +217,7 @@ done < <(find "$PROJECT_DIR/assets/vault" "$PROJECT_DIR/assets/three-vaults" -ty
 # Canonical prose belongs to the route guides; extension assets stay here.
 REPOSITORY_ROOT="$(cd "$PROJECT_DIR/../../.." && pwd)"
 MANUAL_DOCS="$REPOSITORY_ROOT/docs/setup/manual/second-brain/obsidian"
-ASSISTED_GUIDE="$REPOSITORY_ROOT/docs/setup/assisted/optional/second-brain.md"
+ASSISTED_GUIDE="$REPOSITORY_ROOT/docs/shared/tools/second-brain.md"
 if grep -Fq 'No Obsidian AI' "$MANUAL_DOCS/claude.md" \
    && grep -Fq 'Obsidian AI plugin' "$MANUAL_DOCS/codex.md" \
    && grep -Fq 'ai_allowed' "$PROJECT_DIR/assets/vault/CLAUDE.md" \

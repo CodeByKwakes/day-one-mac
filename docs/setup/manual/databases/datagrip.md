@@ -1,4 +1,4 @@
-[← Application guides](../apps/README.md) · [Local database module](../../assisted/optional/09-databases.md) · [VS Code profiles](../../assisted/optional/vscode-profiles.md)
+[← Application guides](../apps/README.md) · [Local database module](../../../shared/tools/09-databases.md) · [VS Code profiles](../../../shared/tools/vscode-profiles.md)
 
 # PostgreSQL setup with DataGrip and VS Code
 
@@ -69,7 +69,7 @@ and [password storage](https://www.jetbrains.com/help/datagrip/reference-ide-set
 
 Complete [VS Code base setup](../editors/vscode.md). If using the project profiles, select
 Full Stack for development and Operations for production investigation in the
-[profile guide](../../assisted/optional/vscode-profiles.md). These profiles organize tools; they do not
+[profile guide](../../../shared/tools/vscode-profiles.md). These profiles organize tools; they do not
 isolate saved credentials. Install the PostgreSQL extension in section 8.
 
 No separate PostgreSQL server, Java installation or Homebrew database service
@@ -284,7 +284,7 @@ is not evidence that a real remote environment has been provisioned or tested.
 
 For local containers, follow the [manual container setup](containers.md).
 For editor extensions and profiles, use the [manual VS Code guide](../editors/vscode.md).
-If you chose assisted database provisioning, [Module 09](../../assisted/optional/09-databases.md)
+If you chose assisted database provisioning, [Module 09](../../../shared/tools/09-databases.md)
 owns that procedure. Recheck vendor UI labels against the installed versions
 when they differ from this guide.
 

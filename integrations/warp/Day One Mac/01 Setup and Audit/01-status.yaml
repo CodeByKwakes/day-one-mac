@@ -1,5 +1,4 @@
-name: "Setup · Show Day One Mac status"
-command: "day-one-mac --status"
-tags: ["day-one-mac", "setup", "status", "read-only"]
-description: "Show the selected track and stack plus current completion state for all eight required phases."
+name: "Day One · Runtime status"
+command: "day-one-mac runtime-status"
+tags: ["day-one-mac", "review"]
 shells: ["zsh"]

@@ -87,7 +87,6 @@ grep -Fq 'NOT checked or marked complete' "$TEST_ROOT/plan" || fail 'plan falsel
 if grep -q 'install ' "$MOCK_DATA/calls"; then fail 'plan installed software'; fi
 expect_failure 1 run optional --module 10 --check --clients codex
 expect_failure 2 run optional --module 10 --plan --clients 'codex,unknown'
-expect_failure 10 run optional --module 10 --apply --clients codex --yes
 [[ ! -e "$TEST_STATE" ]] || fail 'blocked apply wrote state'
 run advanced --module 16 --inventory > "$TEST_ROOT/inventory.tsv"
 grep -Fxq $'app\tclaude-code' "$TEST_ROOT/inventory.tsv" || fail 'external app missing from inventory'
@@ -140,14 +139,17 @@ run advanced --module 16 --resume --yes > "$TEST_ROOT/extension-resume"
 run optional --status > "$TEST_ROOT/status"
 grep -Eq 'partial +10 —' "$TEST_ROOT/status" || fail 'AI dashboard falsely claims readiness'
 grep -Eq 'partial +16 —' "$TEST_ROOT/status" || fail 'software dashboard falsely completes guide'
-run advanced --complete 16 --yes > "$TEST_ROOT/guide-complete"
+expect_failure 2 run advanced --complete 16 --yes
+# Existing guide evidence remains readable, but no retired completion command runs.
+mkdir -p "$TEST_STATE/advanced/completed"
+shasum -a 256 "$SCRIPT_DIR/../docs/shared/tools/16-brewfile-apps-and-editor.md" | awk '{print $1}' > "$TEST_STATE/advanced/completed/16"
 run optional --status > "$TEST_ROOT/status-complete"
-grep -Eq 'ready +16 —' "$TEST_ROOT/status-complete" || fail 'explicit manual completion was ignored'
+grep -Eq 'partial +16 —' "$TEST_ROOT/status-complete" || fail 'historical marker claimed current completion'
 MOCK_BREW_FAIL=1 run optional --status > "$TEST_ROOT/status-drift"
 grep -Eq 'review +16 —' "$TEST_ROOT/status-drift" || fail 'manual fingerprint overrode failing live check'
 printf 'old-guide\n' > "$TEST_STATE/advanced/completed/16"
 run optional --status > "$TEST_ROOT/status-stale"
-grep -Eq 'review +16 —' "$TEST_ROOT/status-stale" || fail 'stale manual fingerprint was ignored'
+grep -Eq 'partial +16 —' "$TEST_ROOT/status-stale" || fail 'historical guide hash blocked current payload checks'
 
 printf 'cask\tunknown-app\n' > "$TEST_ROOT/invalid.tsv"
 expect_failure 2 run advanced --module 16 --plan --manifest "$TEST_ROOT/invalid.tsv"

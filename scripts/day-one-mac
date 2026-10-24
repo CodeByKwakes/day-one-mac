@@ -98,189 +98,116 @@ if ! resolve_project_root; then
   esac
 fi
 
+show_help() {
+  cat <<'EOF'
+Day One Mac: choose AI-assisted or Manual setup.
+
+AI-assisted: read docs/setup/ai/README.md; prepare a client and choose direct
+provider access or OmniRoute before asking the assistant to configure the Mac.
+Manual: read docs/setup/manual/README.md and follow the selected tool recipes.
+Open the handbook: day-one-mac docs open
+
+Optional reviewed tools (no setup runner or phase-marker prerequisites):
+  assistant         preview/export/check a private AI assistant workspace
+  tool              --list or --module ID --plan|--apply|--check|--resume
+  vscode-profile    default|full-stack|ai|operations; --dry-run previews
+  folders           plan/apply/check a selected developer-folder layout
+  databases         plan/install/check explicitly selected local test services
+  cli-tools         preview or install selected Homebrew formulae
+  macos-settings    preview/configure/restore selected macOS preferences
+  applications      inspect application ownership and availability
+  inventory         write a private application inventory
+  shell-status      inspect shell configuration
+  safety-report     write a private existing-Mac inspection report
+  readiness         inspect policy and recorded evidence
+  audit             write a private environment audit
+  modules           inspect recorded utility selections and results
+  rollback          preview recovery of recorded owned changes
+  shortcuts         preview/import the Finder shortcut
+  raycast           manage selected integration commands
+  workspace         create/open bounded projectless task directories
+  second-brain      obsidian|notion; preview before applying
+
+Bundle lifecycle:
+  --version         print the active version
+  runtime-status    inspect runtime integrity and installed versions
+  update            install a verified release; does not update your apps
+  rollback-runtime  select a previous runtime; preserves setup records
+  uninstall-runtime remove the runtime only; preserves configured apps/data
+  docs              browse/export/open bundled guides
+  verify            verify runtime integrity, not machine readiness
+  validate          contributor checks in a checkout; integrity in a runtime
+  root              print the runtime/source location
+
+Compatibility: optional/advanced accept explicit tool operations only.
+setup, install, finalize, remove, prepare-existing and broad reset are retired.
+Their notices link to migration guidance. Existing state is never deleted.
+EOF
+}
 case "${1:-}" in
   --version|version) printf 'day-one-mac %s\n' "$(sed -n '1p' "$PROJECT_ROOT/VERSION")" ;;
   root) printf '%s\n' "$PROJECT_ROOT" ;;
-  ai-setup) shift; exec /bin/bash "$PROJECT_ROOT/src/setup/ai-setup.sh" "$@" ;;
+  ''|help|-h|--help) show_help ;;
+  assistant) shift; exec /bin/bash "$PROJECT_ROOT/src/operations/assistant.sh" "$@" ;;
   runtime-status) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" status "$@" ;;
   update) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" update "$@" ;;
   rollback-runtime) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" rollback "$@" ;;
   uninstall-runtime) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" uninstall "$@" ;;
   docs) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" docs "$@" ;;
-  second-brain)
+  tool|optional|advanced)
     shift
-    case "${1:-}" in
-      obsidian)
-        shift
-        exec /bin/bash "$PROJECT_ROOT/extensions/second-brain/obsidian/scripts/second-brain-manager.sh" "$@"
-        ;;
-      notion)
-        shift
-        exec /bin/bash "$PROJECT_ROOT/extensions/second-brain/notion/scripts/notion-second-brain-manager.sh" "$@"
-        ;;
-      ''|help|-h|--help)
-        printf '%s\n' \
-          'Usage: day-one-mac second-brain obsidian|notion [options]' \
-          'Use obsidian --help or notion --help for manager actions.' \
-          'Managers preview by default; --apply is explicit. Notion only manages a local plan.'
-        ;;
-      *) printf 'Unknown Second Brain manager: %s\nChoose obsidian or notion.\n' "$1" >&2; exit 2 ;;
-    esac
-    ;;
-  shell-status) shift; exec "$PROJECT_ROOT/scripts/shell-status.sh" "$@" ;;
+    dashboard=0
+    dashboard_args=()
+    for arg in "$@"; do
+      if [[ "$arg" == --status ]]; then dashboard=1; else dashboard_args+=("$arg"); fi
+    done
+    if [[ "$dashboard" == 1 ]]; then
+      for arg in "${dashboard_args[@]+"${dashboard_args[@]}"}"; do
+        case "$arg" in --module|--list|--plan|--apply|--resume|--inventory) printf 'Do not combine status with module actions.\n' >&2; exit 2 ;; esac
+      done
+      exec "$PROJECT_ROOT/scripts/optional-status.sh" ${dashboard_args[@]+"${dashboard_args[@]}"}
+    fi
+    exec /bin/bash "$PROJECT_ROOT/src/modules/optional-module.sh" "$@" ;;
+  optional-status|modules) shift; exec "$PROJECT_ROOT/scripts/optional-status.sh" "$@" ;;
   vscode-profile)
     shift
     case "${1:-}" in
       default|full-stack|ai|operations)
         profile_name="$1"; shift
-        exec /bin/bash "$PROJECT_ROOT/scripts/vscode-profiles/$profile_name.sh" "$@"
-        ;;
+        exec /bin/bash "$PROJECT_ROOT/scripts/vscode-profiles/$profile_name.sh" "$@" ;;
       ''|help|-h|--help)
         printf '%s\n' 'Usage: day-one-mac vscode-profile default|full-stack|ai|operations [options]' \
-          'Generate private review bundles; --dry-run previews without writes.' \
-          'Use <profile> --help for options. Extension installation and approved settings replacement require current Phase 8.' \
-          '--replace-settings previews a bounded replacement; --restore BACKUP previews recovery.'
-        ;;
+          'Use <profile> --help. Preview generation with --dry-run; replacement needs an approved preview hash.' ;;
       *) printf 'Unknown profile. Choose default, full-stack, ai, or operations.\n' >&2; exit 2 ;;
-    esac
-    ;;
+    esac ;;
+  second-brain)
+    shift
+    case "${1:-}" in
+      obsidian) shift; exec /bin/bash "$PROJECT_ROOT/extensions/second-brain/obsidian/scripts/second-brain-manager.sh" "$@" ;;
+      notion) shift; exec /bin/bash "$PROJECT_ROOT/extensions/second-brain/notion/scripts/notion-second-brain-manager.sh" "$@" ;;
+      ''|help|-h|--help) printf '%s\n' 'Usage: day-one-mac second-brain obsidian|notion [options]. Preview is the default.' ;;
+      *) printf 'Unknown Second Brain manager.\n' >&2; exit 2 ;;
+    esac ;;
+  shell-status) shift; exec "$PROJECT_ROOT/scripts/shell-status.sh" "$@" ;;
   verify) shift; exec "$PROJECT_ROOT/scripts/verify.sh" "$@" ;;
   validate)
     shift
-    if [[ -x "$PROJECT_ROOT/scripts/validate.sh" ]]; then
-      printf 'Scope: contributor source validation (includes regression fixtures).\n' >&2
-      exec "$PROJECT_ROOT/scripts/validate.sh" "$@"
-    fi
-    printf 'Scope: installed-runtime integrity only; use setup --check for local machine checks.\n' >&2
-    exec "$PROJECT_ROOT/scripts/verify.sh" "$@"
-    ;;
+    if [[ -x "$PROJECT_ROOT/tools/validate.sh" ]]; then exec "$PROJECT_ROOT/tools/validate.sh" "$@"; fi
+    exec "$PROJECT_ROOT/scripts/verify.sh" "$@" ;;
   safety-report|preflight) shift; exec "$PROJECT_ROOT/scripts/preflight-audit.sh" "$@" ;;
-  prepare-existing|prepare-reset)
-    shift
-    [[ $# -gt 0 ]] || set -- --guided
-    exec "$PROJECT_ROOT/scripts/prepare-existing-mac.sh" "$@"
-    ;;
   inventory) shift; exec "$PROJECT_ROOT/scripts/application-inventory.sh" "$@" ;;
   applications) shift; exec "$PROJECT_ROOT/scripts/application-status.sh" "$@" ;;
-  install) shift; exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" --install-centre "$@" ;;
-  ssh-pin) shift; [[ $# -gt 0 ]] || set -- both; exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" --ssh-pin "$@" ;;
   shortcuts) shift; exec "$PROJECT_ROOT/scripts/configure-shortcuts.sh" "$@" ;;
   raycast) shift; exec "$PROJECT_ROOT/scripts/configure-raycast.sh" "$@" ;;
   workspace) shift; exec "$PROJECT_ROOT/scripts/workspace-manager.sh" "$@" ;;
   macos-settings) shift; exec "$PROJECT_ROOT/scripts/configure-macos-settings.sh" "$@" ;;
-  optional)
-    shift
-    dashboard=0
-    module_action=0
-    dashboard_args=()
-    for module_arg in "$@"; do
-      case "$module_arg" in
-        --status) dashboard=1 ;;
-        *) dashboard_args+=("$module_arg") ;;
-      esac
-      case "$module_arg" in
-        --module|--list|--plan|--apply|--resume|--inventory) module_action=1 ;;
-      esac
-    done
-    if [[ "$dashboard" == 1 ]]; then
-      [[ "$module_action" == 0 ]] || {
-        printf 'Do not combine the optional --status dashboard with module actions.\n' >&2; exit 2; }
-      # --check --status and --status --check both select the dashboard.
-      exec "$PROJECT_ROOT/scripts/optional-status.sh" ${dashboard_args[@]+"${dashboard_args[@]}"}
-    fi
-    for module_arg in "$@"; do
-      case "$module_arg" in
-        --module|--list|--plan|--apply|--check|--resume|--inventory)
-          exec /bin/bash "$PROJECT_ROOT/scripts/optional-module.sh" "$@" ;;
-      esac
-    done
-    exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" --optional "$@"
-    ;;
-  optional-status|modules) shift; exec "$PROJECT_ROOT/scripts/optional-status.sh" "$@" ;;
   readiness) shift; exec "$PROJECT_ROOT/scripts/workstation-readiness.sh" "$@" ;;
   databases) shift; exec "$PROJECT_ROOT/scripts/configure-databases.sh" "$@" ;;
-  finalize) shift; exec "$PROJECT_ROOT/scripts/finalize-setup.sh" "$@" ;;
   advanced-audit|audit) shift; exec "$PROJECT_ROOT/scripts/advanced-audit.sh" "$@" ;;
-  advanced)
-    shift
-    # Guide-only calls retain their existing meaning; actions are explicit.
-    for module_arg in "$@"; do
-      case "$module_arg" in
-        --plan|--apply|--check|--resume|--inventory)
-          exec /bin/bash "$PROJECT_ROOT/scripts/optional-module.sh" "$@" ;;
-      esac
-    done
-    exec "$PROJECT_ROOT/scripts/advanced-setup.sh" "$@"
-    ;;
   cli-tools) shift; exec "$PROJECT_ROOT/scripts/configure-cli-tools.sh" "$@" ;;
-  remove) shift; exec "$PROJECT_ROOT/scripts/remove-day-one-mac.sh" "$@" ;;
-  clean|reset-development)
-    shift
-    printf 'Warning: broad development reset, not cache cleanup. Execution can remove all Homebrew packages and Homebrew itself. Preview is the default.\n' >&2
-    exec "$PROJECT_ROOT/scripts/clean-development-state.sh" "$@"
-    ;;
   rollback) shift; exec "$PROJECT_ROOT/scripts/rollback-recorded-setup.sh" "$@" ;;
-  setup) shift; exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" "$@" ;;
   folders) shift; exec /bin/bash "$PROJECT_ROOT/scripts/configure-folders.sh" "$@" ;;
-  help|-h|--help)
-    printf '%s\n' \
-      'day-one-mac commands:' \
-      '' \
-      'Runtime and documentation:' \
-      '  --version         print the active runtime or checkout version' \
-      '  bootstrap         clone/reuse the project and install this command' \
-      '  runtime-status    show and verify the active standalone runtime' \
-      '  update            install the latest verified public release' \
-      '  rollback-runtime  preview or select a previous installed runtime' \
-      '  uninstall-runtime remove only the command and runtime; preserve setup' \
-      '  docs              browse, export, locate, or open bundled documentation' \
-      '' \
-      'Required setup and inspection:' \
-      '  (no command)      browse the setup centre: phases, modules and actions' \
-      '  setup [options]   run or inspect the eight required phases' \
-      '                    --plan | --apply | --check | --resume; --phase NN selects phases' \
-      '  folders           standalone layouts and opt-in ghq: --plan | --apply | --check | --resume' \
-      '  shell-status      inspect zsh, PATH, completions and shell tools' \
-      '  safety-report     create the Stage 0 read-only safety report' \
-      '  prepare-existing  choose Stage 0 Route A or Route B' \
-      '  ai-setup          optional AI assistance before Phase 1; inspect with --plan' \
-      '  applications      check required or optional app ownership' \
-      '  install           install or revalidate required software' \
-      '  ssh-pin           save 1Password public keys to ~/.ssh' \
-      '' \
-      'Optional and advanced configuration:' \
-      '  second-brain      preview or configure Obsidian layouts or a local Notion plan' \
-      '  shortcuts         preview or import the optional Finder shortcut' \
-      '  raycast           manage optional Day One Raycast commands' \
-      '  workspace         create and open bounded projectless tasks' \
-      '  vscode-profile    generate bundles or preview approved settings replacement/recovery' \
-      '  macos-settings    configure or restore optional macOS preferences' \
-      '  optional          choose modules; --status shows or audits Modules 09–22' \
-      '                    --list lists capabilities; --module ID --plan|--apply|--check|--resume' \
-      '  readiness         inspect workstation policy, evidence and version drift' \
-      '  databases         install, resume, or verify optional databases' \
-      '  advanced          track guides; all 15–22 support bounded explicit actions' \
-      '  advanced-audit    write the private extended audit' \
-      '' \
-      'Validation and maintenance:' \
-      '  verify            check the installed runtime integrity' \
-      '  validate          validate a checkout (runtime: same as verify)' \
-      '  inventory         write the complete application inventory' \
-      '  cli-tools         select optional Homebrew formulae' \
-      '  remove            choose recorded, sectional, or full removal' \
-      '  finalize          preview record compaction or detach after Phase 8' \
-      '  reset-development preview broad reset: ALL Homebrew packages, not just ours' \
-      '  rollback          preview manifest-owned rollback' \
-      '  root              print the active runtime or development root' \
-      '' \
-      'Compatibility aliases:' \
-      '  clean             same as reset-development (NOT ordinary cleanup)' \
-      '  preflight         same as safety-report' \
-      '  prepare-reset     same as prepare-existing' \
-      '  audit             same as advanced-audit' \
-      '  optional-status   same as optional --status' \
-      '  modules           same as optional --status'
-    ;;
-  ''|-*) exec "$PROJECT_ROOT/scripts/bootstrap-day-one-mac.sh" "$@" ;;
-  *) printf 'Unknown command: %s\nRun day-one-mac --help to list commands.\n' "$1" >&2; exit 2 ;;
+  ai-setup|setup|install|finalize|remove|clean|reset-development|prepare-existing|prepare-reset|ssh-pin|-*)
+    exec /bin/bash "$PROJECT_ROOT/src/operations/retired-setup.sh" "$@" ;;
+  *) printf 'Unknown command: %s\nRun day-one-mac --help.\n' "$1" >&2; exit 2 ;;
 esac

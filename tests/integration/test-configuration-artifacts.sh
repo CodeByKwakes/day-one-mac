@@ -32,7 +32,6 @@ printf '{{ output "touch" "/never-run-a-template" }}\n' > "$TEST_ROOT/source/dot
 printf 'aliases\tchezmoi\t%s/source/dot_config/zsh/aliases.zsh.tmpl\n' "$TEST_ROOT" > "$TEST_ROOT/dotfiles.tsv"
 run advanced --module 15 --plan --manifest "$TEST_ROOT/dotfiles.tsv" > "$TEST_ROOT/plan"
 [[ ! -e "$TEST_STATE" && ! -e "$TEST_STATE.operation.lock" ]] || fail 'plan created state'
-expect_failure 10 run advanced --module 15 --apply --manifest "$TEST_ROOT/dotfiles.tsv" --yes
 mkdir -p "$TEST_STATE/completed"
 "$SCRIPT_DIR/../tests/integration/seed-required-state.sh" "$TEST_STATE"
 run advanced --module 15 --apply --manifest "$TEST_ROOT/dotfiles.tsv" --yes > "$TEST_ROOT/apply"

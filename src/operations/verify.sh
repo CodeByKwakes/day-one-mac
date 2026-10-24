@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Packaged-runtime checks. Phase 8 adds the track/stack-specific machine checks.
+# Packaged-runtime checks; actual machine checks belong to each capability.
 set -euo pipefail
 DAY_ONE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SCRIPT_DIR="$DAY_ONE_ROOT/scripts"
@@ -24,5 +24,5 @@ for script in day-one-mac bootstrap-day-one-mac.sh setup.sh runtime-manager.sh; 
 done
 while IFS= read -r -d '' script; do
   /bin/bash -n "$script"
-done < <(find "$ROOT/src" "$SCRIPT_DIR/lib" "$SCRIPT_DIR/phases" -type f -name '*.sh' -print0)
-printf '✓ Runtime verification passed. Run setup --phase 08 for machine verification.\n'
+done < <(find "$ROOT/src" "$SCRIPT_DIR/lib" -type f -name '*.sh' -print0)
+printf '✓ Runtime verification passed. Use each selected capability guide for machine verification.\n'

@@ -12,12 +12,13 @@ MODULE="" ACTION="" SELECTION="" SELECTOR="" ASSUME_YES=0 LIST=0
 APP_POLICY=""
 CONTAINER_RUNTIME=""
 SETUP_ALIASES=0
+ALIASES_OWNER=""
 DISPOSABLE_DATA=0
 
 usage() {
   cat <<'EOF'
-Usage: day-one-mac optional --module ID --plan|--apply|--check|--resume [selection]
-       day-one-mac optional --list
+Usage: day-one-mac tool --module ID --plan|--apply|--check|--resume [selection]
+       day-one-mac tool --list
 
   --module ID        09 databases, 10 AI, 10A gateway, 11 MCP, 13 CLI,
                      14 Warp, 15 dotfiles, 16 software, 17 shell, 18 identities,
@@ -38,11 +39,12 @@ Usage: day-one-mac optional --module ID --plan|--apply|--check|--resume [selecti
   --app-install-policy MODE
                      Module 10/16: prompt, homebrew, or check-only (default)
   --aliases          Module 13: opt in to guarded eza aliases
+  --aliases-owner OWNER  Module 13: unmanaged or chezmoi
   --yes              accept apply/resume confirmation, not platform permissions
   --list             list optional and advanced capabilities, not completion
   -h, --help         show help
 
-Apply/resume requires completed Phase 8. Planning is allowed before completion.
+Apply/resume checks the platform and operation prerequisites. Plan is read-only.
 Module 12 is retired; use day-one-mac vscode-profile and its application guide.
 Existing databases and cli-tools commands remain supported.
 EOF
@@ -64,6 +66,10 @@ while (( $# )); do
       [[ $# -ge 2 && -z "$APP_POLICY" ]] || die '--app-install-policy needs one value'
       APP_POLICY="$2"; shift 2 ;;
     --aliases) SETUP_ALIASES=1; shift ;;
+    --aliases-owner)
+      [[ $# -ge 2 && -z "$ALIASES_OWNER" ]] || die '--aliases-owner needs one value'
+      case "$2" in unmanaged|chezmoi) ALIASES_OWNER="$2" ;; *) die 'Owner must be unmanaged or chezmoi' ;; esac
+      shift 2 ;;
     --disposable-data) DISPOSABLE_DATA=1; shift ;;
     --yes) ASSUME_YES=1; shift ;;
     --list) LIST=1; shift ;;
@@ -72,16 +78,21 @@ while (( $# )); do
   esac
 done
 if [[ "$LIST" == 1 ]]; then
-  [[ -z "$MODULE$ACTION$SELECTOR$APP_POLICY$CONTAINER_RUNTIME" && "$ASSUME_YES" == 0 && "$SETUP_ALIASES" == 0 ]] || die '--list cannot be combined with a module action'
+  [[ -z "$MODULE$ACTION$SELECTOR$APP_POLICY$CONTAINER_RUNTIME$ALIASES_OWNER" && "$ASSUME_YES" == 0 && "$SETUP_ALIASES" == 0 ]] || die '--list cannot be combined with a module action'
   printf 'ID\tLayer\tExecution\tPrerequisite\tModule\n'
   awk -F '\t' 'BEGIN {OFS="\t"} !/^#/ {print $1,$2,$3,$4,$5}' "$PROJECT_DIR/config/catalogs/modules.tsv"
   exit 0
 fi
 if [[ "$MODULE" == 12 ]]; then day_one_retired_profile_module "$PROJECT_DIR"; exit 2; fi
-[[ -n "$MODULE" && -n "$ACTION" ]] || { usage >&2; exit 2; }
+[[ -n "$MODULE" ]] || { usage >&2; exit 2; }
 row="$(awk -F '\t' -v id="$MODULE" '!/^#/ && $1 == id {print}' "$PROJECT_DIR/config/catalogs/modules.tsv")"
 [[ -n "$row" ]] || die "unknown module: $MODULE"
 IFS=$'\t' read -r id layer mode prerequisite title guide <<< "$row"
+if [[ -z "$ACTION" ]]; then
+  [[ -z "$SELECTOR$APP_POLICY$CONTAINER_RUNTIME$ALIASES_OWNER" && "$ASSUME_YES$SETUP_ALIASES$DISPOSABLE_DATA" == 000 ]] || die 'Choose an explicit action before supplying selections'
+  cat "$PROJECT_DIR/$guide"
+  exit 0
+fi
 if [[ "$mode" != executable ]]; then
   printf 'Module %s is guided, not an executable setup module.\nGuide: %s/%s\n' "$id" "$PROJECT_DIR" "$guide" >&2
   exit 2
@@ -91,6 +102,7 @@ if [[ "$ASSUME_YES" == 1 && "$ACTION" != apply && "$ACTION" != resume ]]; then d
 [[ "$DISPOSABLE_DATA" == 0 || "$MODULE" == 09 ]] || die '--disposable-data is only for Module 09'
 [[ -z "$CONTAINER_RUNTIME" || "$MODULE" == 09 ]] || die 'container runtime is only supported for 09'
 [[ -z "$APP_POLICY" || "$MODULE" == 10 || "$MODULE" == 16 ]] || die 'application policy is only supported for 10 and 16'
+[[ -z "$ALIASES_OWNER" || ( "$MODULE" == 13 && "$SETUP_ALIASES" == 1 ) ]] || die '--aliases-owner requires Module 13 and --aliases'
 [[ "$SETUP_ALIASES" == 0 || ( "$MODULE" == 13 && "$ACTION" != check ) ]] || die '--aliases is supported for Module 13 plan/apply/resume only'
 [[ "$ACTION" != inventory || ( "$MODULE" == 16 && -z "$SELECTOR$APP_POLICY" ) ]] || die '--inventory is only supported for Module 16 without other selections'
 if [[ "$MODULE" =~ ^(11|14|15|17|18|21|22)$ ]]; then
@@ -132,8 +144,8 @@ if [[ "$MODULE" == 10 || "$MODULE" == 16 ]]; then
   exec /bin/bash "$script" "${software_args[@]}"
 fi
 if [[ "$ACTION" == apply || "$ACTION" == resume ]]; then
-  day_one_phase_current "$prerequisite" || {
-    printf 'Required Phase %s is not recorded current; apply is blocked. Use --plan to preview.\n' "$prerequisite" >&2
+  day_one_operation_ready || {
+    printf 'The apply environment is unsupported (prerequisites: %s). Use --plan to preview.\n' "$prerequisite" >&2
     exit 10
   }
 fi
@@ -141,6 +153,7 @@ fi
 args=()
 [[ "$DISPOSABLE_DATA" == 0 ]] || { [[ "$MODULE" == 09 ]] || die '--disposable-data is only for Module 09'; args+=(--disposable-data); }
 [[ "$SETUP_ALIASES" == 0 ]] || args+=(--aliases)
+[[ -z "$ALIASES_OWNER" ]] || args+=(--aliases-owner "$ALIASES_OWNER")
 [[ -z "$CONTAINER_RUNTIME" ]] || args+=(--container-runtime "$CONTAINER_RUNTIME")
 if [[ -n "$SELECTION" ]]; then args+=("$SELECTOR" "$SELECTION"); else args+=(--saved); fi
 case "$ACTION" in

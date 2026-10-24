@@ -2,7 +2,7 @@
 
 # Choose and configure VS Code profiles
 
-Continue with the [current guide](../setup/assisted/optional/vscode-profiles.md). This compatibility page preserves existing links.
+Continue with the [current guide](../shared/tools/vscode-profiles.md). This compatibility page preserves existing links.
 
 ## Contents
 
@@ -18,15 +18,15 @@ See the [current instructions](../setup/manual/editors/vscode.md).
 
 ### Generate profile files with the scripts
 
-See the [current instructions](../setup/assisted/optional/vscode-profiles.md).
+See the [current instructions](../shared/tools/vscode-profiles.md).
 
 #### Import settings and extensions together
 
-See the [current instructions](../setup/assisted/optional/vscode-profiles.md#import-settings-and-extensions-together).
+See the [current instructions](../shared/tools/vscode-profiles.md#import-settings-and-extensions-together).
 
 #### Install extensions into the named profile
 
-See the [current instructions](../setup/assisted/optional/vscode-profiles.md#install-extensions-into-the-named-profile).
+See the [current instructions](../shared/tools/vscode-profiles.md#install-extensions-into-the-named-profile).
 
 ## 2. Install the final extension lists
 

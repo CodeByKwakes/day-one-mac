@@ -2,15 +2,15 @@
 
 # Advanced 22 — Shared AI skills and MCP operations
 
-Continue with the [current guide](../setup/assisted/advanced/22-ai-skills-and-mcp-operations.md). This compatibility page preserves existing links.
+Continue with the [current guide](../shared/tools/22-ai-skills-and-mcp-operations.md). This compatibility page preserves existing links.
 
 ## Outcome
 
-See the [current instructions](../setup/assisted/advanced/22-ai-skills-and-mcp-operations.md#outcome).
+See the [current instructions](../shared/tools/22-ai-skills-and-mcp-operations.md#outcome).
 
 ## Executable inventory and drift route
 
-See the [current instructions](../setup/assisted/advanced/22-ai-skills-and-mcp-operations.md#executable-inventory-and-drift-route).
+See the [current instructions](../shared/tools/22-ai-skills-and-mcp-operations.md#executable-inventory-and-drift-route).
 
 ## Step 22.1 — Record the selected clients and purpose
 
@@ -66,4 +66,4 @@ See the [current instructions](../setup/manual/ai/maintenance.md#rollback).
 
 ## Advanced 22 completion checklist 🚦
 
-See the [current instructions](../setup/assisted/advanced/22-ai-skills-and-mcp-operations.md#advanced-22-completion-checklist-).
+See the [current instructions](../shared/tools/22-ai-skills-and-mcp-operations.md#advanced-22-completion-checklist-).

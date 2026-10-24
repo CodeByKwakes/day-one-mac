@@ -2,7 +2,7 @@
 
 # Choose and configure VS Code profiles
 
-Continue with the [current guide](../../setup/assisted/optional/vscode-profiles.md). This compatibility page preserves existing links.
+Continue with the [current guide](../../shared/tools/vscode-profiles.md). This compatibility page preserves existing links.
 
 ## Contents
 

@@ -83,7 +83,7 @@ appropriate only when the complete current diff has been reviewed.
 
 ## Required managed targets
 
-Phase 5 requires these targets:
+The documented shell recipe uses these targets:
 
 | Target | Owner and purpose |
 |---|---|
@@ -96,7 +96,7 @@ Phase 5 requires these targets:
 | `~/.ssh/config` | Reviewed provider host configuration; comment-only is valid for HTTPS-only setups |
 | `~/.config/starship.toml` | Starship prompt configuration |
 
-Phase 8 also requires the reviewed `~/Brewfile` to be managed.
+Include the reviewed `~/Brewfile` when you choose to manage it with chezmoi.
 
 ## Targets deliberately excluded
 
@@ -112,7 +112,7 @@ Phase 8 also requires the reviewed `~/Brewfile` to be managed.
 
 ## Day One Mac aliases
 
-Phase 5 places these convenience aliases in
+The shell recipe can place these convenience aliases in
 `~/.config/zsh/aliases.zsh`:
 
 | Alias | Expansion | Purpose |
@@ -146,13 +146,7 @@ for the commands shown.
 
 | Command | Relationship |
 |---|---|
-| `day-one-mac setup --phase 05` | Creates, adopts, applies, and verifies the required baseline |
-| `day-one-mac setup --phase 05 --dotfiles-repo URL` | Uses an existing private source |
-| `day-one-mac setup --phase 05 --new-dotfiles --dotfiles-versioning git` | Creates or retains a new source requiring private Git in Phase 8 |
-| `day-one-mac setup --phase 05 --local-dotfiles` | Selects the local-only protection gate |
 | `day-one-mac shell-status` | Verifies shell paths, startup files, aliases, and tools |
-| `day-one-mac setup --phase 08` | Adds Brewfile desired state and checks source protection |
-| `day-one-mac advanced --complete 15` | Records completion of the optional expanded-dotfiles module |
 | `day-one-mac advanced-audit` | Includes chezmoi and Brewfile drift in the private audit |
 
 ## Routine health check

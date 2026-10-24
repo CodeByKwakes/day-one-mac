@@ -35,6 +35,15 @@ cat > "$TEST_ROOT/bin/killall" <<'MOCK'
 touch "$MOCK_PREFS/restarted"
 exit 99
 MOCK
+cat > "$TEST_ROOT/bin/profiles" <<'MOCK'
+#!/usr/bin/env bash
+case "${MOCK_ENROLLMENT:-no}" in
+  no) printf 'Enrolled via DEP: No\nMDM enrollment: No\n' ;;
+  yes) printf 'Enrolled via DEP: Yes\nMDM enrollment: Yes\n' ;;
+  unknown) printf 'unrecognised response\n' ;;
+  error) exit 1 ;;
+esac
+MOCK
 chmod +x "$TEST_ROOT/bin/"*
 for domain in com.apple.finder com.apple.dock NSGlobalDomain; do /usr/bin/plutil -create xml1 "$MOCK_PREFS/$domain.plist"; done
 /usr/bin/plutil -insert tilesize -float 52.5 "$MOCK_PREFS/com.apple.dock.plist"
@@ -53,7 +62,14 @@ printf 'setting\tfinder-path\nsetting\tdock-size\nsetting\tdock-right\nsetting\t
 run --plan --manifest "$TEST_ROOT/selection.tsv" > "$TEST_ROOT/plan"
 [[ ! -e "$TEST_STATE" && ! -e "$TEST_STATE.operation.lock" ]] || fail 'plan wrote state'
 if grep -q '^write ' "$MOCK_PREFS/calls"; then fail 'plan wrote preferences'; fi
-expect_failure 10 run --apply --manifest "$TEST_ROOT/selection.tsv" --yes
+# A new managed or unclassified Mac must be blocked without saved deployment state.
+for enrollment in yes unknown error; do
+  MOCK_ENROLLMENT="$enrollment" expect_failure 10 run --apply --manifest "$TEST_ROOT/selection.tsv" --yes
+  [[ ! -e "$TEST_STATE" && ! -e "$TEST_STATE.operation.lock" ]] || fail 'managed/unknown preference refusal wrote state'
+  if grep -q '^write ' "$MOCK_PREFS/calls"; then fail 'managed/unknown preference refusal wrote defaults'; fi
+  MOCK_ENROLLMENT="$enrollment" expect_failure 10 env PATH="$TEST_ROOT/bin:$PATH" DAY_ONE_MAC_STATE_ROOT="$TEST_STATE" DAY_ONE_MAC_STATE_DIR="$TEST_STATE" "$SCRIPT_DIR/day-one-mac" macos-settings --restore --yes
+  [[ ! -e "$TEST_STATE" ]] || fail 'legacy preference restore wrote state before ownership check'
+done
 mkdir -p "$TEST_STATE/completed"
 "$SCRIPT_DIR/../tests/integration/seed-required-state.sh" "$TEST_STATE"
 MOCK_READ_FAIL=1 expect_failure 1 run --apply --manifest "$TEST_ROOT/selection.tsv" --yes

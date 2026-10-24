@@ -6,28 +6,28 @@ Continue with the [current guide](../shared/reference/expected-layout.md). This 
 
 ## Standalone runtime and optional source checkout
 
-See the [current instructions](../shared/reference/expected-layout.md#standalone-runtime-and-optional-source-checkout).
+See the [current instructions](../shared/reference/expected-layout.md).
 
 ## Beginner view: files you are expected to use
 
-See the [current instructions](../shared/reference/expected-layout.md#beginner-view-files-you-are-expected-to-use).
+See the [current instructions](../shared/reference/expected-layout.md).
 
 ## Technical ownership tree
 
-See the [current instructions](../shared/reference/expected-layout.md#technical-ownership-tree).
+See the [current instructions](../shared/reference/expected-layout.md).
 
 ## Login shell
 
-See the [current instructions](../shared/reference/expected-layout.md#login-shell).
+See the [current instructions](../shared/reference/expected-layout.md).
 
 ## Required applications and Homebrew storage
 
-See the [current instructions](../shared/reference/expected-layout.md#required-applications-and-homebrew-storage).
+See the [current instructions](../shared/reference/expected-layout.md).
 
 ## What should not exist yet
 
-See the [current instructions](../shared/reference/expected-layout.md#what-should-not-exist-yet).
+See the [current instructions](../shared/reference/expected-layout.md).
 
 ## Inspect the real machine
 
-See the [current instructions](../shared/reference/expected-layout.md#inspect-the-real-machine).
+See the [current instructions](../shared/reference/expected-layout.md).

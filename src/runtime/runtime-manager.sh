@@ -176,7 +176,7 @@ open_docs() {
       'manual' "$RUNTIME_ROOT/docs/setup/manual/README.md" \
       'process' "$RUNTIME_ROOT/docs/shared/explanation/process-overview.md" \
       'project' "$RUNTIME_ROOT/docs/shared/explanation/process-overview.md" \
-      'commands' "$RUNTIME_ROOT/docs/setup/assisted/reference/command-reference.md" \
+      'commands' "$RUNTIME_ROOT/docs/shared/reference/command-reference.md" \
       'chezmoi' "$RUNTIME_ROOT/docs/setup/manual/shell/chezmoi.md" \
       'handbook' "$RUNTIME_ROOT/docs/setup/manual/README.md" \
       'second-brain-guide' "$RUNTIME_ROOT/docs/setup/manual/second-brain/README.md" \
@@ -192,9 +192,9 @@ open_docs() {
       'chezmoi-daily' "$RUNTIME_ROOT/docs/setup/manual/shell/chezmoi.md" \
       'chezmoi-reference' "$RUNTIME_ROOT/docs/shared/reference/chezmoi-commands.md" \
       'chezmoi-concepts' "$RUNTIME_ROOT/docs/shared/explanation/chezmoi-boundaries.md" \
-      'status' "$RUNTIME_ROOT/docs/setup/assisted/reference/optional-status.md" \
-      'optional' "$RUNTIME_ROOT/docs/setup/assisted/optional/README.md" \
-      'advanced' "$RUNTIME_ROOT/docs/setup/assisted/advanced/README.md" \
+      'status' "$RUNTIME_ROOT/docs/shared/reference/optional-status.md" \
+      'optional' "$RUNTIME_ROOT/docs/shared/reference/tools.md" \
+      'advanced' "$RUNTIME_ROOT/docs/shared/reference/tools.md" \
       'second-brain' "$RUNTIME_ROOT/docs/setup/manual/second-brain/README.md"
     return 0
   fi
@@ -208,7 +208,7 @@ open_docs() {
       manual) target="$RUNTIME_ROOT/docs/setup/manual/README.md" ;;
       process) target="$RUNTIME_ROOT/docs/shared/explanation/process-overview.md" ;;
       project) target="$RUNTIME_ROOT/docs/shared/explanation/process-overview.md" ;;
-      commands) target="$RUNTIME_ROOT/docs/setup/assisted/reference/command-reference.md" ;;
+      commands) target="$RUNTIME_ROOT/docs/shared/reference/command-reference.md" ;;
       chezmoi) target="$RUNTIME_ROOT/docs/setup/manual/shell/chezmoi.md" ;;
       handbook) target="$RUNTIME_ROOT/docs/setup/manual/README.md" ;;
       second-brain-guide) target="$RUNTIME_ROOT/docs/setup/manual/second-brain/README.md" ;;
@@ -224,9 +224,9 @@ open_docs() {
       chezmoi-daily) target="$RUNTIME_ROOT/docs/setup/manual/shell/chezmoi.md" ;;
       chezmoi-reference) target="$RUNTIME_ROOT/docs/shared/reference/chezmoi-commands.md" ;;
       chezmoi-concepts) target="$RUNTIME_ROOT/docs/shared/explanation/chezmoi-boundaries.md" ;;
-      status) target="$RUNTIME_ROOT/docs/setup/assisted/reference/optional-status.md" ;;
-      optional) target="$RUNTIME_ROOT/docs/setup/assisted/optional/README.md" ;;
-      advanced) target="$RUNTIME_ROOT/docs/setup/assisted/advanced/README.md" ;;
+      status) target="$RUNTIME_ROOT/docs/shared/reference/optional-status.md" ;;
+      optional) target="$RUNTIME_ROOT/docs/shared/reference/tools.md" ;;
+      advanced) target="$RUNTIME_ROOT/docs/shared/reference/tools.md" ;;
       second-brain) target="$RUNTIME_ROOT/docs/setup/manual/second-brain/README.md" ;;
       *)
         printf 'Unknown documentation topic: %s\n' "$topic" >&2

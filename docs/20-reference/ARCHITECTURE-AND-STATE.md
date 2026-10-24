@@ -6,28 +6,28 @@ Continue with the [current guide](../shared/explanation/architecture-and-state.m
 
 ## Execution boundaries
 
-See the [current instructions](../shared/explanation/architecture-and-state.md#execution-boundaries).
+See the [current instructions](../shared/explanation/architecture-and-state.md).
 
 ## Selection contract
 
-See the [current instructions](../shared/explanation/architecture-and-state.md#selection-contract).
+See the [current instructions](../shared/explanation/architecture-and-state.md).
 
 ## Completion and migration
 
-See the [current instructions](../shared/explanation/architecture-and-state.md#completion-and-migration).
+See the [current instructions](../shared/explanation/architecture-and-state.md).
 
 ## Atomic writes and concurrent operations
 
-See the [current instructions](../shared/explanation/architecture-and-state.md#atomic-writes-and-concurrent-operations).
+See the [current instructions](../shared/explanation/architecture-and-state.md).
 
 ## Runtime ownership and switching
 
-See the [current instructions](../shared/explanation/architecture-and-state.md#runtime-ownership-and-switching).
+See the [current instructions](../shared/explanation/architecture-and-state.md).
 
 ## Verification and trust
 
-See the [current instructions](../shared/explanation/architecture-and-state.md#verification-and-trust).
+See the [current instructions](../shared/explanation/architecture-and-state.md).
 
 ## Contributor verification
 
-See the [current instructions](../shared/explanation/architecture-and-state.md#contributor-verification).
+See the [current instructions](../shared/explanation/architecture-and-state.md).

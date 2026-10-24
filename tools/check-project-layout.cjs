@@ -30,21 +30,15 @@ try {
  const modules = rows('config/catalogs/modules.tsv');
  if (new Set(modules.map(row => row[0])).size !== modules.length || modules.some(row => row[0] === '12')) fail('Duplicate or retired module ID.');
  for (const row of modules) { if (row.length !== 6) fail('Invalid module metadata.'); regular(row[5]); }
- const dependencies = rows('config/catalogs/phase-dependencies.tsv');
- const seen = new Set();
- for (const [phase,file,...extra] of dependencies) {
-  if (extra.length || !/^(\*|0[1-8])$/.test(phase) || seen.has(`${phase}:${file}`)) fail('Invalid or duplicate phase dependency.');
-  seen.add(`${phase}:${file}`); regular(file);
-  if (!files.includes(file)) fail(`Unpackaged phase dependency: ${file}`);
+ for (const file of files) {
+  if (file.startsWith('src/setup/') || file === 'src/core/wizard-centre.sh') fail(`Retired runner packaged: ${file}`);
  }
- for (const [phase,,,implementation] of phases) {
-  if (!seen.has(`${phase}:${implementation}`)) fail(`Missing own implementation dependency: ${phase}`);
- }
+ if (modules.some(row => row[3] === '08')) fail('Utility still requires a retired phase marker.');
  const aliases = JSON.parse(read('config/catalogs/document-aliases.json'));
  for (const [old,target] of Object.entries(aliases)) {
   regular(old); regular(target);
   if (!read(old).includes('<!-- day-one-mac:compatibility-guide -->') || read(target).includes('<!-- day-one-mac:compatibility-guide -->')) fail(`Invalid guide alias: ${old}`);
   if (!files.includes(old) || !files.includes(target)) fail(`Unpackaged documentation alias: ${old}`);
  }
- console.log(`Project layout: ${files.length} runtime files, ${phases.length} phases, ${modules.length} modules and ${Object.keys(aliases).length} guide aliases verified.`);
+ console.log(`Project layout: ${files.length} runtime files, ${phases.length} historical phase IDs, ${modules.length} modules and ${Object.keys(aliases).length} guide aliases verified.`);
 } catch (error) { console.error(error.message); process.exitCode=1; }

@@ -86,7 +86,7 @@ check_command() {
 audit_selected_commands() {
   COMPLETED_DIR="$STATE_DIR/completed"
   configuration_load_choices
-  configuration_validate_choices || fail_gate "Configuration choices" "Missing/invalid saved selections; review required setup"
+  configuration_validate_choices || review_gate "Configuration choices" "Legacy choices absent or invalid; review the capabilities you use"
   PRESET="$(state_value preset)"
   commands=(brew git day-one-mac)
   uses_chezmoi && commands+=(chezmoi)
@@ -129,8 +129,8 @@ STACK="$(state_value stack)"
   printf '|---|---|---|\n'
 } > "$REPORT"
 
-case "$TRACK" in 1|2|3|4) pass_gate "Track state" "Track $TRACK is recorded" ;; *) fail_gate "Track state" "Choose Track 1, 2, 3, or 4 in required Phase 1" ;; esac
-case "$STACK" in node|python|both) pass_gate "Stack state" "$STACK is recorded" ;; *) fail_gate "Stack state" "Choose node, python, or both in required Phase 1" ;; esac
+case "$TRACK" in 1|2|3|4) pass_gate "Track state" "Track $TRACK is recorded" ;; *) review_gate "Track state" "No legacy hosting selection; verify the providers you use manually" ;; esac
+case "$STACK" in node|python|both) pass_gate "Stack state" "$STACK is recorded" ;; *) review_gate "Stack state" "No legacy language selection; verify the toolchains you use manually" ;; esac
 
 audit_selected_commands
 folders_load_choices

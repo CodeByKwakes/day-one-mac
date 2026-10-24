@@ -1,114 +1,62 @@
 # Start here
 
-Choose one setup route for your Apple-silicon Mac. Both routes prepare the same
-selected development capabilities; they record and recover changes differently.
-
-| Route | Use it when | Begin |
-|---|---|---|
-| Scripted (Assisted) Setup | Policy permits local scripts and you want resumable checks and recorded ownership | [Assisted setup](setup/assisted/README.md) |
-| Manual Setup | You want to perform each installation and edit yourself, or policy prohibits the project scripts | [Manual setup](setup/manual/README.md) |
+Choose AI-assisted or manual setup for your Apple-silicon Mac. Both routes use
+the same manual recipes and verification criteria. Neither route requires the
+retired scripted setup runner.
 
 ## Before you begin
 
-Read the [shared prerequisites](shared/prerequisites.md), then complete the
-[decision worksheet](shared/decisions.md). Keep the worksheet and recovery
-information privately. If this Mac holds the only copy of important data, stop
-and verify a separate backup before proceeding.
+1. Read [prerequisites](shared/prerequisites.md), including the managed-device rules.
 
-A managed Mac needs your organisation's approved software, identity and elevation
-process. Mobile device management (MDM) settings remain owned by IT.
+   Expected result: supported hardware, an approved starting point and permission
+   to install the selected tools. Never erase or format a disk with these guides.
 
-## Optional AI choice before setup
+2. Verify a separate backup when the Mac holds important data.
 
-Choose no AI, guidance only, or approved local execution before Phase 1.
-Reuse one approved client, or prepare it through the
-[manual AI checkpoint](setup/manual/ai/setup-assistant.md) or
-[assisted AI checkpoint](setup/assisted/ai-setup-assistant.md) for your route.
-If a reset is still planned, use browser guidance until the starting boundary
-is ready. Additional clients and MCP can wait until the base works.
+   Expected result: you can read a restored sample. A package list is not a data backup.
 
-## Choose one setup route
+3. Record your selections in the private [decision worksheet](shared/decisions.md).
 
-The assisted route installs the standalone `day-one-mac` command. It does not
-need a permanent Git checkout. Its required work ends with Phase 8; optional
-modules remain separate.
+   Expected result: the chosen tools and installation owners are explicit.
 
-The manual route uses macOS and the selected tools directly. It does not install
-or call Day One Mac scripts, create phase markers or promise automated rollback.
-Record each result and backup yourself.
+## Choose one route
 
-Both routes include human actions such as accepting licences, approving account
-access and testing a backup. An assisted guide links to the exact manual task
-and states when to return. Complete that task once.
+| Route | Who performs changes | Begin |
+|---|---|---|
+| AI-assisted setup | You review guidance or approve a local client's bounded plan | [Prepare the assistant](setup/ai/README.md) |
+| Manual setup | You run each command and complete each application step | [Follow the manual sequence](setup/manual/README.md) |
 
-## Get help or continue later
+AI users prepare a client and choose direct provider access, existing OmniRoute,
+local OmniRoute or gateway setup later before depending on the assistant.
+If no client is available yet, use the manual bootstrap instructions or browser guidance.
 
-- [Troubleshooting](shared/troubleshooting.md) routes a symptom to its owning guide.
-- [Terminal basics](shared/terminal-basics.md) explains commands and placeholders.
-- [Glossary](shared/glossary.md) defines unfamiliar terms.
-- [Process overview](shared/explanation/process-overview.md) explains the two journeys.
-- [All documentation](README.md) lists tasks by route and topic.
+Optional [reviewed tools](shared/reference/tools.md) help with individual tasks.
+They are not another setup route. Manual setup does not need them.
 
-Do not treat a successful installation command as proof of account access,
-application permissions or recoverability. Use the guide's verification step.
+## Verify and resume
 
-## Previously published section links
+Use the owning guide's verification step after each capability. Record what
+worked, what remains manual and where recovery files are stored. On resumption,
+recheck the machine. An installed application or old marker does not prove
+that account access and configuration work.
 
-Existing bookmarks remain available below. Use the route and task links above
-for the normal setup sequence.
+[All guides](README.md), [terminal basics](shared/terminal-basics.md),
+[glossary](shared/glossary.md) and [troubleshooting](shared/troubleshooting.md)
+provide shared help. Existing installations should read the
+[migration guide](shared/migration/from-scripted-setup.md).
 
-### What this project does
-
-Continue with [How setup fits together](shared/explanation/process-overview.md).
-
-### Personal or managed Mac
-
-Continue with [Check prerequisites](shared/prerequisites.md).
-
-#### Script-assisted route — recommended
-
-Continue with [Scripted (Assisted) Setup](setup/assisted/README.md).
-
-#### Manual route — no Day One Mac scripts
-
-Continue with [Manual Setup](setup/manual/README.md).
-
-### Terminal basics used in this guide
-
-Continue with [Terminal basics](shared/terminal-basics.md).
-
-### Terminal colours and symbols
-
-Continue with [Terminal basics](shared/terminal-basics.md).
-
-### Install the standalone command for the script-assisted route
-
-Continue with [Install and manage the standalone runtime](setup/assisted/runtime.md).
-
-### Run the recommended route
-
-Continue with [Scripted (Assisted) Setup](setup/assisted/README.md).
-
-### Understand preview and apply
-
-Continue with [Scripted (Assisted) Setup](setup/assisted/README.md).
-
-### One change that needs your password
-
-Continue with [Install and manage the standalone runtime](setup/assisted/runtime.md).
-
-### Stop, resume, and get help
-
-Continue with [Find the right troubleshooting procedure](shared/troubleshooting.md).
-
-### How to read each phase
-
-Continue with [Scripted (Assisted) Setup](setup/assisted/README.md).
-
-### Set up the required applications
-
-Continue with [Required Installation Centre](setup/assisted/INSTALLATION-CENTRE.md).
-
-### After Phase 8
-
-Continue with [Optional Day One Mac modules](setup/assisted/optional/README.md).
+<a id="choose-one-setup-route"></a>
+<a id="what-this-project-does"></a>
+<a id="personal-or-managed-mac"></a>
+<a id="script-assisted-route--recommended"></a>
+<a id="manual-route--no-day-one-mac-scripts"></a>
+<a id="terminal-basics-used-in-this-guide"></a>
+<a id="terminal-colours-and-symbols"></a>
+<a id="install-the-standalone-command-for-the-script-assisted-route"></a>
+<a id="run-the-recommended-route"></a>
+<a id="understand-preview-and-apply"></a>
+<a id="one-change-that-needs-your-password"></a>
+<a id="stop-resume-and-get-help"></a>
+<a id="how-to-read-each-phase"></a>
+<a id="set-up-the-required-applications"></a>
+<a id="after-phase-8"></a>

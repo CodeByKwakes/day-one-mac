@@ -64,19 +64,17 @@ try {
   run('ai', ['--unknown'], 1);
   assert.match(run('ai', ['--help']).stdout, /Usage:/);
   const blockedOutput = path.join(temporary, 'blocked-install');
-  run('default', ['--install-extensions', '--output', blockedOutput, '--code', '/does/not/exist'], 10);
+  run('default', ['--install-extensions', '--output', blockedOutput, '--code', '/does/not/exist'], 1);
   assert(!fs.existsSync(blockedOutput));
   const publicPreview = spawnSync('/bin/bash', [path.join(root, 'scripts/day-one-mac'),
     'vscode-profile', 'ai', '--dry-run'], { cwd: temporary, env: environment, encoding: 'utf8' });
   assert.equal(publicPreview.status, 0, publicPreview.stderr);
   assert.match(publicPreview.stdout, /Dry run: no files written/);
-  const seed = spawnSync('/bin/bash', [path.join(root, 'tests/integration/seed-required-state.sh'),
-    environment.DAY_ONE_MAC_STATE_ROOT], { env: environment, encoding: 'utf8' });
-  assert.equal(seed.status, 0, seed.stderr);
   const mock = path.join(temporary, 'mock code');
   fs.writeFileSync(mock, `#!${process.execPath}
 const fs = require('node:fs');
 const args = process.argv.slice(2);
+if (args.includes('--version')) { console.log('1.105.0'); process.exit(0); }
 fs.appendFileSync(process.env.PROFILE_TEST_LOG, JSON.stringify(args) + '\\n');
 if (args.includes('--list-extensions')) console.log('ESBENP.PRETTIER-VSCODE');
 else if (args.includes('--install-extension') && args.at(-1) === 'tomoki1207.pdf') process.exit(9);

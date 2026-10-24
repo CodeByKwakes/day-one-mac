@@ -45,11 +45,9 @@ try {
   write(identities, `repository\t${repo}\tFixture Developer\tfixture@example.test\toff\t${repos}\nrepository\t${linked}\tFixture Developer\tfixture@example.test\toff\t${repos}\n`);
   run('18', 'plan', ['--manifest', identities]);
   assert(!fs.existsSync(state)); assert(!fs.existsSync(`${state}.operation.lock`));
-  run('18', 'apply', ['--manifest', identities, '--yes'], 10);
   const noRestore = path.join(root, 'no-restore.tsv');
   write(noRestore, 'mode\tno-restore\n');
   run('20', 'plan', ['--manifest', noRestore]);
-  run('20', 'apply', ['--manifest', noRestore, '--yes'], 10);
   assert(!fs.existsSync(state));
   cmd('/bin/bash', [path.join(__dirname, 'seed-required-state.sh'), state]);
   run('18', 'apply', ['--manifest', identities, '--yes']);
@@ -134,7 +132,6 @@ fs.linkSync = (from, to) => {
   const plan = run('20', 'plan', ['--manifest', restore]);
   assert(plan.includes('totalBytes')); assert.deepEqual(inventory(state), before);
   run('20', 'plan', ['--manifest', restore], 1, { DAY_ONE_MAC_STATE_DIR: `${volume}/state` });
-  run('20', 'apply', ['--manifest', restore], 10);
   write(env.TEST_FAULT, 'fail second file');
   run('20', 'apply', ['--manifest', restore, '--yes'], 1);
   const staged = currentStaging(), inode = fs.statSync(path.join(staged, 'files/one.txt')).ino;

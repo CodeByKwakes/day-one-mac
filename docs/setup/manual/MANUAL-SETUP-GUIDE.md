@@ -1,6 +1,6 @@
 <!-- day-one-mac:compatibility-guide -->
 
-# Day One Mac — complete manual and script-assisted setup
+# Day One Mac — complete manual and AI-assisted setup
 
 Continue with the [current guide](README.md). This compatibility page preserves existing links.
 
@@ -28,13 +28,13 @@ See the [current instructions](README.md).
 
 See the [current instructions](README.md).
 
-### Script-assisted route only — install the standalone runtime
+### AI-assisted route only — install the standalone runtime
 
-See the [current instructions](../assisted/README.md).
+See the [current instructions](../../START-HERE.md).
 
-## Software preset for the script-assisted route
+## Software preset for the AI-assisted route
 
-See the [current instructions](../assisted/README.md).
+See the [current instructions](../../START-HERE.md).
 
 ## Record the setup decisions
 
@@ -118,39 +118,39 @@ See the [current instructions](backup-and-restore.md).
 
 ## Script-assisted setup flow
 
-See the [current instructions](../assisted/README.md).
+See the [current instructions](../../START-HERE.md).
 
 ### Script-assisted 1 — preview the complete plan
 
-See the [current instructions](../assisted/README.md).
+See the [current instructions](../../START-HERE.md).
 
 ### Script-assisted 2 — run or resume the wizard
 
-See the [current instructions](../assisted/README.md).
+See the [current instructions](../../START-HERE.md).
 
-### Script-assisted 2a — choose optional work only after Phase 8
+### Script-assisted 2a — choose optional work only after checking the operation prerequisites
 
-See the [current instructions](../assisted/README.md).
+See the [current instructions](../../START-HERE.md).
 
 ### Script-assisted 3 — complete shared manual actions when prompted
 
-See the [current instructions](../assisted/README.md).
+See the [current instructions](../../START-HERE.md).
 
 ### Script-assisted 4 — inspect status and retry only what failed
 
-See the [current instructions](../assisted/README.md).
+See the [current instructions](../../START-HERE.md).
 
 ### Script-assisted 5 — review the reports
 
-See the [current instructions](../assisted/README.md).
+See the [current instructions](../../START-HERE.md).
 
 ### Script-assisted 6 — complete application setup
 
-See the [current instructions](../assisted/README.md).
+See the [current instructions](../../START-HERE.md).
 
 ### Script-assisted 7 — verify the runtime and machine state
 
-See the [current instructions](../assisted/README.md).
+See the [current instructions](../../START-HERE.md).
 
 ## Compare the routes
 
@@ -179,3 +179,19 @@ See the [current instructions](README.md).
 ### Real project proof
 
 See the [current instructions](README.md).
+
+# Day One Mac — complete manual and script-assisted setup
+
+See the current guidance linked at the top of this page.
+
+### Script-assisted route only — install the standalone runtime
+
+See the current guidance linked at the top of this page.
+
+## Software preset for the script-assisted route
+
+See the current guidance linked at the top of this page.
+
+### Script-assisted 2a — choose optional work only after Phase 8
+
+See the current guidance linked at the top of this page.

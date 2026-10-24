@@ -5,6 +5,7 @@ DAY_ONE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SCRIPT_DIR="$DAY_ONE_ROOT/scripts"
 source "$SCRIPT_DIR/../src/core/project-paths.sh"
 source "$SCRIPT_DIR/../src/core/platform.sh"
+source "$SCRIPT_DIR/../src/core/preference-ownership.sh"
 source "$SCRIPT_DIR/../src/core/module-execution.sh"
 source "$SCRIPT_DIR/../src/core/macos-preferences.sh"
 ORIGINAL_ARGS=("$@")
@@ -20,7 +21,7 @@ usage() {
 Usage: configure-preferences.sh --plan|--apply|--check|--resume [--manifest PATH] [--yes]
 Manifest rows: setting<TAB>ID, using scalar IDs from the existing macOS catalogue.
 Screenshot location and manual GUI/security choices are excluded.
-Plan/check write nothing. Apply/resume require Phase 8 and confirmation.
+Plan/check write nothing. Apply/resume require a supported platform and confirmation.
 Typed originals and pending writes are saved before mutation. External changes
 block retries; no automatic restore, GUI restart or security change is performed.
 EOF
@@ -37,15 +38,13 @@ done
 [[ -n "$ACTION" ]] || die 'Choose one action.' 2
 [[ "$ACTION" != resume || -z "$INPUT" ]] || die 'Resume uses saved choices.' 2
 [[ "$YES" == 0 || "$ACTION" == apply || "$ACTION" == resume ]] || die '--yes is apply/resume only.' 2
-if [[ "$(cat "$STATE_DIR/deployment-mode" 2>/dev/null || true)" == managed ]]; then
-  case "${MODE:-${ACTION:-}}" in
-    wizard|apply|resume|restore) printf 'Managed preferences belong to the policy owner; use MDM/IT to change them.\n' >&2; exit 10 ;;
-  esac
-fi
+case "$ACTION" in
+  wizard|apply|resume|restore) day_one_require_personal_preferences "$STATE_DIR" || exit 10 ;;
+esac
 
 if [[ "$ACTION" == apply || "$ACTION" == resume ]]; then
   day_one_serialize preferences "$0" "${ORIGINAL_ARGS[@]}"
-  day_one_phase_current 08 || die 'Complete current required Phase 8 first; planning is available.' 10
+  day_one_operation_ready || die 'A supported native Apple-silicon environment is required for apply.' 10
 fi
 safe_path() {
   local path="$1"
@@ -155,7 +154,7 @@ printf 'Scope: selected scalar preferences only. GUI activation, permissions, se
 printf 'Typed original records: %s\n' "$RECORDS"
 [[ "$CONFLICTS" == 0 ]] || die 'Preference mismatch or external change detected; no writes performed. Review the typed records and current settings.'
 if [[ "$ACTION" == plan ]]; then
-  day_one_phase_current 08 || printf 'Blocked on apply: complete Phase 8.\n'
+  day_one_operation_ready || printf 'Apply requires a supported native Apple-silicon environment.\n'
   exit 0
 elif [[ "$ACTION" == check ]]; then exit 0
 fi

@@ -22,6 +22,16 @@ function documentationRenderer(markdownIt, documents, currentPath) {
       state.tokens[index - 2].attrJoin('class', 'task-item');
     }
   });
+  // Preserve published anchors without keeping retired instructions in the page.
+  // Accept only exact, inert anchor tags; arbitrary source HTML stays disabled.
+  md.core.ruler.after('inline', 'legacy_anchors', state => {
+    for (const token of state.tokens) {
+      if (token.type !== 'inline' || !/^(?:<a id="[a-z0-9_-]+"><\/a>\s*)+$/.test(token.content)) continue;
+      const anchor = new state.Token('html_inline', '', 0);
+      anchor.content = token.content;
+      token.children = [anchor];
+    }
+  });
   const slugs = new Map();
   md.renderer.rules.heading_open = (tokens, index, options, env, self) => {
     const base = tokens[index + 1].content.toLowerCase().replace(/[^a-z0-9 _-]/g, '').replace(/[ \t]/g, '-');
@@ -48,17 +58,10 @@ function documentationRenderer(markdownIt, documents, currentPath) {
   return md;
 }
 
-// Reader metadata never changes guide paths or the CLI's setup state. Only the
-// script-assisted core has a sequence; optional guides are not a checklist.
+// Reader sequencing is guidance, never saved setup completion.
 function requiredSequence(documents) {
-  const phases = Array.from(documents.keys()).filter(file => /^docs\/setup\/assisted\/0[1-8]-[^/]+\.md$/.test(file)).sort();
-  const sequence = ['docs/setup/assisted/README.md', 'docs/setup/assisted/ai-setup-assistant.md'];
-  for (const file of phases) {
-    sequence.push(file);
-    if (file.includes('/01-')) sequence.push('docs/setup/assisted/MACOS-SETTINGS.md');
-    if (file.includes('/02-')) sequence.push('docs/setup/assisted/INSTALLATION-CENTRE.md');
-  }
-  return sequence.filter(file => documents.has(file));
+  return ['docs/setup/ai/README.md', 'docs/setup/ai/bootstrap.md', 'docs/setup/ai/operation.md']
+    .filter(file => documents.has(file));
 }
 function resolveDocumentationRoute(path, anchor, documents) {
   const text = documents.get(path) || '';
@@ -99,15 +102,10 @@ function documentationNavigation(documents) {
   const group = (label, sections) => ({ label, sections: sections.map(([name, paths]) => ({ label: name, entries: entries(paths) })) });
   const groups = [
     group('Start here', [['', ['docs/START-HERE.md', 'docs/README.md']]]),
-    group('Scripted (Assisted) Setup', [
-      ['Install and prepare', ['docs/setup/assisted/runtime.md', ...matching('docs/setup/assisted/existing-mac/')]],
-      ['Required phases and checkpoints', coreSequence],
-      ['Optional operations', matching('docs/setup/assisted/optional/')],
-      ['Advanced operations', matching('docs/setup/assisted/advanced/')],
-      ['Integrations', matching('docs/setup/assisted/integrations/')],
-      ['Recovery', matching('docs/setup/assisted/recovery/')],
-      ['Command and state reference', matching('docs/setup/assisted/reference/')],
-      ['Other assisted tasks', matching('docs/setup/assisted/')],
+    group('AI-assisted setup', [
+      ['Prepare and operate', coreSequence],
+      ['Clients', matching('docs/setup/ai/clients/')],
+      ['Other AI tasks', matching('docs/setup/ai/')],
     ]),
     group('Manual Setup', [
       ['Base setup', ['docs/setup/manual/README.md', 'docs/setup/manual/macos.md', 'docs/setup/manual/homebrew.md',

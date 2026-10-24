@@ -16,7 +16,7 @@ printf 'postgres\n' > "$TEST_STATE/database-services"
 printf 'claude\n' > "$TEST_STATE/ai-clients"
 printf 'brew-formula\tbat\n' > "$TEST_STATE/install-manifest.tsv"
 printf 'complete\n' > "$TEST_STATE/completed/08"
-shasum -a 256 "$PROJECT_DIR/docs/setup/assisted/advanced/15-full-dotfiles-and-bootstrap.md" \
+shasum -a 256 "$PROJECT_DIR/docs/shared/tools/15-full-dotfiles-and-bootstrap.md" \
   | awk '{print $1}' > "$TEST_STATE/advanced/completed/15"
 
 cat > "$MOCK_BIN/docker" <<'EOF'
@@ -77,7 +77,7 @@ grep -Fq 'database health or configuration verification failed' "$TEST_ROOT/stat
 grep -Eq 'partial +10 — AI clients' "$TEST_ROOT/status.txt"
 grep -Eq 'not selected +10A — OmniRoute AI gateway' "$TEST_ROOT/status.txt"
 grep -Eq 'ready +13 — Enhanced CLI tools' "$TEST_ROOT/status.txt"
-grep -Eq 'ready +15 — Full dotfiles and bootstrap' "$TEST_ROOT/status.txt"
+grep -Eq 'partial +15 — Full dotfiles and bootstrap' "$TEST_ROOT/status.txt"
 grep -Eq 'pending +16 — Brewfile, applications, and editor inventory' "$TEST_ROOT/status.txt"
 
 grep -Fq 'Optional phase: partially complete' "$TEST_ROOT/status.txt"

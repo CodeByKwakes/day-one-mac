@@ -4,9 +4,9 @@ Thank you for improving Day One Mac.
 
 ## Before changing code
 
-1. Read [Start Here](docs/START-HERE.md) and the affected phase or module.
-2. Keep required Phases 1–8 separate from optional Modules 9–14 and advanced
-   Modules 15–22.
+1. Read [Start Here](docs/START-HERE.md) and the affected capability guide.
+2. Keep AI-assisted and manual setup as the two routes. Retained utilities
+   perform explicit operations and check their actual prerequisites.
 3. Never add real credentials, private keys, personal inventories, company
    names, private repository names, vault names or absolute personal paths.
 4. Keep scripts compatible with the Bash 3.2 included with macOS.
@@ -21,7 +21,7 @@ Thank you for improving Day One Mac.
 ## Source ownership
 
 Runtime behavior lives in `src/`; `scripts/` preserves the public launcher and
-old entry points. Edit canonical guides in `docs/setup/assisted`, `docs/setup/manual` and `docs/shared`. Old numbered guide folders are aliases.
+old entry points. Edit canonical guides in `docs/setup/ai`, `docs/setup/manual` and `docs/shared`. Old numbered guide folders are aliases.
 Contributor history and release procedures belong in `maintainers/`.
 
 Application, module, phase and dependency catalogues live in `config/catalogs/`.
@@ -108,3 +108,27 @@ Use this order for a new or substantially revised setup guide:
 6. **Next steps and sources:** where to continue, vendor references, and anything not verified on real hardware or in the published release.
 
 Reference pages may use tables instead of a procedure. Compatibility pages preserve old headings and forward to the current owner; they must not grow a second copy of the instructions. Update the reader, aliases and runtime inventory with every move.
+
+## AI-assisted and manual architecture
+
+The normal setup choices are AI-assisted and manual. Canonical commands live in
+`docs/setup/manual/`; AI guides explain client preparation and the approval cycle.
+Shared prerequisites, reference and recovery live in `docs/shared/`. The optional
+`day-one-mac` bundle exposes bounded reviewed utilities, not a whole-machine runner.
+
+Add executable metadata to `config/catalogs/`, package dependencies explicitly in
+`config/runtime-files.txt`, and document prerequisites and ownership before adding
+an apply action. Skills in `templates/skills/` share instructions across clients;
+role adapters in `templates/agents/` use each client's own format. Never treat a
+skill as permission to execute commands.
+
+Historical runner source and fixtures remain for previous-version recovery research;
+they are excluded from the current runtime and active setup path. Integration
+checks cover command retirement, fresh-state utilities, assistant exports and the
+retained operations. See `maintainers/plans/2026-10-24-ai-manual-progress.md` in a source checkout
+for replaced test contracts. Do not restore phase-marker gates.
+
+Before proposing an architectural release, run the lint, static, integration and
+packaged acceptance gates, then exercise an isolated upgrade and rollback from
+the previous release. Live account, managed-device and container checks require
+separate acceptance evidence; a passing fixture is not that evidence.

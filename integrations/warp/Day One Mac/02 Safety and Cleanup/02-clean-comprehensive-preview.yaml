@@ -1,5 +1,4 @@
-name: "Cleanup · Preview comprehensive recoverable cleanup"
-command: "day-one-mac clean --zap-cask-data --archive-projects --archive-docker-data --archive-orbstack-data --archive-1password-data --archive-ssh-private-keys --prepare-keychain-reset"
-tags: ["day-one-mac", "cleanup", "credentials", "containers", "preview", "read-only"]
-description: "Preview the deepest recovery-archive scope. It deliberately omits --execute."
+name: "Day One · Read manual lifecycle"
+command: "day-one-mac docs open docs/setup/manual/lifecycle.md"
+tags: ["day-one-mac", "review"]
 shells: ["zsh"]

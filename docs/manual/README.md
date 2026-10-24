@@ -6,7 +6,7 @@ Continue with the [current guide](../setup/manual/README.md). This compatibility
 
 ## Choose your route
 
-See the [current instructions](../setup/manual/README.md#choose-your-route).
+See the [current instructions](../setup/manual/README.md).
 
 ## What the CLI does and what you do
 

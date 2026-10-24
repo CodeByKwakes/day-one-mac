@@ -46,7 +46,7 @@ expect_failure() {
 }
 
 # Registry is data, with fixed IDs and real installed guide paths.
-awk -F '\t' '!/^#/ {if (NF != 6 || seen[$1]++ || ($3 != "guided" && $3 != "executable") || $4 != "08") exit 1; count++} END {if (count != 14) exit 1}' \
+awk -F '\t' '!/^#/ {if (NF != 6 || seen[$1]++ || ($3 != "guided" && $3 != "executable") || $4 != "platform-and-tool") exit 1; count++} END {if (count != 14) exit 1}' \
   "$PROJECT_DIR/config/catalogs/modules.tsv" || fail 'invalid registry'
 while IFS=$'\t' read -r id layer mode prerequisite title guide; do
   [[ "$id" != \#* ]] || continue
@@ -62,12 +62,11 @@ run_module --module 13 --plan --packages eza,fzf > "$TEST_ROOT/plan"
 grep -Fq 'brew install eza' "$TEST_ROOT/plan" || fail 'missing plan operation'
 [[ ! -e "$TEST_STATE" && ! -e "$TEST_STATE.operation.lock" ]] || fail 'plan created state/lock'
 if grep -q '^install ' "$MOCK_CALLS"; then fail 'plan installed packages'; fi
-expect_failure 10 run_module --module 13 --apply --packages eza --yes
 expect_failure 2 run_module --module 13 --plan --apply --packages eza
 expect_failure 2 run_module --module 13 --resume --packages eza
 expect_failure 2 run_module --module 13 --plan --services postgres
 expect_failure 2 run_module --module 13 --check
-expect_failure 10 run_module --module 11 --apply
+expect_failure 1 run_module --module 11 --apply
 expect_failure 2 run_module --module 20 --plan --services postgres
 expect_failure 2 run_module --module ../09 --plan
 [[ ! -e "$TEST_STATE" ]] || fail 'invalid request saved state'
@@ -186,7 +185,6 @@ case "$1" in
 esac
 EOF
 chmod +x "$MOCK_BIN/chezmoi"
-expect_failure 10 run_alias cli-tools --packages eza --aliases --yes
 "$SCRIPT_DIR/../tests/integration/seed-required-state.sh" "$ALIAS_STATE"
 run_alias cli-tools --packages eza --aliases --yes > "$TEST_ROOT/alias-managed"
 cmp -s "$ALIAS_SOURCE_FIXTURE" "$ALIAS_TARGET" || fail 'managed source was not applied'
@@ -211,3 +209,17 @@ expect_failure 1 run_alias cli-tools --packages eza --aliases --yes
 cmp -s "$ALIAS_TARGET" "$TEST_ROOT/invalid-marked-aliases" || fail 'invalid existing block was changed'
 
 printf 'PASS: module registry, preview, apply, check, resume, ownership, backups and locks\n'
+
+# A new manual shell can select ownership without a retired setup record.
+ALIAS_HOME="$TEST_ROOT/fresh-alias-home"
+ALIAS_STATE="$ALIAS_HOME/state"
+ALIAS_TARGET="$ALIAS_HOME/.config/zsh/aliases.zsh"
+mkdir -p "$(dirname "$ALIAS_TARGET")"
+printf 'source "$HOME/.config/zsh/aliases.zsh"\n' > "$ALIAS_HOME/.zshrc"
+printf '# Fresh manually owned file\n' > "$ALIAS_TARGET"
+run_alias tool --module 13 --plan --packages eza --aliases --aliases-owner unmanaged > "$TEST_ROOT/fresh-alias-plan"
+[[ ! -e "$ALIAS_STATE" ]] || fail 'fresh alias plan wrote state'
+run_alias tool --module 13 --apply --packages eza --aliases --aliases-owner unmanaged --yes > "$TEST_ROOT/fresh-alias-apply"
+grep -Fq '# Day One Mac optional eza aliases' "$ALIAS_TARGET" || fail 'fresh alias owner was not applied'
+[[ ! -e "$ALIAS_STATE/completed" && ! -e "$ALIAS_STATE/dotfiles-versioning" ]] || fail 'alias choice manufactured legacy state'
+printf 'PASS: fresh manual shell aliases use an explicit owner without phase records\n'

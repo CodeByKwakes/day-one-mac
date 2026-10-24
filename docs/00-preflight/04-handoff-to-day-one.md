@@ -2,16 +2,16 @@
 
 # Continue to Day One Mac
 
-Continue with the [current guide](../setup/assisted/existing-mac/04-handoff-to-day-one.md). This compatibility page preserves existing links.
+Continue with the [current guide](../shared/migration/from-scripted-setup.md). This compatibility page preserves existing links.
 
 ## Route A — after Apple reset
 
-See the [current instructions](../setup/assisted/existing-mac/04-handoff-to-day-one.md#route-a---after-apple-reset).
+See the [current instructions](../shared/migration/from-scripted-setup.md).
 
 ## Route B — after account-preserving cleanup
 
-See the [current instructions](../setup/assisted/existing-mac/04-handoff-to-day-one.md#route-b---after-account-preserving-cleanup).
+See the [current instructions](../shared/migration/from-scripted-setup.md).
 
 ## Start the eight required phases
 
-See the [current instructions](../setup/assisted/existing-mac/04-handoff-to-day-one.md#start-the-eight-required-phases).
+See the [current instructions](../shared/migration/from-scripted-setup.md).

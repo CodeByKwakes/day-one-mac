@@ -2,23 +2,23 @@
 
 # Advanced 16 — Brewfile, applications, and editor inventory
 
-Continue with the [current guide](../../../setup/assisted/advanced/16-brewfile-apps-and-editor.md). This compatibility page preserves existing links.
+Continue with the [current guide](../../../shared/tools/16-brewfile-apps-and-editor.md). This compatibility page preserves existing links.
 
 ## Outcome
 
-See the [current instructions](../../../setup/assisted/advanced/16-brewfile-apps-and-editor.md#outcome).
+See the [current instructions](../../../shared/tools/16-brewfile-apps-and-editor.md#outcome).
 
 ## Step 16.1 — Capture reality without changing it
 
-See the [current instructions](../../../setup/assisted/advanced/16-brewfile-apps-and-editor.md#1-capture-reality-without-changing-it).
+See the [current instructions](../../../shared/tools/16-brewfile-apps-and-editor.md#1-capture-reality-without-changing-it).
 
 ### Executable selected-payload route
 
-See the [current instructions](../../../setup/assisted/advanced/16-brewfile-apps-and-editor.md#executable-selected-payload-route).
+See the [current instructions](../../../shared/tools/16-brewfile-apps-and-editor.md#executable-selected-payload-route).
 
 ### Broader manual inventory
 
-See the [current instructions](../../../setup/assisted/advanced/16-brewfile-apps-and-editor.md).
+See the [current instructions](../../../shared/tools/16-brewfile-apps-and-editor.md).
 
 ## Step 16.2 — Back up the desired-state file
 
@@ -58,4 +58,4 @@ See the [current instructions](../../../setup/manual/apps/brewfile.md#rollback).
 
 ## Advanced 16 completion checklist 🚦
 
-See the [current instructions](../../../setup/assisted/advanced/16-brewfile-apps-and-editor.md#advanced-16-completion-checklist-).
+See the [current instructions](../../../shared/tools/16-brewfile-apps-and-editor.md#advanced-16-completion-checklist-).

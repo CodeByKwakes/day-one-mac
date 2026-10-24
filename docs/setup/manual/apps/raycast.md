@@ -1,4 +1,4 @@
-[← Optional apps](README.md) · **Raycast setup** · [Day One command pack](../../assisted/integrations/raycast.md) · [AI providers](raycast-ai-providers.md) · [Keyboard shortcuts](keyboard-shortcuts.md) · [Warp setup →](../terminals/warp.md)
+[← Optional apps](README.md) · **Raycast setup** · [Day One command pack](../../../shared/tools/raycast.md) · [AI providers](raycast-ai-providers.md) · [Keyboard shortcuts](keyboard-shortcuts.md) · [Warp setup →](../terminals/warp.md)
 
 # Set up, back up, and restore Raycast
 
@@ -117,7 +117,7 @@ Try the two core controls:
 Create aliases or dedicated hotkeys only for commands used repeatedly. Too many
 global shortcuts become harder to remember and are more likely to conflict.
 
-After the required base is complete, the optional [Day One Raycast command pack](../../assisted/integrations/raycast.md)
+After the required base is complete, the optional [Day One Raycast command pack](../../../shared/tools/raycast.md)
 can generate safe, track-aware and AI-aware Script Commands. It keeps setup
 checks searchable without assigning dozens of global shortcuts.
 
@@ -212,7 +212,7 @@ global shortcuts or Accessibility access are restricted.
 ### Raycast AI
 
 Raycast AI is not part of the required launcher. Leave it unconfigured unless
-it was deliberately selected after Phase 8. When selected, keep tool approval
+it was deliberately selected after checking the operation prerequisites. When selected, keep tool approval
 on **Ask**, leave the globally allowed-tools list empty, then choose exactly one
 initial provider route in the [Raycast AI providers guide](raycast-ai-providers.md).
 
@@ -334,7 +334,7 @@ Do not assume that moving Raycast to Trash removes its settings or cloud data.
 
 ## Add optional integrations later
 
-- [Day One Mac Raycast commands](../../assisted/integrations/raycast.md) adds the reviewed local
+- [Day One Mac Raycast commands](../../../shared/tools/raycast.md) adds the reviewed local
   command directory and the recommended extension catalogue.
 - [Second Brain - Obsidian and Raycast](../second-brain/obsidian/raycast.md)
   adds vault-aware capture and search commands.
@@ -392,4 +392,4 @@ format.
 
 ---
 
-[← Optional apps](README.md) · [Add Day One commands](../../assisted/integrations/raycast.md) · [Choose an AI provider](raycast-ai-providers.md) · [Configure Warp →](../terminals/warp.md) · [Second Brain options →](../second-brain/README.md)
+[← Optional apps](README.md) · [Add Day One commands](../../../shared/tools/raycast.md) · [Choose an AI provider](raycast-ai-providers.md) · [Configure Warp →](../terminals/warp.md) · [Second Brain options →](../second-brain/README.md)

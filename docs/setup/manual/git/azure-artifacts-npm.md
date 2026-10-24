@@ -1,4 +1,4 @@
-[← Manual handbook](../README.md) · [Node.js toolchains](../../assisted/06-language-toolchains.md)
+[← Manual handbook](../README.md) · [Node.js toolchains](../languages.md)
 
 # Configure npm access to Azure Artifacts on macOS
 
@@ -62,7 +62,7 @@ npm --version
 ```
 
 If either command is unavailable, complete the
-[Node.js toolchain setup](../../assisted/06-language-toolchains.md) first. For a
+[Node.js toolchain setup](../languages.md) first. For a
 fully manual installation, use [Manual 6](../languages.md).
 
 Your Azure Repos SSH key, GitHub login, or `az login` session does not by itself

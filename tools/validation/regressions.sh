@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 # Sourced by tools/validate.sh; run_fixture captures failures and diagnostics.
-if "$SCRIPT_DIR/../tests/integration/test-audit-regressions.sh"; then
-  pass "audit behavioral regressions pass"
-else
-  fail "audit behavioral regressions failed"
-fi
 
 if "$SCRIPT_DIR/../tests/integration/test-release-installer.sh"; then
   pass "release archive and installer regressions pass"
@@ -16,25 +11,13 @@ run_fixture "documentation routes preserve canonical ownership and old section l
   "documentation route compatibility failed" \
   node "$SCRIPT_DIR/../tests/integration/test-documentation-routes.cjs" || true
 
-run_fixture "all 96 base selection plans preserve read-only behavior" \
-  "selection matrix failed" \
-  /usr/bin/env python3 -I -B "$SCRIPT_DIR/../tests/integration/test-selection-matrix.py" || true
 
 run_fixture "audit remediation gates preserve current, credential-free evidence" \
   "audit remediation regression failed" \
   "$SCRIPT_DIR/../tests/integration/test-audit-remediation.sh" || true
 
-run_fixture "Day One Mac regression fixture passes" \
-  "Day One Mac regression fixture failed" \
-  "$SCRIPT_DIR/../tests/integration/test-day-one-mac.sh" || true
 
-run_fixture "required phase actions preserve read-only and resume boundaries" \
-  "required phase action regressions failed" \
-  "$SCRIPT_DIR/../tests/integration/test-required-actions.sh" || true
 
-run_fixture "early AI setup preserves inspection, installation and phase boundaries" \
-  "AI setup checkpoint regressions failed" \
-  "$SCRIPT_DIR/../tests/integration/test-ai-setup.sh" || true
 
 run_fixture "HTTPS helpers and Git access gates preserve authentication boundaries" \
   "hosting authentication regression fixture failed" \
@@ -102,17 +85,11 @@ run_fixture "Homebrew, external, App Store, missing, and conflict application fi
   "application ownership and provenance regression fixture failed" \
   "$SCRIPT_DIR/../tests/integration/test-application-ownership.sh" || true
 
-run_fixture "Stage 0 preflight regression fixture passes" \
-  "Stage 0 preflight regression fixture failed" \
-  "$SCRIPT_DIR/../tests/integration/test-preflight.sh" || true
 
 run_fixture "secret scan, SSH identity pairing, and validator dependency fixtures pass" \
   "secret scan, SSH identity pairing, or validator dependency fixture failed" \
   "$SCRIPT_DIR/../tests/integration/test-secret-scan-and-ssh.sh" || true
 
-run_fixture "1Password CLI integration, deadline, and track key-type fixtures pass" \
-  "1Password CLI integration, deadline, or track key-type fixture failed" \
-  "$SCRIPT_DIR/../tests/integration/test-phase3-onepassword.sh" || true
 
 run_fixture "standalone runtime installs before Phase 1 and survives source removal" \
   "portable dispatcher installation or checkout resolution fixture failed" \
@@ -162,3 +139,9 @@ run_fixture "phase dependencies isolate optional changes" "phase dependency regr
 run_fixture "restructure safety regressions fail closed" \
   "restructure safety regression failed" \
   "$SCRIPT_DIR/../tests/integration/test-restructure-safety.sh" || true
+
+run_fixture "retired setup commands are inert; tools work without phase markers" "AI/manual route contract failed" node "$PROJECT_DIR/tests/integration/test-ai-manual-contract.cjs" || true
+run_fixture "assistant exports preserve scope, integrity and client separation" "assistant workspace contract failed" node "$PROJECT_DIR/tests/integration/test-assistant-workspace.cjs" || true
+run_fixture "archive integrity, path safety and locks fail closed" "runtime safety regression failed" "$PROJECT_DIR/tests/integration/test-audit-regressions.sh" || true
+
+run_fixture "retained scalar settings and recorded rollback preserve recovery" "retained operation regression failed" "$PROJECT_DIR/tests/integration/test-retained-operations.sh" || true

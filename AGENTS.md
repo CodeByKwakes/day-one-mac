@@ -1,20 +1,19 @@
 # Project instructions for AI agents
 
 Day One Mac is a public, Apple-silicon-only macOS development-environment
-installer. Read `docs/START-HERE.md`, `docs/shared/explanation/process-overview.md` and the
-affected phase before changing behaviour.
+guide and reviewed utility bundle. Read `docs/START-HERE.md`, `docs/shared/explanation/process-overview.md` and the
+affected capability before changing behaviour.
 
-The normal user path is the public release installer, the versioned standalone
-runtime, and the `day-one-mac` command. User-facing examples should use that
-command. Direct scripts belong only in contributor, low-level troubleshooting,
-or recovery instructions. Never make an ordinary setup depend on a permanent
-Git checkout or a personal absolute path.
+The user journeys are AI-assisted setup and manual setup. Canonical tool
+recipes live under `docs/setup/manual`; AI operation lives under `docs/setup/ai`.
+The optional versioned `day-one-mac` command exposes reviewed operations only.
+Never restore a setup wizard or whole-machine phase runner. A normal user must
+not need a permanent source checkout. Manual setup must not call project scripts.
 
-Documentation must distinguish the **manual route** (no Day One Mac scripts),
-the **script-assisted route** (`day-one-mac`), and **shared manual actions**
-that neither route can automate. Required work is a phase, an inserted gate is
-a checkpoint, and optional or advanced work is a module. Do not mix routes
-inside one procedure unless the transition is an explicit recovery step.
+Preserve ownership and recovery state. Retained tools check real prerequisites;
+old phase markers are historical evidence, never current completion. Keep
+numeric operation IDs stable for compatibility. Shared references own tool
+contracts, prerequisites and terminology. Avoid duplicating executable recipes.
 
 Never add credentials, private keys, recovery codes, real personal inventories,
 company identifiers, private repository names, 1Password vault names or
@@ -40,8 +39,9 @@ gate. Runtime changes additionally need packaged checks; see `CONTRIBUTING.md`.
 
 ## Restructuring and maintenance
 
-Read `maintainers/plans/2026-10-19-restructure.md` for the current migration
-contract and progress. Preserve public commands and state paths. Configuration
+Read `maintainers/plans/2026-10-24-ai-manual-rewrite.md` for the approved migration.
+The earlier restructure is historical. Retired public commands must stop with
+a migration notice; preserve retained interfaces and all recovery state paths. Configuration
 catalogues own executable metadata; guides explain it. Keep user documentation,
 contributor tooling and runtime packaging distinct. Test an isolated packaged
 upgrade and rollback before installing an architectural change on a real Mac.

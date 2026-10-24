@@ -1,18 +1,21 @@
 # Upgrade notes for earlier installations
 
+> Historical upgrade record. Old setup-runner commands below are retired.
+> Use the [current migration guide](migration/from-scripted-setup.md).
+
 This page covers upgrades from earlier Day One Mac layouts and legacy
 installations. A new Mac can start with the current installation guide.
 
 > **Current installation:** download the release installer, run
 > `day-one-mac --wizard`, and use the command names in
-> [Command reference](../setup/assisted/reference/command-reference.md).
+> [Command reference](reference/command-reference.md).
 
 ## October 2026 project reorganization
 
 Public `day-one-mac` commands, phase IDs 01-08 and module IDs are preserved.
 Module 12 remains retired. The current source provides `day-one-mac vscode-profile`
 for profiles; check installed help before relying on it in a published release.
-The local `v1.5.0` tag predates that command. See the [profile operation](../setup/assisted/optional/vscode-profiles.md) for availability and the supported alternative.
+The local `v1.5.0` tag predates that command. See the [profile operation](tools/vscode-profiles.md) for availability and the supported alternative.
 Implementations moved into `src/`; old supported script paths are small
 compatibility entry points. The current source groups scripted setup under `docs/setup/assisted`, complete
 manual tasks under `docs/setup/manual`, and shared requirements/reference under
@@ -141,8 +144,8 @@ remain user documents and are never removed as compatibility data.
 
 ---
 
-[← Reference index](README.md) · [Portable runtime](../setup/assisted/runtime.md) ·
-[Phase 5](../setup/assisted/05-dotfiles-and-shell.md)
+[← Reference index](README.md) · [Portable runtime](tools/runtime.md) ·
+[Phase 5](../setup/manual/shell/README.md)
 
 ## Runtime and phase-contract upgrade
 

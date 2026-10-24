@@ -1,5 +1,4 @@
-name: "Cleanup · Preview broad development cleanup"
-command: "day-one-mac clean"
-tags: ["day-one-mac", "cleanup", "preview", "read-only"]
-description: "Inventory all Homebrew software and known development settings; make no changes."
+name: "Day One · Read migration guidance"
+command: "day-one-mac docs open docs/shared/migration/from-scripted-setup.md"
+tags: ["day-one-mac", "review"]
 shells: ["zsh"]

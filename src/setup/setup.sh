@@ -2,6 +2,10 @@
 # Minimal, resumable setup for a genuinely clean Mac.
 # Compatible with the Bash 3.2 shipped by macOS.
 set -euo pipefail
+# Retained only for historical evidence fixtures; excluded from runtime packages.
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  exec /bin/bash "$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/src/operations/retired-setup.sh" "$@"
+fi
 
 DAY_ONE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SCRIPT_DIR="$DAY_ONE_ROOT/scripts"

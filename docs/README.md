@@ -1,205 +1,164 @@
 # Documentation
 
-Choose [Scripted (Assisted) Setup](setup/assisted/README.md) or
-[Manual Setup](setup/manual/README.md). Both use the [shared prerequisites](shared/prerequisites.md).
-Each table lists canonical guides; legacy paths remain compatibility links.
+Begin with [Start here](START-HERE.md). Choose AI-assisted or manual setup;
+shared references and reviewed utilities support individual tasks.
 
-## Scripted (Assisted) Setup
+## AI-assisted setup
 
-| Guide | Topic |
+| Guide | Location |
 |---|---|
-| [Optional AI setup checkpoint](setup/assisted/ai-setup-assistant.md) | Before Phase 1 |
-| [Phase 1 - First boot and setup decisions](setup/assisted/01-first-boot-and-decisions.md) | Entry and base setup |
-| [Phase 2 - Command-line foundation](setup/assisted/02-command-line-foundation.md) | Entry and base setup |
-| [Phase 3 - Security, 1Password, and SSH](setup/assisted/03-security-and-ssh.md) | Entry and base setup |
-| [Phase 4 - Core tools, folders, Git, and hosting](setup/assisted/04-core-tools-and-hosting.md) | Entry and base setup |
-| [Phase 5 - Configuration ownership, shell, and prompt](setup/assisted/05-dotfiles-and-shell.md) | Entry and base setup |
-| [Phase 6 - Language toolchains and pnpm](setup/assisted/06-language-toolchains.md) | Entry and base setup |
-| [Phase 7 - VS Code base](setup/assisted/07-vscode-base.md) | Entry and base setup |
-| [Phase 8 - Verify, record, and reproduce](setup/assisted/08-verify-and-reproduce.md) | Entry and base setup |
-| [Required Installation Centre](setup/assisted/INSTALLATION-CENTRE.md) | Entry and base setup |
-| [Early macOS Settings Wizard](setup/assisted/MACOS-SETTINGS.md) | Entry and base setup |
-| [Scripted (Assisted) Setup](setup/assisted/README.md) | Entry and base setup |
-| [Advanced 15 - Full dotfiles and bootstrap](setup/assisted/advanced/15-full-dotfiles-and-bootstrap.md) | advanced |
-| [Advanced 16 - Brewfile, applications, and editor inventory](setup/assisted/advanced/16-brewfile-apps-and-editor.md) | advanced |
-| [Advanced 17 - Shell and package automation](setup/assisted/advanced/17-shell-and-package-automation.md) | advanced |
-| [Advanced 18 - Hosting identities, Azure DevOps, and worktrees](setup/assisted/advanced/18-hosting-identities-azure-and-worktrees.md) | advanced |
-| [Advanced 19 - macOS, GUI applications, and local HTTPS](setup/assisted/advanced/19-macos-gui-and-local-https.md) | advanced |
-| [Advanced 20 - Restore and migrate selected data](setup/assisted/advanced/20-restore-and-migrate.md) | advanced |
-| [Advanced 21 - Audit, maintenance, and rebuild](setup/assisted/advanced/21-audit-maintenance-and-rebuild.md) | advanced |
-| [Advanced 22 - Shared AI skills and MCP operations](setup/assisted/advanced/22-ai-skills-and-mcp-operations.md) | advanced |
-| [Advanced optional setup](setup/assisted/advanced/README.md) | advanced |
-| [Choose Route A or Route B](setup/assisted/existing-mac/00-existing-mac-decision.md) | existing-mac |
-| [Step 1 - Create and review the safety report](setup/assisted/existing-mac/01-private-inventory.md) | existing-mac |
-| [Steps 2-3 - Prepare, copy, and prove the backup can be restored](setup/assisted/existing-mac/02-backup-readiness.md) | existing-mac |
-| [Route B only - Preview or apply account cleanup](setup/assisted/existing-mac/03-account-preserving-cleanup.md) | existing-mac |
-| [Continue to Day One Mac](setup/assisted/existing-mac/04-handoff-to-day-one.md) | existing-mac |
-| [Stage 0 - Safely prepare an existing Mac](setup/assisted/existing-mac/README.md) | existing-mac |
-| [Use Day One Mac from Raycast](setup/assisted/integrations/raycast.md) | integrations |
-| [Import the bundled Open in VS Code shortcut](setup/assisted/integrations/shortcuts.md) | integrations |
-| [Optional 9 - Local databases with containers](setup/assisted/optional/09-databases.md) | optional |
-| [Optional 10: install AI client payloads](setup/assisted/optional/10-ai-agents.md) | optional |
-| [Optional 10A: create an owned OmniRoute container](setup/assisted/optional/10a-omniroute.md) | optional |
-| [Optional 11: generate MCP connection snippets](setup/assisted/optional/11-mcp-servers.md) | optional |
-| [Module 12 retired - VS Code profiles moved](setup/assisted/optional/12-vscode-profiles.md) | optional |
-| [Optional 13 - Enhanced command-line toolkit 🤖 ⚙️](setup/assisted/optional/13-enhanced-cli-tools.md) | optional |
-| [Optional 14 - Import the Day One Mac Warp Drive bundle](setup/assisted/optional/14-warp-drive.md) | optional |
-| [Optional Day One Mac modules](setup/assisted/optional/README.md) | optional |
-| [AI workspaces, projectless tasks, and repository work](setup/assisted/optional/ai-workspaces.md) | optional |
-| [Dynamic vault and domain manager](setup/assisted/optional/second-brain.md) | optional |
-| [Generate, replace and restore VS Code profiles](setup/assisted/optional/vscode-profiles.md) | optional |
-| [Finalise, roll back, remove, or clean Day One Mac](setup/assisted/recovery/README.md) | recovery |
-| [Finalise or detach Day One Mac](setup/assisted/recovery/finalize.md) | recovery |
-| [Remove Day One Mac safely](setup/assisted/recovery/remove-day-one-mac.md) | recovery |
-| [Clean the development state without erasing the Mac](setup/assisted/recovery/rollback.md) | recovery |
-| [Assisted command and state reference](setup/assisted/reference/README.md) | reference |
-| [Day One Mac command reference](setup/assisted/reference/command-reference.md) | reference |
-| [Module execution reference](setup/assisted/reference/module-execution.md) | reference |
-| [Optional and advanced status dashboard](setup/assisted/reference/optional-status.md) | reference |
-| [Personal and managed workstation readiness](setup/assisted/reference/workstation-readiness.md) | reference |
-| [Install and manage the standalone runtime](setup/assisted/runtime.md) | Entry and base setup |
+| [AI-assisted setup](setup/ai/README.md) | `setup/ai` |
+| [Prepare the AI client and connection](setup/ai/bootstrap.md) | `setup/ai` |
+| [Use the setup workspace with Claude Code](setup/ai/clients/claude.md) | `setup/ai/clients` |
+| [Use the setup workspace with Codex](setup/ai/clients/codex.md) | `setup/ai/clients` |
+| [Use the setup workspace with GitHub Copilot](setup/ai/clients/copilot.md) | `setup/ai/clients` |
+| [Operate and maintain the setup assistant](setup/ai/operation.md) | `setup/ai` |
 
-## Manual Setup
+## Manual setup
 
-| Guide | Topic |
+| Guide | Location |
 |---|---|
-| [Prepare AI assistance](setup/manual/ai/setup-assistant.md) | Optional pre-setup client and tool check |
-| [Manual Setup](setup/manual/README.md) | Entry and base setup |
-| [Install and configure selected AI clients](setup/manual/ai/clients.md) | ai |
-| [Project instructions, agents and skills](setup/manual/ai/instructions-agents-skills.md) | ai |
-| [Set up MCP servers with Docker](setup/manual/ai/mcp-docker.md) | ai |
-| [Project and global MCP connections](setup/manual/ai/mcp.md) | ai |
-| [Configure an OmniRoute gateway manually](setup/manual/ai/omniroute.md) | ai |
-| [AI workflows in VS Code](setup/manual/ai/workflows.md) | ai |
-| [Set up selected applications](setup/manual/apps/README.md) | apps |
-| [Day One Mac keyboard shortcuts](setup/manual/apps/keyboard-shortcuts.md) | apps |
-| [Optional macOS Shortcuts for development](setup/manual/apps/macos-shortcuts.md) | apps |
-| [Choose and configure a Raycast AI provider](setup/manual/apps/raycast-ai-providers.md) | apps |
-| [Set up, back up, and restore Raycast](setup/manual/apps/raycast.md) | apps |
-| [Configure Vorssaint for software development on macOS](setup/manual/apps/vorssaint.md) | apps |
-| [Verify and back up the finished setup](setup/manual/backup-and-restore.md) | Entry and base setup |
-| [Database setup and operations](setup/manual/databases/README.md) | databases |
-| [Run disposable local database containers](setup/manual/databases/containers.md) | databases |
-| [PostgreSQL setup with DataGrip and VS Code](setup/manual/databases/datagrip.md) | databases |
-| [PostgreSQL setup with DBeaver Community and VS Code](setup/manual/databases/dbeaver.md) | databases |
-| [PostgreSQL migrations, verification and recovery](setup/manual/databases/operations.md) | databases |
-| [PostgreSQL setup across local, development, test and production](setup/manual/databases/postgresql.md) | databases |
-| [Connect VS Code to PostgreSQL](setup/manual/databases/vscode.md) | databases |
-| [Choose an AI working directory](setup/manual/development/ai-workspaces.md) | development |
-| [Developer folders and optional ghq](setup/manual/development/folders.md) | development |
-| [Developer Resources](setup/manual/development/resources.md) | development |
-| [Git worktrees: choose your workflow](setup/manual/development/worktrees/README.md) | development/worktrees |
-| [Git worktrees with Claude](setup/manual/development/worktrees/claude.md) | development/worktrees |
-| [Git worktrees with Codex](setup/manual/development/worktrees/codex.md) | development/worktrees |
-| [Git worktrees with VS Code Agents and GitHub Copilot](setup/manual/development/worktrees/copilot.md) | development/worktrees |
-| [Worktree environment files and running applications](setup/manual/development/worktrees/environment.md) | development/worktrees |
-| [Git worktrees from Terminal](setup/manual/development/worktrees/terminal.md) | development/worktrees |
-| [Git worktree troubleshooting](setup/manual/development/worktrees/troubleshooting.md) | development/worktrees |
-| [Git worktrees in VS Code](setup/manual/development/worktrees/vscode.md) | development/worktrees |
-| [Configure VS Code for development](setup/manual/editors/vscode.md) | editors |
-| [Configure npm access to Azure Artifacts on macOS](setup/manual/git/azure-artifacts-npm.md) | git |
-| [Clone a private GitHub setup repository](setup/manual/git/github-private-repository.md) | git |
-| [Configure Git and provider access](setup/manual/git/setup.md) | git |
-| [Install Apple tools and Homebrew](setup/manual/homebrew.md) | Entry and base setup |
-| [Set up language toolchains](setup/manual/languages.md) | Entry and base setup |
-| [Enable local HTTPS for a development project](setup/manual/local-https.md) | Entry and base setup |
-| [Prepare macOS](setup/manual/macos.md) | Entry and base setup |
-| [Maintain the environment](setup/manual/maintenance.md) | Entry and base setup |
-| [Prepare a verified encrypted backup destination](setup/manual/preparation/encrypted-backup.md) | preparation |
-| [Set up a Second Brain](setup/manual/second-brain/README.md) | second-brain |
-| [1 - Prerequisites and boundaries](setup/manual/second-brain/notion/01-prerequisites.md) | second-brain/notion |
-| [2 - Workspace and domains](setup/manual/second-brain/notion/02-workspace-and-domains.md) | second-brain/notion |
-| [3 - Databases and properties](setup/manual/second-brain/notion/03-databases-and-properties.md) | second-brain/notion |
-| [4 - Database templates](setup/manual/second-brain/notion/04-templates.md) | second-brain/notion |
-| [5 - Second Brain HQ dashboard](setup/manual/second-brain/notion/05-dashboard.md) | second-brain/notion |
-| [6 - Raycast integration 🤖 ⚙️ Optional](setup/manual/second-brain/notion/06-raycast-integration.md) | second-brain/notion |
-| [7 - AI integration 🤖 ⚙️ Optional](setup/manual/second-brain/notion/07-ai-integration.md) | second-brain/notion |
-| [8 - Operating workflow](setup/manual/second-brain/notion/08-operating-workflow.md) | second-brain/notion |
-| [9 - Backup, export, and recovery expectations](setup/manual/second-brain/notion/09-backup-and-export.md) | second-brain/notion |
-| [Notion Second Brain - Day One Mac](setup/manual/second-brain/notion/README.md) | second-brain/notion |
-| [Notion Second Brain completion checklist](setup/manual/second-brain/notion/checklist.md) | second-brain/notion |
-| [Build an Obsidian knowledge vault manually](setup/manual/second-brain/obsidian/README.md) | second-brain/obsidian |
-| [Alternative tool stacks](setup/manual/second-brain/obsidian/alternatives.md) | second-brain/obsidian |
-| [Second Brain - Day One Mac checklist](setup/manual/second-brain/obsidian/checklist.md) | second-brain/obsidian |
-| [Guide 2 - Obsidian + Claude Code](setup/manual/second-brain/obsidian/claude.md) | second-brain/obsidian |
-| [Guide 3 - Obsidian + Codex](setup/manual/second-brain/obsidian/codex.md) | second-brain/obsidian |
-| [Dashboard across all selected knowledge domains](setup/manual/second-brain/obsidian/dashboard.md) | second-brain/obsidian |
-| [Separate physical Obsidian vaults - three-domain example](setup/manual/second-brain/obsidian/layouts.md) | second-brain/obsidian |
-| [The operating system: capture, process, connect, create](setup/manual/second-brain/obsidian/operations.md) | second-brain/obsidian |
-| [Guide 1 - Obsidian + Raycast](setup/manual/second-brain/obsidian/raycast.md) | second-brain/obsidian |
-| [1Password, SSH and hosting walkthrough](setup/manual/security/1password.md) | security |
-| [Security setup: choose one key owner](setup/manual/security/README.md) | security |
-| [Use an existing SSH agent](setup/manual/security/external-agent.md) | security |
-| [Configure HTTPS Git credentials](setup/manual/security/https-git.md) | security |
-| [Apple Keychain-backed SSH walkthrough](setup/manual/security/keychain-ssh.md) | security |
-| [SSH registration, signing and recovery](setup/manual/security/ssh-signing-and-recovery.md) | security |
-| [Configure the shell and choose a file owner](setup/manual/shell/README.md) | shell |
-| [Add, edit, save, and remove Zsh aliases](setup/manual/shell/aliases.md) | shell |
-| [Set up and maintain chezmoi](setup/manual/shell/chezmoi.md) | shell |
-| [Zsh in VS Code and Warp](setup/manual/shell/zsh.md) | shell |
-| [Set up, back up, and restore Warp](setup/manual/terminals/warp.md) | terminals |
+| [Manual Setup](setup/manual/README.md) | `setup/manual` |
+| [Install and configure selected AI clients](setup/manual/ai/clients.md) | `setup/manual/ai` |
+| [Prepare Day One Mac skills and agents manually](setup/manual/ai/day-one-skills.md) | `setup/manual/ai` |
+| [Project instructions, agents and skills](setup/manual/ai/instructions-agents-skills.md) | `setup/manual/ai` |
+| [Maintain AI skills and MCP access](setup/manual/ai/maintenance.md) | `setup/manual/ai` |
+| [Set up MCP servers with Docker](setup/manual/ai/mcp-docker.md) | `setup/manual/ai` |
+| [Project and global MCP connections](setup/manual/ai/mcp.md) | `setup/manual/ai` |
+| [Configure an OmniRoute gateway manually](setup/manual/ai/omniroute.md) | `setup/manual/ai` |
+| [Prepare optional AI assistance before setup](setup/manual/ai/setup-assistant.md) | `setup/manual/ai` |
+| [AI workflows in VS Code](setup/manual/ai/workflows.md) | `setup/manual/ai` |
+| [Set up selected applications](setup/manual/apps/README.md) | `setup/manual/apps` |
+| [Maintain a selective Brewfile](setup/manual/apps/brewfile.md) | `setup/manual/apps` |
+| [Day One Mac keyboard shortcuts](setup/manual/apps/keyboard-shortcuts.md) | `setup/manual/apps` |
+| [Optional macOS Shortcuts for development](setup/manual/apps/macos-shortcuts.md) | `setup/manual/apps` |
+| [Choose and configure a Raycast AI provider](setup/manual/apps/raycast-ai-providers.md) | `setup/manual/apps` |
+| [Set up, back up, and restore Raycast](setup/manual/apps/raycast.md) | `setup/manual/apps` |
+| [Configure Vorssaint for software development on macOS](setup/manual/apps/vorssaint.md) | `setup/manual/apps` |
+| [Verify and back up the finished setup](setup/manual/backup-and-restore.md) | `setup/manual` |
+| [Database setup and operations](setup/manual/databases/README.md) | `setup/manual/databases` |
+| [Run disposable local database containers](setup/manual/databases/containers.md) | `setup/manual/databases` |
+| [PostgreSQL setup with DataGrip and VS Code](setup/manual/databases/datagrip.md) | `setup/manual/databases` |
+| [PostgreSQL setup with DBeaver Community and VS Code](setup/manual/databases/dbeaver.md) | `setup/manual/databases` |
+| [PostgreSQL migrations, verification and recovery](setup/manual/databases/operations.md) | `setup/manual/databases` |
+| [PostgreSQL setup across local, development, test and production](setup/manual/databases/postgresql.md) | `setup/manual/databases` |
+| [Connect VS Code to PostgreSQL](setup/manual/databases/vscode.md) | `setup/manual/databases` |
+| [Choose an AI working directory](setup/manual/development/ai-workspaces.md) | `setup/manual/development` |
+| [Developer folders and optional ghq](setup/manual/development/folders.md) | `setup/manual/development` |
+| [Developer Resources](setup/manual/development/resources.md) | `setup/manual/development` |
+| [Git worktrees: choose your workflow](setup/manual/development/worktrees/README.md) | `setup/manual/development/worktrees` |
+| [Git worktrees with Claude](setup/manual/development/worktrees/claude.md) | `setup/manual/development/worktrees` |
+| [Git worktrees with Codex](setup/manual/development/worktrees/codex.md) | `setup/manual/development/worktrees` |
+| [Git worktrees with VS Code Agents and GitHub Copilot](setup/manual/development/worktrees/copilot.md) | `setup/manual/development/worktrees` |
+| [Worktree environment files and running applications](setup/manual/development/worktrees/environment.md) | `setup/manual/development/worktrees` |
+| [Git worktrees from Terminal](setup/manual/development/worktrees/terminal.md) | `setup/manual/development/worktrees` |
+| [Git worktree troubleshooting](setup/manual/development/worktrees/troubleshooting.md) | `setup/manual/development/worktrees` |
+| [Git worktrees in VS Code](setup/manual/development/worktrees/vscode.md) | `setup/manual/development/worktrees` |
+| [Configure VS Code for development](setup/manual/editors/vscode.md) | `setup/manual/editors` |
+| [Configure npm access to Azure Artifacts on macOS](setup/manual/git/azure-artifacts-npm.md) | `setup/manual/git` |
+| [Clone a private GitHub setup repository](setup/manual/git/github-private-repository.md) | `setup/manual/git` |
+| [Configure multiple Git identities and hosting defaults](setup/manual/git/multiple-identities.md) | `setup/manual/git` |
+| [Configure Git and provider access](setup/manual/git/setup.md) | `setup/manual/git` |
+| [Install Apple tools and Homebrew](setup/manual/homebrew.md) | `setup/manual` |
+| [Set up language toolchains](setup/manual/languages.md) | `setup/manual` |
+| [Install, update, remove and recover components](setup/manual/lifecycle.md) | `setup/manual` |
+| [Enable local HTTPS for a development project](setup/manual/local-https.md) | `setup/manual` |
+| [Prepare macOS](setup/manual/macos.md) | `setup/manual` |
+| [Maintain the environment](setup/manual/maintenance.md) | `setup/manual` |
+| [Prepare a verified encrypted backup destination](setup/manual/preparation/encrypted-backup.md) | `setup/manual/preparation` |
+| [Restore selected projects and application data](setup/manual/preparation/restore-projects.md) | `setup/manual/preparation` |
+| [Set up a Second Brain](setup/manual/second-brain/README.md) | `setup/manual/second-brain` |
+| [1 - Prerequisites and boundaries](setup/manual/second-brain/notion/01-prerequisites.md) | `setup/manual/second-brain/notion` |
+| [2 - Workspace and domains](setup/manual/second-brain/notion/02-workspace-and-domains.md) | `setup/manual/second-brain/notion` |
+| [3 - Databases and properties](setup/manual/second-brain/notion/03-databases-and-properties.md) | `setup/manual/second-brain/notion` |
+| [4 - Database templates](setup/manual/second-brain/notion/04-templates.md) | `setup/manual/second-brain/notion` |
+| [5 - Second Brain HQ dashboard](setup/manual/second-brain/notion/05-dashboard.md) | `setup/manual/second-brain/notion` |
+| [6 - Raycast integration 🤖 ⚙️ Optional](setup/manual/second-brain/notion/06-raycast-integration.md) | `setup/manual/second-brain/notion` |
+| [7 - AI integration 🤖 ⚙️ Optional](setup/manual/second-brain/notion/07-ai-integration.md) | `setup/manual/second-brain/notion` |
+| [8 - Operating workflow](setup/manual/second-brain/notion/08-operating-workflow.md) | `setup/manual/second-brain/notion` |
+| [9 - Backup, export, and recovery expectations](setup/manual/second-brain/notion/09-backup-and-export.md) | `setup/manual/second-brain/notion` |
+| [Notion Second Brain - Day One Mac](setup/manual/second-brain/notion/README.md) | `setup/manual/second-brain/notion` |
+| [Notion Second Brain completion checklist](setup/manual/second-brain/notion/checklist.md) | `setup/manual/second-brain/notion` |
+| [Build an Obsidian knowledge vault manually](setup/manual/second-brain/obsidian/README.md) | `setup/manual/second-brain/obsidian` |
+| [Alternative tool stacks](setup/manual/second-brain/obsidian/alternatives.md) | `setup/manual/second-brain/obsidian` |
+| [Second Brain - Day One Mac checklist](setup/manual/second-brain/obsidian/checklist.md) | `setup/manual/second-brain/obsidian` |
+| [Guide 2 - Obsidian + Claude Code](setup/manual/second-brain/obsidian/claude.md) | `setup/manual/second-brain/obsidian` |
+| [Guide 3 - Obsidian + Codex](setup/manual/second-brain/obsidian/codex.md) | `setup/manual/second-brain/obsidian` |
+| [Dashboard across all selected knowledge domains](setup/manual/second-brain/obsidian/dashboard.md) | `setup/manual/second-brain/obsidian` |
+| [Separate physical Obsidian vaults - three-domain example](setup/manual/second-brain/obsidian/layouts.md) | `setup/manual/second-brain/obsidian` |
+| [The operating system: capture, process, connect, create](setup/manual/second-brain/obsidian/operations.md) | `setup/manual/second-brain/obsidian` |
+| [Guide 1 - Obsidian + Raycast](setup/manual/second-brain/obsidian/raycast.md) | `setup/manual/second-brain/obsidian` |
+| [1Password, SSH and hosting walkthrough](setup/manual/security/1password.md) | `setup/manual/security` |
+| [Security setup: choose one key owner](setup/manual/security/README.md) | `setup/manual/security` |
+| [Use an existing SSH agent](setup/manual/security/external-agent.md) | `setup/manual/security` |
+| [Configure HTTPS Git credentials](setup/manual/security/https-git.md) | `setup/manual/security` |
+| [Apple Keychain-backed SSH walkthrough](setup/manual/security/keychain-ssh.md) | `setup/manual/security` |
+| [SSH registration, signing and recovery](setup/manual/security/ssh-signing-and-recovery.md) | `setup/manual/security` |
+| [Configure the shell and choose a file owner](setup/manual/shell/README.md) | `setup/manual/shell` |
+| [Add, edit, save, and remove Zsh aliases](setup/manual/shell/aliases.md) | `setup/manual/shell` |
+| [Set up and maintain chezmoi](setup/manual/shell/chezmoi.md) | `setup/manual/shell` |
+| [Extend a reviewed dotfile setup](setup/manual/shell/dotfile-hardening.md) | `setup/manual/shell` |
+| [Maintain shell and package-manager workflows](setup/manual/shell/package-workflows.md) | `setup/manual/shell` |
+| [Zsh in VS Code and Warp](setup/manual/shell/zsh.md) | `setup/manual/shell` |
+| [Set up, back up, and restore Warp](setup/manual/terminals/warp.md) | `setup/manual/terminals` |
 
-## Shared library
+## Shared references and reviewed tools
 
-| Guide | Topic |
+| Guide | Location |
 |---|---|
-| [Shared library](shared/README.md) | Entry and base setup |
-| [Record setup decisions](shared/decisions.md) | Entry and base setup |
-| [Runtime architecture and state contract](shared/explanation/architecture-and-state.md) | explanation |
-| [Understand chezmoi ownership and safety boundaries](shared/explanation/chezmoi-boundaries.md) | explanation |
-| [How setup fits together](shared/explanation/process-overview.md) | explanation |
-| [Plain-English glossary](shared/glossary.md) | Entry and base setup |
-| [Check prerequisites](shared/prerequisites.md) | Entry and base setup |
-| [Read and export documentation offline](shared/reading-and-export.md) | Entry and base setup |
-| [Application ownership: Homebrew, Company Portal, or another installer](shared/reference/application-ownership.md) | reference |
-| [Chezmoi command reference for Day One Mac](shared/reference/chezmoi-commands.md) | reference |
-| [Expected Day One Mac layout](shared/reference/expected-layout.md) | reference |
-| [Applications and formulae catalogue](shared/reference/software-catalogue.md) | reference |
-| [VS Code profile configuration reference](shared/reference/vscode-profile-data.md) | reference |
-| [Terminal basics](shared/terminal-basics.md) | Entry and base setup |
-| [Find the right troubleshooting procedure](shared/troubleshooting.md) | Entry and base setup |
-| [Upgrade notes for earlier installations](shared/upgrade-notes.md) | Entry and base setup |
-| [Verify the selected workstation](shared/verification.md) | Entry and base setup |
+| [Shared library](shared/README.md) | `shared` |
+| [Record setup decisions](shared/decisions.md) | `shared` |
+| [Runtime architecture and state contract](shared/explanation/architecture-and-state.md) | `shared/explanation` |
+| [Understand chezmoi ownership and safety boundaries](shared/explanation/chezmoi-boundaries.md) | `shared/explanation` |
+| [How setup fits together](shared/explanation/process-overview.md) | `shared/explanation` |
+| [Plain-English glossary](shared/glossary.md) | `shared` |
+| [Migrate from scripted setup](shared/migration/from-scripted-setup.md) | `shared/migration` |
+| [Check prerequisites](shared/prerequisites.md) | `shared` |
+| [Read and export documentation offline](shared/reading-and-export.md) | `shared` |
+| [Add a supported capability](shared/reference/adding-capabilities.md) | `shared/reference` |
+| [Application ownership: Homebrew, Company Portal, or another installer](shared/reference/application-ownership.md) | `shared/reference` |
+| [Chezmoi command reference for Day One Mac](shared/reference/chezmoi-commands.md) | `shared/reference` |
+| [Expected Day One Mac layout](shared/reference/expected-layout.md) | `shared/reference` |
+| [Module execution reference](shared/reference/module-execution.md) | `shared/reference` |
+| [Optional and advanced status dashboard](shared/reference/optional-status.md) | `shared/reference` |
+| [Setup coverage](shared/reference/setup-coverage.md) | `shared/reference` |
+| [Applications and formulae catalogue](shared/reference/software-catalogue.md) | `shared/reference` |
+| [Reviewed utility reference](shared/reference/tools.md) | `shared/reference` |
+| [VS Code profile configuration reference](shared/reference/vscode-profile-data.md) | `shared/reference` |
+| [Personal and managed workstation readiness](shared/reference/workstation-readiness.md) | `shared/reference` |
+| [Terminal basics](shared/terminal-basics.md) | `shared` |
+| [Optional 9 - Local databases with containers](shared/tools/09-databases.md) | `shared/tools` |
+| [Optional 10: install AI client payloads](shared/tools/10-ai-agents.md) | `shared/tools` |
+| [Optional 10A: create an owned OmniRoute container](shared/tools/10a-omniroute.md) | `shared/tools` |
+| [Optional 11: generate MCP connection snippets](shared/tools/11-mcp-servers.md) | `shared/tools` |
+| [Module 12 retired - VS Code profiles moved](shared/tools/12-vscode-profiles.md) | `shared/tools` |
+| [Optional 13 - Enhanced command-line toolkit 🤖 ⚙️](shared/tools/13-enhanced-cli-tools.md) | `shared/tools` |
+| [Optional 14 - Import the Day One Mac Warp Drive bundle](shared/tools/14-warp-drive.md) | `shared/tools` |
+| [Advanced 15 - Full dotfiles and bootstrap](shared/tools/15-full-dotfiles-and-bootstrap.md) | `shared/tools` |
+| [Advanced 16 - Brewfile, applications, and editor inventory](shared/tools/16-brewfile-apps-and-editor.md) | `shared/tools` |
+| [Advanced 17 - Shell and package automation](shared/tools/17-shell-and-package-automation.md) | `shared/tools` |
+| [Advanced 18 - Hosting identities, Azure DevOps, and worktrees](shared/tools/18-hosting-identities-azure-and-worktrees.md) | `shared/tools` |
+| [Advanced 19 - macOS, GUI applications, and local HTTPS](shared/tools/19-macos-gui-and-local-https.md) | `shared/tools` |
+| [Advanced 20 - Restore and migrate selected data](shared/tools/20-restore-and-migrate.md) | `shared/tools` |
+| [Advanced 21 - Audit, maintenance, and rebuild](shared/tools/21-audit-maintenance-and-rebuild.md) | `shared/tools` |
+| [Advanced 22 - Shared AI skills and MCP operations](shared/tools/22-ai-skills-and-mcp-operations.md) | `shared/tools` |
+| [AI workspaces, projectless tasks, and repository work](shared/tools/ai-workspaces.md) | `shared/tools` |
+| [Choose Route A or Route B](shared/tools/preparation/00-existing-mac-decision.md) | `shared/tools/preparation` |
+| [Step 1 - Create and review the safety report](setup/manual/backup-and-restore.md) | `shared/tools/preparation` |
+| [Steps 2-3 - Prepare, copy, and prove the backup can be restored](setup/manual/backup-and-restore.md) | `shared/tools/preparation` |
+| [Use Day One Mac from Raycast](shared/tools/raycast.md) | `shared/tools` |
+| [Recover recorded owned changes](shared/tools/rollback.md) | `shared/tools` |
+| [Install and manage the optional runtime](shared/tools/runtime.md) | `shared/tools` |
+| [Dynamic vault and domain manager](shared/tools/second-brain.md) | `shared/tools` |
+| [Import the bundled Open in VS Code shortcut](shared/tools/shortcuts.md) | `shared/tools` |
+| [Generate, replace and restore VS Code profiles](shared/tools/vscode-profiles.md) | `shared/tools` |
+| [Find the right troubleshooting procedure](shared/troubleshooting.md) | `shared` |
+| [Upgrade notes for earlier installations](shared/upgrade-notes.md) | `shared` |
+| [Verify the selected workstation](shared/verification.md) | `shared` |
 
-Contributor workflows and historical records live under `maintainers/` in an
-optional source checkout. They are not ordinary setup prerequisites or runtime
-payloads. See [Contributing](../CONTRIBUTING.md) for the contributor path.
-
-## Further manual tasks
-
-- [Extend a reviewed dotfile setup](setup/manual/shell/dotfile-hardening.md)
-- [Maintain a selective Brewfile](setup/manual/apps/brewfile.md)
-- [Maintain shell and package-manager workflows](setup/manual/shell/package-workflows.md)
-- [Configure multiple Git identities and hosting defaults](setup/manual/git/multiple-identities.md)
-- [Restore selected projects and application data](setup/manual/preparation/restore-projects.md)
-- [Maintain AI skills and MCP access](setup/manual/ai/maintenance.md)
-
-## Previously published section links
-
-These entries preserve bookmarks from the previous structure. Each points to the current task; follow the main guide above for the normal sequence.
-
-## Day One Mac documentation
-
-Continue with the [current guide](README.md).
-
-## Choose where to begin
-
-Continue with the [current guide](START-HERE.md).
-
-## Documentation conventions
-
-Continue with the [current guide](README.md).
-
-## The normal reading flow
-
-Continue with the [current guide](START-HERE.md).
-
-## Folder map
-
-Continue with the [current guide](README.md).
-
-## When the wizard stops
-
-Continue with the [current guide](README.md).
-
-[Setup coverage map](shared/reference/setup-coverage.md) links every phase, checkpoint and module to its manual owner.
+<a id="day-one-mac-documentation"></a>
+<a id="choose-where-to-begin"></a>
+<a id="documentation-conventions"></a>
+<a id="the-normal-reading-flow"></a>
+<a id="folder-map"></a>
+<a id="when-the-wizard-stops"></a>

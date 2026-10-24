@@ -2,19 +2,19 @@
 
 # Advanced 18 — Hosting identities, Azure DevOps, and worktrees
 
-Continue with the [current guide](../../../setup/assisted/advanced/18-hosting-identities-azure-and-worktrees.md). This compatibility page preserves existing links.
+Continue with the [current guide](../../../shared/tools/18-hosting-identities-azure-and-worktrees.md). This compatibility page preserves existing links.
 
 ## Outcome
 
-See the [current instructions](../../../setup/assisted/advanced/18-hosting-identities-azure-and-worktrees.md#outcome).
+See the [current instructions](../../../shared/tools/18-hosting-identities-azure-and-worktrees.md#outcome).
 
 ## Choose only the route you need
 
-See the [current instructions](../../../setup/assisted/advanced/18-hosting-identities-azure-and-worktrees.md#choose-only-the-route-you-need).
+See the [current instructions](../../../shared/tools/18-hosting-identities-azure-and-worktrees.md#choose-only-the-route-you-need).
 
 ### Executable identity and worktree review
 
-See the [current instructions](../../../setup/assisted/advanced/18-hosting-identities-azure-and-worktrees.md#executable-identity-and-worktree-review).
+See the [current instructions](../../../shared/tools/18-hosting-identities-azure-and-worktrees.md#executable-identity-and-worktree-review).
 
 ## Step 18.1 — Confirm the selected track
 
@@ -70,4 +70,4 @@ See the [current instructions](../../../setup/manual/git/multiple-identities.md#
 
 ## Advanced 18 completion checklist 🚦
 
-See the [current instructions](../../../setup/assisted/advanced/18-hosting-identities-azure-and-worktrees.md#advanced-18-completion-checklist-).
+See the [current instructions](../../../shared/tools/18-hosting-identities-azure-and-worktrees.md#advanced-18-completion-checklist-).

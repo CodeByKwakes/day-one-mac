@@ -74,7 +74,7 @@ write_shell_bootstrap() {
   local zprofile="$HOME/.zprofile"
   local source_line='[[ -r "$HOME/.config/zsh/path.zsh" ]] && source "$HOME/.config/zsh/path.zsh"'
   local content
-  content=$'# Day One Mac bootstrap PATH — Phase 5 expands and adopts this file.\ntypeset -U path PATH\ncase ":$PATH:" in\n  *":$HOME/.local/bin:"*) ;;\n  *) export PATH="$HOME/.local/bin:$PATH" ;;\nesac\n'
+  content=$'# Day One Mac bootstrap PATH — shared with the selected shell configuration owner.\ntypeset -U path PATH\ncase ":$PATH:" in\n  *":$HOME/.local/bin:"*) ;;\n  *) export PATH="$HOME/.local/bin:$PATH" ;;\nesac\n'
 
   mkdir -p "$zsh_dir"
   if [[ ! -e "$path_file" ]]; then
@@ -176,7 +176,7 @@ printf '%s\n' \
   '' \
   'Then run:' \
   '  day-one-mac runtime-status' \
-  '  day-one-mac --wizard' \
+  '  day-one-mac --help' \
   '' \
   'View the installed documentation:' \
   '  day-one-mac docs --list' \

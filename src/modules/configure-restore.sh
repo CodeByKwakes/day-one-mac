@@ -47,7 +47,7 @@ safe_path() {
 safe_path "$STATE_DIR" && safe_path "$POINTER" && safe_path "$SAVED" && safe_path "$STATE_DIR/module-runs/20" || die 'Unsafe restore state path.'
 if [[ "$ACTION" == apply || "$ACTION" == resume ]]; then
   day_one_serialize restore "$0" "${ORIGINAL_ARGS[@]}"
-  day_one_phase_current 08 || die 'Complete current required Phase 8 first; planning is available.' 10
+  day_one_operation_ready || die 'A supported native Apple-silicon environment is required for apply.' 10
 fi
 INPUT="${INPUT:-$SAVED}"
 SELECTION="$(day_one_review_node "$SCRIPT_DIR/../src/core/restore-staging.cjs" selection "$INPUT")" || exit 2
@@ -58,7 +58,7 @@ if [[ "$ACTION" == plan || "$ACTION" == apply ]]; then
   printf 'Fresh staging only: %s/module-runs/20/NEW-RUN/staging/files/\nNo live destination is touched; imports remain manual.\n' "$STATE_DIR"
 fi
 if [[ "$ACTION" == plan ]]; then
-  day_one_phase_current 08 || printf 'Blocked on apply: complete Phase 8.\n'
+  day_one_operation_ready || printf 'Apply requires a supported native Apple-silicon environment.\n'
   exit 0
 fi
 if [[ "$ACTION" == check || "$ACTION" == resume ]]; then

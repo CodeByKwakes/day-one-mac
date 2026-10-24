@@ -19,7 +19,7 @@ usage() {
   cat <<'EOF'
 Usage: configure-omniroute.sh --plan|--apply|--check|--resume [--manifest PATH] [--yes]
 Manifest: context<TAB>orbstack|desktop-linux, image<TAB>diegosouzapw/omniroute@sha256:<64 hex>,
-port<TAB>1024..65535. No credentials. Apply requires Phase 8 and a local Docker Desktop or OrbStack engine.
+port<TAB>1024..65535. No credentials. Apply requires a supported Mac and a local Docker Desktop or OrbStack engine.
 Plan prints the proposal only; apply/check inspect ownership and exact spec.
 Creates only omniroute and omniroute-data; never adopts, replaces or deletes.
 Provider credentials, accounts, billing, dashboard setup and client routing are manual.
@@ -39,7 +39,7 @@ done
 [[ "$YES" == 0 || "$ACTION" == apply || "$ACTION" == resume ]] || die '--yes is apply/resume only.' 2
 if [[ "$ACTION" == apply || "$ACTION" == resume ]]; then
   day_one_serialize omniroute "$0" "${ORIGINAL_ARGS[@]}"
-  day_one_phase_current 08 || die 'Complete current required Phase 8 first; planning is available.' 10
+  day_one_operation_ready || die 'A supported native Apple-silicon environment is required for apply.' 10
 fi
 safe_path() {
   local path="$1"
@@ -71,7 +71,7 @@ if [[ "$ACTION" == plan ]]; then
   printf 'Plan only; Docker availability, collisions and image healthcheck are validated on apply.\n%s\n' "$SELECTION"
   printf 'Create owned %s + volume %s, bind 127.0.0.1:%s:20128, limit memory to 10 GiB (runtime 8192 MiB).\n' "$NAME" "$VOLUME" "$PORT"
   printf 'Require API keys; no credentials are generated or forwarded. Preserve existing resources; refuse unowned names.\n'
-  day_one_phase_current 08 || printf 'Blocked on apply: complete Phase 8.\n'
+  day_one_operation_ready || printf 'Apply requires a supported native Apple-silicon environment.\n'
   exit 0
 fi
 [[ ! -d "$HOME/.orbstack/bin" ]] || export PATH="$PATH:$HOME/.orbstack/bin"

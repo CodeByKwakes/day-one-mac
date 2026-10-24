@@ -6,8 +6,9 @@ anything.
 
 | Decision | Choices | Record |
 |---|---|---|
-| Setup route | Scripted (Assisted) / Manual | One route |
-| Early AI assistance | None / guidance only / approved execution | One client, account and tool check before Phase 1; [AI checkpoint](../setup/manual/ai/setup-assistant.md) |
+| Setup route | AI-assisted / Manual | One route |
+| Early AI assistance | None / guidance only / approved execution | One client, account and tool check before relying on AI; [AI checkpoint](../setup/manual/ai/setup-assistant.md) |
+| AI connection | Direct / existing OmniRoute / local OmniRoute / gateway later | Provider route and installation owner |
 | Device ownership | Personal / managed | Owner and approval process |
 | Software preset | Core / recommended productivity | Core omits VS Code, Warp, Raycast and the Nerd Font |
 | Hosting | GitHub / Azure DevOps / both / self-managed | Providers and authorised repository URLs |
@@ -22,9 +23,9 @@ anything.
 | Editor integration | VS Code / preserve another editor | Git editor/diff/merge ownership |
 | Optional work | Databases, AI, MCP, profiles, Second Brain, other tools | Add only a capability needed by a project |
 
-The assisted runner calls the hosting choices tracks 1 (GitHub), 2 (Azure),
-3 (both) and 4 (self-managed). Hosting, authentication, languages and layout are
-independent. Core still requires the chosen authentication and language checks.
+Hosting, authentication, languages and layout are independent. Existing utility
+records may use track IDs 1 (GitHub), 2 (Azure), 3 (both) or 4 (self-managed).
+Selected authentication and language capabilities need their own checks.
 1Password is required only when its authentication mode is selected.
 
 Local-only chezmoi still has a source directory that needs an encrypted backup.
@@ -46,5 +47,5 @@ protect reviewed non-secret configuration; it is not storage for credentials.
    Expected result: the evidence describes a check you performed, not just an
    intended backup location. Never include recovery codes or tokens.
 
-Next: [Assisted Setup](../setup/assisted/README.md) or
+Next: [AI-assisted setup](../setup/ai/README.md) or
 [Manual Setup](../setup/manual/README.md).

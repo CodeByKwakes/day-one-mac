@@ -9,7 +9,7 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/../src/core/terminal-ui.sh"
 BUNDLE="$PROJECT_DIR/integrations/warp/Day One Mac"
 NOTEBOOK="$BUNDLE/00 Day One Mac Command Catalogue.md"
-IMPORT_GUIDE="$PROJECT_DIR/docs/setup/assisted/optional/14-warp-drive.md"
+IMPORT_GUIDE="$PROJECT_DIR/docs/shared/tools/14-warp-drive.md"
 FAILURES=0
 
 pass() { ui_success "$@"; }
@@ -103,17 +103,9 @@ assert_command() {
   fi
 }
 
-assert_command '01 Setup and Audit/01-status.yaml' '"day-one-mac --status"'
 assert_command '01 Setup and Audit/02-validate.yaml' '"day-one-mac validate"'
-assert_command '01 Setup and Audit/04-phase-preview.yaml' "'day-one-mac setup --phase \"{{phase}}\" --dry-run'"
 assert_command '01 Setup and Audit/10-advanced-status.yaml' '"day-one-mac advanced --status"'
 assert_command '01 Setup and Audit/13-advanced-audit.yaml' '"day-one-mac advanced-audit"'
-assert_command '01 Setup and Audit/15-finalize-status.yaml' '"day-one-mac finalize --status"'
-assert_command '01 Setup and Audit/16-finalize-preview.yaml' '"day-one-mac finalize"'
-assert_command '02 Safety and Cleanup/01-clean-preview.yaml' '"day-one-mac clean"'
-assert_command '02 Safety and Cleanup/02-clean-comprehensive-preview.yaml' '"day-one-mac clean --zap-cask-data --archive-projects --archive-docker-data --archive-orbstack-data --archive-1password-data --archive-ssh-private-keys --prepare-keychain-reset"'
-assert_command '02 Safety and Cleanup/07-removal-inventory.yaml' '"day-one-mac remove --inventory"'
-assert_command '02 Safety and Cleanup/08-removal-preview.yaml' '"day-one-mac remove --mode recorded"'
 assert_command '03 Repositories and Hosting/01-ghq-root.yaml' '"ghq root"'
 assert_command '04 Dotfiles/02-chezmoi-diff.yaml' '"chezmoi diff"'
 assert_command '05 Toolchains/06-pnpm-install-frozen.yaml' '"pnpm install --frozen-lockfile"'
@@ -123,30 +115,14 @@ assert_command '07 AI Workspaces/04-open-vscode-here.yaml' "'day-one-mac workspa
 assert_command '07 AI Workspaces/05-start-codex-here.yaml' "'day-one-mac workspace start-codex \"\$PWD\"'"
 assert_command '07 AI Workspaces/06-start-claude-here.yaml' "'day-one-mac workspace start-claude \"\$PWD\"'"
 assert_command '07 AI Workspaces/07-start-copilot-cli-here.yaml' "'day-one-mac workspace status \"\$PWD\" >/dev/null && copilot -C \"\$PWD\"'"
-assert_command '01 Setup and Audit/17-optional-setup.yaml' '"day-one-mac optional --guided"'
 if [[ "$EXPECTED_COMMANDS_OK" == 1 ]]; then
   pass "core setup, safety, ghq, chezmoi, toolchain, and Homebrew workflows match policy"
 fi
 
-if grep -Fq '**63 workflows in seven folders**' "$NOTEBOOK" \
-   && grep -Fq 'day-one-mac root' "$NOTEBOOK" \
-   && grep -Fq 'contains no cleanup workflow with `--execute`' "$NOTEBOOK" \
-   && grep -Fq 'Track 2 — Azure DevOps' "$NOTEBOOK"; then
-  pass "Notebook declares scope, portability, track boundaries, and cleanup safety"
+if grep -Eq 'day-one-mac (setup|clean|remove|finalize|--status|--reset|optional --guided|advanced --guided)([ "]|$)' "$BUNDLE"/*/*.yaml; then
+  fail "workflow still invokes a retired setup action"
 else
-  fail "Notebook is missing its count, dispatcher, track, or cleanup-safety statement"
-fi
-
-if grep -Fq '**63 validated' "$IMPORT_GUIDE" \
-   && grep -Fq '**Drive → Open Left Panel**' "$IMPORT_GUIDE" \
-   && grep -Fq '**Day One Mac** directory inside the versioned' "$IMPORT_GUIDE" \
-   && grep -Fq 'In an installed release, `validate` checks runtime integrity.' "$IMPORT_GUIDE" \
-   && grep -Fq 'without a separate preview' "$IMPORT_GUIDE" \
-   && grep -Fq 'Do not create a one-click Warp workflow that includes `--execute`' "$IMPORT_GUIDE" \
-   && grep -Fq 'No workflow stores a secret or personal absolute path.' "$IMPORT_GUIDE"; then
-  pass "import guide explains prerequisites, import target, secrets, and destructive boundaries"
-else
-  fail "import guide is missing a required instruction or safety boundary"
+  pass "workflows exclude retired setup and broad cleanup actions"
 fi
 
 if [[ "$FAILURES" -gt 0 ]]; then

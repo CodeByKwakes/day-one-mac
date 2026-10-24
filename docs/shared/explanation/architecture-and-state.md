@@ -1,176 +1,62 @@
-# Runtime architecture and state contract
+# Runtime architecture and state
 
-This reference is for contributors and operators. For first-time setup, use
-[Start here](../../START-HERE.md); for terminology, use the [glossary](../glossary.md).
+Day One Mac has two setup routes: [AI-assisted](../../setup/ai/README.md) and
+[manual](../../setup/manual/README.md). Both use the same manual recipes.
+The optional utility bundle supplies bounded operations; it does not coordinate
+whole-machine setup. See [migration](../migration/from-scripted-setup.md) for old installations.
 
-## Execution boundaries
+## Responsibilities
 
-| Component | Owns | Must not do |
+| Component | Responsibility | Boundary |
 |---|---|---|
-| `scripts/day-one-mac` | Resolve the active runtime and dispatch commands | Implement phase behavior |
-| `bootstrap-day-one-mac.sh` | Collect, review, and save wizard choices | Silently install optional modules |
-| `setup.sh` | Parse options, load selections, enforce gates, record completion | Copy phase bodies into tests |
-| `scripts/phases/01-*.sh` through `08-*.sh` | Phase-specific configuration and verification | Run automatically when sourced |
-| `scripts/lib/` | Shared state, locking, deadlines, paths, ownership, and packaging | Claim ownership of pre-existing external apps |
-| `verify.sh` | Installed-runtime integrity and syntax checks | Require contributor dependencies or run setup |
-| `validate.sh` and `scripts/tests/` | Repository structure and regression checks | Ship as an end-user setup dependency |
+| `scripts/day-one-mac` | Resolve the runtime and dispatch commands | No setup orchestration |
+| `src/runtime/` | Install, verify, switch and remove runtime versions | Preserve application data and recovery state |
+| `src/modules/` | Selected utilities with preview, apply and verification | Check actual prerequisites; preserve existing ownership |
+| `src/core/` | Paths, state, locks, deadlines and shared checks | No implicit installation |
+| `src/operations/assistant.cjs` | Export a private assistant workspace | No client launch or global configuration changes |
+| `templates/skills/` | Shared instructions for six capabilities | Instructions do not grant execution permissions |
+| `templates/agents/` | Client-specific role adapters | Client permission settings remain authoritative |
+| `docs/setup/manual/` | Canonical setup recipes | No Day One Mac scripts required |
+| `tools/` and `tests/` | Contributor validation and release checks | Excluded from the installed runtime |
 
-Phase modules run in the runner's shell, with its saved selections and helper
-functions. Sourcing `setup.sh` defines this context without starting setup.
-This is an incremental separation, not a fully isolated dependency-injection
-design: shared variables still form an internal API. Keep those dependencies
-explicit when moving functions between modules.
+## State and ownership
 
-## Selection contract
+The default private state directory remains `~/.day-one-mac`. Existing scalar
+selections, ownership manifests, backups and operation records remain readable.
+Retired phase records are historical evidence. They are neither prerequisites
+for a utility nor proof that the current machine is healthy.
 
-`deployment-mode` selects `personal` or `managed`; older selections default to
-personal, but enrollment detection blocks personal apply on a managed device.
-`workstation-policy` stores the approved policy path. Managed preflight requires
-that policy and current enrollment/elevation evidence before setup can proceed.
-`workstation-evidence.json` holds private, dated attestations bound to policy,
-device and account. Policy content participates in the completion fingerprint;
-expiry is evaluated by the live readiness check. See the
-[readiness contract](../verification.md) for controls and non-waivable gates.
+Each retained utility checks its actual inputs: platform, required executable,
+selected manifest, destination, ownership and any required approval. Run its
+plan before applying. A generated artifact verifies only the exported files;
+manual import, account sign-in and service access still need their own checks.
 
-Saved scalar files include `track`, `stack`, `auth-mode`, `preset`,
-`primary-ide`, Git identity, and dotfiles choices. HTTPS additionally records
-`https-helper`; repository gates use `github-verification-repo` and
-`azure-verification-repo`. Older installations without a
-preset retain `recommended-productivity`. The explicit `core` preset skips
-Raycast, Warp, the Nerd Font, and VS Code; it does not uninstall them.
+New utility state uses private files, rejects redirected paths and records only
+owned changes. Atomic replacement writes a complete temporary file beside the
+destination before renaming it. This protects an individual file, not a whole
+multi-file operation or a sudden power loss. Mutating operations use the shared
+operation lock. Do not delete a live lock; follow the recovery instructions.
 
-Authentication independently selects whether 1Password and its CLI are needed.
-The `primary-ide` option controls Git and chezmoi integration, not the desktop
-application catalogue. Core uses `other` so it does not introduce an editor
-dependency. Optional modules remain separate and may have their own application
-requirements.
+## Packaging and updates
 
-Older saved HTTPS setups default to `existing`: GitHub CLI supplies the
-GitHub helper, while Azure retains its existing helper. Selecting `gcm`
-adds the conditional GCM cask to the Installation Centre, including for core.
-The URL selection files are private, mode 600, and must contain no tokens.
-Changing the helper or verification URL changes the Phase 4 and 8 fingerprints.
+`config/runtime-files.txt` is the shipping allowlist. Unlisted personal files,
+contributor instructions, dependencies and the retired runner do not ship.
+Installed versions live under `~/.local/share/day-one-mac/releases/`; `current`
+selects the active version. A verified update changes that selection and retains
+the previous version for rollback. It does not reconfigure the Mac.
 
-The Git access gate runs bounded `git ls-remote URL HEAD` checks with interactive
-prompts disabled. It neither clones nor records remote refs or raw Git
-diagnostics in reports. CLI login is a separate gate. Track 4 claims no managed
-provider access. Local `--check` reports live access as manual; Phase 4 and 8
-apply perform the network checks.
+The public installer checks release provenance and checksums. Local archive
+checksums detect changes but do not establish publisher identity. Contributor
+acceptance must exercise an extracted package and an isolated previous-version
+upgrade and rollback before a real-Mac installation.
 
-## Completion and migration
+## Assistant workspaces
 
-A required phase marker is a SHA-256 fingerprint, not a claim that the machine
-can never drift. Its inputs include a contract version, implementation hashes,
-relevant selections, and the required application catalogue where applicable.
-The runner and shared libraries affect all phase hashes. A phase module affects
-its own hash. Phases 4 and 5 also include their security-module helpers; Phase 8
-includes every phase and the runtime verifier, so changes to setup behavior
-invalidate the final machine verification too.
+Export creates a new directory with shared skills, client role adapters, approved
+recipes and a hash manifest. Existing destinations are refused. Session notes
+live in `session/` and remain private. Checks detect modified or unexpected
+exported files; they do not prove that a model followed the instructions.
 
-Documentation wording and optional catalogue entries do not invalidate required
-phases. Optional advanced-module tracking is separate and can still fingerprint
-its guides. The Installation Centre includes selections and implementation
-evidence, then checks that the selected software is actually available.
-
-Migrating from the old fingerprint format makes existing required-phase markers
-stale once. No application or saved choice is removed. Review `--status`, then
-resume the wizard and approve the phases it needs to run. Do not manually edit
-markers or use `--reset-progress` merely to update the runtime.
-
-## Atomic writes and concurrent operations
-
-An atomic write puts complete content into a private temporary file in the same
-directory, then renames it over the destination. Readers see the old or the new
-value, not a half-written value. This is used for scalar choices, completion
-markers, and runtime locator/history records. Non-regular destinations and
-symlinks anywhere in the state path are rejected before directories or temporary
-files are created. Module journals use the same parent-path checks before
-creating a run or copying ownership records. The fixed macOS aliases `/tmp`,
-`/var`, and `/etc` are allowed only when they point to their standard `private/`
-targets; custom symlinked paths are not.
-
-If an overridden state path is rejected, inspect the named link and use the
-intended directory's physical path (the path printed by `pwd -P` inside that
-directory). Preserve existing state; do not delete it or reset progress to clear
-this error. These checks and the operation lock protect against pre-existing
-redirects and competing Day One writers, not a hostile process running as the
-same user and replacing directories during a write.
-
-A directory lock outside the state tree serializes the required setup, wizard,
-runtime installation/switch/removal, macOS preferences, application ownership
-report, recorded rollback, cleanup, and finalisation. Nested commands inherit
-the same operation lock. Other optional tools retain their own existing state
-handling; this is not yet a transactional database for every project command.
-
-Contention exits with status 75 rather than guessing which writer should win.
-The supervisor releases its lock after normal success or failure. A forced kill
-or power loss can leave a stale lock. Before removing one, inspect the recorded
-PID and confirm that both the supervisor and its child operation have stopped.
-Never delete a live lock. The default location is
-`~/.day-one-mac.operation.lock`; an overridden state root changes that prefix.
-
-Atomic replacement protects individual files, not an entire multi-file
-transaction, and does not guarantee disk durability through sudden power loss.
-Ownership manifests and append-only logs retain their existing formats.
-
-## Runtime ownership and switching
-
-Both the local installer and release builder copy only files listed in
-`config/runtime-files.txt`. Adding a runtime dependency requires updating that
-manifest. Unlisted files, contributor agent instructions, tests, dependency directories,
-and arbitrary local files are excluded. Manifest entries must be regular files
-within the source, with no symlink parents or path traversal.
-
-Each release lives in its own version directory and includes `SHA256SUMS`.
-Existing versions with different contents are rejected. The activation helper
-verifies the candidate before atomically replacing `current` with macOS
-`mv -h`, which replaces a directory symlink instead of following it.
-Verification requires the exact regular-file inventory in
-`config/runtime-files.txt`, its necessary parent directories, and `SHA256SUMS`.
-Additional files or directories, symlinks, special file types, missing files,
-and incomplete or duplicate checksum entries are rejected. Runtime status,
-explicit verification, activation, and rollback use the same check. An integrity
-failure during activation leaves both `current` and `previous` unchanged.
-
-The `previous` record stores activation history, not lexical version order.
-Default rollback selects that previous activation; explicit `--version` remains
-available. If activation was interrupted and history equals the active version,
-choose a verified version explicitly. Runtime rollback does not undo machine
-configuration or migrate state backward.
-
-## Verification and trust
-
-`day-one-mac verify` checks the installed runtime. Phase 8 separately checks the
-machine, selected tools, authentication, and dotfiles protection. A linked Git
-checkout has no release manifest, so verification reports that limitation.
-`day-one-mac validate` runs the full suite only from a contributor checkout;
-inside a standalone runtime it is a compatibility alias for `verify`.
-The focused Warp bundle validator remains packaged because optional status
-calls it; contributor-only suite runners do not.
-
-Checksums detect changed bytes but cannot authenticate a publisher when both
-the archive and checksum come from the same compromised source. New releases
-request GitHub build attestations. The optional installer
-`--require-attestation` gate verifies repository and workflow identity through
-`gh` before extraction. Missing or failed attestations stop that installation.
-Older releases may not have attestations; the default does not pretend otherwise.
-
-Homebrew's installer is downloaded over HTTPS to a private state file, syntax
-checked, hashed, and presented for approval before execution. The saved hash is
-an audit record, not a pinned upstream trust root. Review the downloaded script
-and the printed path; an upstream Homebrew install can still request administrator
-privileges. See [runtime operations](../../setup/assisted/runtime.md).
-
-## Contributor verification
-
-Run `tools/validate.sh` and `pnpm run lint` in the source checkout.
-The suite uses isolated temporary homes; it must not install software on the
-contributor's Mac. Behavioral tests source real phase modules and shared helpers.
-The audit regressions cover package exclusion, corruption detection, locking,
-atomic state, selection behavior, and fingerprint invalidation. Portable-command
-fixtures cover activation, rollback history, linked mode, and argument rejection.
-
-Keep documentation split by purpose: a short beginner tutorial in Start here,
-task-oriented recovery in phase guides, command/state contracts in reference
-pages, and contributor implementation detail here. Update all affected layers
-when a user-visible choice or runtime contract changes.
+Updates create a separate export for review. Preserve session notes and deliberate
+customisations before retiring an older export. Global AI client files and
+credentials are outside this export's ownership.

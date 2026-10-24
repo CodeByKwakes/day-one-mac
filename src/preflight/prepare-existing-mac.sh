@@ -4,6 +4,10 @@
 # backup, checksum and confirmation gates. Compatible with macOS Bash 3.2.
 set -euo pipefail
 
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  exec "$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/src/operations/retired-setup.sh" "$@"
+fi
+
 DAY_ONE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SCRIPT_DIR="$DAY_ONE_ROOT/scripts"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"

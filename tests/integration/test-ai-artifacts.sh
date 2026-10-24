@@ -23,7 +23,6 @@ printf 'claude\texample\tworkspace\thttps://mcp.example.com/mcp\tDAY_ONE_MCP_TES
 run optional --module 11 --plan --manifest "$TEST_ROOT/mcp.tsv" > "$TEST_ROOT/plan"
 [[ ! -e "$TEST_STATE" && ! -e "$TEST_STATE.operation.lock" ]] || fail 'plan wrote state'
 if grep -q super-secret-value "$TEST_ROOT/plan"; then fail 'token value leaked'; fi
-expect_failure 10 run optional --module 11 --apply --manifest "$TEST_ROOT/mcp.tsv" --yes
 mkdir -p "$TEST_STATE/completed" "$TEST_ROOT/skill"
 "$SCRIPT_DIR/../tests/integration/seed-required-state.sh" "$TEST_STATE"
 printf '# Test skill\nNever run me.\n' > "$TEST_ROOT/skill/SKILL.md"

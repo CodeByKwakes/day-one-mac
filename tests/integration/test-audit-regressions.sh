@@ -84,7 +84,7 @@ rm "$candidate/SHA256SUMS"
 cp "$TEST_ROOT/checksums" "$candidate/SHA256SUMS"
 "$candidate/src/operations/verify.sh" >/dev/null
 day_one_activate_runtime "$TEST_ROOT/runtime" candidate || fail 'intact candidate rejected'
-printf '\n# corruption\n' >> "$TEST_ROOT/package/src/setup/phases/06-toolchains.sh"
+printf '\n# corruption\n' >> "$TEST_ROOT/package/src/core/module-execution.sh"
 if "$TEST_ROOT/package/src/operations/verify.sh" >/dev/null 2>&1; then fail 'corrupt runtime accepted'; fi
 
 # Reject manifest escape paths even when they exist locally.
@@ -158,72 +158,4 @@ else
 fi
 [[ ! -d "$TEST_ROOT/operation.lock" ]] || fail 'failed command leaked lock'
 
-# Fingerprints follow behavior and selections, not documentation wording.
-# Importing setup defines functions but performs no setup or platform mutation.
-source "$TEST_ROOT/source/src/setup/setup.sh"
-TRACK=1 STACK=node GIT_NAME='Test Developer' GIT_EMAIL='test@example.invalid'
-AUTH_MODE=https PRIMARY_IDE=other PRESET=core DOTFILES_REPO='' DOTFILES_VERSIONING=local
-baseline="$(phase_fingerprint 06)"
-security="$(phase_fingerprint 03)"
-printf '\nEditorial change.\n' >> "$DOC_DIR/01-required/06-language-toolchains.md"
-[[ "$(phase_fingerprint 06)" == "$baseline" ]] || fail 'docs invalidated phase'
-printf '\n# implementation change\n' >> "$SCRIPT_DIR/../src/setup/phases/06-toolchains.sh"
-[[ "$(phase_fingerprint 06)" != "$baseline" ]] || fail 'implementation did not invalidate phase'
-[[ "$(phase_fingerprint 03)" == "$security" ]] || fail 'unrelated phase invalidated security'
-TRACK=3
-[[ "$(phase_fingerprint 03)" != "$security" ]] || fail 'track did not invalidate SSH phase'
-[[ -z "$(required_application_ids)" ]] || fail 'core HTTPS unexpectedly requires desktop applications'
-AUTH_MODE=1password
-[[ "$(required_application_ids)" == $'1password\n1password-cli' ]] || fail 'core 1Password selection is wrong'
-PRESET=recommended-productivity AUTH_MODE=https
-grep -Fqx visual-studio-code <<<"$(required_application_ids)" || fail 'default preset lost VS Code'
-# CLI preview must honor core all the way through installation and Phase 7.
-preview="$(HOME="$TEST_ROOT/preview-home" "$TEST_SCRIPT_DIR/../src/setup/setup.sh" --dry-run --preset core --auth-mode https --track 1 --stack node --layout none --ghq no --name 'Test Developer' --email test@example.invalid --local-dotfiles --shell apple --prompt none --skip-macos-settings)"
-grep -Fq 'Core preset: VS Code installation and configuration are not required.' <<<"$preview" || fail 'core CLI preview did not skip editor'
-if grep -Eq 'brew install --cask (visual-studio-code|warp|raycast|1password)' <<<"$preview"; then fail 'core preview installs desktop casks'; fi
-[[ ! -e "$TEST_ROOT/preview-home/.day-one-mac" ]] || fail 'preview wrote setup state'
-day_one_write_state "$TEST_ROOT/preview-home/.day-one-mac/preset" core
-day_one_write_state "$TEST_ROOT/preview-home/.day-one-mac/auth-mode" https
-ownership="$(HOME="$TEST_ROOT/preview-home" "$TEST_SCRIPT_DIR/../src/operations/application-status.sh" --required)"
-grep -Fq 'No applications are required' <<<"$ownership" || fail 'required-app status ignored saved preset'
-# Fresh-user decisions must not launch Apple's Git shim before Phase 2.
-# Overrides below are called by the imported production functions.
-# shellcheck disable=SC2329
-(
-  phase_next() { :; }; phase_step_done() { :; }; ui_title() { :; }
-  info() { :; }; ok() { :; }; confirm() { return 0; }
-  day_one_require_apple_silicon() { return 0; }; save_state_value() { :; }
-  git() { printf '%s\n' "$*" >> "$TEST_ROOT/git-default-queries"; printf 'saved-value\n'; }
-  xcode-select() { return 1; }
-  ask() { printf '%s\n' "${2:-fixture@example.invalid}"; }
-  GIT_NAME='Provided Name' GIT_EMAIL=provided@example.invalid DRY_RUN=0
-  phase_01
-  [[ ! -e "$TEST_ROOT/git-default-queries" ]] || fail 'explicit identity queried Git'
-  GIT_NAME='' GIT_EMAIL=''
-  phase_01
-  [[ ! -e "$TEST_ROOT/git-default-queries" ]] || fail 'fresh user queried Git before developer tools'
-  xcode-select() { printf '%s\n' "$TEST_ROOT"; }
-  GIT_NAME='Provided Name' GIT_EMAIL=''
-  phase_01
-  [[ "$GIT_NAME" == 'Provided Name' && "$GIT_EMAIL" == saved-value ]] || fail 'identity default selection failed'
-  [[ "$(cat "$TEST_ROOT/git-default-queries")" == 'config --global user.email' ]] || fail 'queried an already supplied identity field'
-)
-
-# Early validation failure must not leave a producer writing to a closed pipe.
-# Overrides below are called by the imported production functions.
-# shellcheck disable=SC2329
-(
-  load_brew() { return 0; }
-  day_one_app_detect() { return 1; }
-  required_application_ids() {
-    printf 'raycast\n'
-    sleep 0.05
-    printf 'warp\n'
-    printf 'complete\n' > "$TEST_ROOT/application-list-completed"
-  }
-  if installation_centre_components_ready; then fail 'missing app accepted'; fi
-  [[ -f "$TEST_ROOT/application-list-completed" ]] || fail 'status returned before its application producer finished'
-  required_application_ids() { return 23; }
-  if installation_centre_components_ready; then fail 'failed application enumeration accepted'; fi
-)
-printf 'PASS: packaging, state, fingerprints, presets, fresh-user identity and complete status enumeration\n'
+printf "PASS: package integrity, state paths, locks and ownership boundaries\n"

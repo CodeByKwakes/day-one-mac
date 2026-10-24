@@ -33,8 +33,7 @@ Usage: configure-artifacts.sh --module 11|14|15|17|18|21|22 --plan|--apply|--che
 18 checks explicit repository identities/signing/layout and proposes configuration.
 21 snapshots recorded setup evidence and selected executable-module checks.
 22 snapshots explicitly selected skill trees and MCP metadata, never executes them.
-Plan/check never save records or create temporary files. Apply/resume requires
-Phase 8 and publishes a new private version; previous versions are preserved.
+Plan/check never save records or create temporary files. Apply/resume checks the platform and publishes a new private version; previous versions are preserved.
 EOF
 }
 while (( $# )); do
@@ -57,7 +56,7 @@ SAVED="$STATE_DIR/artifact-$MODULE-selection.tsv"
 POINTER="$STATE_DIR/artifact-$MODULE-current"
 if [[ "$ACTION" == apply || "$ACTION" == resume ]]; then
   day_one_serialize artifacts "$0" "${ORIGINAL_ARGS[@]}"
-  day_one_phase_current 08 || die 'Complete current required Phase 8; --plan is available first.' 10
+  day_one_operation_ready || die 'A supported native Apple-silicon environment is required for apply.' 10
 fi
 
 # Do not follow a changed owned directory or a pointer out of the run namespace.
@@ -120,7 +119,7 @@ manual_steps() {
       'Project checks inspect declarations only. Frozen-install helpers print proposals; no dependencies, upgrades or package scripts run.' ;;
     18) printf '%s\n' 'Scope: expected effective Git identity, signing settings and metadata layout for explicit checkouts; Node 22+ required.' \
       'Manual: review identity-proposals.json and fragments before any configuration edits. Authentication, actual signatures, signing trust and worktree lifecycle are not verified or changed.' ;;
-    21) printf '%s\n' 'Scope: recorded phase evidence, runtime entry points/integrity and saved executable selections only.' \
+    21) printf '%s\n' 'Scope: runtime entry points/integrity, saved utility selections and optional legacy records only.' \
       'Phase record presence is not current machine health. Authentication, FileVault, Brewfile, repositories, upgrades, cleanup and rebuild remain separately reviewed.' ;;
     22) printf '%s\n' 'Scope: explicitly selected skill folders and Module 11 metadata manifests only; no live credential files.' \
       'Owner labels and hashes are inventory evidence, not signatures or trust certification. Review changes before accepting a new baseline.' ;;
@@ -175,7 +174,7 @@ if [[ "$ACTION" == plan ]]; then
     done
   fi
   if [[ "$MODULE" =~ ^(15|17|18|21|22)$ ]]; then printf '%s\n%s\n' "$EVIDENCE" "$DRIFT"; fi
-  day_one_phase_current 08 || printf 'Blocked on apply: complete required Phase 8.\n'
+  day_one_operation_ready || printf 'Apply requires a supported native Apple-silicon environment.\n'
   exit 0
 fi
 if [[ "$ACTION" == check ]]; then

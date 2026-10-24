@@ -2,15 +2,15 @@
 
 # Advanced 20 — Restore and migrate selected data
 
-Continue with the [current guide](../../../setup/assisted/advanced/20-restore-and-migrate.md). This compatibility page preserves existing links.
+Continue with the [current guide](../../../shared/tools/20-restore-and-migrate.md). This compatibility page preserves existing links.
 
 ## Outcome
 
-See the [current instructions](../../../setup/assisted/advanced/20-restore-and-migrate.md#outcome).
+See the [current instructions](../../../shared/tools/20-restore-and-migrate.md#outcome).
 
 ## Executable checksummed staging route
 
-See the [current instructions](../../../setup/assisted/advanced/20-restore-and-migrate.md#executable-checksummed-staging-route).
+See the [current instructions](../../../shared/tools/20-restore-and-migrate.md#executable-checksummed-staging-route).
 
 ## Step 20.1 — Make the restore decision explicit
 
@@ -58,4 +58,4 @@ See the [current instructions](../../../setup/manual/preparation/restore-project
 
 ## Advanced 20 completion checklist 🚦
 
-See the [current instructions](../../../setup/assisted/advanced/20-restore-and-migrate.md#advanced-20-completion-checklist-).
+See the [current instructions](../../../shared/tools/20-restore-and-migrate.md#advanced-20-completion-checklist-).

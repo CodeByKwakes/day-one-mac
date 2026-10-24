@@ -31,7 +31,7 @@ grep -Fq 'Azure · Active Account' <<<"$preview"
 grep -Fq 'AI · New Codex Task' <<<"$preview"
 grep -Fq 'AI · New Claude Code Task' <<<"$preview"
 grep -Fq 'AI · New Copilot CLI Task' <<<"$preview"
-grep -Fq 'Day One · Preview Broad Cleanup' <<<"$preview"
+grep -Fq 'Day One · Migration Guide' <<<"$preview"
 
 raycast_only="$("$SCRIPT_DIR/../src/modules/configure-raycast.sh" --launcher-mode raycast-only --preview)"
 grep -Fq 'Raycast-only launcher' <<<"$raycast_only"

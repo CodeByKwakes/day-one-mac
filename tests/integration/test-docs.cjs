@@ -73,16 +73,6 @@ try {
   const optionalFormulae = fs.readFileSync(path.join(fixture, 'config/catalogs/optional-formulae.tsv'), 'utf8')
     .split('\n').filter(line => line && !line.startsWith('#')).map(line => line.split('\t'));
   assert.deepEqual(optionalRows.map(row => row.slice(0, 3)), optionalFormulae);
-  const selectedFormulae = spawnSync('/bin/bash', ['-c',
-    'source "$1/src/setup/setup.sh"; DOTFILES_VERSIONING=git; SHELL_CHOICE=homebrew; PROMPT_CHOICE=starship; for GHQ_CHOICE in no yes; do for TRACK in 1 2 3; do for STACK in node python both; do required_formulae; done; done; done',
-    'catalogue-fixture', fixture], {
-    env: { HOME: home, PATH: '/usr/bin:/bin:/usr/sbin:/sbin',
-      DAY_ONE_MAC_STATE_ROOT: path.join(home, '.day-one-mac'), DAY_ONE_MAC_DISABLE_BREW_DISCOVERY: '1' },
-    encoding: 'utf8',
-  });
-  assert.equal(selectedFormulae.status, 0, selectedFormulae.stderr);
-  assert.deepEqual(rows('## Required and conditional formulae').map(row => row[0]).sort(),
-    Array.from(new Set(selectedFormulae.stdout.trim().split('\n'))).sort());
   fs.writeFileSync(path.join(fixture, 'SHA256SUMS'), 'runtime marker');
   run(['export', '--format', 'html', '--output', path.join(fixture, 'export')], 2);
   assert.ok(!fs.existsSync(path.join(fixture, 'export')));
@@ -156,7 +146,7 @@ try {
   const { coreSequence } = navigation;
   assert.deepEqual(resolveDocumentationRoute('docs/10-app-guides/DATAGRIP.md', 'create-a-local-example-database-and-roles', embedded).path, 'docs/setup/manual/databases/datagrip.md');
   assert.equal(resolveDocumentationRoute('docs/10-app-guides/DATAGRIP.md', '4-create-a-local-example-database-and-roles', embedded).path, 'docs/setup/manual/databases/postgresql.md');
-  assert.deepEqual(navigation.groups.map(group => group.label), ['Start here', 'Scripted (Assisted) Setup', 'Manual Setup', 'Shared library']);
+  assert.deepEqual(navigation.groups.map(group => group.label), ['Start here', 'AI-assisted setup', 'Manual Setup', 'Shared library']);
   const worktrees = navigation.groups.flatMap(group => group.sections).find(section => section.label === 'Git worktrees');
   assert.equal(worktrees.entries.length, 8);
   assert.ok(worktrees.entries.some(entry => entry.path.endsWith('/copilot.md')));
@@ -164,17 +154,19 @@ try {
   const listed = navigation.groups.flatMap(group => group.sections.flatMap(section => section.entries.map(entry => entry.path)));
   assert.equal(new Set(listed).size, listed.length, 'Each guide has one canonical navigation location');
   assert.deepEqual([...listed].sort(), [...embedded.keys()].filter(path => !embedded.get(path).includes('<!-- day-one-mac:compatibility-guide -->')).sort(), 'All canonical guides remain discoverable');
-  assert.deepEqual(navigation.groups[1].sections[1].entries.map(entry => entry.path), coreSequence);
+  assert.deepEqual(navigation.groups[1].sections[0].entries.map(entry => entry.path), coreSequence);
   const git = navigation.groups.find(group => group.label === 'Manual Setup')
     .sections.find(section => section.label === 'Git and providers');
   assert.ok(git.entries.some(entry => entry.path === npmGuide), 'Private registry setup is discoverable with Git and hosting');
   assert.ok(!coreSequence.includes(npmGuide), 'Private-registry setup is optional');
-  assert.ok(coreSequence.indexOf('docs/setup/assisted/MACOS-SETTINGS.md') < coreSequence.indexOf('docs/setup/assisted/02-command-line-foundation.md'));
-  assert.ok(coreSequence.indexOf('docs/setup/assisted/INSTALLATION-CENTRE.md') < coreSequence.indexOf('docs/setup/assisted/03-security-and-ssh.md'));
+  assert.ok(coreSequence.indexOf('docs/setup/ai/bootstrap.md') < coreSequence.indexOf('docs/setup/ai/operation.md'));
+  assert.ok(!coreSequence.some(file => file.includes('/assisted/')));
   assert.ok(findDocumentation(navigation.titles, ' CHEZMOI ').length > 1);
   assert.deepEqual(findDocumentation(navigation.titles, ''), []);
   assert.deepEqual(findDocumentation(navigation.titles, 'no-matching-guide-xyz'), []);
   const render = text => documentationRenderer(markdownIt, embedded, 'docs/setup/manual/shell/README.md').render(text);
+  assert.match(render('<a id="published-anchor"></a>'), /<a id="published-anchor"><\/a>/);
+  assert.ok(!render('<a id="unsafe" onclick="alert(1)"></a>').includes('<a id="unsafe"'));
   const rendered = render('# Example\n\n# Example\n\n[Daily](../../../reference/MANAGING-DOTFILES-WITH-CHEZMOI.md#recovery)\n\n[Here](#example)\n\n<script>alert(1)</script>\n\n![remote](https://example.org/pixel.png)\n\n[bad](javascript:alert(1))\n\n| A | B |\n|---|---|\n| 1 | 2 |\n\n```sh\n<unsafe>\n```');
   assert.match(rendered, /id="example"/);
   assert.match(rendered, /id="example-1"/);

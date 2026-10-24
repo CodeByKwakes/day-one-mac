@@ -134,54 +134,22 @@ unrestricted execution mode merely to make setup prompts disappear.
 
 ## 4. Prepare a private setup task
 
-1. Create a new folder for the setup session:
+1. Follow the [manual workspace procedure](day-one-skills.md) using a reviewed
+   archive. It copies the six current shared skills and client-specific roles.
 
-   ```bash
-   umask 077
-   mkdir -p "$HOME/Documents/AI Tasks"
-   setup_task="$(mktemp -d "$HOME/Documents/AI Tasks/setup.XXXXXX")"
-   mkdir -p "$setup_task/.agents/skills/day-one-mac-assistant"
-   printf 'Task folder: %s\n' "$setup_task"
-   ```
+   Expected result: a new private directory containing `START.md`, `AGENTS.md`,
+   guides, skills and agent definitions. Existing destinations remain untouched.
 
-   Expected result: a unique private folder. Keep its path in your private notes.
-   An assisted handoff already supplies this folder; reuse that exact folder
-   and skip its creation here.
+2. Open `START.md` and the matching guide under `docs/setup/ai/clients/`.
 
-2. Save the reviewed [setup skill](../../../../templates/ai-setup-assistant/SKILL.md)
-   as `.agents/skills/day-one-mac-assistant/SKILL.md` within that folder.
+   Expected result: your selected client discovers the correct shared skills and
+   its own agent format. Claude's project skill link points to `.agents/skills`.
 
-   Expected result: the file begins with the `day-one-mac-assistant` name and a
-   description. Open and review it before giving it to a client. Browser clients
-   can receive the file as an attachment; automatic skill discovery is optional.
+3. In a browser-only session, attach the relevant guide and skill, then request
+   guidance without execution. Do not attach private progress notes by default.
 
-3. Save an `AGENTS.md` file in the task folder containing:
-
-   ```markdown
-   # Mac setup task
-
-   Route: manual. Mode: guidance only until I approve a specific action.
-   Read .agents/skills/day-one-mac-assistant/SKILL.md first.
-   Use the Day One Mac manual guides supplied with this task.
-   Ask for missing choices. Explain each command and its expected result.
-   Propose one bounded step at a time; report what was actually verified.
-   Do not read secrets, bypass approvals, erase disks or invent completed checks.
-   ```
-
-   Expected result: instructions match your chosen route and mode. For an
-   assisted handoff, retain its generated route and document-root path instead.
-
-4. If using Claude Code, create `CLAUDE.md` beside it with this single line:
-
-   ```text
-   @AGENTS.md
-   ```
-
-   Expected result: Claude loads the shared instructions. This import remains
-   supported when direct `AGENTS.md` discovery is unavailable. Inspect loaded
-   context in the client; see [Claude instruction imports](https://code.claude.com/docs/en/memory).
-   Other clients can explicitly open `AGENTS.md` and the skill. No directory-wide
-   configuration symlinks or credential copies are needed.
+   Expected result: the client can cite the supplied procedure and explain its
+   prerequisites. If the documents are unavailable, stop instead of guessing.
 
 ## 5. Verify the permitted tools
 
@@ -215,8 +183,8 @@ unrestricted execution mode merely to make setup prompts disappear.
    Request approval for the next concrete set of changes after reviewing it.
 
    Expected result: each phase ends with its own checks. No-AI and guidance
-   routes remain usable when a provider is unavailable. If you arrived through
-   the assisted checkpoint, return to that guide instead.
+   routes remain usable when a provider is unavailable. Continue with the
+   [AI operation cycle](../../ai/operation.md) if you chose approved local execution.
 
 ## Troubleshooting and rollback
 

@@ -679,4 +679,4 @@ Provider setup references: [Context7](https://context7.com/docs/resources/all-cl
 
 ---
 
-[← OmniRoute gateway](../../assisted/optional/10a-omniroute.md) · [Enhanced CLI tools →](../../assisted/optional/13-enhanced-cli-tools.md) · [Project home](../../../README.md)
+[← OmniRoute gateway](../../../shared/tools/10a-omniroute.md) · [Enhanced CLI tools →](../../../shared/tools/13-enhanced-cli-tools.md) · [Project home](../../../README.md)

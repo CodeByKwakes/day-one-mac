@@ -1,4 +1,4 @@
-[← Manual handbook](../README.md) · [Phase 4](../../assisted/04-core-tools-and-hosting.md)
+[← Manual handbook](../README.md) · [Phase 4](../git/setup.md)
 
 # Developer folders and optional ghq
 
@@ -213,11 +213,11 @@ which covers both optional ghq and ordinary Git. Folder setup does not clone
 repositories or prove provider access. For Azure HTTPS URLs, use
 `ghq get --vcs git 'https://dev.azure.com/ORG/PROJECT/_git/REPO'` to bypass VCS
 detection. The track-aware persistent defaults are configured separately in
-[Phase 4](../../assisted/04-core-tools-and-hosting.md#step-43--configure-global-git-defaults).
+[Phase 4](../git/setup.md).
 Keep notes separate and use
 [manual Second Brain links](../second-brain/README.md#link-a-repository-without-syncing-its-contents).
 
 ## CLI-assisted equivalent
 
-The [assisted folder operation](../../assisted/04-core-tools-and-hosting.md) is
+The [assisted folder operation](../git/setup.md) is
 a separate route. The manual steps above are complete without it.

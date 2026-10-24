@@ -1,10 +1,74 @@
 # Configure an OmniRoute gateway manually
 
-This optional manual task requires an approved container engine, AI client and
-provider route. Use it only when you need a gateway; an ordinary client can
-connect directly to its approved provider.
+Choose this optional gateway before the rest of setup if your AI client needs
+it. You can reuse an approved service, install a native Node package, or run a
+local container. Choose one owner; do not install multiple copies to repair a
+connection problem. Direct provider access remains a valid choice.
 
-## Minimum working route
+## Choose the installation route
+
+| Route | Prerequisites | Continue at |
+|---|---|---|
+| Existing service | Approved endpoint, account and model route | Provider/client verification below; skip local creation |
+| Native package | Node.js and npm in your user environment | Native steps below, then provider and client setup |
+| Local container | Docker Desktop or OrbStack | Container steps 2–3, then provider and client setup |
+
+### Native package for early AI setup
+
+1. Prepare Node.js using the [language guide](../languages.md), then inspect the
+   package requirements before installing it.
+
+   ```bash
+   node --version
+   npm view omniroute version engines
+   ```
+
+   Expected result: a working Node runtime and the package's current version and
+   supported Node range. Stop if the runtime does not satisfy that range.
+
+2. Review that version and install it with npm. Replace the placeholder before running.
+
+   ```bash
+   npm install --global omniroute@REVIEWED_VERSION
+   omniroute --help
+   ```
+
+   Expected result: the CLI help. Use the same Node/npm owner for updates. Do not
+   add `sudo` to work around a user-runtime permissions problem.
+
+3. Start the service and inspect its listener in another terminal.
+
+   ```bash
+   omniroute
+   ```
+
+   ```bash
+   lsof -nP -iTCP:20128 -sTCP:LISTEN
+   ```
+
+   Expected result: the dashboard is available on port 20128. Confirm its actual
+   listen address; do not assume a `localhost` browser URL means a loopback-only
+   bind. If it listens on all interfaces, stop it and use the documented bind
+   control or the explicit loopback container route below before adding credentials.
+
+4. Complete one provider connection and endpoint key, then configure one client
+   using the matching sections below. Keep approval controls enabled.
+
+   Expected result: one harmless model response through the intended route.
+   Local service health alone is insufficient.
+
+For native updates, stop the service, back up the data directory reported by the
+installed version, review a new version and reinstall that exact version with
+the same npm owner. To remove the CLI, stop it and use `npm uninstall --global
+omniroute`; retain its data until restoration has been checked. Do not delete
+provider data as part of removing the executable.
+
+The native install commands and port are documented in the
+[upstream setup guide](https://github.com/cheaper-inference/OmniRoute/blob/release/v3.8.53/docs/guides/SETUP_GUIDE.md),
+reviewed on 24 October 2026. Binding controls, package requirements and client
+adapters can change; verify the selected release before using them.
+
+## Minimum working container route
 
 For the shortest successful setup, complete one client before adding the rest:
 
@@ -19,8 +83,8 @@ For the shortest successful setup, complete one client before adding the rest:
 
 | Part | Plain-English purpose | Where it runs |
 |---|---|---|
-| OmniRoute server | Receives model requests and routes them to a connected provider | Docker on this Mac |
-| Provider connection | Gives OmniRoute access to an approved model service; it may use OAuth or a provider API key | Stored in the `omniroute-data` Docker volume |
+| OmniRoute server | Receives model requests and routes them to a connected provider | Native process, container or approved remote service |
+| Provider connection | Gives OmniRoute access to an approved model service; it may use OAuth or a provider API key | The selected server’s private data directory or volume |
 | Endpoint key | Lets a local client call this OmniRoute server; it is not the provider's account key | Loaded privately by each client |
 
 The request path is:
@@ -668,4 +732,4 @@ and [configuration reference](https://learn.chatgpt.com/docs/config-file/config-
 
 ---
 
-[← AI clients](../../assisted/optional/10-ai-agents.md) · [MCP servers (optional) →](../../assisted/optional/11-mcp-servers.md) · [Project home](../../../README.md)
+[← AI clients](../../../shared/tools/10-ai-agents.md) · [MCP servers (optional) →](../../../shared/tools/11-mcp-servers.md) · [Project home](../../../README.md)

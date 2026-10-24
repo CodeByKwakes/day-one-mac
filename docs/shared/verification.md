@@ -36,7 +36,7 @@ as passed. An approved exception is distinct from an observed pass.
 
 Manual users retain the check date, reviewer, expiry, result and evidence location
 in private notes. Assisted users follow the
-[policy and evidence reference](../setup/assisted/reference/workstation-readiness.md).
+[policy and evidence reference](reference/workstation-readiness.md).
 Both routes leave untested controls unknown; neither infers approval from a file's
 existence. FileVault and Gatekeeper remain required completion controls.
 
@@ -56,7 +56,7 @@ existence. FileVault and Gatekeeper remain required completion controls.
    TLS, proxy, identity and certificate-renewal outcomes separately. Ask IT to
    resolve failures; do not bypass TLS/VPN/endpoint controls.
 7. Complete the controls below, then enter current evidence in the readiness
-   record (script-assisted route) or the manual acceptance record.
+   record (AI-assisted route) or the manual acceptance record.
 8. Re-run final verification. Expand the pilot only after required failures and
    unknowns are resolved or the policy owner approves explicit exceptions.
 
@@ -121,7 +121,7 @@ replace them for the actual workload and hardware.
 | Setup completion | Separate active work, downloads, OS updates and approvals | Investigate avoidable repeated questions or unexplained waits |
 | Recovery throughput | Same encrypted drive, connection, file mix and byte count | Meet agreed RPO/RTO; investigate regression without removing integrity checks |
 
-The script-assisted route can record shell measurements explicitly:
+The AI-assisted route can record shell measurements explicitly:
 
 ```bash
 day-one-mac readiness --benchmark-shell "$HOME/Downloads/shell-timings.json" --shell /bin/zsh

@@ -553,11 +553,11 @@ if [[ "$ACTION" == status || "$ACTION" == check ]]; then
   if show_status; then exit 0; else exit 1; fi
 fi
 
-if [[ "$DRY_RUN" == 0 ]] && ! day_one_phase_current 08; then
-  err 'Required Phase 8 is not recorded current. Finish the base before adding databases.'
+if [[ "$DRY_RUN" == 0 ]] && ! day_one_operation_ready; then
+  err 'Database installation requires a supported native Apple-silicon environment.'
   exit 10
 fi
-day_one_phase_current 08 || warn 'Plan only: apply requires current completion of Phase 8.'
+day_one_operation_ready || warn 'Plan only: apply requires a supported native Apple-silicon environment.'
 
 ui_title '🗄️' 'Install optional local databases'
 info "selected services: $SERVICES"

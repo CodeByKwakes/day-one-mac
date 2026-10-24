@@ -27,13 +27,13 @@ describes an action or a file the user may need to review.
 | **Dry run / preview** | Show intended actions without making the changes. |
 | **Environment variable** | A named value inherited by commands, such as `PNPM_HOME`. It configures behavior without being typed into every command. |
 | **APFS** | Apple File System: the current macOS disk format. Stage 0 requires an encrypted external APFS volume for an account-preserving cleanup archive. |
-| **Fingerprint** | A checksum of the phase implementation dependencies, schema and relevant selections/policy. The runner uses it to decide whether recorded completion needs revalidation; editorial changes alone do not invalidate it. |
-| **FileVault** | Apple's full-disk encryption. With it on, the contents of the disk are unreadable without your login password or recovery key, so a lost or stolen Mac does not expose your files. Phase 3 requires it. |
+| **Fingerprint** | A checksum of the phase implementation dependencies, schema and relevant selections/policy. Old phase fingerprints are historical evidence; retained tools use their own current checks. |
+| **FileVault** | Apple's full-disk encryption. With it on, the contents of the disk are unreadable without your login password or recovery key, so a lost or stolen Mac does not expose your files. |
 | **fnm** | Fast Node Manager: installs multiple Node.js versions under your account and switches between them per project, so no single Node release is baked into the system. |
 | **Formula** | Homebrew's package type for a command-line tool or library. |
 | **Gate** | A check that must pass before a phase can be marked complete. |
 | **Configuration owner** | The person or tool responsible for editing a file, such as you, chezmoi or an approved management system. Use that owner's workflow to avoid conflicting edits. |
-| **Gatekeeper** | The macOS feature that checks an application is from an identified developer and has not been tampered with before letting it run. Phase 8 verifies it is still enabled. |
+| **Gatekeeper** | The macOS feature that checks an application is from an identified developer and has not been tampered with before letting it run. Verify it during security review. |
 | **ghq** | A command-line tool that stores cloned Git repositories in a predictable provider/owner/repository folder structure. |
 | **Homebrew prefix** | Homebrew's installation root. Day One Mac requires the native Apple-silicon prefix `/opt/homebrew`. |
 | **Idempotent** | Safe to run repeatedly: an existing correct item is kept instead of duplicated. |
@@ -46,7 +46,7 @@ describes an action or a file the user may need to review.
 | **Preflight / audit** | A check performed before changes. In Stage 0 it means a read-only safety report; it does not copy, remove, or back up data. |
 | **Provenance** | Evidence showing where an application came from and whether Day One Mac installed it. The application provenance report distinguishes Homebrew from external ownership. |
 | **Safety report** | The required first Stage 0 step for Route A and Route B. It lists current applications, repositories, packages, containers, and configuration locations so backup risks can be reviewed. |
-| **Stage 0** | The optional process used before Phase 1 when a Mac still has data or settings: create the safety report, test an encrypted backup, then choose Route A or Route B. |
+| **Stage 0** | The optional process used before Phase 1 when a Mac still has data or settings: create the safety report, test an encrypted backup, then choose AI-assisted or manual setup. |
 | **Route A** | Erase the current accounts, applications, files, settings, and credentials using Apple's Erase All Content and Settings. The Day One script shows the handoff but does not perform the erase. |
 | **Route B** | Keep the current macOS account and non-Homebrew applications while removing the known development setup after a no-change preview and backup gates. Unknown settings can remain. |
 | **Dirty repository** | A Git repository containing local file changes that have not been committed. These changes may exist nowhere else. |
@@ -64,13 +64,13 @@ describes an action or a file the user may need to review.
 | **Rosetta** | Apple's translation layer that lets Intel software run on Apple-silicon Macs. Day One Mac requires native Apple-silicon (`arm64`) execution and refuses to run under Rosetta, because a translated Terminal installs the wrong Homebrew. |
 | **Repository / repo** | A folder whose files and change history are tracked by Git. |
 | **Scope** | The resources or permissions a credential or integration is allowed to use. Smaller scope is safer. |
-| **Login shell** | The shell macOS starts for you, recorded per account and shown by `dscl . -read "/Users/$(id -un)" UserShell`. Phase 5 offers to change it from `/bin/zsh` to Homebrew's zsh; `chsh -s /bin/zsh` restores it. |
+| **Login shell** | The shell macOS starts for you, recorded per account and shown by `dscl . -read "/Users/$(id -un)" UserShell`. If you choose Homebrew's zsh, `chsh -s /bin/zsh` restores it. |
 | **Shell** | The program that reads Terminal commands. macOS uses Zsh by default; The setup can keep an existing Zsh, use Apple Zsh or select Homebrew Zsh. |
 | **Shim** | A small compatibility command that forwards an old command name to its replacement. |
 | **SDK** | Software Development Kit: tools and libraries used to build software for a platform. |
 | **Socket** | A special local connection file. The 1Password SSH agent socket lets SSH request a signature without copying out the private key. |
 | **Starship** | An optional Terminal prompt. It replaces the default `%` prompt with one showing the current folder, Git branch, and language version. Configured in `~/.config/starship.toml`. |
-| **Upstream branch** | The remote branch your local branch is linked to, set by `git push -u origin main`. Once set, plain `git push` and `git pull` know where to go, and Phase 8 can confirm your work reached the server. |
+| **Upstream branch** | The remote branch your local branch is linked to, set by `git push -u origin main`. Once set, plain `git push` and `git pull` know where to go. Verify the remote branch separately. |
 | **uv** | A fast Python package and version manager. It installs Python interpreters under your account and manages per-project dependencies, so the system Python is left alone. |
 | **Symlink** | A symbolic link: a filesystem pointer that redirects one path to another file or folder. |
 | **SSH agent** | A service that offers approved SSH identities to Git without exposing the private key file. |

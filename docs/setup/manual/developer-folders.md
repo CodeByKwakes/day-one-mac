@@ -30,4 +30,4 @@ See the [current instructions](development/folders.md#cli-assisted-equivalent).
 
 ## Safety, state and recovery reference
 
-See the [current instructions](../assisted/04-core-tools-and-hosting.md#safety-state-and-recovery-reference).
+See the [current instructions](git/setup.md).

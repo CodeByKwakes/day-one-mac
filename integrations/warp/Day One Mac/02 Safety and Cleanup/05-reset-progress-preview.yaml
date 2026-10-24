@@ -1,5 +1,4 @@
-name: "Cleanup · Preview progress reset"
-command: "day-one-mac setup --reset-progress --dry-run"
-tags: ["day-one-mac", "setup", "progress", "preview", "read-only"]
-description: "Preview archiving the eight phase-completion markers without uninstalling or changing configured files."
+name: "Day One \u00b7 Migration help 05-reset-progress-preview"
+command: "day-one-mac docs open docs/shared/migration/from-scripted-setup.md"
+tags: ["day-one-mac", "review"]
 shells: ["zsh"]

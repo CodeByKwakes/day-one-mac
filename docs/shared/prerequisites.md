@@ -29,7 +29,7 @@ supported setup targets.
 | Homebrew installation | Apple Command Line Tools and an approved native installation | `xcode-select -p`; `/opt/homebrew/bin/brew --prefix` |
 | Base manual Node stack | Homebrew, fnm and pnpm | Follow [language setup](../setup/manual/languages.md) |
 | Base manual Python stack | Homebrew and uv | Follow [language setup](../setup/manual/languages.md) |
-| VS Code profile generation | A runtime exposing `vscode-profile`, Node.js 22 or newer | `day-one-mac --help`; `node --version`, on the assisted route only |
+| VS Code profile generation | A runtime exposing `vscode-profile`, Node.js 22 or newer | `day-one-mac --help`; `node --version`, when using the optional utility |
 | Containers | One selected, running container engine | `docker info` and the intended Docker context |
 | PostgreSQL client | A reachable server, database, permitted role and environment details | Complete the chosen [database guide](../setup/manual/databases/README.md) |
 | AI client or MCP integration | Chosen client/account, access policy and required executable | Check that client's guide before installing servers |
@@ -57,16 +57,14 @@ task. Full Xcode is optional; Command Line Tools suffice for the base.
 
 ## Offline and existing-Mac limits
 
-The assisted runtime can be installed from an existing archive. That does not
+The optional utility runtime can be installed from an existing archive. That does not
 supply all Homebrew downloads, application installers, language packages or
 account access offline. A disconnected build needs a separately approved
 software distribution plan.
 
-For a populated Mac, the assisted route has an
-[existing-Mac preparation procedure](../setup/assisted/existing-mac/README.md).
-The manual route does not provide an equivalent broad account-preserving cleanup.
-Use a tested backup and your approved reset/new-account process, then begin the
-manual setup. This guide does not erase or format a disk.
+For a populated Mac, inventory existing tools and test a backup before either
+route. Keep working applications and their owners. Broad cleanup and account
+reset are outside this project; neither route erases or formats a disk.
 
 ## Troubleshooting
 

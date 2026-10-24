@@ -2,15 +2,15 @@
 
 # Advanced 15 — Full dotfiles and bootstrap
 
-Continue with the [current guide](../../../setup/assisted/advanced/15-full-dotfiles-and-bootstrap.md). This compatibility page preserves existing links.
+Continue with the [current guide](../../../shared/tools/15-full-dotfiles-and-bootstrap.md). This compatibility page preserves existing links.
 
 ## Outcome
 
-See the [current instructions](../../../setup/assisted/advanced/15-full-dotfiles-and-bootstrap.md#outcome).
+See the [current instructions](../../../shared/tools/15-full-dotfiles-and-bootstrap.md#outcome).
 
 ## Executable inventory and proposal route
 
-See the [current instructions](../../../setup/assisted/advanced/15-full-dotfiles-and-bootstrap.md#executable-inventory-and-proposal-route).
+See the [current instructions](../../../shared/tools/15-full-dotfiles-and-bootstrap.md#executable-inventory-and-proposal-route).
 
 ## Step 15.1 — Audit the minimal source first
 
@@ -50,4 +50,4 @@ See the [current instructions](../../../setup/manual/shell/dotfile-hardening.md#
 
 ## Advanced 15 completion checklist 🚦
 
-See the [current instructions](../../../setup/assisted/advanced/15-full-dotfiles-and-bootstrap.md#advanced-15-completion-checklist-).
+See the [current instructions](../../../shared/tools/15-full-dotfiles-and-bootstrap.md#advanced-15-completion-checklist-).

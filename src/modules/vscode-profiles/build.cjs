@@ -77,13 +77,13 @@ function main(args) {
       console.log('Usage: day-one-mac vscode-profile <profile> [--dry-run] [--output NEW_DIRECTORY]\n'
         + '  [--with OPTIONAL_EXTENSION_ID]... [--install-extensions] [--code CLI_PATH]\n'
         + 'Generates review files only by default. Requires Node.js 22+.\n'
-        + 'Install mode requires current Phase 8 and adds missing extensions; it may create the named profile.\n'
+        + 'Install mode checks the platform and VS Code CLI, then adds missing extensions; it may create the named profile.\n'
         + 'Normal generation/install mode never applies settings, removes extensions, or installs Copilot.\n'
         + 'Explicit replacement: --replace-settings [--settings-file ABSOLUTE_PATH]\n'
         + 'Replacement changes complete settings and shortcuts only; other installed extensions are kept.\n'
         + 'Recovery preview: --restore ABSOLUTE_BACKUP_DIRECTORY\n'
         + 'Replacement/restore preview by default. Apply: --execute --approve PREVIEW_SHA256.\n'
-        + 'Replacement requires current Phase 8; restore remains available without it.\n'
+        + 'Replacement checks the platform; restore remains available independently.\n'
         + 'Named replacement needs its own local VS Code settings path copied from the editor.');
       return;
     } else throw new Error(`Unknown option: ${arg}`);
@@ -102,10 +102,10 @@ function main(args) {
       throw new Error('Preview first, then pass --execute --approve <exact preview hash>.');
     }
     if (replacementOptions.replace && replacementOptions.execute && !dryRun) {
-      const gate = spawnSync('/bin/bash', ['-c', 'source "$1"; day_one_phase_current 08',
+      const gate = spawnSync('/bin/bash', ['-c', 'source "$1"; day_one_operation_ready',
         'profile-prerequisite', path.join(root, 'src/core/module-execution.sh')], { encoding: 'utf8' });
       if (gate.error || gate.status !== 0) {
-        console.error('Current Phase 8 completion is required before replacing profile settings. Restore and preview remain available.');
+        console.error('A supported Apple-silicon Mac is required to replace settings. Restore and preview remain available.');
         process.exitCode = 10;
         return;
       }
@@ -119,13 +119,17 @@ function main(args) {
     return;
   }
   if (install) {
-    const gate = spawnSync('/bin/bash', ['-c', 'source "$1"; day_one_phase_current 08',
+    const gate = spawnSync('/bin/bash', ['-c', 'source "$1"; day_one_operation_ready',
       'profile-prerequisite', path.join(root, 'src/core/module-execution.sh')], { encoding: 'utf8' });
     if (gate.error || gate.status !== 0) {
-      console.error('Current Phase 8 completion is required before installing extensions; use --dry-run or generate a review bundle first.');
+      console.error('A supported Apple-silicon Mac is required to install extensions; use --dry-run first.');
       process.exitCode = 10;
       return;
     }
+  }
+  if (install) {
+    const probe = spawnSync(code, ['--version'], { encoding: 'utf8' });
+    if (probe.error || probe.status !== 0) throw new Error('VS Code CLI is unavailable; enable the code command or pass --code.');
   }
   // A new directory prevents overwriting earlier output, including symlinks.
   if (output) fs.mkdirSync(output, { mode: 0o700 });

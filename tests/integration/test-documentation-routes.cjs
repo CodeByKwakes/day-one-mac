@@ -10,31 +10,31 @@ const inventory = fs.readFileSync(path.join(root, 'config/runtime-files.txt'), '
 const documents = new Map(inventory.filter(x => x.endsWith('.md')).map(x => [x, fs.readFileSync(path.join(root, x), 'utf8')]));
 const anchors = text => {
   const counts = new Map();
-  return markdownIt().parse(text, {}).filter(t => t.type === 'inline' && t.map && /^#+ /.test(text.split('\n')[t.map[0]]))
+  const declared = Array.from(text.matchAll(/<a id="([a-z0-9_-]+)"><\/a>/g), m => m[1]);
+  return declared.concat(markdownIt().parse(text, {}).filter(t => t.type === 'inline' && t.map && /^#+ /.test(text.split('\n')[t.map[0]]))
     .map(t => {
       const base = t.content.toLowerCase().replace(/[^a-z0-9 _-]/g, '').replace(/[ \t]/g, '-');
       const count = counts.get(base) || 0; counts.set(base, count + 1);
       return count ? `${base}-${count}` : base;
-    });
+    }));
 };
 const nav = documentationNavigation(documents);
-assert.ok(nav.coreSequence.indexOf('docs/setup/assisted/ai-setup-assistant.md') >= 0
-  && nav.coreSequence.indexOf('docs/setup/assisted/ai-setup-assistant.md') < nav.coreSequence.indexOf('docs/setup/assisted/01-first-boot-and-decisions.md'),
-  'Browser sequence offers the optional AI checkpoint before Phase 1');
+assert.deepEqual(nav.coreSequence, ['docs/setup/ai/README.md', 'docs/setup/ai/bootstrap.md', 'docs/setup/ai/operation.md']);
+assert.ok(!nav.groups.some(g => /Scripted/.test(g.label)));
 
-for (const label of ['Scripted (Assisted) Setup', 'Manual Setup', 'Shared library']) {
+for (const label of ['AI-assisted setup', 'Manual Setup', 'Shared library']) {
   assert.ok(nav.groups.some(g => g.label === label), `Missing navigation section: ${label}`);
 }
 for (const [file, text] of documents) {
   if (!file.startsWith('docs/') || text.includes('<!-- day-one-mac:compatibility-guide -->')) continue;
   assert.ok(['docs/README.md', 'docs/START-HERE.md'].includes(file)
-    || /^docs\/(setup\/(assisted|manual)|shared)\//.test(file), `Guide outside approved roots: ${file}`);
+    || /^docs\/(setup\/(ai|manual)|shared)\//.test(file), `Guide outside approved roots: ${file}`);
 }
 const aliases = JSON.parse(fs.readFileSync(path.join(root, 'config/catalogs/document-aliases.json'), 'utf8'));
 const originalHeadings = JSON.parse(fs.readFileSync(path.join(root, 'tests/fixtures/documentation-headings-before-routes.json'), 'utf8'));
 for (const [file, originalAnchors] of Object.entries(originalHeadings)) {
   assert.ok(documents.has(file), `Original documentation path disappeared: ${file}`);
-  const currentAnchors = anchors(documents.get(file));
+  const currentAnchors = [...anchors(documents.get(file)), ...Array.from(documents.get(file).matchAll(/<a id="([a-z0-9_-]+)"><\/a>/g), m => m[1])];
   for (const anchor of originalAnchors) assert.ok(currentAnchors.includes(anchor), `Original heading disappeared: ${file}#${anchor}`);
 }
 for (const [oldPath, newPath] of Object.entries(aliases)) {
@@ -177,12 +177,12 @@ if (process.platform === 'darwin') {
   assert.ok(coverage);
   const moduleIds = fs.readFileSync(path.join(root, 'config/catalogs/modules.tsv'), 'utf8')
     .split('\n').filter(line => line && !line.startsWith('#')).map(line => line.split('\t')[0]);
-  for (const id of ['01', '02', '03', '04', '05', '06', '07', '08', ...moduleIds]) {
-    assert.ok(coverage.includes(`| ${id} |`), `Missing phase/module manual mapping: ${id}`);
+  for (const id of moduleIds) {
+    assert.ok(documents.get('docs/shared/reference/tools.md').includes(`| ${id} |`), `Missing reviewed tool mapping: ${id}`);
   }
   let examples = 0;
   for (const [file, text] of documents) {
-    if (!/^docs\/setup\/(manual|assisted)\//.test(file)) continue;
+    if (!/^docs\/(setup\/(manual|ai)|shared)\//.test(file)) continue;
     for (const token of markdownIt().parse(text, {}).filter(t => t.type === 'fence')) {
       const language = token.info.trim();
       const shell = { bash: '/bin/bash', sh: '/bin/sh', zsh: '/bin/zsh' }[language];

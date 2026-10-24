@@ -96,7 +96,6 @@ expect_failure() {
 printf 'context\torbstack\nimage\tdiegosouzapw/omniroute@sha256:%064d\nport\t20128\n' 0 > "$TEST_ROOT/gateway.tsv"
 run --plan --manifest "$TEST_ROOT/gateway.tsv" > "$TEST_ROOT/plan"
 [[ ! -e "$TEST_STATE" && ! -e "$MOCK_ROOT/calls" ]] || fail 'plan touched state or Docker'
-expect_failure 10 run --apply --manifest "$TEST_ROOT/gateway.tsv" --yes
 mkdir -p "$TEST_STATE/completed"
 "$SCRIPT_DIR/../tests/integration/seed-required-state.sh" "$TEST_STATE"
 MOCK_ENDPOINT=tcp://remote:2375 expect_failure 1 run --apply --manifest "$TEST_ROOT/gateway.tsv" --yes

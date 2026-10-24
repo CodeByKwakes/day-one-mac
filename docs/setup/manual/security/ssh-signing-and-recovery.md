@@ -51,8 +51,8 @@ These tests may return non-zero despite successful authentication; inspect the
 actual response, not just an exit code. A password prompt, wrong account, timeout
 or `Permission denied (publickey)` is not success.
 
-The current scripted Phase 4 uses `StrictHostKeyChecking=accept-new`; that is not
-evidence of your independent fingerprint review. Do the manual trust check first.
+Using `StrictHostKeyChecking=accept-new` is not evidence of an independent
+fingerprint review. Complete the manual trust check first.
 Never solve a trust failure by disabling host checking or deleting all known hosts.
 
 For repository access, copy an authorised repository's SSH URL from the provider
@@ -155,9 +155,9 @@ authentication and signing registrations and any active account sessions.
 
 Changing modes is a migration, not an uninstall. Preserve the prior config, inspect
 `SSH_AUTH_SOCK`, host `IdentityAgent`, public/private `IdentityFile` paths and
-`gpg.ssh.program`, then change only the selected identity. In the scripted route,
-preview the new required-phase plan and follow Phase 3/4 gates; do not rely on an
-old completion marker. Test before retiring the old route.
+`gpg.ssh.program`, then change only the selected identity. Follow the selected
+security and Git recipes and verify authentication and signing separately.
+Test before retiring the old route.
 
 If chezmoi owns edited configuration, reconcile the intended source using the
 [chezmoi daily guide](../shell/chezmoi.md) and review

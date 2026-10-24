@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Compatibility entry point; implementation: src/setup/setup.sh
-set -euo pipefail
+# Historical source fixture remains readable; direct orchestration is retired.
 if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
   source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/src/setup/setup.sh"
 else
-  exec /bin/bash "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/src/setup/setup.sh" "$@"
+  set -euo pipefail
+  exec /bin/bash "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/src/operations/retired-setup.sh" "$@"
 fi

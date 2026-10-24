@@ -59,7 +59,6 @@ for action in plan apply check resume; do
 done
 expect_failure 2 run optional --module 12
 [[ ! -e "$TEST_STATE" && ! -e "$TEST_STATE.operation.lock" && ! -e "$MOCK_CALLS" ]] || fail 'retired command created state or launched clients'
-expect_failure 10 run optional --module 14 --apply --yes
 expect_failure 2 run optional --module 14 --apply --manifest "$TEST_ROOT/profile.tsv" --yes
 mkdir -p "$TEST_STATE/module-runs/12/legacy/artifact"
 printf 'vscode-profiles\n' > "$TEST_STATE/optional-modules"
@@ -111,16 +110,15 @@ MOCK_READ_ONLY=1 run advanced --module 21 --plan > "$TEST_ROOT/audit-plan"
 [[ "$before" == "$(state_hashes)" ]] || fail 'audit preview/check wrote records'
 printf 'recommended-productivity\n' > "$TEST_STATE/preset"
 expect_failure 1 run advanced --module 21 --check
-expect_failure 10 run advanced --module 21 --apply --yes
 "$SCRIPT_DIR/../tests/integration/seed-required-state.sh" "$TEST_STATE"
 run advanced --module 21 --apply --yes > "$TEST_ROOT/audit-accept"
 grep -Fq 'selection-preset' "$(artifact_path 21)/report.md" || fail 'audit comparison missing'
 [[ -f "$audit_artifact/evidence.tsv" ]] || fail 'old audit snapshot lost'
 run advanced --module 21 --check > "$TEST_ROOT/audit-accepted"
 mv "$TEST_STATE/completed/01" "$TEST_ROOT/phase01"
-expect_failure 1 run advanced --module 21 --apply --yes
-grep -Fq $'phase-01-record\tFAIL' "$(artifact_path 21)/evidence.tsv" || fail 'failed evidence not saved'
-expect_failure 1 run advanced --module 21 --check
+run advanced --module 21 --apply --yes > "$TEST_ROOT/audit-no-legacy-marker"
+grep -Fq $'phase-01-record\tINFO' "$(artifact_path 21)/evidence.tsv" || fail 'missing legacy record was not informational'
+run advanced --module 21 --check > "$TEST_ROOT/audit-check-no-marker"
 mv "$TEST_ROOT/phase01" "$TEST_STATE/completed/01"
 run advanced --module 21 --resume --yes > "$TEST_ROOT/audit-recovered"
 run advanced --module 21 --check > "$TEST_ROOT/audit-recovered-check"

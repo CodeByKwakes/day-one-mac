@@ -80,11 +80,11 @@ async function run() {
   const pages = {
     'docs/START-HERE.md': '[All documentation](README.md)\n\n# Start\n\n## Choose a route\n\nRead the guide.\n\n### Manual\n\n```sh\necho "safe"\n```',
     'docs/README.md': '# All documentation',
-    'docs/setup/assisted/01-first-boot-and-decisions.md': '# Phase 1',
-    'docs/setup/assisted/MACOS-SETTINGS.md': '# Settings checkpoint',
-    'docs/setup/assisted/02-command-line-foundation.md': '# Phase 2',
+    'docs/setup/ai/README.md': '# Phase 1',
+    'docs/setup/ai/bootstrap.md': '# Settings checkpoint',
+    'docs/setup/ai/operation.md': '# Phase 2',
     'docs/setup/manual/apps/macos-shortcuts.md': fs.readFileSync(path.join(root, 'docs/setup/manual/apps/macos-shortcuts.md'), 'utf8'),
-    'docs/setup/assisted/optional/09-databases.md': '# Databases',
+    'docs/shared/tools/09-databases.md': '# Databases',
   };
   for (const [file, text] of Object.entries(pages)) {
     const node = document.createElement('script'); node.className = 'document-data'; node.setAttribute('data-path', file); node.textContent = Buffer.from(text).toString('base64'); document.body.append(node);
@@ -138,13 +138,13 @@ async function run() {
   assert.equal(document.activeElement.id, 'manual');
   assert.equal(get('article').querySelectorAll('button').length, 2, 'Anchor navigation does not duplicate code controls');
   navigate('#docs/START-HERE.md#missing'); assert.match(get('reader-status').textContent, /not in this guide/);
-  navigate('#docs/setup/assisted/01-first-boot-and-decisions.md');
+  navigate('#docs/setup/ai/README.md');
   assert.equal(visibleBlocks()[1].tagName, 'H1', 'Title-first source guides use the same browser order');
   assert.equal(document.activeElement, get('article').querySelector('h1'), 'Guide navigation focuses its heading, not the reading pane');
-  assert.equal(get('page-sequence').querySelector('a').href, '#docs/setup/assisted/MACOS-SETTINGS.md');
+  assert.equal(get('page-sequence').querySelector('a').href, '#docs/setup/ai/bootstrap.md');
   assert.equal(get('page-toc').hidden, true);
-  navigate('#docs/setup/assisted/optional/09-databases.md'); assert.equal(get('page-sequence').hidden, true);
-  assert.match(get('breadcrumbs').textContent, /Scripted \(Assisted\) Setup/);
+  navigate('#docs/shared/tools/09-databases.md'); assert.equal(get('page-sequence').hidden, true);
+  assert.match(get('breadcrumbs').textContent, /Shared library/);
   assert.equal(active().length, 1);
   navigate('#docs/setup/manual/apps/macos-shortcuts.md');
   assert.ok(get('article').textContent.includes('Open in VS Code'));
@@ -158,7 +158,7 @@ async function run() {
   assert.equal(get('sidebar').hidden, true);
   get('menu-toggle').fire('click'); assert.equal(get('sidebar').hidden, false); assert.equal(get('menu-toggle').getAttribute('aria-expanded'), 'true');
   get('sidebar').fire('keydown', { key: 'Escape' }); assert.equal(get('sidebar').hidden, true); assert.equal(document.activeElement, get('menu-toggle'));
-  get('menu-toggle').fire('click'); navigate('#docs/setup/assisted/02-command-line-foundation.md'); assert.equal(get('sidebar').hidden, true);
+  get('menu-toggle').fire('click'); navigate('#docs/setup/ai/operation.md'); assert.equal(get('sidebar').hidden, true);
   get('menu-toggle').fire('click'); get('sidebar').fire('click', { target: active()[0] });
   assert.equal(get('sidebar').hidden, true);
   assert.equal(document.activeElement, get('article').querySelector('h1'), 'Selecting the current mobile guide restores heading focus');

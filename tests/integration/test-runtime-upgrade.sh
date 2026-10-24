@@ -36,8 +36,10 @@ portable="$HOME/.local/bin/day-one-mac"
 grep -Fq 'Version:   test-candidate' "$TASK_TMP/status"
 grep -Fq 'Integrity: verified' "$TASK_TMP/status"
 "$portable" verify > "$TASK_TMP/verify"
-"$portable" setup --status > "$TASK_TMP/setup-status"
-grep -Fq 'changed — revalidate' "$TASK_TMP/setup-status"
+status=0
+"$portable" setup --status > "$TASK_TMP/setup-status" 2>&1 || status=$?
+[[ "$status" == 2 ]]
+grep -Fq 'retired' "$TASK_TMP/setup-status"
 "$portable" docs manual > "$TASK_TMP/docs-path"
 grep -Fq '/docs/setup/manual/README.md' "$TASK_TMP/docs-path"
 [[ -f "$HOME/.local/share/day-one-mac/current/docs/setup/manual/databases/datagrip.md" ]]

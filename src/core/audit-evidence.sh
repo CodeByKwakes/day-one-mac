@@ -2,7 +2,7 @@
 # Bounded, write-free evidence: never evaluate a Brewfile or launch account clients.
 # Caller supplies SCRIPT_DIR, PROJECT_DIR, STATE_ROOT, STATE_DIR and safe_path.
 day_one_audit_evidence() {
-  local phase file id guide expected recorded output status selection digest
+  local phase file id output status selection digest
   printf 'gate\tresult\tevidence\n'
   if "$SCRIPT_DIR/../src/operations/verify.sh" >/dev/null 2>&1; then
     if [[ -s "$PROJECT_DIR/SHA256SUMS" ]]; then
@@ -19,7 +19,8 @@ day_one_audit_evidence() {
         printf 'phase-%s-record\tPASS\t%s\n' "$phase" "$digest"
       else printf 'phase-%s-record\tFAIL\tunreadable completion record\n' "$phase"
       fi
-    else printf 'phase-%s-record\tFAIL\tmissing or unsafe completion record\n' "$phase"
+    elif [[ -e "$file" || -L "$file" ]]; then printf 'phase-%s-record\tFAIL\tunsafe legacy record\n' "$phase"
+    else printf 'phase-%s-record\tINFO\tnot recorded; retired setup phase\n' "$phase"
     fi
   done
   # Hash only explicit, non-secret setup records. No directory-wide credential scan.
@@ -64,18 +65,17 @@ day_one_audit_evidence() {
     # Preserve a change detector, not private command output or auth-adjacent paths.
     printf 'module-%s\t%s\t%s\n' "$id" "$status" "$(printf '%s' "$output" | shasum -a 256 | awk '{print $1}')"
   done
-  while IFS=$'\t' read -r id _layer _mode _prerequisite _title guide; do
+  while IFS=$'\t' read -r id _layer _mode _prerequisite _title _guide; do
     [[ "$id" =~ ^(15|16|17|18|19|20|22)$ ]] || continue
     file="$STATE_ROOT/advanced/completed/$id"
     [[ -e "$file" || -L "$file" ]] || continue
     if [[ ! -f "$file" ]] || ! safe_path "$file"; then
       printf 'guide-%s\tFAIL\tunsafe completion record\n' "$id"; continue
     fi
-    if ! expected="$(shasum -a 256 "$PROJECT_DIR/$guide" | awk '{print $1}')" \
-        || ! recorded="$(sed -n '1p' "$file")"; then
-      printf 'guide-%s\tFAIL\tunreadable guide or completion record\n' "$id"; continue
+    if digest="$(shasum -a 256 "$file" | awk '{print $1}')"; then
+      printf 'guide-%s\tINFO\thistorical record %s; not current verification\n' "$id" "$digest"
+    else
+      printf 'guide-%s\tFAIL\tunreadable historical record\n' "$id"
     fi
-    if [[ "$recorded" == "$expected" ]]; then status=PASS; else status=FAIL; fi
-    printf 'guide-%s\t%s\t%s\n' "$id" "$status" "$expected"
   done < "$PROJECT_DIR/config/catalogs/modules.tsv"
 }

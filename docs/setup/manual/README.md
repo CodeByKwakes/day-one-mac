@@ -11,12 +11,10 @@ Complete the [prerequisites](../../shared/prerequisites.md) and
 approved software and elevation process. For an existing populated account,
 follow the existing-Mac limit in the prerequisites before changing configuration.
 
-## Optional AI preparation
+## Using AI instead
 
-Before the base, choose [AI guidance or approved execution](ai/setup-assistant.md)
-if wanted. Reuse or install one client and verify account/tool access. Choosing
-no AI continues directly below. Keep a browser-only session until any planned
-reset is complete.
+For AI guidance or approved client execution, choose the [AI-assisted route](../ai/README.md).
+This manual sequence is complete without an AI account or Day One Mac tools.
 
 ## Follow the base setup
 
@@ -43,8 +41,8 @@ Each row is a complete task. Finish its verification before continuing.
 - [Second Brain](second-brain/README.md): Obsidian or Notion.
 - [Local HTTPS](local-https.md) and [routine maintenance](maintenance.md).
 
-These additions do not require an assisted Phase 8 marker. They have their own
-prerequisites and verification steps.
+Each addition has its own prerequisites and verification. Use [component lifecycle](lifecycle.md)
+for scoped installation, updates, removal and recovery.
 
 ## Recover or get help
 
@@ -60,10 +58,6 @@ for the normal setup sequence.
 ### Manual Setup Handbook
 
 Continue with [Manual Setup](README.md).
-
-### Choose your route
-
-Continue with [Start here](../../START-HERE.md).
 
 ### What the CLI does and what you do
 
@@ -100,3 +94,5 @@ Continue with [Verify and back up the finished setup](backup-and-restore.md).
 ### Reading and keeping these guides
 
 Continue with [Read and export documentation offline](../../shared/reading-and-export.md).
+
+<a id="choose-your-route"></a>

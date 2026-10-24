@@ -20,7 +20,7 @@ See the [current instructions](shell/chezmoi.md).
 
 See the [current instructions](shell/chezmoi.md).
 
-### Script-assisted route
+### AI-assisted route
 
 See the [current instructions](shell/chezmoi.md).
 
@@ -32,7 +32,7 @@ See the [current instructions](shell/chezmoi.md).
 
 See the [current instructions](shell/chezmoi.md).
 
-### Script-assisted route
+### AI-assisted route
 
 See the [current instructions](shell/chezmoi.md).
 
@@ -44,7 +44,7 @@ See the [current instructions](shell/chezmoi.md).
 
 See the [current instructions](shell/chezmoi.md).
 
-### Script-assisted route
+### AI-assisted route
 
 See the [current instructions](shell/chezmoi.md).
 
@@ -56,7 +56,7 @@ See the [current instructions](shell/chezmoi.md).
 
 See the [current instructions](shell/chezmoi.md).
 
-### Script-assisted route
+### AI-assisted route
 
 See the [current instructions](shell/chezmoi.md).
 
@@ -76,7 +76,7 @@ See the [current instructions](shell/chezmoi.md).
 
 See the [current instructions](shell/chezmoi.md).
 
-### Script-assisted route
+### AI-assisted route
 
 See the [current instructions](shell/chezmoi.md).
 
@@ -96,7 +96,7 @@ See the [current instructions](shell/chezmoi.md).
 
 See the [current instructions](shell/chezmoi.md).
 
-### Script-assisted route
+### AI-assisted route
 
 See the [current instructions](shell/chezmoi.md).
 
@@ -123,3 +123,27 @@ See the [current instructions](shell/chezmoi.md).
 ## Completion checklist
 
 See the [current instructions](shell/chezmoi.md).
+
+### Script-assisted route
+
+See the current guidance linked at the top of this page.
+
+### Script-assisted route
+
+See the current guidance linked at the top of this page.
+
+### Script-assisted route
+
+See the current guidance linked at the top of this page.
+
+### Script-assisted route
+
+See the current guidance linked at the top of this page.
+
+### Script-assisted route
+
+See the current guidance linked at the top of this page.
+
+### Script-assisted route
+
+See the current guidance linked at the top of this page.

@@ -30,11 +30,11 @@ See the [current instructions](../setup/manual/README.md).
 
 ### Script-assisted route only — install the standalone runtime
 
-See the [current instructions](../setup/assisted/README.md).
+See the [current instructions](../START-HERE.md).
 
 ## Software preset for the script-assisted route
 
-See the [current instructions](../setup/assisted/README.md).
+See the [current instructions](../START-HERE.md).
 
 ## Record the setup decisions
 
@@ -118,39 +118,39 @@ See the [current instructions](../setup/manual/backup-and-restore.md).
 
 ## Script-assisted setup flow
 
-See the [current instructions](../setup/assisted/README.md).
+See the [current instructions](../START-HERE.md).
 
 ### Script-assisted 1 — preview the complete plan
 
-See the [current instructions](../setup/assisted/README.md).
+See the [current instructions](../START-HERE.md).
 
 ### Script-assisted 2 — run or resume the wizard
 
-See the [current instructions](../setup/assisted/README.md).
+See the [current instructions](../START-HERE.md).
 
 ### Script-assisted 2a — choose optional work only after Phase 8
 
-See the [current instructions](../setup/assisted/README.md).
+See the [current instructions](../START-HERE.md).
 
 ### Script-assisted 3 — complete shared manual actions when prompted
 
-See the [current instructions](../setup/assisted/README.md).
+See the [current instructions](../START-HERE.md).
 
 ### Script-assisted 4 — inspect status and retry only what failed
 
-See the [current instructions](../setup/assisted/README.md).
+See the [current instructions](../START-HERE.md).
 
 ### Script-assisted 5 — review the reports
 
-See the [current instructions](../setup/assisted/README.md).
+See the [current instructions](../START-HERE.md).
 
 ### Script-assisted 6 — complete application setup
 
-See the [current instructions](../setup/assisted/README.md).
+See the [current instructions](../START-HERE.md).
 
 ### Script-assisted 7 — verify the runtime and machine state
 
-See the [current instructions](../setup/assisted/README.md).
+See the [current instructions](../START-HERE.md).
 
 ## Compare the routes
 

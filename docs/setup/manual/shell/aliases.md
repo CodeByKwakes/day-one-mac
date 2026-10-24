@@ -1,4 +1,4 @@
-[← the base shell task](../../assisted/05-dotfiles-and-shell.md) · [Shell automation](../../assisted/advanced/17-shell-and-package-automation.md)
+[← the base shell task](README.md) · [Shell automation](../../../shared/tools/17-shell-and-package-automation.md)
 
 # Add, edit, save, and remove Zsh aliases
 

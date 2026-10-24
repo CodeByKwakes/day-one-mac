@@ -45,7 +45,6 @@ try {
   run('default', ['--replace-settings', '--execute'], 1);
   run('default', ['--replace-settings', '--execute', '--dry-run']);
   assert(!fs.existsSync(state));
-  run('default', ['--replace-settings', ...approve(preview)], 10);
   assert(!fs.existsSync(state));
   run('full-stack', ['--replace-settings'], 1);
   run('full-stack', ['--replace-settings', '--settings-file', settings], 1);
@@ -53,8 +52,6 @@ try {
   run('default', ['--replace-settings', '--install-extensions'], 1);
   run('default', ['--approve', 'a'.repeat(64)], 1);
   run('default', ['--replace-settings', '--settings-file', path.join(tmp, 'settings.json')], 1);
-  const seed = spawnSync('/bin/bash', [path.join(root, 'tests/integration/seed-required-state.sh'), state], { env, encoding: 'utf8' });
-  assert.equal(seed.status, 0, seed.stderr);
   run('default', ['--replace-settings', '--execute', '--approve', '0'.repeat(64)], 1);
   assert(!fs.existsSync(path.join(state, 'profile-replacements')));
   const applied = run('default', ['--replace-settings', ...approve(preview)]);
@@ -75,14 +72,13 @@ try {
   assert.match(run('default', ['--replace-settings']), /Already matches/);
   const restore = run('default', ['--restore', backup]);
   // Recovery must work even if required setup evidence has become unavailable.
-  const oldState = path.join(tmp, 'state-without-gates');
-  fs.renameSync(path.join(state, 'completed/08'), oldState);
+  assert(!fs.existsSync(path.join(state, 'completed')));
   run('default', ['--restore', backup, ...approve(restore)]);
   assert.equal(fs.readFileSync(settings, 'utf8'), original);
   assert.equal(fs.statSync(settings).mode & 0o777, 0o640);
   assert.equal(fs.readFileSync(shortcuts, 'utf8'), originalShortcuts);
   assert.match(run('default', ['--restore', backup]), /Already restored/);
-  fs.renameSync(oldState, path.join(state, 'completed/08'));
+
   // A stale preview cannot overwrite later edits.
   const stale = run('default', ['--replace-settings']);
   fs.appendFileSync(settings, '\n// A later edit\n');

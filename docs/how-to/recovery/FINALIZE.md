@@ -2,28 +2,28 @@
 
 # Finalise or detach Day One Mac
 
-Continue with the [current guide](../../setup/assisted/recovery/finalize.md). This compatibility page preserves existing links.
+Continue with the [current guide](../../shared/migration/from-scripted-setup.md). This compatibility page preserves existing links.
 
 ## Choose the intended result
 
-See the [current instructions](../../setup/assisted/recovery/finalize.md#choose-the-intended-result).
+See the [current instructions](../../shared/migration/from-scripted-setup.md).
 
 ### Optional rehearsal cleanup is separate
 
-See the [current instructions](../../setup/assisted/recovery/finalize.md#optional-rehearsal-cleanup-is-separate).
+See the [current instructions](../../shared/migration/from-scripted-setup.md).
 
 ## Compact and retain operations — recommended
 
-See the [current instructions](../../setup/assisted/recovery/finalize.md#compact-and-retain-operations---recommended).
+See the [current instructions](../../shared/migration/from-scripted-setup.md).
 
 ## Detach completely
 
-See the [current instructions](../../setup/assisted/recovery/finalize.md#detach-completely).
+See the [current instructions](../../shared/migration/from-scripted-setup.md).
 
 ## Restore a detached state
 
-See the [current instructions](../../setup/assisted/recovery/finalize.md#restore-a-detached-state).
+See the [current instructions](../../shared/migration/from-scripted-setup.md).
 
 ## Safety boundaries
 
-See the [current instructions](../../setup/assisted/recovery/finalize.md#safety-boundaries).
+See the [current instructions](../../shared/migration/from-scripted-setup.md).

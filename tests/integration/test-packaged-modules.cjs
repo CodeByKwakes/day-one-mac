@@ -14,16 +14,12 @@ try {
   execute(cli, ['optional', '--module', '12', '--apply', '--manifest', '/missing.tsv', '--yes'], { env, cwd: root, expected: 2 });
   need(stateSnapshot(state) === beforeRetired, 'Retired module changed packaged state.');
   const beforeAI = stateSnapshot(state);
-  run(['ai-setup', '--plan', '--mode', 'guide', '--client', 'existing']);
-  need(stateSnapshot(state) === beforeAI, 'Packaged AI preview wrote state.');
-  run(['ai-setup', '--apply', '--mode', 'guide', '--client', 'existing']);
-  run(['ai-setup', '--check'], 10);
-  const handoff = fs.readFileSync(path.join(state, 'ai-setup/current'), 'utf8').trim();
-  need(fs.existsSync(path.join(state, 'ai-setup', handoff, '.agents/skills/day-one-mac-assistant/SKILL.md')),
-    'Packaged assistant skill was not copied into the handoff.');
-  need(!fs.existsSync(path.join(state, 'completed')), 'Early checkpoint created phase evidence.');
-  run(['ai-setup', '--apply', '--mode', 'none']);
-  run(['ai-setup', '--check']);
+  run(['assistant', '--plan']);
+  run(['ai-setup', '--plan'], 2);
+  const assistant = path.join(root, 'setup assistant é');
+  run(['assistant', '--export', assistant]);
+  run(['assistant', '--check', assistant]);
+  need(stateSnapshot(state) === beforeAI, 'Assistant export changed installer state.');
   // Exercise the public profile route outside a checkout, using only bundled recipes.
   run(['vscode-profile', '--help']);
   for (const slug of ['default', 'full-stack', 'ai', 'operations']) {
@@ -37,8 +33,8 @@ try {
     need(settings['chat.tools.global.autoApprove'] === false && settings['chat.tools.terminal.enableAutoApprove'] === false, 'Packaged profile changed approval safety.');
   }
   const blockedProfile = path.join(root, 'blocked-profile');
-  run(['vscode-profile', 'default', '--install-extensions', '--code', '/does/not/exist', '--output', blockedProfile], 10);
-  need(!fs.existsSync(blockedProfile), 'Missing Phase 8 must block before profile writes or installation.');
+  run(['vscode-profile', 'default', '--install-extensions', '--code', '/does/not/exist', '--output', blockedProfile], 1);
+  need(!fs.existsSync(blockedProfile), 'Missing VS Code must block before profile writes or installation.');
   const repos = path.join(root, 'repositories'), repo = path.join(repos, 'primary'), linked = path.join(repos, 'linked');
   git(['-c', 'init.templateDir=', 'init', '-q', repo]);
   git(['-C', repo, 'config', 'user.name', 'Packaged Fixture']);
@@ -52,16 +48,10 @@ try {
   write(restore, 'mode\tno-restore\n');
   const installedState = stateSnapshot(state);
   need(run(['--version']).trim() === `day-one-mac ${fs.readFileSync(path.join(runtime, 'VERSION'), 'utf8').trim()}`, 'Packaged version is incorrect.');
-  const requiredPlan = JSON.parse(run(['setup', '--plan', '--track', '1', '--stack', 'both', '--json']));
-  need(requiredPlan.schema_version === 1 && requiredPlan.phases.length === 8, 'Packaged required-phase plan is incomplete.');
-  const requiredCheck = JSON.parse(run(['setup', '--check', '--phase', '05', '--track', '1', '--stack', 'both', '--json'], 11));
-  need(requiredCheck.phases[0].live === 'fail' && requiredCheck.checked_at, 'Packaged checks must detect the empty fixture home.');
-  need(stateSnapshot(state) === installedState, 'Packaged required-phase inspection changed installer state.');
+  run(['setup', '--plan'], 2);
+  need(stateSnapshot(state) === installedState, 'Retired setup changed state.');
   for (const [id, manifest] of [['17', helpers], ['18', identities], ['20', restore]]) run(['advanced', '--module', id, '--plan', '--manifest', manifest]);
   need(stateSnapshot(state) === installedState, 'Packaged plans changed installer state.');
-  run(['advanced', '--module', '20', '--apply', '--manifest', restore, '--yes'], 10);
-  // These markers are fixture-only, not evidence that machine onboarding ran.
-  execute('/bin/bash', [path.join(__dirname, 'seed-required-state.sh'), state, path.join(runtime, 'scripts')], { env });
   // Replacement and recovery must also work from the isolated installed archive.
   const editorUser = path.join(env.HOME, 'Library/Application Support/Code/User');
   fs.mkdirSync(editorUser, { recursive: true });
