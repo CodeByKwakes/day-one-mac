@@ -6,7 +6,7 @@ account access and permissions belong to the parent session.
 ## Prerequisites and steps
 
 1. Complete [bootstrap](../bootstrap.md), then install the [main skill](../../manual/ai/day-one-skills.md)
-   or export an [assistant workspace](../operation.md).
+   in your private setup folder.
 
    Expected result: an approved Codex installation and a verified directory.
 
@@ -27,7 +27,7 @@ account access and permissions belong to the parent session.
    Expected result: the plan cites the bundled guides and makes no changes.
 
 4. After approving the plan, start an execution session using normal approval
-   controls and request `day-one-operator`. Keep workspace access scoped; approve
+   controls and request `day-one-operator` if activated; otherwise use the main skill. Keep workspace access scoped; approve
    specific changes outside it when needed. Do not enable unrestricted access.
 
    Expected result: approved operations produce evidence and unresolved human steps.

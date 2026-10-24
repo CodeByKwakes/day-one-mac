@@ -1,13 +1,13 @@
 # Use the setup workspace with Claude Code
 
-Claude Code accesses installed skills through `.claude/skills`. The optional
-workspace export also supplies shared instructions through `CLAUDE.md` and
-agent definitions in Claude's own format.
+Claude Code accesses installed skills through `.claude/skills`. The main skill
+includes optional role templates in Claude's own format; activate them only
+through the documented project configuration steps.
 
 ## Prerequisites and steps
 
 1. Complete [bootstrap](../bootstrap.md), then install the [main skill](../../manual/ai/day-one-skills.md)
-   or export an [assistant workspace](../operation.md).
+   in your private setup folder.
 
    Expected result: an approved Claude Code installation and a verified workspace.
 
@@ -33,9 +33,10 @@ agent definitions in Claude's own format.
 
 ## Shared files and permission limits
 
-`CLAUDE.md` imports `@AGENTS.md`. The exporter creates the relative link
-`.claude/skills -> ../.agents/skills` inside the new workspace. For an existing
-project, use the collision-safe [manual procedure](../../manual/ai/day-one-skills.md).
+Use `CLAUDE.md` to import `@AGENTS.md` only when you maintain shared project
+instructions. For a combined client installation, the Skills CLI links the
+individual Claude skill to the shared copy. For an existing project, use the
+collision-safe [manual procedure](../../manual/ai/day-one-skills.md).
 Do not symlink the entire `.claude` directory or copy authentication files.
 
 Planner and verifier definitions list only `Read`, `Glob` and `Grep`. They

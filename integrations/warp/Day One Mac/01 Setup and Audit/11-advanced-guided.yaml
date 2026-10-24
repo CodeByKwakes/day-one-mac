@@ -1,4 +1,0 @@
-name: "Day One · List reviewed tools"
-command: "day-one-mac tool --list"
-tags: ["day-one-mac", "review"]
-shells: ["zsh"]

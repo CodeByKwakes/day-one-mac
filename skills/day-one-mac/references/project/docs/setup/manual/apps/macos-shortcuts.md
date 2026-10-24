@@ -247,7 +247,7 @@ service. Warp must be installed to provide its services. Do not use the
 not guarantee that its shell starts in the selected directory.
 
 For Day One command launchers, use the existing
-[Raycast command pack](../../../shared/tools/raycast.md). It already covers project workflows
+[Raycast command pack](raycast.md). It already covers project workflows
 and setup commands without requiring a permanent checkout.
 
 ## Copy a folder path without creating a shortcut

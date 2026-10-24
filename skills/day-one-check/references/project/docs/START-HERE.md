@@ -30,7 +30,7 @@ AI users prepare a client and choose direct provider access, existing OmniRoute,
 local OmniRoute or gateway setup later before depending on the assistant.
 If no client is available yet, use the manual bootstrap instructions or browser guidance.
 
-Optional [reviewed tools](shared/reference/tools.md) help with individual tasks.
+Optional [bundled skill helpers](shared/reference/tools.md) help with individual tasks.
 They are not another setup route. Manual setup does not need them.
 
 ## Verify and resume

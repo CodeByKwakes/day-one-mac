@@ -33,17 +33,15 @@ jobs:
         run: actionlint
       - name: Lint shell and Markdown files
         run: pnpm run lint
-      - name: Check shell syntax
+      - name: Validate sources and independent packages
         run: |
-          while IFS= read -r -d '' script; do
-            bash -n "$script"
-          done < <(find scripts src tools tests extensions -type f -name '*.sh' -print0)
-          bash -n install-day-one-mac
-          bash -n scripts/day-one-mac
-      - name: Run complete validation
-        run: tools/validate.sh
-      - name: Rehearse executable modules from the release archive
-        run: tests/integration/test-packaged-modules.sh
+          pnpm run validate:static
+          pnpm run test:integration
+      - name: Verify pinned Skills CLI installation and lifecycle
+        run: |
+          SKILLS_TEST_DIR="$(mktemp -d)"
+          npm install --prefix "$SKILLS_TEST_DIR" --ignore-scripts --no-audit --no-fund skills@1.7.4
+          pnpm run test:skills-cli "$SKILLS_TEST_DIR/node_modules/skills/bin/cli.mjs"
 
   validate:
     name: validate

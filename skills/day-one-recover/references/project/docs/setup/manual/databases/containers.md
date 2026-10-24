@@ -348,11 +348,8 @@ docker volume rm dev-pgdata dev-redisdata dev-mongodata
 docker network rm dev-net
 ```
 
-The broad clean-state script preserves container data by default. Its separate
-`--archive-docker-data` and `--archive-orbstack-data` options move the selected
-runtime's known storage into the recovery archive. It does not silently delete
-volumes. See [Upgrade notes](../../../shared/upgrade-notes.md) only when an
-existing automation still uses an earlier flag name.
+The retired Day One Mac cleanup command is not available. Keep container data
+and independent backups until the exact resource owner approves disposal.
 
 ## Verify and troubleshoot
 

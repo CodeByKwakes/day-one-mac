@@ -1,60 +1,16 @@
 # Optional 10: install AI client payloads
 
-This assisted operation installs only the selected payloads when its prerequisites are satisfied.
-Account login, billing, project trust and permissions remain manual. Review
-[client choices](../../setup/manual/ai/clients.md) before selecting anything.
+<!-- day-one-mac:compatibility-guide -->
 
-For assistance with the base itself, use the optional
-[pre-Phase-1 checkpoint](../../setup/ai/bootstrap.md). Reuse that client here;
-Module 10 is for later payload choices and retains its platform check. Confirm
-`~/.local/bin` is visible in the new shell when reusing a native CLI.
+This command-based guide is retired. Day One Mac now provides AI-assisted and
+manual setup without an installed runtime or setup runner.
 
-## Before you start
+Use [the current guide](../../setup/manual/ai/clients.md) for the supported procedure and verification.
+If the old manager is installed, follow
+[legacy manager removal](../migration/remove-legacy-manager.md).
+Preserve existing configuration, ownership records and backups during migration.
 
-Check the platform and tool prerequisites, then choose the intended application owner. Existing
-approved external installations remain externally owned.
-
-### Install selected payloads together
-
-After checking prerequisites, you can use one recoverable operation for selected clients:
-
-```bash
-day-one-mac tool --module 10 --plan --clients claude,codex
-day-one-mac tool --module 10 --apply --clients claude,codex --app-install-policy homebrew
-day-one-mac tool --module 10 --check
-```
-
-Supported choices are `claude`, `codex`, `copilot-app`, `copilot-cli`,
-`copilot-vscode` and `raycast-ai`. The latter two install only their host
-applications, VS Code and Raycast; they do not enable a paid service or install
-historical Copilot extensions. Existing official/company-managed installations
-are preserved, not transferred to Homebrew.
-
-Review the plan first. Use `--app-install-policy prompt` for an interactive
-ownership choice, or install through your approved external route. The default
-`check-only` policy stops on missing applications. `--yes` skips selection
-confirmation but does not approve an installer or macOS permissions.
-
-Resume interrupted work with `day-one-mac tool --module 10 --resume`,
-adding your chosen installation policy when needed. Resume uses the saved
-client selection. A passing `--check` means the payloads are present, not that
-accounts, permissions, billing or providers work. Continue the client-specific
-sign-in steps below; no guide completion marker is written automatically.
-
-## Complete the shared manual action
-
-Follow the [selected client's account setup](../../setup/manual/ai/clients.md) after
-installation, then return here. Expected result: the client identifies the
-intended account and can perform a harmless read in an approved disposable folder.
-Do not infer this result from `--check`, which verifies payload presence.
-
-## Troubleshooting and recovery
-
-If a payload is missing, inspect the chosen app-install policy and installation
-owner. If its CLI is not on PATH, open a new shell and check the selected PATH
-helper. If login fails, use the client's supported account recovery flow; do not
-switch billing credentials merely to clear an error.
-
-Use the [module execution reference](../reference/module-execution.md) to inspect
-saved choices and removal boundaries. Account revocation, local client-state
-removal and application uninstall are separate actions.
+<a id="before-you-start"></a>
+<a id="install-selected-payloads-together"></a>
+<a id="complete-the-shared-manual-action"></a>
+<a id="troubleshooting-and-recovery"></a>

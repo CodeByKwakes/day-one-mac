@@ -1,147 +1,93 @@
 # Contributing
 
-Thank you for improving Day One Mac.
+Day One Mac maintains manual recipes, AI skills and narrowly scoped helpers.
+Read [Start here](docs/START-HERE.md) and [adding a capability](docs/shared/reference/adding-capabilities.md)
+before changing behaviour. Work in a branch; keep real inventories, credentials
+and private machine paths outside the public repository.
 
-## Before changing code
+## Prepare contributor tools
 
-1. Read [Start Here](docs/START-HERE.md) and the affected capability guide.
-2. Keep AI-assisted and manual setup as the two routes. Retained utilities
-   perform explicit operations and check their actual prerequisites.
-3. Never add real credentials, private keys, personal inventories, company
-   names, private repository names, vault names or absolute personal paths.
-4. Keep scripts compatible with the Bash 3.2 included with macOS.
-5. Make mutations idempotent, preview-first where destructive, and precisely
-   recorded for rollback.
-6. Use the `day-one-mac` portable command in user-facing instructions. Show
-   direct scripts only in contributor, low-level troubleshooting, or recovery
-   sections, and state why the direct form is needed.
-7. Distribute setup skills through `skills/` and optional utilities through the
-   versioned standalone runtime. A source checkout is optional development state.
+1. Install Node.js 22.20 or newer, the pnpm version in `package.json`, ShellCheck
+   and actionlint using your approved tool owner.
 
-## Source ownership
+   Expected result: `node --version`, `pnpm --version`, `shellcheck --version`
+   and `actionlint --version` succeed.
 
-Runtime behavior lives in `src/`; `scripts/` preserves the public launcher and
-old entry points. Edit canonical guides in `docs/setup/ai`, `docs/setup/manual` and `docs/shared`. Old numbered guide folders are aliases.
-Contributor history and release procedures belong in `maintainers/`.
+2. From the repository root, install locked dependencies:
 
-Application, module, phase and dependency catalogues live in `config/catalogs/`.
-VS Code profile data lives in `config/profiles/vscode/profiles.json`; run
-`pnpm run docs:sync` after editing it. Do not edit the generated reference.
-Add every runtime file to `config/runtime-files.txt`. Keep contributor skills,
-tests, audit history and private machine data outside that allowlist.
+   ```bash
+   pnpm install --frozen-lockfile
+   ```
 
-Skill instructions live in `templates/skills/`. The catalogue at
-`config/catalogs/assistant-skills.json` declares portable packages and extra
-assets. Run `pnpm run skills:build` after changing a skill or its linked guides.
-The builder copies required references, resolves compatibility links and keeps
-the generated runtime inventory current. Do not edit `skills/` by hand.
+   Expected result: contributor dependencies and local Git hooks are ready.
+   The private package is tooling only; users do not install it as an application.
 
-`pnpm run test:skills` verifies independent packages and contained references.
-To test the actual pinned CLI, obtain `skills@1.7.4` through npm and pass its
-absolute `bin/cli.mjs` path to `pnpm run test:skills-cli /path/to/bin/cli.mjs`.
-The test creates temporary homes and exercises project/global installation,
-reinstallation and removal for Codex, Copilot and Claude. It does not configure
-real accounts. GitHub publication and live client discovery are separate checks.
+## Change and verify
 
-## Validate a change
+1. Edit the owning manual guide, configuration, skill template or helper. Update
+   the reviewed source inventories for newly bundled files. Never edit generated
+   `skills/` contents directly.
 
-```bash
-pnpm install --frozen-lockfile
-pnpm run lint
-pnpm run validate:static
-pnpm run test:integration
-pnpm run acceptance:package
-```
+2. Regenerate references and skill packages:
 
-Static checks validate shell syntax, local documentation links, configuration
-catalogues and whether generated references match their source. Integration
-tests use isolated temporary homes. The combined `tools/validate.sh --all` is the
-CI gate: it must pass before a change proceeds through that workflow.
-Native acceptance requires separate real-Mac and managed-device evidence.
+   ```bash
+   pnpm run docs:sync
+   pnpm run skills:build
+   ```
 
-Also inspect:
+   Expected result: committed outputs match their sources. The builder refuses
+   unexpected generated files; review obsolete entries before removing them.
 
-```bash
-git diff --check
-git status --short
-```
+3. Run the full gate:
 
-Run `pnpm install --frozen-lockfile` once after cloning to install the
-contributor tools and activate the shared Husky hooks. See the
-contributor-tooling setup guide (`maintainers/contributing/CONTRIBUTOR-TOOLING.md` in a source checkout)
-for prerequisites, hook behaviour, troubleshooting, and safe bypasses. These
-maintainer files belong to a source checkout and are not in the standalone runtime.
+   ```bash
+   tools/validate.sh --all
+   actionlint
+   ```
 
-## Release workflow
+   Expected result: lint, static and integration checks pass. Fixtures use
+   temporary locations and mock external commands; they do not prove live
+   account, provider, hardware or managed-device acceptance.
 
-Use Conventional Commit subjects so Release Please can select the next
-semantic version:
+4. For skill packaging or installer changes, test the pinned Skills CLI. Install
+   it in a temporary contributor directory, not as a global application:
 
-- `fix:` proposes a patch release;
-- `feat:` proposes a minor release;
-- `feat!:` or another explicit breaking-change marker proposes a major release.
+   ```bash
+   SKILLS_TEST_DIR="$(mktemp -d "${TMPDIR:-/tmp}/day-one-skills-test.XXXXXX")"
+   npm install --prefix "$SKILLS_TEST_DIR" --ignore-scripts --no-audit --no-fund skills@1.7.4
+   pnpm run test:skills-cli "$SKILLS_TEST_DIR/node_modules/skills/bin/cli.mjs"
+   ```
 
-Do not update `VERSION`, create a release tag, or publish a GitHub Release by
-hand during normal development. After validation succeeds on `main`, Release
-Please updates one release pull request containing `VERSION`, the private
-contributor-tooling version in `package.json`, `CHANGELOG.md`, and the release
-manifest. Review and merge that pull request when the changes are ready to
-publish. The workflow creates the tag and a draft release, validates that exact
-candidate and archive, then attaches the runtime, checksum, installer and
-provenance/evidence before publishing. Failed candidates remain drafts; see the
-release and retry procedure (`maintainers/contributing/GIT-WORKFLOW.md#release-lifecycle-and-failed-draft-retry` in a source checkout).
+   Expected result: isolated local/Git installs, scoped updates, removal and
+   source-independent packages pass for the supported clients. No live AI account
+   is needed. Retain logs outside the repository, then remove only the temporary
+   directory you created when finished.
 
-Repository maintainers must keep the narrowly scoped `RELEASE_PLEASE_TOKEN`
-Actions secret available so the generated release pull request receives the
-normal validation workflow.
+5. Review the diff and commit using Conventional Commits, for example
+   `docs: clarify profile recovery` or `fix(skills): preserve shared references`.
 
-## Public examples
+   Expected result: the commit explains the concrete change and verification.
+   Git hooks check formatting and messages; CI checks all supported runners.
 
-Use placeholders such as:
+## Publishing and compatibility
 
-```text
-/Users/your-name
-github.com/example-user/example-repository
-op://<vault>/<item>/<field>
-```
+There is no runtime release pipeline, installer archive or release token
+requirement. Reviewed commits and optional tags identify skill snapshots.
+A GitHub install can only use a revision available on the remote. Pushing,
+merging and publishing require their normal approval.
 
-Never use a realistic token, even when it has been revoked.
+Preserve old documentation URLs using migration notices and the alias catalogue.
+Do not restore runtime wrappers to keep old commands alive. Existing users have
+one [legacy manager removal guide](docs/shared/migration/remove-legacy-manager.md).
+Historical plans, audits, CHANGELOG entries, tags and releases remain records.
 
-## Setup-guide template
+The [offline reader](docs/shared/reading-and-export.md) is a static contributor
+export. Its files work without the checkout or a running service.
 
-Keep one complete procedure in its owning route. A shared human action lives in the Manual Setup topic; the assisted guide links to that task and says when to return. Shared prerequisites, terminology, acceptance criteria and troubleshooting navigation live under `docs/shared`.
-
-Use this order for a new or substantially revised setup guide:
-
-1. **Outcome and scope:** who needs the task, what changes and what remains outside it.
-2. **Prerequisites:** selected tools, permissions, versions and backups. Link shared requirements once.
-3. **Numbered actions:** one action per step, followed by the expected result. Define unfamiliar terms on first use and mark placeholders explicitly.
-4. **Verification:** observable checks of the finished behavior, not just command exit status.
-5. **Troubleshooting and recovery:** likely symptoms, the relevant owner and a scoped way to undo the change.
-6. **Next steps and sources:** where to continue, vendor references, and anything not verified on real hardware or in the published release.
-
-Reference pages may use tables instead of a procedure. Compatibility pages preserve old headings and forward to the current owner; they must not grow a second copy of the instructions. Update the reader, aliases and runtime inventory with every move.
-
-## AI-assisted and manual architecture
-
-The normal setup choices are AI-assisted and manual. Canonical commands live in
-`docs/setup/manual/`; AI guides explain client preparation and the approval cycle.
-Shared prerequisites, reference and recovery live in `docs/shared/`. The optional
-`day-one-mac` bundle exposes bounded reviewed utilities, not a whole-machine runner.
-
-Add executable metadata to `config/catalogs/`, package dependencies explicitly in
-`config/runtime-files.txt`, and document prerequisites and ownership before adding
-an apply action. Skills in `templates/skills/` share instructions across clients;
-role adapters in `templates/agents/` use each client's own format. Never treat a
-skill as permission to execute commands.
-
-Historical runner source and fixtures remain for previous-version recovery research;
-they are excluded from the current runtime and active setup path. Integration
-checks cover command retirement, fresh-state utilities, assistant exports and the
-retained operations. See `maintainers/plans/2026-10-24-ai-manual-progress.md` in a source checkout
-for replaced test contracts. Do not restore phase-marker gates.
-
-Before proposing an architectural release, run the lint, static, integration and
-packaged acceptance gates, then exercise an isolated upgrade and rollback from
-the previous release. Live account, managed-device and container checks require
-separate acceptance evidence; a passing fixture is not that evidence.
+<a id="before-changing-code"></a>
+<a id="source-ownership"></a>
+<a id="validate-a-change"></a>
+<a id="release-workflow"></a>
+<a id="public-examples"></a>
+<a id="setup-guide-template"></a>
+<a id="ai-assisted-and-manual-architecture"></a>

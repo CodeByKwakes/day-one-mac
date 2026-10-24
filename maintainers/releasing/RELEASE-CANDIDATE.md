@@ -1,3 +1,6 @@
+> Historical runtime procedure, retired by the no-runtime migration.
+> Do not run these steps for current skills. See [current checks](../../CONTRIBUTING.md).
+
 [← Maintainer material](../audits/README.md) · [Acceptance procedure](../acceptance/ACCEPTANCE.md)
 
 # Candidate notes: executable modules and acceptance hardening

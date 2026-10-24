@@ -146,8 +146,8 @@ unrestricted execution mode merely to make setup prompts disappear.
 
    Expected result: the client can explain its setup and checking workflows and
    open the bundled guides. This installation does not require root-level
-   `START.md` or `AGENTS.md`. The optional [workspace export](../../ai/operation.md)
-   supplies those files and configured agent directories if you prefer that layout.
+   `START.md` or `AGENTS.md`. Follow [assistant operation](../../ai/operation.md)
+   for planning, approval, private notes and resumption.
 
 3. In a browser-only session, attach the relevant bundled guide and workflow,
    then request guidance without execution. Do not attach private progress notes

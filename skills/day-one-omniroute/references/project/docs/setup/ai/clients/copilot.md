@@ -11,15 +11,15 @@ organisation policy still apply.
 
    Expected result: Copilot can answer a harmless request in the selected editor.
 
-2. Install the [main skill](../../manual/ai/day-one-skills.md) or export an
-   [assistant workspace](../operation.md), then open its directory:
+2. Install the [main skill](../../manual/ai/day-one-skills.md) in a private setup
+   folder, then open that folder:
 
    ```bash
    code "$SETUP_WORKSPACE"
    ```
 
-   Expected result: `.agents/skills/day-one-mac` is available. An exported
-   workspace also contains `START.md` and project roles. Review Workspace Trust.
+   Expected result: `.agents/skills/day-one-mac` is available. Review Workspace
+   Trust and activate optional project roles only when needed.
 
 3. Choose Copilot as the session harness. Open **Chat: Open Customizations**
    from the Command Palette and inspect the available agents and skills.

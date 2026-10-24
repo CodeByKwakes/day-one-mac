@@ -1,3 +1,6 @@
+> Historical runtime procedure, retired by the no-runtime migration.
+> Do not run these steps for current skills. See [current checks](../../CONTRIBUTING.md).
+
 # Set up a GitHub release automation token
 
 Use this guide to give Release Please, or a similar GitHub Actions release

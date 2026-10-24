@@ -1,4 +1,4 @@
-[← Application guides](../apps/README.md) · [Local database module](../../../shared/tools/09-databases.md) · [VS Code profiles](../../../shared/tools/vscode-profiles.md)
+[← Application guides](../apps/README.md) · [Local database module](containers.md) · [VS Code profiles](../../../shared/tools/vscode-profiles.md)
 
 # PostgreSQL setup with DataGrip and VS Code
 
@@ -284,7 +284,7 @@ is not evidence that a real remote environment has been provisioned or tested.
 
 For local containers, follow the [manual container setup](containers.md).
 For editor extensions and profiles, use the [manual VS Code guide](../editors/vscode.md).
-If you chose assisted database provisioning, [Module 09](../../../shared/tools/09-databases.md)
+If you chose assisted database provisioning, [Module 09](containers.md)
 owns that procedure. Recheck vendor UI labels against the installed versions
 when they differ from this guide.
 

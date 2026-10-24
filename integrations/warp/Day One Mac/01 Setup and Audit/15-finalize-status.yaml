@@ -1,4 +1,0 @@
-name: "Day One · Inspect tool status"
-command: "day-one-mac modules"
-tags: ["day-one-mac", "review"]
-shells: ["zsh"]

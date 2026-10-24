@@ -83,19 +83,16 @@ See [skill installation and lifecycle](docs/setup/manual/ai/day-one-skills.md)
 for global scope, specialist selection, optional agent roles, updates, removal
 and examples for setup. Client sign-in and execution permissions remain separate.
 
-## Optional tools and assistant workspace
+## Helpers, offline reading and migration
 
-The optional `day-one-mac` command provides reviewed operations for inventory,
-configuration proposals, VS Code profiles and recovery. Skills and manual setup
-work without it. See the [utility reference](docs/shared/reference/tools.md)
-and [runtime installation](docs/shared/tools/runtime.md).
+Skills include reviewed [helpers](docs/shared/reference/tools.md) for VS Code
+profiles and read-only version checks. They need no global Day One Mac command.
+Manual setup remains independent of helpers. Contributors can build a
+[static offline reader](docs/shared/reading-and-export.md) for sharing.
 
-An [assistant workspace](docs/setup/ai/operation.md) can also export the complete
-handbook, seven portable skills and native project roles. Export is an alternative
-to skill installation; it is not a prerequisite for using an installed skill.
-
-Existing installations should read [migration](docs/shared/migration/from-scripted-setup.md)
-before updating. Historical ownership and recovery records are preserved.
+If the old manager is installed, use the
+[legacy removal guide](docs/shared/migration/remove-legacy-manager.md). Preserve
+working developer tools, settings and recovery backups.
 
 ## Repository layout
 
@@ -106,8 +103,8 @@ before updating. Historical ownership and recovery records are preserved.
 | `docs/shared/` | Prerequisites, references, reviewed tools and migration |
 | `skills/` | Generated, self-contained skill packages for installation |
 | `templates/skills/`, `templates/agents/` | Maintained skill instructions and client roles |
-| `config/` | Capability catalogues, policies and VS Code profile data |
-| `src/`, `scripts/` | Optional utilities, packaging and compatibility notices |
+| `config/` | Reviewed source inventories, tool catalogues and VS Code profile data |
+| `helpers/` | Bounded helpers also bundled into portable skills |
 | `integrations/`, `extensions/` | Optional application assets and Second Brain |
 | `tools/`, `tests/`, `maintainers/` | Contributor tooling, regression tests and project history |
 
@@ -118,3 +115,5 @@ separate from the distributable setup skills.
 
 <a id="start-here"></a>
 <a id="install-without-keeping-a-repository"></a>
+
+<a id="optional-tools-and-assistant-workspace"></a>

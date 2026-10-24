@@ -8,7 +8,7 @@ const root = path.resolve(__dirname, '../..');
 const tmp = fs.mkdtempSync('/private/tmp/day-one-profile-replacement-');
 const home = path.join(tmp, 'home with spaces é');
 const user = path.join(home, 'Library/Application Support/Code/User');
-const state = path.join(home, '.day-one-mac');
+const state = path.join(home, 'Profile backups');
 const env = { ...process.env, HOME: home, DAY_ONE_MAC_STATE_ROOT: state, DAY_ONE_MAC_STATE_DIR: state };
 const settings = path.join(user, 'settings.json');
 const shortcuts = path.join(user, 'keybindings.json');
@@ -16,7 +16,7 @@ const named = path.join(user, 'profiles/named-fixture/settings.json');
 const original = '// Preserve my exact JSONC bytes\n{ "editor.fontSize": 19, }\n';
 const originalShortcuts = '// Preserve my custom shortcuts\n[{"key":"cmd+alt+x","command":"workbench.action.files.save"},]\n';
 function run(slug, args = [], expected = 0, overrides = {}) {
-  const result = spawnSync('/bin/bash', [path.join(root, 'scripts/day-one-mac'), 'vscode-profile', slug, ...args], {
+  const result = spawnSync(process.execPath, [path.join(root, 'helpers/vscode/build.cjs'), slug, ...(args.includes('--replace-settings') ? ['--backup-dir', state] : []), ...args], {
     env: { ...env, ...overrides }, cwd: tmp, encoding: 'utf8', timeout: 20000,
   });
   assert.equal(result.status, expected, `${result.error || ''}\n${result.stdout}\n${result.stderr}`);
@@ -103,13 +103,12 @@ try {
 const fs = require('node:fs');
 const originalRename = fs.renameSync;
 fs.renameSync = (from, to) => { if (to === ${JSON.stringify(path.join(path.dirname(partialSettings), 'keybindings.json'))}) throw new Error('fixture publish failure'); return originalRename(from, to); };
-const { recipe } = require(${JSON.stringify(path.join(root, 'src/modules/vscode-profiles/build.cjs'))});
-const { replacement } = require(${JSON.stringify(path.join(root, 'src/modules/vscode-profiles/replace.cjs'))});
-try { replacement(${JSON.stringify(root)}, recipe('ai'), { replace: true, execute: true, settingsFile: ${JSON.stringify(partialSettings)}, approve: ${JSON.stringify(approval(partialPreview))} }); }
+const { recipe } = require(${JSON.stringify(path.join(root, 'helpers/vscode/build.cjs'))});
+const { replacement } = require(${JSON.stringify(path.join(root, 'helpers/vscode/replace.cjs'))});
+try { replacement(${JSON.stringify(root)}, recipe('ai'), { replace: true, execute: true, settingsFile: ${JSON.stringify(partialSettings)}, backupDir: ${JSON.stringify(state)}, approve: ${JSON.stringify(approval(partialPreview))} }); }
 catch (error) { console.error(error.message); process.exitCode = 1; }
 `);
-  const partial = spawnSync('/bin/bash', [path.join(root, 'src/modules/with-operation-lock.sh'), `${state}.operation.lock`,
-    process.execPath, harness], { env, encoding: 'utf8', timeout: 20000 });
+  const partial = spawnSync(process.execPath, [harness], { env, encoding: 'utf8', timeout: 20000 });
   assert.equal(partial.status, 1, partial.stderr);
   const partialBackup = partial.stderr.match(/Recovery backup retained: (.+)/)[1];
   const partialRestore = run('ai', ['--restore', partialBackup]);

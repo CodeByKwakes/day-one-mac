@@ -669,10 +669,8 @@ the named manual backup if appropriate, revoke the OmniRoute endpoint key, and
 disconnect provider accounts in the dashboard before deleting the volume.
 Removing the container alone does not revoke provider access.
 
-The broad Day One cleanup preserves Docker/OrbStack data by default. When the
-`--archive-docker-data` or `--archive-orbstack-data` option matching your
-runtime is selected, the container data that contains `omniroute-data` is moved
-into the recovery archive with other container state.
+The retired Day One Mac cleanup command is not available. Keep container data
+and independent backups until the exact resource owner approves disposal.
 
 ## Troubleshooting
 
@@ -732,4 +730,4 @@ and [configuration reference](https://learn.chatgpt.com/docs/config-file/config-
 
 ---
 
-[← AI clients](../../../shared/tools/10-ai-agents.md) · [MCP servers (optional) →](../../../shared/tools/11-mcp-servers.md) · [Project home](../../../README.md)
+[← AI clients](clients.md) · [MCP servers (optional) →](mcp.md) · [Project home](../../../README.md)

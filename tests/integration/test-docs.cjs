@@ -11,9 +11,10 @@ const fixture = path.join(temporary, 'standalone');
 const home = path.join(temporary, 'private-home');
 fs.mkdirSync(home);
 try {
-  // Use the release inventory, with no node_modules, Git checkout or real HOME.
-  const inventory = fs.readFileSync(path.join(root, 'config/runtime-files.txt'), 'utf8')
+  // Use the reviewed public inventory, with no node_modules, Git checkout or real HOME.
+  const inventory = fs.readFileSync(path.join(root, 'config/document-sources.txt'), 'utf8')
     .split('\n').filter(line => line && !line.startsWith('#'));
+  inventory.push('config/document-sources.txt', 'tools/export-docs.cjs', 'tools/docs/docs-browser.js', 'tools/docs/docs-browser.css', 'tools/docs/docs-browser.html', 'tools/vendor/markdown-it/markdown-it.min.js', 'tools/vendor/markdown-it/LICENSE');
   for (const file of inventory) {
     const target = path.join(fixture, file);
     fs.mkdirSync(path.dirname(target), { recursive: true });
@@ -23,20 +24,13 @@ try {
   fs.mkdirSync(path.join(home, '.day-one-mac'));
   fs.writeFileSync(path.join(home, '.day-one-mac/private.md'), 'PRIVATE_HOME_SENTINEL');
   const run = (args, expected = 0, environment = {}) => {
-    const result = spawnSync('/bin/bash', [path.join(fixture, 'src/runtime/runtime-manager.sh'), 'docs', ...args], {
+    const result = spawnSync(process.execPath, [path.join(fixture, 'tools/export-docs.cjs'), ...(args[0] === 'export' ? args.slice(1) : args)], {
       env: { ...process.env, HOME: home, DAY_ONE_MAC_STATE_ROOT: path.join(home, '.day-one-mac'),
         PATH: '/usr/bin:/bin:/usr/sbin:/sbin', ...environment }, encoding: 'utf8',
     });
     assert.equal(result.status, expected, `${args.join(' ')}\n${result.stdout}\n${result.stderr}`);
     return result.stdout;
   };
-  assert.match(run([]), /docs\/START-HERE.md/);
-  assert.match(run(['manual']), /setup\/manual\/README.md/);
-  assert.match(run(['chezmoi']), /manual\/shell\/chezmoi.md/);
-  assert.match(run(['handbook']), /manual\/README.md/);
-  assert.match(run(['chezmoi-guide']), /manual\/shell\/README.md/);
-  assert.match(run(['--list']), /chezmoi-daily/);
-  assert.match(run(['second-brain']), /second-brain\/README.md/);
   const handbookTopics = {
     'second-brain-guide': 'docs/setup/manual/second-brain/README.md',
     folders: 'docs/setup/manual/development/folders.md',
@@ -48,40 +42,10 @@ try {
     worktrees: 'docs/setup/manual/development/worktrees/README.md',
     shortcuts: 'docs/setup/manual/apps/macos-shortcuts.md',
   };
-  for (const [topic, file] of Object.entries(handbookTopics)) {
-    assert.equal(fs.realpathSync(run([topic]).trim()), fs.realpathSync(path.join(fixture, file)));
-    assert.ok(run(['--list']).includes(topic));
-    assert.ok(run(['--help']).includes(topic), `docs help omitted ${topic}`);
-  }
-
-  // Compare the public catalogue with executable selection sources, not a
-  // second hand-maintained package list. Sourcing setup exposes functions only.
-  const catalogue = fs.readFileSync(path.join(fixture, handbookTopics.software), 'utf8');
-  const rows = heading => catalogue.split(heading)[1].split('\n## ')[0]
-    .split('\n').filter(line => line.startsWith('| ')).slice(1)
-    .map(line => line.split('|').slice(1, -1).map(cell => cell.trim().replaceAll('`', '')));
-  const appRows = rows('## Registered applications, CLI casks and font');
-  const registeredApps = fs.readFileSync(path.join(fixture, 'config/catalogs/applications.tsv'), 'utf8')
-    .split('\n').filter(line => line && !line.startsWith('#')).map(line => line.split('\t'));
-  assert.deepEqual(appRows.map(row => row[0]).sort(), registeredApps.map(row => row[0]).sort());
-  for (const [id, , , name, cask] of registeredApps) {
-    const documented = appRows.find(row => row[0] === id);
-    assert.equal(documented[2], cask, id);
-    assert.ok(documented[1].startsWith(name), id);
-  }
-  const optionalRows = rows('## Optional formulae');
-  const optionalFormulae = fs.readFileSync(path.join(fixture, 'config/catalogs/optional-formulae.tsv'), 'utf8')
-    .split('\n').filter(line => line && !line.startsWith('#')).map(line => line.split('\t'));
-  assert.deepEqual(optionalRows.map(row => row.slice(0, 3)), optionalFormulae);
-  fs.writeFileSync(path.join(fixture, 'SHA256SUMS'), 'runtime marker');
-  run(['export', '--format', 'html', '--output', path.join(fixture, 'export')], 2);
-  assert.ok(!fs.existsSync(path.join(fixture, 'export')));
-  run(['--browser', '--open'], 2);
-  run(['--browser', '--folder'], 2);
-  run(['export', '--format', 'pdf', '--output', path.join(temporary, 'invalid')], 2);
-  run(['export', '--format', 'html'], 2);
-  run(['export', '--format', 'html', '--format', 'html', '--output', path.join(temporary, 'invalid')], 2);
-  assert.ok(!fs.existsSync(path.join(temporary, 'invalid')));
+  run(['--format', 'pdf', '--output', path.join(temporary, 'invalid')], 1);
+  run(['--format', 'html'], 1);
+  run(['--format', 'html', '--format', 'html', '--output', path.join(temporary, 'invalid')], 1);
+  assert(!fs.existsSync(path.join(temporary, 'invalid')));
 
   const htmlDir = path.join(temporary, 'html export');
   run(['export', '--format', 'html', '--output', htmlDir]);
@@ -140,8 +104,8 @@ try {
     assert.equal(fs.readFileSync(path.join(mdDir, file), 'utf8'), embedded.get(file));
   }
 
-  const markdownIt = require(path.join(fixture, 'src/vendor/markdown-it/markdown-it.min.js'));
-  const { documentationRenderer, documentationNavigation, findDocumentation, resolveDocumentationRoute } = require(path.join(fixture, 'src/docs/docs-browser.js'));
+  const markdownIt = require(path.join(fixture, 'tools/vendor/markdown-it/markdown-it.min.js'));
+  const { documentationRenderer, documentationNavigation, findDocumentation, resolveDocumentationRoute } = require(path.join(fixture, 'tools/docs/docs-browser.js'));
   const navigation = documentationNavigation(embedded);
   const { coreSequence } = navigation;
   assert.deepEqual(resolveDocumentationRoute('docs/10-app-guides/DATAGRIP.md', 'create-a-local-example-database-and-roles', embedded).path, 'docs/setup/manual/databases/datagrip.md');
@@ -200,16 +164,13 @@ try {
     assert.ok(!/href="\.\/[^"#]+\.md(?:#|"|$)/.test(page), `Unbundled Markdown link in ${file}`);
   }
 
-  // Browser opening is stubbed; no app is launched and no Node binary is on PATH.
-  const bin = path.join(temporary, 'bin'); fs.mkdirSync(bin);
-  const openLog = path.join(temporary, 'opened');
-  fs.writeFileSync(path.join(bin, 'open'), '#!/bin/bash\nprintf "%s\\n" "$@" > "$DOCS_OPEN_LOG"\n', { mode: 0o700 });
-  const browserTemp = path.join(temporary, 'browser space # percent %'); fs.mkdirSync(browserTemp);
-  run(['chezmoi-guide', '--browser'], 0, { PATH: `${bin}:/usr/bin:/bin`, TMPDIR: browserTemp, DOCS_OPEN_LOG: openLog });
-  const opened = fs.readFileSync(openLog, 'utf8').trim();
-  assert.match(opened, /index.html#docs\/setup\/manual\/shell\/README.md$/);
-  assert.ok(fs.existsSync(decodeURIComponent(opened.slice('file://'.length).split('#')[0])));
+  // The exported reader survives removal of the source checkout.
   assert.deepEqual(fs.readdirSync(path.join(home, '.day-one-mac')), ['private.md']);
+  const readerBefore = fs.readFileSync(path.join(htmlDir, 'index.html'));
+  const movedFixture = path.join(temporary, 'source-unavailable');
+  fs.renameSync(fixture, movedFixture);
+  assert(fs.readFileSync(path.join(htmlDir, 'index.html')).equals(readerBefore));
+  fs.renameSync(movedFixture, fixture);
 
   // Reject symlinked listed inputs and symlink parents before writing output.
   const guide = path.join(fixture, 'docs/setup/manual/shell/README.md');

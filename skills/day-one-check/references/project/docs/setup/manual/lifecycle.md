@@ -86,7 +86,8 @@ Stage data restores using [backup and restore](backup-and-restore.md). Test a
 sample before replacing active data. Database migrations may need a logical
 backup and application-specific recovery rather than a package downgrade.
 
-The optional runtime has its own [install/update/removal guide](../../shared/tools/runtime.md).
+For an old manager installation, use [legacy removal](../../shared/migration/remove-legacy-manager.md).
+Current skills have no runtime installation.
 Removing it preserves developer apps and setup records. An assistant workspace
 updates by creating a new export; see [assistant operation](../ai/operation.md).
 To add support to this project, follow [adding capabilities](../../shared/reference/adding-capabilities.md).

@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const root = path.resolve(__dirname, '../..');
-const { recipe } = require('../../src/modules/vscode-profiles/build.cjs');
+const { recipe } = require('../../helpers/vscode/build.cjs');
 const golden = require('../fixtures/vscode/recipes-v1.json');
 // Keep the migration snapshot intact and enumerate supported differences explicitly.
 const expected = structuredClone(golden);
@@ -22,13 +22,13 @@ expected.ai.settings['workbench.colorCustomizations']['activityBarBadge.backgrou
 for (const slug of Object.keys(expected)) assert.deepEqual(recipe(slug), expected[slug]);
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'day-one-profile-config-'));
 try {
-  fs.mkdirSync(path.join(tmp, 'src/modules/vscode-profiles'), { recursive: true });
+  fs.mkdirSync(path.join(tmp, 'helpers/vscode'), { recursive: true });
   fs.mkdirSync(path.join(tmp, 'config/profiles/vscode'), { recursive: true });
-  fs.copyFileSync(path.join(root, 'src/modules/vscode-profiles/build.cjs'), path.join(tmp, 'src/modules/vscode-profiles/build.cjs'));
+  fs.copyFileSync(path.join(root, 'helpers/vscode/build.cjs'), path.join(tmp, 'helpers/vscode/build.cjs'));
   const target = path.join(tmp, 'config/profiles/vscode/profiles.json');
   const config = JSON.parse(fs.readFileSync(path.join(root, 'config/profiles/vscode/profiles.json')));
   fs.writeFileSync(target, JSON.stringify(config));
-  const independent = require(path.join(tmp, 'src/modules/vscode-profiles/build.cjs'));
+  const independent = require(path.join(tmp, 'helpers/vscode/build.cjs'));
   for (const slug of Object.keys(expected)) assert.deepEqual(independent.recipe(slug), expected[slug]);
   config.schemaVersion = 99;
   fs.writeFileSync(target, JSON.stringify(config));

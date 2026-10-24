@@ -2,43 +2,44 @@
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
+const markdown = require('./vendor/markdown-it/markdown-it.min.js')();
+const { documentationRenderer } = require('./docs/docs-browser.js');
 const root = path.resolve(__dirname, '..');
-const fail = message => { throw new Error(message); };
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
-const regular = file => {
- if (!file || file.startsWith('/') || file.split('/').some(part => !part || part === '.' || part === '..')) fail(`Unsafe path: ${file}`);
- for (let current = file; current !== '.'; current = path.dirname(current)) {
-  const info = fs.lstatSync(path.join(root, current));
-  if (info.isSymbolicLink()) fail(`Symlink in maintained path: ${current}`);
- }
- if (!fs.statSync(path.join(root, file)).isFile()) fail(`Not a regular file: ${file}`);
-};
+function regular(file) {
+  if (!file || file.split('/').includes('.DS_Store') || path.isAbsolute(file) || file.split('/').some(p => !p || p === '.' || p === '..')) throw new Error(`Unsafe inventory path: ${file}`);
+  if (!/^(docs\/|config\/|templates\/|helpers\/|integrations\/|extensions\/|README\.md$|CONTRIBUTING\.md$|AGENTS\.md$|LICENSE$|SECURITY\.md$|CHANGELOG\.md$)/.test(file)) throw new Error(`Non-public source: ${file}`);
+  for (let p = file; p !== '.'; p = path.dirname(p)) if (fs.lstatSync(path.join(root,p)).isSymbolicLink()) throw new Error(`Symlink source: ${file}`);
+  if (!fs.statSync(path.join(root,file)).isFile()) throw new Error(`Not a regular file: ${file}`);
+}
 try {
- const files = read('config/runtime-files.txt').split('\n').filter(line => line && !line.startsWith('#'));
- if (new Set(files).size !== files.length) fail('Duplicate runtime inventory entry.');
- for (const file of files) {
-  regular(file);
-  if (/^(?:\.agents|\.claude|\.git|node_modules|tests|tools|maintainers)\//.test(file)) fail(`Contributor data in runtime: ${file}`);
- }
- const rows = file => read(file).split('\n').filter(line => line && !line.startsWith('#')).map(line => line.split('\t'));
- const phases = rows('config/catalogs/phases.tsv');
- if (phases.map(row => row[0]).join(',') !== '01,02,03,04,05,06,07,08') fail('Required phase IDs changed.');
- for (const [id,title,guide,implementation,...extra] of phases) {
-  if (!title || extra.length) fail(`Invalid phase row: ${id}`);
-  regular(guide); regular(implementation);
- }
- const modules = rows('config/catalogs/modules.tsv');
- if (new Set(modules.map(row => row[0])).size !== modules.length || modules.some(row => row[0] === '12')) fail('Duplicate or retired module ID.');
- for (const row of modules) { if (row.length !== 6) fail('Invalid module metadata.'); regular(row[5]); }
- for (const file of files) {
-  if (file.startsWith('src/setup/') || file === 'src/core/wizard-centre.sh') fail(`Retired runner packaged: ${file}`);
- }
- if (modules.some(row => row[3] === '08')) fail('Utility still requires a retired phase marker.');
- const aliases = JSON.parse(read('config/catalogs/document-aliases.json'));
- for (const [old,target] of Object.entries(aliases)) {
-  regular(old); regular(target);
-  if (!read(old).includes('<!-- day-one-mac:compatibility-guide -->') || read(target).includes('<!-- day-one-mac:compatibility-guide -->')) fail(`Invalid guide alias: ${old}`);
-  if (!files.includes(old) || !files.includes(target)) fail(`Unpackaged documentation alias: ${old}`);
- }
- console.log(`Project layout: ${files.length} runtime files, ${phases.length} historical phase IDs, ${modules.length} modules and ${Object.keys(aliases).length} guide aliases verified.`);
-} catch (error) { console.error(error.message); process.exitCode=1; }
+  const inventories = ['config/skill-sources.txt','config/document-sources.txt'].map(file => {
+    const lines = read(file).split('\n').filter(s => s && !s.startsWith('#'));
+    if (new Set(lines).size !== lines.length) throw new Error(`Duplicates in ${file}`);
+    lines.forEach(regular); return new Set(lines);
+  });
+  const aliases = JSON.parse(read('config/catalogs/document-aliases.json'));
+  for (const [old,target] of Object.entries(aliases)) {
+    regular(old); regular(target);
+    if (!read(old).includes('<!-- day-one-mac:compatibility-guide -->') || read(target).includes('<!-- day-one-mac:compatibility-guide -->')) throw new Error(`Invalid alias: ${old}`);
+    if (!inventories.every(set => set.has(old) && set.has(target))) throw new Error(`Unbundled alias: ${old}`);
+  }
+  const documents = new Map([...new Set(inventories.flatMap(set => [...set]))].filter(f => f.endsWith('.md')).map(f => [f,read(f)]));
+  const rendered = new Map([...documents].map(([file,text]) => [file,documentationRenderer(require('./vendor/markdown-it/markdown-it.min.js'),documents,file).render(text)]));
+  const failures = [];
+  for (const [file,text] of documents) {
+    const visit = tokens => { for (const token of tokens) {
+      const href = token.attrGet('href') || token.attrGet('src');
+      if (href && !/^[a-z][a-z\d+.-]*:|^\/\//i.test(href)) {
+        const [name,fragment] = decodeURIComponent(href).split('#');
+        const target = name ? path.relative(root,path.resolve(root,path.dirname(file),name)) : file;
+        if (target.startsWith('..') || !fs.existsSync(path.join(root,target))) failures.push(`${file}: missing ${href}`);
+        else if (fragment && rendered.has(target) && !rendered.get(target).includes(`id="${fragment}"`)) failures.push(`${file}: missing anchor ${href}`);
+      }
+      if (token.children) visit(token.children);
+    } };
+    visit(markdown.parse(text,{}));
+  }
+  if (failures.length) throw new Error(failures.join('\n'));
+  console.log(`PASS: reviewed sources, ${Object.keys(aliases).length} aliases and ${documents.size} document links/anchors`);
+} catch (e) { console.error(e.message); process.exitCode=1; }

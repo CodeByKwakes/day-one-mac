@@ -29,8 +29,8 @@ client approval controls still apply. Optional role templates are separate
 from the skills and require explicit project configuration.
 
 Use the manual recipes bundled with the selected workflow. Load only the
-relevant guide. Optional utility commands require a separately installed
-runtime; choose the manual procedure when it is absent. Client installation,
+relevant guide. Reviewed bundled helpers are optional; inspect their previews
+and use only within the approved scope. Client installation,
 provider sign-in and tool downloads still require their normal prerequisites.
 
 Store approved session notes in a user-selected private workspace, outside this

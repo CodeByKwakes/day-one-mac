@@ -1,4 +1,0 @@
-name: "Day One · Check runtime integrity"
-command: "day-one-mac verify"
-tags: ["day-one-mac", "review"]
-shells: ["zsh"]

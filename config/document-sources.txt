@@ -1,0 +1,550 @@
+# Reviewed public source files. Additions require review; do not discover private files.
+AGENTS.md
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE
+README.md
+SECURITY.md
+config/catalogs/applications.tsv
+config/catalogs/assistant-skills.json
+config/catalogs/document-aliases.json
+config/catalogs/optional-formulae.tsv
+config/catalogs/raycast-extensions.tsv
+config/profiles/vscode/profiles.json
+docs/00-preflight/00-existing-mac-decision.md
+docs/00-preflight/01-private-inventory.md
+docs/00-preflight/02-backup-readiness.md
+docs/00-preflight/03-account-preserving-cleanup.md
+docs/00-preflight/04-handoff-to-day-one.md
+docs/00-preflight/ENCRYPTED-BACKUP-DRIVE.md
+docs/00-preflight/README.md
+docs/01-required/01-first-boot-and-decisions.md
+docs/01-required/02-command-line-foundation.md
+docs/01-required/03-security-and-ssh.md
+docs/01-required/04-core-tools-and-hosting.md
+docs/01-required/05-dotfiles-and-shell.md
+docs/01-required/06-language-toolchains.md
+docs/01-required/07-vscode-base.md
+docs/01-required/08-verify-and-reproduce.md
+docs/01-required/INSTALLATION-CENTRE.md
+docs/01-required/MACOS-SETTINGS.md
+docs/01-required/README.md
+docs/02-optional/09-databases.md
+docs/02-optional/10-ai-agents.md
+docs/02-optional/10a-omniroute.md
+docs/02-optional/11-mcp-servers.md
+docs/02-optional/12-vscode-profiles.md
+docs/02-optional/13-enhanced-cli-tools.md
+docs/02-optional/14-warp-drive.md
+docs/02-optional/README.md
+docs/03-advanced/15-full-dotfiles-and-bootstrap.md
+docs/03-advanced/16-brewfile-apps-and-editor.md
+docs/03-advanced/17-shell-and-package-automation.md
+docs/03-advanced/18-hosting-identities-azure-and-worktrees.md
+docs/03-advanced/19-macos-gui-and-local-https.md
+docs/03-advanced/20-restore-and-migrate.md
+docs/03-advanced/21-audit-maintenance-and-rebuild.md
+docs/03-advanced/22-ai-skills-and-mcp-operations.md
+docs/03-advanced/GIT-WORKTREES-VSCODE-AND-AI.md
+docs/03-advanced/README.md
+docs/03-advanced/WORKTREES-CLAUDE.md
+docs/03-advanced/WORKTREES-CODEX.md
+docs/03-advanced/WORKTREES-COPILOT.md
+docs/03-advanced/WORKTREES-ENVIRONMENT.md
+docs/03-advanced/WORKTREES-TERMINAL.md
+docs/03-advanced/WORKTREES-TROUBLESHOOTING.md
+docs/03-advanced/WORKTREES-VSCODE.md
+docs/04-operations/FINALIZE.md
+docs/04-operations/README.md
+docs/04-operations/REMOVE-DAY-ONE-MAC.md
+docs/04-operations/ROLLBACK.md
+docs/04-operations/WORKSTATION-ACCEPTANCE.md
+docs/10-app-guides/1PASSWORD-SSH-APPROVAL.md
+docs/10-app-guides/DATAGRIP.md
+docs/10-app-guides/DBEAVER.md
+docs/10-app-guides/KEYBOARD-SHORTCUTS.md
+docs/10-app-guides/MACOS-SHORTCUTS.md
+docs/10-app-guides/RAYCAST-AI-PROVIDERS.md
+docs/10-app-guides/RAYCAST-COMMANDS.md
+docs/10-app-guides/RAYCAST.md
+docs/10-app-guides/README.md
+docs/10-app-guides/VORSSAINT.md
+docs/10-app-guides/VSCODE-PROFILES.md
+docs/10-app-guides/VSCODE-TYPESCRIPT.md
+docs/10-app-guides/VSCODE.md
+docs/10-app-guides/WARP.md
+docs/20-reference/AI-WORKSPACES.md
+docs/20-reference/APPLICATION-OWNERSHIP.md
+docs/20-reference/ARCHITECTURE-AND-STATE.md
+docs/20-reference/CHEZMOI-COMMAND-REFERENCE.md
+docs/20-reference/CHEZMOI-CONCEPTS-AND-BOUNDARIES.md
+docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md
+docs/20-reference/COMMAND-REFERENCE.md
+docs/20-reference/DOCUMENTATION-COMMANDS.md
+docs/20-reference/EXPECTED-LAYOUT.md
+docs/20-reference/GITHUB-PRIVATE-REPOSITORY.md
+docs/20-reference/GLOSSARY.md
+docs/20-reference/MANAGING-DOTFILES-WITH-CHEZMOI.md
+docs/20-reference/MANUAL-SETUP-GUIDE.md
+docs/20-reference/MODULE-EXECUTION.md
+docs/20-reference/NOTION-SETUP-GUIDE.md
+docs/20-reference/OPTIONAL-STATUS.md
+docs/20-reference/PORTABLE-COMMAND.md
+docs/20-reference/README.md
+docs/20-reference/SOFTWARE-CATALOGUE.md
+docs/20-reference/TERMINAL-BASICS.md
+docs/20-reference/UPGRADE-NOTES.md
+docs/20-reference/VSCODE-PROFILE-DATA.md
+docs/20-reference/WORKSTATION-READINESS.md
+docs/20-reference/ZSH-ALIASES.md
+docs/20-reference/developer-resources/README.md
+docs/20-reference/phase-05-shell-files/README.md
+docs/NEW-DEVICE-SETUP-BLUEPRINT.md
+docs/PROCESS-OVERVIEW.md
+docs/PROJECT-GUIDE.md
+docs/README.md
+docs/START-HERE.md
+docs/explanation/ARCHITECTURE-AND-STATE.md
+docs/explanation/CHEZMOI-CONCEPTS-AND-BOUNDARIES.md
+docs/explanation/PROCESS-OVERVIEW.md
+docs/explanation/PROJECT-GUIDE.md
+docs/how-to/apps/1PASSWORD-SSH-APPROVAL.md
+docs/how-to/apps/KEYBOARD-SHORTCUTS.md
+docs/how-to/apps/MACOS-SHORTCUTS.md
+docs/how-to/apps/RAYCAST-AI-PROVIDERS.md
+docs/how-to/apps/RAYCAST-COMMANDS.md
+docs/how-to/apps/RAYCAST.md
+docs/how-to/apps/README.md
+docs/how-to/apps/VORSSAINT.md
+docs/how-to/apps/VSCODE-PROFILES.md
+docs/how-to/apps/VSCODE.md
+docs/how-to/apps/WARP.md
+docs/how-to/databases/DATAGRIP.md
+docs/how-to/databases/DBEAVER.md
+docs/how-to/databases/OPERATIONS.md
+docs/how-to/databases/POSTGRESQL.md
+docs/how-to/databases/README.md
+docs/how-to/databases/VSCODE.md
+docs/how-to/development/AI-WORKFLOWS.md
+docs/how-to/development/MCP-CONNECTIONS.md
+docs/how-to/development/MCP-DOCKER.md
+docs/how-to/development/PROJECT-INSTRUCTIONS-AND-SKILLS.md
+docs/how-to/development/VSCODE-TYPESCRIPT.md
+docs/how-to/development/ZSH-AND-TERMINALS.md
+docs/how-to/development/worktrees/GIT-WORKTREES-VSCODE-AND-AI.md
+docs/how-to/development/worktrees/WORKTREES-CLAUDE.md
+docs/how-to/development/worktrees/WORKTREES-CODEX.md
+docs/how-to/development/worktrees/WORKTREES-COPILOT.md
+docs/how-to/development/worktrees/WORKTREES-ENVIRONMENT.md
+docs/how-to/development/worktrees/WORKTREES-TERMINAL.md
+docs/how-to/development/worktrees/WORKTREES-TROUBLESHOOTING.md
+docs/how-to/development/worktrees/WORKTREES-VSCODE.md
+docs/how-to/modules/advanced/15-full-dotfiles-and-bootstrap.md
+docs/how-to/modules/advanced/16-brewfile-apps-and-editor.md
+docs/how-to/modules/advanced/17-shell-and-package-automation.md
+docs/how-to/modules/advanced/18-hosting-identities-azure-and-worktrees.md
+docs/how-to/modules/advanced/19-macos-gui-and-local-https.md
+docs/how-to/modules/advanced/20-restore-and-migrate.md
+docs/how-to/modules/advanced/21-audit-maintenance-and-rebuild.md
+docs/how-to/modules/advanced/22-ai-skills-and-mcp-operations.md
+docs/how-to/modules/advanced/README.md
+docs/how-to/modules/optional/09-databases.md
+docs/how-to/modules/optional/10-ai-agents.md
+docs/how-to/modules/optional/10a-omniroute.md
+docs/how-to/modules/optional/11-mcp-servers.md
+docs/how-to/modules/optional/12-vscode-profiles.md
+docs/how-to/modules/optional/13-enhanced-cli-tools.md
+docs/how-to/modules/optional/14-warp-drive.md
+docs/how-to/modules/optional/README.md
+docs/how-to/recovery/FINALIZE.md
+docs/how-to/recovery/README.md
+docs/how-to/recovery/REMOVE-DAY-ONE-MAC.md
+docs/how-to/recovery/ROLLBACK.md
+docs/how-to/recovery/WORKSTATION-ACCEPTANCE.md
+docs/manual/1password.md
+docs/manual/README.md
+docs/manual/azure-artifacts-npm.md
+docs/manual/chezmoi.md
+docs/manual/developer-folders.md
+docs/manual/keychain-ssh.md
+docs/manual/second-brain.md
+docs/manual/security.md
+docs/manual/ssh-signing-and-recovery.md
+docs/reference/AI-WORKSPACES.md
+docs/reference/APPLICATION-OWNERSHIP.md
+docs/reference/CHEZMOI-COMMAND-REFERENCE.md
+docs/reference/COMMAND-REFERENCE.md
+docs/reference/DOCUMENTATION-COMMANDS.md
+docs/reference/EXPECTED-LAYOUT.md
+docs/reference/GITHUB-PRIVATE-REPOSITORY.md
+docs/reference/GLOSSARY.md
+docs/reference/MANAGING-DOTFILES-WITH-CHEZMOI.md
+docs/reference/MODULE-EXECUTION.md
+docs/reference/NEW-DEVICE-SETUP-BLUEPRINT.md
+docs/reference/NOTION-SETUP-GUIDE.md
+docs/reference/OPTIONAL-STATUS.md
+docs/reference/PORTABLE-COMMAND.md
+docs/reference/README.md
+docs/reference/SOFTWARE-CATALOGUE.md
+docs/reference/TERMINAL-BASICS.md
+docs/reference/UPGRADE-NOTES.md
+docs/reference/VSCODE-PROFILE-DATA.md
+docs/reference/WORKSTATION-READINESS.md
+docs/reference/ZSH-ALIASES.md
+docs/reference/developer-resources/README.md
+docs/setup/ai/README.md
+docs/setup/ai/bootstrap.md
+docs/setup/ai/clients/claude.md
+docs/setup/ai/clients/codex.md
+docs/setup/ai/clients/copilot.md
+docs/setup/ai/operation.md
+docs/setup/assisted/01-first-boot-and-decisions.md
+docs/setup/assisted/02-command-line-foundation.md
+docs/setup/assisted/03-security-and-ssh.md
+docs/setup/assisted/04-core-tools-and-hosting.md
+docs/setup/assisted/05-dotfiles-and-shell.md
+docs/setup/assisted/06-language-toolchains.md
+docs/setup/assisted/07-vscode-base.md
+docs/setup/assisted/08-verify-and-reproduce.md
+docs/setup/assisted/INSTALLATION-CENTRE.md
+docs/setup/assisted/MACOS-SETTINGS.md
+docs/setup/assisted/README.md
+docs/setup/assisted/advanced/15-full-dotfiles-and-bootstrap.md
+docs/setup/assisted/advanced/16-brewfile-apps-and-editor.md
+docs/setup/assisted/advanced/17-shell-and-package-automation.md
+docs/setup/assisted/advanced/18-hosting-identities-azure-and-worktrees.md
+docs/setup/assisted/advanced/19-macos-gui-and-local-https.md
+docs/setup/assisted/advanced/20-restore-and-migrate.md
+docs/setup/assisted/advanced/21-audit-maintenance-and-rebuild.md
+docs/setup/assisted/advanced/22-ai-skills-and-mcp-operations.md
+docs/setup/assisted/advanced/README.md
+docs/setup/assisted/ai-setup-assistant.md
+docs/setup/assisted/existing-mac/00-existing-mac-decision.md
+docs/setup/assisted/existing-mac/01-private-inventory.md
+docs/setup/assisted/existing-mac/02-backup-readiness.md
+docs/setup/assisted/existing-mac/03-account-preserving-cleanup.md
+docs/setup/assisted/existing-mac/04-handoff-to-day-one.md
+docs/setup/assisted/existing-mac/README.md
+docs/setup/assisted/integrations/raycast.md
+docs/setup/assisted/integrations/shortcuts.md
+docs/setup/assisted/optional/09-databases.md
+docs/setup/assisted/optional/10-ai-agents.md
+docs/setup/assisted/optional/10a-omniroute.md
+docs/setup/assisted/optional/11-mcp-servers.md
+docs/setup/assisted/optional/12-vscode-profiles.md
+docs/setup/assisted/optional/13-enhanced-cli-tools.md
+docs/setup/assisted/optional/14-warp-drive.md
+docs/setup/assisted/optional/README.md
+docs/setup/assisted/optional/ai-workspaces.md
+docs/setup/assisted/optional/second-brain.md
+docs/setup/assisted/optional/vscode-profiles.md
+docs/setup/assisted/recovery/README.md
+docs/setup/assisted/recovery/finalize.md
+docs/setup/assisted/recovery/remove-day-one-mac.md
+docs/setup/assisted/recovery/rollback.md
+docs/setup/assisted/reference/README.md
+docs/setup/assisted/reference/command-reference.md
+docs/setup/assisted/reference/module-execution.md
+docs/setup/assisted/reference/optional-status.md
+docs/setup/assisted/reference/workstation-readiness.md
+docs/setup/assisted/runtime.md
+docs/setup/existing-mac/00-existing-mac-decision.md
+docs/setup/existing-mac/01-private-inventory.md
+docs/setup/existing-mac/02-backup-readiness.md
+docs/setup/existing-mac/03-account-preserving-cleanup.md
+docs/setup/existing-mac/04-handoff-to-day-one.md
+docs/setup/existing-mac/ENCRYPTED-BACKUP-DRIVE.md
+docs/setup/existing-mac/README.md
+docs/setup/manual/1password.md
+docs/setup/manual/CHEZMOI-SETUP-TUTORIAL.md
+docs/setup/manual/MANUAL-SETUP-GUIDE.md
+docs/setup/manual/README.md
+docs/setup/manual/ai/clients.md
+docs/setup/manual/ai/day-one-skills.md
+docs/setup/manual/ai/instructions-agents-skills.md
+docs/setup/manual/ai/maintenance.md
+docs/setup/manual/ai/mcp-docker.md
+docs/setup/manual/ai/mcp.md
+docs/setup/manual/ai/omniroute.md
+docs/setup/manual/ai/setup-assistant.md
+docs/setup/manual/ai/workflows.md
+docs/setup/manual/apps/README.md
+docs/setup/manual/apps/brewfile.md
+docs/setup/manual/apps/keyboard-shortcuts.md
+docs/setup/manual/apps/macos-shortcuts.md
+docs/setup/manual/apps/raycast-ai-providers.md
+docs/setup/manual/apps/raycast.md
+docs/setup/manual/apps/vorssaint.md
+docs/setup/manual/azure-artifacts-npm.md
+docs/setup/manual/backup-and-restore.md
+docs/setup/manual/chezmoi.md
+docs/setup/manual/databases/README.md
+docs/setup/manual/databases/containers.md
+docs/setup/manual/databases/datagrip.md
+docs/setup/manual/databases/dbeaver.md
+docs/setup/manual/databases/operations.md
+docs/setup/manual/databases/postgresql.md
+docs/setup/manual/databases/vscode.md
+docs/setup/manual/developer-folders.md
+docs/setup/manual/development/ai-workspaces.md
+docs/setup/manual/development/folders.md
+docs/setup/manual/development/resources.md
+docs/setup/manual/development/worktrees/README.md
+docs/setup/manual/development/worktrees/claude.md
+docs/setup/manual/development/worktrees/codex.md
+docs/setup/manual/development/worktrees/copilot.md
+docs/setup/manual/development/worktrees/environment.md
+docs/setup/manual/development/worktrees/terminal.md
+docs/setup/manual/development/worktrees/troubleshooting.md
+docs/setup/manual/development/worktrees/vscode.md
+docs/setup/manual/editors/vscode.md
+docs/setup/manual/git/azure-artifacts-npm.md
+docs/setup/manual/git/github-private-repository.md
+docs/setup/manual/git/multiple-identities.md
+docs/setup/manual/git/setup.md
+docs/setup/manual/homebrew.md
+docs/setup/manual/keychain-ssh.md
+docs/setup/manual/languages.md
+docs/setup/manual/lifecycle.md
+docs/setup/manual/local-https.md
+docs/setup/manual/macos.md
+docs/setup/manual/maintenance.md
+docs/setup/manual/preparation/encrypted-backup.md
+docs/setup/manual/preparation/restore-projects.md
+docs/setup/manual/second-brain.md
+docs/setup/manual/second-brain/README.md
+docs/setup/manual/second-brain/notion/01-prerequisites.md
+docs/setup/manual/second-brain/notion/02-workspace-and-domains.md
+docs/setup/manual/second-brain/notion/03-databases-and-properties.md
+docs/setup/manual/second-brain/notion/04-templates.md
+docs/setup/manual/second-brain/notion/05-dashboard.md
+docs/setup/manual/second-brain/notion/06-raycast-integration.md
+docs/setup/manual/second-brain/notion/07-ai-integration.md
+docs/setup/manual/second-brain/notion/08-operating-workflow.md
+docs/setup/manual/second-brain/notion/09-backup-and-export.md
+docs/setup/manual/second-brain/notion/README.md
+docs/setup/manual/second-brain/notion/checklist.md
+docs/setup/manual/second-brain/obsidian/README.md
+docs/setup/manual/second-brain/obsidian/alternatives.md
+docs/setup/manual/second-brain/obsidian/checklist.md
+docs/setup/manual/second-brain/obsidian/claude.md
+docs/setup/manual/second-brain/obsidian/codex.md
+docs/setup/manual/second-brain/obsidian/dashboard.md
+docs/setup/manual/second-brain/obsidian/layouts.md
+docs/setup/manual/second-brain/obsidian/operations.md
+docs/setup/manual/second-brain/obsidian/raycast.md
+docs/setup/manual/security.md
+docs/setup/manual/security/1password.md
+docs/setup/manual/security/README.md
+docs/setup/manual/security/external-agent.md
+docs/setup/manual/security/https-git.md
+docs/setup/manual/security/keychain-ssh.md
+docs/setup/manual/security/ssh-signing-and-recovery.md
+docs/setup/manual/shell/README.md
+docs/setup/manual/shell/aliases.md
+docs/setup/manual/shell/chezmoi.md
+docs/setup/manual/shell/dotfile-hardening.md
+docs/setup/manual/shell/package-workflows.md
+docs/setup/manual/shell/zsh.md
+docs/setup/manual/ssh-signing-and-recovery.md
+docs/setup/manual/terminals/warp.md
+docs/shared/README.md
+docs/shared/decisions.md
+docs/shared/explanation/architecture-and-state.md
+docs/shared/explanation/chezmoi-boundaries.md
+docs/shared/explanation/process-overview.md
+docs/shared/glossary.md
+docs/shared/migration/from-scripted-setup.md
+docs/shared/migration/remove-legacy-manager.md
+docs/shared/prerequisites.md
+docs/shared/reading-and-export.md
+docs/shared/reference/adding-capabilities.md
+docs/shared/reference/application-ownership.md
+docs/shared/reference/chezmoi-commands.md
+docs/shared/reference/command-reference.md
+docs/shared/reference/expected-layout.md
+docs/shared/reference/module-execution.md
+docs/shared/reference/optional-status.md
+docs/shared/reference/setup-coverage.md
+docs/shared/reference/software-catalogue.md
+docs/shared/reference/tools.md
+docs/shared/reference/vscode-profile-data.md
+docs/shared/reference/workstation-readiness.md
+docs/shared/terminal-basics.md
+docs/shared/tools/09-databases.md
+docs/shared/tools/10-ai-agents.md
+docs/shared/tools/10a-omniroute.md
+docs/shared/tools/11-mcp-servers.md
+docs/shared/tools/12-vscode-profiles.md
+docs/shared/tools/13-enhanced-cli-tools.md
+docs/shared/tools/14-warp-drive.md
+docs/shared/tools/15-full-dotfiles-and-bootstrap.md
+docs/shared/tools/16-brewfile-apps-and-editor.md
+docs/shared/tools/17-shell-and-package-automation.md
+docs/shared/tools/18-hosting-identities-azure-and-worktrees.md
+docs/shared/tools/19-macos-gui-and-local-https.md
+docs/shared/tools/20-restore-and-migrate.md
+docs/shared/tools/21-audit-maintenance-and-rebuild.md
+docs/shared/tools/22-ai-skills-and-mcp-operations.md
+docs/shared/tools/ai-workspaces.md
+docs/shared/tools/preparation/00-existing-mac-decision.md
+docs/shared/tools/preparation/01-private-inventory.md
+docs/shared/tools/preparation/02-backup-readiness.md
+docs/shared/tools/raycast.md
+docs/shared/tools/rollback.md
+docs/shared/tools/runtime.md
+docs/shared/tools/second-brain.md
+docs/shared/tools/shortcuts.md
+docs/shared/tools/vscode-profiles.md
+docs/shared/troubleshooting.md
+docs/shared/upgrade-notes.md
+docs/shared/verification.md
+extensions/second-brain/README.md
+extensions/second-brain/notion/01-PREREQUISITES.md
+extensions/second-brain/notion/02-WORKSPACE-AND-DOMAINS.md
+extensions/second-brain/notion/03-DATABASES-AND-PROPERTIES.md
+extensions/second-brain/notion/04-TEMPLATES.md
+extensions/second-brain/notion/05-DASHBOARD.md
+extensions/second-brain/notion/06-RAYCAST-INTEGRATION.md
+extensions/second-brain/notion/07-AI-INTEGRATION.md
+extensions/second-brain/notion/08-OPERATING-WORKFLOW.md
+extensions/second-brain/notion/09-BACKUP-AND-EXPORT.md
+extensions/second-brain/notion/CHECKLIST.md
+extensions/second-brain/notion/README.md
+extensions/second-brain/notion/assets/raycast/capture-to-notion-second-brain.sh
+extensions/second-brain/notion/assets/raycast/open-notion-second-brain.sh
+extensions/second-brain/notion/seeds/domains.csv
+extensions/second-brain/notion/seeds/starter-knowledge.csv
+extensions/second-brain/obsidian/ALTERNATIVE-STACKS.md
+extensions/second-brain/obsidian/CHECKLIST.md
+extensions/second-brain/obsidian/DASHBOARD.md
+extensions/second-brain/obsidian/DYNAMIC-LAYOUT-MANAGER.md
+extensions/second-brain/obsidian/GUIDE-1-OBSIDIAN-RAYCAST.md
+extensions/second-brain/obsidian/GUIDE-2-OBSIDIAN-CLAUDE-CODE.md
+extensions/second-brain/obsidian/GUIDE-3-OBSIDIAN-CODEX.md
+extensions/second-brain/obsidian/OPERATING-SYSTEM.md
+extensions/second-brain/obsidian/README.md
+extensions/second-brain/obsidian/THREE-VAULT-ARCHITECTURE.md
+extensions/second-brain/obsidian/assets/claude/second-brain-claude.sh
+extensions/second-brain/obsidian/assets/codex/second-brain-codex.sh
+extensions/second-brain/obsidian/assets/manager/claude/second-brain-claude.sh
+extensions/second-brain/obsidian/assets/manager/codex/second-brain-codex.sh
+extensions/second-brain/obsidian/assets/manager/raycast/capture-knowledge-vault.sh
+extensions/second-brain/obsidian/assets/manager/raycast/open-knowledge-vault.sh
+extensions/second-brain/obsidian/assets/manager/raycast/search-knowledge-vault.sh
+extensions/second-brain/obsidian/assets/manager/report/second-brain-report.sh
+extensions/second-brain/obsidian/assets/raycast/capture-second-brain.sh
+extensions/second-brain/obsidian/assets/raycast/open-second-brain-dashboard.sh
+extensions/second-brain/obsidian/assets/raycast/search-second-brain.sh
+extensions/second-brain/obsidian/assets/raycast/second-brain.env.example
+extensions/second-brain/obsidian/assets/three-vaults/claude/second-brain-claude-three.sh
+extensions/second-brain/obsidian/assets/three-vaults/codex/second-brain-codex-three.sh
+extensions/second-brain/obsidian/assets/three-vaults/common/.gitignore
+extensions/second-brain/obsidian/assets/three-vaults/common/AGENTS.md
+extensions/second-brain/obsidian/assets/three-vaults/common/CLAUDE.md
+extensions/second-brain/obsidian/assets/three-vaults/common/Inbox.md
+extensions/second-brain/obsidian/assets/three-vaults/common/Knowledge System.md
+extensions/second-brain/obsidian/assets/three-vaults/common/Quick capture.md
+extensions/second-brain/obsidian/assets/three-vaults/common/Weekly Review.md
+extensions/second-brain/obsidian/assets/three-vaults/development/01 Dashboard/Development Dashboard.md
+extensions/second-brain/obsidian/assets/three-vaults/development/01 Dashboard/Knowledge.base
+extensions/second-brain/obsidian/assets/three-vaults/development/Software Development.md
+extensions/second-brain/obsidian/assets/three-vaults/raycast/capture-knowledge-vault.sh
+extensions/second-brain/obsidian/assets/three-vaults/raycast/open-knowledge-vault.sh
+extensions/second-brain/obsidian/assets/three-vaults/raycast/search-knowledge-vault.sh
+extensions/second-brain/obsidian/assets/three-vaults/software-content/01 Dashboard/Knowledge.base
+extensions/second-brain/obsidian/assets/three-vaults/software-content/01 Dashboard/Software Content Dashboard.md
+extensions/second-brain/obsidian/assets/three-vaults/software-content/Software Content.md
+extensions/second-brain/obsidian/assets/three-vaults/tech-content/01 Dashboard/Knowledge.base
+extensions/second-brain/obsidian/assets/three-vaults/tech-content/01 Dashboard/Tech Content Dashboard.md
+extensions/second-brain/obsidian/assets/three-vaults/tech-content/Tech Content.md
+extensions/second-brain/obsidian/assets/vault/.gitignore
+extensions/second-brain/obsidian/assets/vault/00 Inbox/Inbox.md
+extensions/second-brain/obsidian/assets/vault/00 Inbox/Quick capture.md
+extensions/second-brain/obsidian/assets/vault/01 Dashboards/All Knowledge.base
+extensions/second-brain/obsidian/assets/vault/01 Dashboards/Development.base
+extensions/second-brain/obsidian/assets/vault/01 Dashboards/Second Brain HQ.md
+extensions/second-brain/obsidian/assets/vault/01 Dashboards/Software Content.base
+extensions/second-brain/obsidian/assets/vault/01 Dashboards/Tech Content.base
+extensions/second-brain/obsidian/assets/vault/10 Software Development/Software Development.md
+extensions/second-brain/obsidian/assets/vault/20 Software Content/Software Content.md
+extensions/second-brain/obsidian/assets/vault/30 Tech Content/Tech Content.md
+extensions/second-brain/obsidian/assets/vault/90 System/Knowledge System.md
+extensions/second-brain/obsidian/assets/vault/99 Templates/Capture.md
+extensions/second-brain/obsidian/assets/vault/99 Templates/Development Note.md
+extensions/second-brain/obsidian/assets/vault/99 Templates/Person.md
+extensions/second-brain/obsidian/assets/vault/99 Templates/Project.md
+extensions/second-brain/obsidian/assets/vault/99 Templates/Software Content.md
+extensions/second-brain/obsidian/assets/vault/99 Templates/Source.md
+extensions/second-brain/obsidian/assets/vault/99 Templates/Tech Content.md
+extensions/second-brain/obsidian/assets/vault/99 Templates/Weekly Review.md
+extensions/second-brain/obsidian/assets/vault/AGENTS.md
+extensions/second-brain/obsidian/assets/vault/CLAUDE.md
+helpers/check.cjs
+helpers/vscode/build.cjs
+helpers/vscode/replace.cjs
+helpers/vscode/review-io.cjs
+integrations/shortcuts/Open in VS Code.shortcut
+integrations/shortcuts/README.md
+integrations/shortcuts/open-in-vscode.plist
+integrations/warp/Day One Mac/00 Day One Mac Command Catalogue.md
+integrations/warp/Day One Mac/03 Repositories and Hosting/01-ghq-root.yaml
+integrations/warp/Day One Mac/03 Repositories and Hosting/02-ghq-list.yaml
+integrations/warp/Day One Mac/03 Repositories and Hosting/03-ghq-clone.yaml
+integrations/warp/Day One Mac/03 Repositories and Hosting/04-git-status.yaml
+integrations/warp/Day One Mac/03 Repositories and Hosting/05-git-remotes.yaml
+integrations/warp/Day One Mac/03 Repositories and Hosting/06-github-auth.yaml
+integrations/warp/Day One Mac/03 Repositories and Hosting/07-azure-account.yaml
+integrations/warp/Day One Mac/03 Repositories and Hosting/08-azure-repositories.yaml
+integrations/warp/Day One Mac/04 Dotfiles/01-chezmoi-status.yaml
+integrations/warp/Day One Mac/04 Dotfiles/02-chezmoi-diff.yaml
+integrations/warp/Day One Mac/04 Dotfiles/03-chezmoi-doctor.yaml
+integrations/warp/Day One Mac/04 Dotfiles/04-chezmoi-managed.yaml
+integrations/warp/Day One Mac/04 Dotfiles/05-chezmoi-edit.yaml
+integrations/warp/Day One Mac/04 Dotfiles/06-chezmoi-apply.yaml
+integrations/warp/Day One Mac/04 Dotfiles/07-chezmoi-verify.yaml
+integrations/warp/Day One Mac/05 Toolchains/01-tool-versions.yaml
+integrations/warp/Day One Mac/05 Toolchains/02-fnm-current.yaml
+integrations/warp/Day One Mac/05 Toolchains/03-fnm-install-lts.yaml
+integrations/warp/Day One Mac/05 Toolchains/04-npm-scripts.yaml
+integrations/warp/Day One Mac/05 Toolchains/05-npm-audit.yaml
+integrations/warp/Day One Mac/05 Toolchains/06-pnpm-install-frozen.yaml
+integrations/warp/Day One Mac/05 Toolchains/07-pnpm-audit.yaml
+integrations/warp/Day One Mac/05 Toolchains/08-pnpm-store-status.yaml
+integrations/warp/Day One Mac/05 Toolchains/09-uv-python-list.yaml
+integrations/warp/Day One Mac/05 Toolchains/10-uv-sync-locked.yaml
+integrations/warp/Day One Mac/06 Homebrew/01-brewfile-check.yaml
+integrations/warp/Day One Mac/06 Homebrew/02-outdated.yaml
+integrations/warp/Day One Mac/06 Homebrew/03-update-metadata.yaml
+integrations/warp/Day One Mac/06 Homebrew/04-doctor.yaml
+integrations/warp/Day One Mac/06 Homebrew/05-cleanup-preview.yaml
+integrations/warp/Day One Mac/06 Homebrew/06-autoremove-preview.yaml
+templates/agents/claude/day-one-maintainer.md
+templates/agents/claude/day-one-operator.md
+templates/agents/claude/day-one-planner.md
+templates/agents/claude/day-one-verifier.md
+templates/agents/codex/day-one-maintainer.toml
+templates/agents/codex/day-one-operator.toml
+templates/agents/codex/day-one-planner.toml
+templates/agents/codex/day-one-verifier.toml
+templates/agents/copilot/day-one-maintainer.agent.md
+templates/agents/copilot/day-one-operator.agent.md
+templates/agents/copilot/day-one-planner.agent.md
+templates/agents/copilot/day-one-verifier.agent.md
+templates/ai-setup-assistant/SKILL.md
+templates/phase-05-shell-files/README.md
+templates/phase-05-shell-files/home/.config/starship.toml
+templates/phase-05-shell-files/home/.config/zsh/aliases.zsh
+templates/phase-05-shell-files/home/.config/zsh/path.zsh
+templates/phase-05-shell-files/home/.gitignore_global
+templates/phase-05-shell-files/home/.zprofile
+templates/phase-05-shell-files/home/.zshrc
+templates/shell-helpers/navigation.zsh
+templates/shell-helpers/packages.zsh
+templates/skills/day-one-check/SKILL.md
+templates/skills/day-one-contribute/SKILL.md
+templates/skills/day-one-mac/SKILL.md
+templates/skills/day-one-maintain/SKILL.md
+templates/skills/day-one-omniroute/SKILL.md
+templates/skills/day-one-recover/SKILL.md
+templates/skills/day-one-setup/SKILL.md

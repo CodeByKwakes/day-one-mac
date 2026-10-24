@@ -79,7 +79,7 @@ weekly-review note.
 Expected result: the dashboard reflects the selected vault's actual notes.
 A directory count is not evidence that content is correct or safely published.
 The optional assisted report belongs to the
-[manager workflow](../../../../shared/tools/second-brain.md).
+[manager workflow](../README.md).
 
 ## 4. Add optional Dataview roll-ups
 

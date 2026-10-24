@@ -9,19 +9,11 @@ not the availability or pricing of every upstream product.
 
 ## Selection and ownership
 
-- **Always** below means the required baseline after selecting a hosting track
-  and language stack, not every Mac in existence.
-- Hosting tracks: `1` GitHub, `2` Azure DevOps, `3` both. Language stacks: `node`,
-  `python`, `both`.
-- The `core` preset omits Raycast, Warp, VS Code and the Nerd Font. Other presets
-  include that productivity group. Selecting another primary editor changes
-  integration choices; it does not remove VS Code from that group's catalogue.
-- 1Password and its CLI are required only for `1password` authentication, not
-  `keychain`, `external` or `https`.
-- Required formulae and selected required apps are supplied at the Installation
-  catalogue. Install only selected applications, then follow their manual recipes.
-- Optional/advanced modules install only selected payloads. Sign-in, trust,
-  shell activation, profile import and backups remain separate manual actions.
+Select only tools needed for the chosen workload. The catalogue is reference
+material, not an executable installer or a mandate to install every item.
+Keep existing approved installations and update them through their actual owner.
+Sign-in, trust, configuration and functional verification remain separate tasks.
+The selection column describes relevant use cases; old phase numbers are historical.
 
 A Homebrew **formula** usually supplies a command-line package. A **cask** can
 supply a desktop app, font or CLI: `1password-cli` and `codex` are casks here.
@@ -30,15 +22,12 @@ package before choosing installation. Those lookups may access Homebrew's networ
 
 For apps, keep a valid existing Homebrew, Company Portal, App Store or trusted
 manual installation. Do not install a duplicate merely because `brew list` does
-not know about it. Update through the actual owner. `check-only` reports missing
-apps; an explicit Homebrew policy permits installation of missing selected apps.
-`--yes` alone does not choose an owner.
+not know about it. Update through the actual owner. Choose Homebrew only when it is the approved installation owner.
 
 ## Registered applications, CLI casks and font
 
-The ID is used by `day-one-mac applications --id ID`. That command checks
-installation and records local provenance/state; it is not a read-only filesystem
-query. It does not prove successful login or application configuration.
+IDs identify entries in the reviewed application catalogue. They are not shell
+commands. Use the linked manual guide to install and verify a selected tool.
 
 | ID | Name and purpose | Homebrew cask | Selection / phase | Manual setup and verification |
 |---|---|---|---|---|
@@ -159,12 +148,9 @@ covers reviewed helper activation, not automatic trust of every shell plugin.
 
 ## Maintenance contract
 
-Sources of truth: `config/catalogs/applications.tsv`,
-`src/core/application-ownership.sh` (preset/auth filtering),
-`src/setup/setup.sh`'s `required_formulae`, and `config/catalogs/optional-formulae.tsv`.
-Catalogue fixtures check registered app IDs/casks, the required formula union,
-and optional formula descriptions. Update this guide and its selection wording
-when changing those sources; presence coverage alone cannot test prose semantics.
+Reference catalogues live in `config/catalogs/applications.tsv` and
+`config/catalogs/optional-formulae.tsv`. Update this guide when those references
+change and verify vendor package names before changing installation advice.
 
 Do not automatically remove unlisted installed software: users and organisations
 may own unrelated tools. Removing a package, deleting its data, revoking its account

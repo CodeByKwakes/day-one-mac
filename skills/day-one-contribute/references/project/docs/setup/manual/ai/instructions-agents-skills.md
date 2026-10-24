@@ -205,7 +205,7 @@ Add only the untracked personal paths you own, for example:
 Existing tracked files remain tracked. Do not hide team-owned files or overwrite
 their instructions. Excluded local files do not follow a new clone/worktree;
 reinstall/relink them there. Alternatively, share project AI files in Git while
-keeping editor preferences personal. See [AI operations](../../../shared/tools/22-ai-skills-and-mcp-operations.md).
+keeping editor preferences personal. See [AI operations](maintenance.md).
 
 ## 2. Choose and install project skills
 

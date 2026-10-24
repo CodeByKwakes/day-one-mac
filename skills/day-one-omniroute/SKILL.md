@@ -32,7 +32,6 @@ The project reference snapshot is under `references/project/`; use its matching
 paths when a guide refers to supplied configuration or template files. Read only
 the guide needed for the current task. Keep this installed package unchanged.
 
-The skill is already available after installation. Workspace export is an
-optional alternative; do not require it to begin. Save approved private notes
-in a user-selected workspace. The optional `day-one-mac` utility command needs
-a separate installation; use the manual recipes when that command is absent.
+Save private notes outside this installed package. No Day One Mac runtime is required.
+Reviewed helpers are bundled under `references/project/helpers/`; inspect their
+help and preview output before approving changes. Manual recipes need no helpers.

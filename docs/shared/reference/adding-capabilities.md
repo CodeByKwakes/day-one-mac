@@ -1,55 +1,48 @@
 # Add a supported capability
 
-Add one canonical manual recipe and the executable metadata needed by its
-reviewed operation. AI skills should route to the recipe instead of duplicating
-installation commands.
+Keep each setup recipe in one manual guide. AI skills select that recipe; they
+do not maintain a second set of installation commands.
 
-## Prerequisites
+1. Work in a repository branch and read AGENTS.md and CONTRIBUTING.md.
 
-Work in a repository branch and read AGENTS.md and CONTRIBUTING.md. Identify
-the supported platform, user need, installation owner and existing implementation.
-Do not test installation against your live machine without explicit scope.
+   Expected result: the intended scope and supported Apple-silicon platform are clear.
 
-## Implementation steps
+2. Add or extend the owning guide under `docs/setup/manual/` with prerequisites,
+   numbered steps, expected results, verification, troubleshooting and recovery.
 
-1. Define the capability: purpose, real prerequisites, supported versions,
-   configuration owner, plan/apply/check behaviour and human actions.
+   Expected result: the procedure works without project helpers or a setup runner.
 
-   Expected result: a contract that does not depend on old phase completion.
+3. Update skill instructions under `templates/skills/` and client roles only if
+   routing to the guide is insufficient. Keep executable configuration in `config/`.
 
-2. Add or extend its guide under `docs/setup/manual/`.
+   Expected result: one source for each instruction and configuration value.
 
-   Expected result: numbered steps with expected results, functional verification,
-   troubleshooting, update/removal and recovery. Mark unverified vendor behaviour.
+4. If a bounded helper is needed, place it under `helpers/`. Require explicit
+   inputs, preview mutations, protect pre-existing files and preserve recovery.
+   Keep private output outside the installed skill and avoid global state.
 
-3. Add authoritative metadata in `config/` if a utility consumes it. Keep stable
-   existing operation IDs and ownership paths. Module 12 remains retired.
+   Expected result: the helper works from an isolated copied skill package.
 
-   Expected result: executable data has one owner and is not parsed from prose.
+5. Add behavioural tests for changed behaviour, including invalid input,
+   missing prerequisites, later edits, ownership and partial failure as applicable.
 
-4. Extend the relevant shared skill or add a narrowly scoped skill when routing
-   alone is insufficient. Use each client's actual agent schema.
+   Expected result: the regression fails before the fix and passes afterwards.
 
-   Expected result: one skill source and resolvable references in an exported workspace.
+6. Review additions to `config/skill-sources.txt` and `config/document-sources.txt`,
+   update navigation and rebuild with `pnpm run skills:build`.
 
-5. Add behavioural tests for invalid input, missing prerequisites, pre-existing
-   foreign resources, repeat application and failure/recovery where relevant.
+   Expected result: all references resolve, and only reviewed public files are bundled.
 
-   Expected result: failures are reproduced before the implementation changes.
+7. Run `pnpm run lint`, `pnpm run validate:static` and `pnpm run test:integration`.
+   For packaging changes, also run the Skills CLI acceptance in CONTRIBUTING.md.
 
-6. Update `config/runtime-files.txt`, documentation indexes and command help.
+   Expected result: actual results and any remaining live-account checks are recorded.
 
-   Expected result: packaged operation works outside the checkout and includes
-   only reviewed regular files. No private inventory or credential is packaged.
+Use Conventional Commits and Git revisions to track changes. Record source
+verification dates beside changing vendor claims. Tags may pin reviewed skills;
+there is no runtime release pipeline or package-version coupling. A local commit
+is not available to GitHub installers until published through the normal review process.
 
-7. Run the contributor checks and packaged acceptance required by CONTRIBUTING.md.
-
-   Expected result: recorded command results and explicit remaining hardware/account
-   acceptance. A breaking interface change needs migration and release notes.
-
-## Versioning
-
-Use Git history and release notes for changes. Keep tested client versions and
-source verification dates with their compatibility claims. Do not claim a
-feature is publicly released because it exists in the branch. Publishing and
-installing a new runtime are separate decisions from repository validation.
+<a id="prerequisites"></a>
+<a id="implementation-steps"></a>
+<a id="versioning"></a>

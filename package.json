@@ -5,7 +5,7 @@
   "description": "Contributor-only linting and Git hook tooling for Day One Mac",
   "packageManager": "pnpm@12.4.2",
   "engines": {
-    "node": ">=22",
+    "node": ">=22.20.0",
     "pnpm": ">=10"
   },
   "scripts": {
@@ -16,9 +16,6 @@
     "validate": "tools/validate.sh",
     "test:vscode-profiles": "node tests/integration/test-vscode-profiles.cjs",
     "test:vscode-profile-replacement": "node tests/integration/test-vscode-profile-replacement.cjs",
-    "acceptance:plan": "tools/release-readiness.sh --plan",
-    "acceptance:package": "tests/integration/test-packaged-modules.sh",
-    "acceptance:native:plan": "tools/rehearse-mounted-restore.sh --plan",
     "commitlint": "commitlint",
     "validate:static": "tools/validate.sh --static",
     "test:integration": "tools/validate.sh --regressions",
@@ -27,12 +24,12 @@
     "skills:build": "node tools/build-skills.cjs",
     "skills:check": "node tools/build-skills.cjs --check",
     "test:skills": "node tests/integration/test-skills-package.cjs",
-    "test:skills-cli": "node tests/integration/test-skills-cli.cjs"
+    "test:skills-cli": "node tests/integration/test-skills-cli.cjs",
+    "docs:export": "node tools/export-docs.cjs"
   },
   "lint-staged": {
     "*.{md,mdx}": "markdownlint-cli2",
-    "*.{sh,bash}": "shellcheck --severity=style",
-    "install-day-one-mac": "shellcheck --severity=style"
+    "*.{sh,bash}": "shellcheck --severity=style"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.3",

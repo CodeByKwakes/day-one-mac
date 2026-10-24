@@ -1,9 +1,0 @@
-# id	title	guide	implementation
-01	First boot and decisions	docs/setup/manual/macos.md	src/setup/phases/01-decisions.sh
-02	Command-line foundation	docs/setup/manual/homebrew.md	src/setup/phases/02-foundation.sh
-03	Security and SSH	docs/setup/manual/security/README.md	src/setup/phases/03-security.sh
-04	Core tools and hosting	docs/setup/manual/git/setup.md	src/setup/phases/04-hosting.sh
-05	Configuration ownership, shell and prompt	docs/setup/manual/shell/README.md	src/setup/phases/05-dotfiles.sh
-06	Language toolchains and pnpm	docs/setup/manual/languages.md	src/setup/phases/06-toolchains.sh
-07	VS Code base	docs/setup/manual/editors/vscode.md	src/setup/phases/07-editor.sh
-08	Verify and reproduce	docs/setup/manual/backup-and-restore.md	src/setup/phases/08-verification.sh

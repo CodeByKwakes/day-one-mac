@@ -19,9 +19,9 @@ for task-oriented procedures.
 | Rendered target | Content chezmoi would produce from source and machine data | Displayed by `chezmoi cat TARGET` |
 | Machine configuration | Local editor settings and template data | `~/.config/chezmoi/chezmoi.toml` |
 | Day One Mac state | Phase choices, manifests, reports, and completion markers | `~/.day-one-mac` |
-| Day One Mac runtime | Installed command and versioned project files | `~/.local/bin/day-one-mac`, `~/.local/share/day-one-mac` |
+| Legacy manager | Retired launcher and assets; preserve recovery evidence | See [removal](../migration/remove-legacy-manager.md) |
 
-The runtime and Day One Mac state are not part of the chezmoi source.
+Legacy manager files and Day One Mac recovery state are not part of the chezmoi source.
 
 ## Inspection commands
 
@@ -102,7 +102,7 @@ Include the reviewed `~/Brewfile` when you choose to manage it with chezmoi.
 
 | Path or class | Reason |
 |---|---|
-| `~/.local/bin/day-one-mac` | Owned by the checksum-verified standalone runtime |
+| `~/.local/bin/day-one-mac` | Retired launcher; never recreate from dotfiles |
 | `~/.day-one-mac` | Machine state, reports, choices, and recovery manifests |
 | `~/.config/chezmoi/chezmoi.toml` | Per-Mac input, not portable output |
 | SSH private keys and 1Password data | Secret material belongs to the credential owner |
@@ -142,13 +142,6 @@ for the commands shown.
 | Receive a private remote change | Git `pull --ff-only` in source → `chezmoi diff` → named applies |
 | Audit the whole setup | `chezmoi doctor` → `chezmoi managed` → `chezmoi diff` → `chezmoi verify` |
 
-## Day One Mac commands related to chezmoi
-
-| Command | Relationship |
-|---|---|
-| `day-one-mac shell-status` | Verifies shell paths, startup files, aliases, and tools |
-| `day-one-mac advanced-audit` | Includes chezmoi and Brewfile drift in the private audit |
-
 ## Routine health check
 
 ```bash
@@ -156,7 +149,6 @@ chezmoi doctor
 chezmoi status
 chezmoi --use-builtin-diff diff --no-pager
 chezmoi verify
-day-one-mac shell-status
 ```
 
 Private-Git mode should also have a clean, pushed source repository. Local-only
@@ -165,3 +157,5 @@ mode should have a recent, tested encrypted backup.
 ---
 
 [← Reference library](../README.md) · [Daily workflows](../../setup/manual/shell/chezmoi.md) · [Concepts and boundaries →](../explanation/chezmoi-boundaries.md)
+
+<a id="day-one-mac-commands-related-to-chezmoi"></a>

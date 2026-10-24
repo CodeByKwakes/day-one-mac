@@ -1,4 +1,0 @@
-name: "Day One · Inspect application ownership"
-command: "day-one-mac applications"
-tags: ["day-one-mac", "review"]
-shells: ["zsh"]

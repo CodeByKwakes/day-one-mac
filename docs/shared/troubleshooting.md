@@ -8,7 +8,7 @@ index points to remedies; it does not maintain a second copy of them.
 |---|---|
 | Unsupported OS, translated terminal or missing approval | [Prerequisites](prerequisites.md) |
 | Apple tools or Homebrew not available | [Manual foundation](../setup/manual/homebrew.md) |
-| Installer/runtime command unavailable | [Assisted runtime](tools/runtime.md) |
+| Old manager command unavailable | [Legacy removal and migration](migration/remove-legacy-manager.md) |
 | Existing Mac backup or preparation blocked | [Assisted preparation](reference/tools.md) or [manual backup destination](../setup/manual/preparation/encrypted-backup.md) |
 | SSH key, host fingerprint or signing problem | [SSH recovery](../setup/manual/security/ssh-signing-and-recovery.md) |
 | HTTPS login works in CLI but Git fails | [HTTPS Git](../setup/manual/security/https-git.md) |

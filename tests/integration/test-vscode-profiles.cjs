@@ -4,13 +4,13 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
-const { recipe } = require('../../src/modules/vscode-profiles/build.cjs');
+const { recipe } = require('../../helpers/vscode/build.cjs');
 const temporary = fs.mkdtempSync(path.join('/tmp', 'day-one-profile-tests-'));
 const root = path.resolve(__dirname, '../..');
 const environment = { ...process.env, PROFILE_TEST_LOG: path.join(temporary, 'calls.jsonl'),
   DAY_ONE_MAC_STATE_ROOT: path.join(temporary, 'state'), DAY_ONE_MAC_STATE_DIR: path.join(temporary, 'state') };
 const run = (slug, args = [], status = 0) => {
-  const result = spawnSync('/bin/bash', [path.join(root, `scripts/vscode-profiles/${slug}.sh`), ...args], {
+  const result = spawnSync(process.execPath, [path.join(root, 'helpers/vscode/build.cjs'), slug, ...args], {
     encoding: 'utf8', env: environment,
   });
   assert.equal(result.status, status, `${result.stdout}\n${result.stderr}`);
@@ -66,8 +66,7 @@ try {
   const blockedOutput = path.join(temporary, 'blocked-install');
   run('default', ['--install-extensions', '--output', blockedOutput, '--code', '/does/not/exist'], 1);
   assert(!fs.existsSync(blockedOutput));
-  const publicPreview = spawnSync('/bin/bash', [path.join(root, 'scripts/day-one-mac'),
-    'vscode-profile', 'ai', '--dry-run'], { cwd: temporary, env: environment, encoding: 'utf8' });
+  const publicPreview = spawnSync(process.execPath, [path.join(root, 'helpers/vscode/build.cjs'), 'ai', '--dry-run'], { cwd: temporary, env: environment, encoding: 'utf8' });
   assert.equal(publicPreview.status, 0, publicPreview.stderr);
   assert.match(publicPreview.stdout, /Dry run: no files written/);
   const mock = path.join(temporary, 'mock code');

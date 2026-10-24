@@ -252,8 +252,9 @@ confirmation. Add `--global` for a user-level installation. Preserve `session/`
 notes and unrelated skills. Agent role files copied separately remain separate;
 remove only those exact files after reviewing any local changes.
 
-The optional [workspace export](../../ai/operation.md) remains an alternative
-that includes a complete handbook and configured project role directories.
+Use [assistant operation](../../ai/operation.md) for planning, approval and
+private progress notes. Optional role templates are bundled; activate them
+separately through the steps above. There is no workspace export command.
 For CLI behaviour and client destinations, see the
 [Skills CLI reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md)
 and [supported clients](https://github.com/vercel-labs/skills/blob/main/docs/agents.md).

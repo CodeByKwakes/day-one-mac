@@ -1,4 +1,0 @@
-name: "Day One · AI assistance plan"
-command: "day-one-mac assistant --plan"
-tags: ["day-one-mac", "review"]
-shells: ["zsh"]

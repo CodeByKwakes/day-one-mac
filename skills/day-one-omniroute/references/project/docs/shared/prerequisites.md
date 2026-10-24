@@ -8,15 +8,15 @@ accounts selected in the [decision worksheet](decisions.md).
 | Requirement | How to check | Expected result |
 |---|---|---|
 | Native Apple silicon | `uname -m` | `arm64`; use a terminal without Rosetta |
-| macOS accepted by the runtime | `sw_vers -productVersion` | Major version 15-27; acceptance and testing evidence are distinguished below |
+| macOS guidance baseline | `sw_vers -productVersion` | macOS 15 or newer; use a vendor-supported, IT-approved build |
 | Storage | System Settings, General, Storage | At least 30 GB free for the base; budget separately for Xcode, containers, models and projects |
 | Account | Confirm with the owner or IT | Personal administrator, or managed standard daily account with approved elevation |
 | Backup | Restore a sample file from another location | Readable, independent copy of the data you need |
 | Network | Open the approved software and hosting services | Trusted connection; managed proxy, VPN and certificate requirements supplied by IT |
 | Power | Connect the power adapter | Stable power during updates and downloads |
 
-The platform guard, `src/core/platform.sh`, defines which versions the runtime
-accepts. CI configuration includes macOS 15 and 26. Hardware and managed-device
+CI configuration includes macOS 15 and 26. The guides do not certify every
+future OS or application combination. Hardware and managed-device
 validation require separate evidence for the actual device and OS build. Follow
 [verification](verification.md) for the distinction between local checks and
 physical-device acceptance. Intel, Rosetta execution, Windows and Linux are not
@@ -29,7 +29,7 @@ supported setup targets.
 | Homebrew installation | Apple Command Line Tools and an approved native installation | `xcode-select -p`; `/opt/homebrew/bin/brew --prefix` |
 | Base manual Node stack | Homebrew, fnm and pnpm | Follow [language setup](../setup/manual/languages.md) |
 | Base manual Python stack | Homebrew and uv | Follow [language setup](../setup/manual/languages.md) |
-| VS Code profile generation | A runtime exposing `vscode-profile`, Node.js 22 or newer | `day-one-mac --help`; `node --version`, when using the optional utility |
+| VS Code profile generation | Reviewed bundled helper and Node.js 22.20 or newer | `node --version`; helper `--help` |
 | Containers | One selected, running container engine | `docker info` and the intended Docker context |
 | PostgreSQL client | A reachable server, database, permitted role and environment details | Complete the chosen [database guide](../setup/manual/databases/README.md) |
 | AI client or MCP integration | Chosen client/account, access policy and required executable | Check that client's guide before installing servers |
@@ -57,8 +57,8 @@ task. Full Xcode is optional; Command Line Tools suffice for the base.
 
 ## Offline and existing-Mac limits
 
-The optional utility runtime can be installed from an existing archive. That does not
-supply all Homebrew downloads, application installers, language packages or
+Guides and skill snapshots can be copied from a reviewed archive. This does not
+supply Homebrew downloads, application installers, language packages or
 account access offline. A disconnected build needs a separately approved
 software distribution plan.
 

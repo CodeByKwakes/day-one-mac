@@ -10,7 +10,7 @@ describes an action or a file the user may need to review.
 | **Apply** | Make the reviewed configuration changes active. With chezmoi, `chezmoi apply` copies the generated settings to their normal locations. |
 | **AI gateway** | A service between an AI client and one or more model providers. OmniRoute is an optional local gateway; it routes model requests but does not control the client's file or Terminal permissions. |
 | **Authentication** | Proving to a service that you are the account owner, usually through a browser, device code, or SSH key. |
-| **Authentication mode** | How this Mac authenticates to GitHub or Azure DevOps: `1password` (the default SSH agent), `keychain` (a private-key file on disk whose passphrase is stored in macOS Keychain), `external` (an existing agent), or `https` (HTTPS credentials). Shown by `day-one-mac --status`. |
+| **Authentication mode** | How this Mac authenticates to GitHub or Azure DevOps: `1password` (the default SSH agent), `keychain` (a private-key file on disk whose passphrase is stored in macOS Keychain), `external` (an existing agent), or `https` (HTTPS credentials). Record the selected mode in your private worksheet. |
 | **AUTO_CD** | An optional zsh setting that changes directory when you type a bare path, so `~` goes home instead of failing. Offered in Module 13; off by default on macOS. |
 | **Brewfile** | A text list of software that Homebrew can reinstall. It is desired state, not a backup of application data. |
 | **Cask** | Homebrew's package type for a macOS application or font, such as VS Code or Raycast. |

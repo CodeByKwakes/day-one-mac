@@ -7,7 +7,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const root = path.resolve(__dirname, '../..');
-const markdownit = require('../../src/vendor/markdown-it/markdown-it.min.js');
+const markdownit = require('../../tools/vendor/markdown-it/markdown-it.min.js');
 const decode = text => text.replace(/&(?:amp|lt|gt|quot|#39);/g, value => ({ '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'" })[value]);
 
 class Node {
@@ -75,7 +75,7 @@ async function run() {
     createRange() { return { selectNodeContents: node => { document.selected = node; } }; },
   };
   document.body = new Node('body', document);
-  document.body.innerHTML = fs.readFileSync(path.join(root, 'src/docs/docs-browser.html'), 'utf8');
+  document.body.innerHTML = fs.readFileSync(path.join(root, 'tools/docs/docs-browser.html'), 'utf8');
   const version = document.createElement('div'); version.setAttribute('id', 'bundle-version'); version.textContent = 'test'; document.body.append(version);
   const pages = {
     'docs/START-HERE.md': '[All documentation](README.md)\n\n# Start\n\n## Choose a route\n\nRead the guide.\n\n### Manual\n\n```sh\necho "safe"\n```',
@@ -101,7 +101,7 @@ async function run() {
   const location = { hash: '' };
   const navigator = { clipboard: { writeText: async text => clipboard.push(text) } };
   const context = vm.createContext({ document, window, location, navigator, URL, TextDecoder, Uint8Array, atob });
-  vm.runInContext(fs.readFileSync(path.join(root, 'src/docs/docs-browser.js'), 'utf8'), context);
+  vm.runInContext(fs.readFileSync(path.join(root, 'tools/docs/docs-browser.js'), 'utf8'), context);
   const get = id => document.getElementById(id);
   const navigate = hash => { location.hash = hash; events.hashchange(); };
   const active = () => get('chapters').querySelectorAll('a').filter(node => node.getAttribute('aria-current') === 'page');

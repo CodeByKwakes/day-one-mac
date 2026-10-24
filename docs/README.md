@@ -1,7 +1,7 @@
 # Documentation
 
 Begin with [Start here](START-HERE.md). Choose AI-assisted or manual setup;
-shared references and reviewed utilities support individual tasks.
+shared references and reviewed skill helpers support individual tasks.
 
 ## AI-assisted setup
 
@@ -116,41 +116,17 @@ shared references and reviewed utilities support individual tasks.
 | [Check prerequisites](shared/prerequisites.md) | `shared` |
 | [Read and export documentation offline](shared/reading-and-export.md) | `shared` |
 | [Add a supported capability](shared/reference/adding-capabilities.md) | `shared/reference` |
-| [Application ownership: Homebrew, Company Portal, or another installer](shared/reference/application-ownership.md) | `shared/reference` |
 | [Chezmoi command reference for Day One Mac](shared/reference/chezmoi-commands.md) | `shared/reference` |
 | [Expected Day One Mac layout](shared/reference/expected-layout.md) | `shared/reference` |
-| [Module execution reference](shared/reference/module-execution.md) | `shared/reference` |
-| [Optional and advanced status dashboard](shared/reference/optional-status.md) | `shared/reference` |
 | [Setup coverage](shared/reference/setup-coverage.md) | `shared/reference` |
 | [Applications and formulae catalogue](shared/reference/software-catalogue.md) | `shared/reference` |
 | [Reviewed utility reference](shared/reference/tools.md) | `shared/reference` |
 | [VS Code profile configuration reference](shared/reference/vscode-profile-data.md) | `shared/reference` |
-| [Personal and managed workstation readiness](shared/reference/workstation-readiness.md) | `shared/reference` |
+| [Remove the legacy manager](shared/migration/remove-legacy-manager.md) | `shared/migration` |
 | [Terminal basics](shared/terminal-basics.md) | `shared` |
-| [Optional 9 - Local databases with containers](shared/tools/09-databases.md) | `shared/tools` |
-| [Optional 10: install AI client payloads](shared/tools/10-ai-agents.md) | `shared/tools` |
-| [Optional 10A: create an owned OmniRoute container](shared/tools/10a-omniroute.md) | `shared/tools` |
-| [Optional 11: generate MCP connection snippets](shared/tools/11-mcp-servers.md) | `shared/tools` |
-| [Module 12 retired - VS Code profiles moved](shared/tools/12-vscode-profiles.md) | `shared/tools` |
-| [Optional 13 - Enhanced command-line toolkit 🤖 ⚙️](shared/tools/13-enhanced-cli-tools.md) | `shared/tools` |
-| [Optional 14 - Import the Day One Mac Warp Drive bundle](shared/tools/14-warp-drive.md) | `shared/tools` |
-| [Advanced 15 - Full dotfiles and bootstrap](shared/tools/15-full-dotfiles-and-bootstrap.md) | `shared/tools` |
-| [Advanced 16 - Brewfile, applications, and editor inventory](shared/tools/16-brewfile-apps-and-editor.md) | `shared/tools` |
-| [Advanced 17 - Shell and package automation](shared/tools/17-shell-and-package-automation.md) | `shared/tools` |
-| [Advanced 18 - Hosting identities, Azure DevOps, and worktrees](shared/tools/18-hosting-identities-azure-and-worktrees.md) | `shared/tools` |
-| [Advanced 19 - macOS, GUI applications, and local HTTPS](shared/tools/19-macos-gui-and-local-https.md) | `shared/tools` |
-| [Advanced 20 - Restore and migrate selected data](shared/tools/20-restore-and-migrate.md) | `shared/tools` |
-| [Advanced 21 - Audit, maintenance, and rebuild](shared/tools/21-audit-maintenance-and-rebuild.md) | `shared/tools` |
-| [Advanced 22 - Shared AI skills and MCP operations](shared/tools/22-ai-skills-and-mcp-operations.md) | `shared/tools` |
-| [AI workspaces, projectless tasks, and repository work](shared/tools/ai-workspaces.md) | `shared/tools` |
 | [Choose Route A or Route B](shared/tools/preparation/00-existing-mac-decision.md) | `shared/tools/preparation` |
 | [Step 1 - Create and review the safety report](setup/manual/backup-and-restore.md) | `shared/tools/preparation` |
 | [Steps 2-3 - Prepare, copy, and prove the backup can be restored](setup/manual/backup-and-restore.md) | `shared/tools/preparation` |
-| [Use Day One Mac from Raycast](shared/tools/raycast.md) | `shared/tools` |
-| [Recover recorded owned changes](shared/tools/rollback.md) | `shared/tools` |
-| [Install and manage the optional runtime](shared/tools/runtime.md) | `shared/tools` |
-| [Dynamic vault and domain manager](shared/tools/second-brain.md) | `shared/tools` |
-| [Import the bundled Open in VS Code shortcut](shared/tools/shortcuts.md) | `shared/tools` |
 | [Generate, replace and restore VS Code profiles](shared/tools/vscode-profiles.md) | `shared/tools` |
 | [Find the right troubleshooting procedure](shared/troubleshooting.md) | `shared` |
 | [Upgrade notes for earlier installations](shared/upgrade-notes.md) | `shared` |

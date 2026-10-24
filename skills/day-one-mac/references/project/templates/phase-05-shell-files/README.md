@@ -1,9 +1,9 @@
 [← Phase 5](../../docs/setup/manual/shell/README.md) · [Reference library](../../docs/shared/README.md)
 
-# Phase 5 shell-file reference
+# Shell-file reference
 
-This folder contains readable reference copies of the shell files created or
-adopted by Phase 5. Use them to compare an upgraded Mac with the current Day
+This folder contains readable reference copies of the shell files used by the
+manual shell guide. Use them to compare an upgraded Mac with the current Day
 One Mac layout before accepting a chezmoi change.
 
 These are **references, not an installer**. Do not copy the whole folder over
@@ -33,27 +33,24 @@ home/
 Show the hidden filenames with:
 
 ```bash
-ls -la "$(day-one-mac root)/docs/reference/phase-05-shell-files/home"
+ls -la "/absolute/path/to/reviewed/templates/phase-05-shell-files/home"
 ```
 
 The `path.zsh` reference represents a Mac with the Node.js stack selected, so
 it includes `PNPM_HOME`. On a Python-only Mac, the final `PNPM_HOME` block is
-correctly absent. The comment above the source line in `.zprofile` is harmless
-and is normally present when the portable command was installed before Phase
-5.
+correctly absent. Review each source line in `.zprofile` against your selected shell layout.
 
 Git identity and SSH configuration are not duplicated here because their
 correct content depends on the selected hosting track, authentication mode,
 email, primary-IDE choice, and organisation policy. The portable global Git
-ignore is included because it is the same on every Mac. Phase 5 explains the
-machine-specific files' required shapes and the runner verifies their semantics.
+ignore is included because it is the same on every Mac. The manual shell guide explains machine-specific files and their verification.
 
 ## Compare without changing anything
 
 Set the reference location once:
 
 ```bash
-REFERENCE="$(day-one-mac root)/docs/reference/phase-05-shell-files/home"
+REFERENCE="/absolute/path/to/reviewed/templates/phase-05-shell-files/home"
 ```
 
 Compare each applied file:
@@ -98,8 +95,8 @@ Finish with:
 /opt/homebrew/bin/zsh -n "$HOME/.zshrc"
 /opt/homebrew/bin/zsh -n "$HOME/.config/zsh/path.zsh"
 /opt/homebrew/bin/zsh -n "$HOME/.config/zsh/aliases.zsh"
-day-one-mac shell-status
-day-one-mac setup --phase 05
+command -v git
+command -v node
 ```
 
 ---

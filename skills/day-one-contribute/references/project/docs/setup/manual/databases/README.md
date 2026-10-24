@@ -13,8 +13,7 @@ identities, network access and recovery requirements.
 4. [Database operations](operations.md): application connections, migrations,
    verification, backups and restore rehearsals.
 
-[Optional local database module](../../../shared/tools/09-databases.md) owns the
-script-assisted container lifecycle. Remote provisioning and permissions remain
-explicit administrator work. [All application guides](../apps/README.md).
+[Manual local containers](containers.md) covers the container lifecycle.
+Remote provisioning and permissions remain explicit administrator work. [All application guides](../apps/README.md).
 
 For a new synthetic sandbox, use the complete [manual container task](containers.md).

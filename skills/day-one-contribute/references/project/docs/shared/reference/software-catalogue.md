@@ -9,19 +9,11 @@ not the availability or pricing of every upstream product.
 
 ## Selection and ownership
 
-- **Always** below means the required baseline after selecting a hosting track
-  and language stack, not every Mac in existence.
-- Hosting tracks: `1` GitHub, `2` Azure DevOps, `3` both. Language stacks: `node`,
-  `python`, `both`.
-- The `core` preset omits Raycast, Warp, VS Code and the Nerd Font. Other presets
-  include that productivity group. Selecting another primary editor changes
-  integration choices; it does not remove VS Code from that group's catalogue.
-- 1Password and its CLI are required only for `1password` authentication, not
-  `keychain`, `external` or `https`.
-- Required formulae and selected required apps are supplied at the Installation
-  catalogue. Install only selected applications, then follow their manual recipes.
-- Optional/advanced modules install only selected payloads. Sign-in, trust,
-  shell activation, profile import and backups remain separate manual actions.
+Select only tools needed for the chosen workload. The catalogue is reference
+material, not an executable installer or a mandate to install every item.
+Keep existing approved installations and update them through their actual owner.
+Sign-in, trust, configuration and functional verification remain separate tasks.
+The selection column describes relevant use cases; old phase numbers are historical.
 
 A Homebrew **formula** usually supplies a command-line package. A **cask** can
 supply a desktop app, font or CLI: `1password-cli` and `codex` are casks here.
@@ -30,15 +22,12 @@ package before choosing installation. Those lookups may access Homebrew's networ
 
 For apps, keep a valid existing Homebrew, Company Portal, App Store or trusted
 manual installation. Do not install a duplicate merely because `brew list` does
-not know about it. Update through the actual owner. `check-only` reports missing
-apps; an explicit Homebrew policy permits installation of missing selected apps.
-`--yes` alone does not choose an owner.
+not know about it. Update through the actual owner. Choose Homebrew only when it is the approved installation owner.
 
 ## Registered applications, CLI casks and font
 
-The ID is used by `day-one-mac applications --id ID`. That command checks
-installation and records local provenance/state; it is not a read-only filesystem
-query. It does not prove successful login or application configuration.
+IDs identify entries in the reviewed application catalogue. They are not shell
+commands. Use the linked manual guide to install and verify a selected tool.
 
 | ID | Name and purpose | Homebrew cask | Selection / phase | Manual setup and verification |
 |---|---|---|---|---|
@@ -49,15 +38,15 @@ query. It does not prove successful login or application configuration.
 | `raycast` | Raycast - launcher, capture and chosen workflow shortcuts | `raycast` | Non-core productivity / 04 | Choose shortcuts/permissions, test launch; [Raycast](../../setup/manual/apps/raycast.md) |
 | `visual-studio-code` | Visual Studio Code - editor, profiles and extensions | `visual-studio-code` | Non-core productivity / 04, configuration 07 | Check `code --version` after CLI integration; select profile; [VS Code](../../setup/manual/editors/vscode.md) |
 | `warp` | Warp - terminal and optional shared workflows | `warp` | Non-core productivity / 04 | Open shell, check prompt/font, review account/import; [Warp](../../setup/manual/terminals/warp.md) |
-| `docker-desktop` | Docker Desktop - local container engine | `docker-desktop` | Optional / 09 | Finish first-run setup; verify `docker --version` and `docker info`; [databases](../tools/09-databases.md) |
-| `orbstack` | OrbStack - local container engine | `orbstack` | Optional / 09 | Launch, review resources/startup and `docker context show`; [databases](../tools/09-databases.md) |
-| `dbeaver-community` | DBeaver Community - database connection/query GUI | `dbeaver-community` | Optional / 09 | [DBeaver and VS Code setup](../../setup/manual/databases/dbeaver.md); connect to intended local test DB; [database services](../tools/09-databases.md) |
-| `claude-code` | Claude Code - terminal AI coding client | `claude-code` | Optional / 10 | `claude --version`, chosen account and workspace permissions; [AI clients](../tools/10-ai-agents.md) |
-| `codex` | Codex CLI - terminal AI coding client, not the desktop app | `codex` | Optional / 10 | `codex --version`, chosen account and workspace permissions; [AI clients](../tools/10-ai-agents.md) |
-| `copilot-app` | GitHub Copilot app - graphical AI client | `github-copilot-app` | Optional / 10 | Open app, confirm account/entitlement and permissions; [AI clients](../tools/10-ai-agents.md) |
-| `copilot-cli` | GitHub Copilot CLI - terminal AI client | `copilot-cli` | Optional / 10 | `copilot --version`, chosen account and permissions; [AI clients](../tools/10-ai-agents.md) |
+| `docker-desktop` | Docker Desktop - local container engine | `docker-desktop` | Optional / 09 | Finish first-run setup; verify `docker --version` and `docker info`; [databases](../../setup/manual/databases/containers.md) |
+| `orbstack` | OrbStack - local container engine | `orbstack` | Optional / 09 | Launch, review resources/startup and `docker context show`; [databases](../../setup/manual/databases/containers.md) |
+| `dbeaver-community` | DBeaver Community - database connection/query GUI | `dbeaver-community` | Optional / 09 | [DBeaver and VS Code setup](../../setup/manual/databases/dbeaver.md); connect to intended local test DB; [database services](../../setup/manual/databases/containers.md) |
+| `claude-code` | Claude Code - terminal AI coding client | `claude-code` | Optional / 10 | `claude --version`, chosen account and workspace permissions; [AI clients](../../setup/manual/ai/clients.md) |
+| `codex` | Codex CLI - terminal AI coding client, not the desktop app | `codex` | Optional / 10 | `codex --version`, chosen account and workspace permissions; [AI clients](../../setup/manual/ai/clients.md) |
+| `copilot-app` | GitHub Copilot app - graphical AI client | `github-copilot-app` | Optional / 10 | Open app, confirm account/entitlement and permissions; [AI clients](../../setup/manual/ai/clients.md) |
+| `copilot-cli` | GitHub Copilot CLI - terminal AI client | `copilot-cli` | Optional / 10 | `copilot --version`, chosen account and permissions; [AI clients](../../setup/manual/ai/clients.md) |
 | `obsidian` | Obsidian - local Markdown knowledge vaults | `obsidian` | Optional / Second Brain | Open intended vault and test capture/search/backup; [Second Brain](../../setup/manual/second-brain/README.md) |
-| `purge` | Purge - optional cleanup application | `jithin-sabu/tap/purge` | Optional / 21 | Review exact candidates and recovery before any deletion; [maintenance](../tools/21-audit-maintenance-and-rebuild.md) |
+| `purge` | Purge - optional cleanup application | `jithin-sabu/tap/purge` | Optional / 21 | Review exact candidates and recovery before any deletion; [maintenance](../../setup/manual/maintenance.md) |
 
 GUI apps should also be opened and tested: a valid bundle is not evidence of
 permissions, connectivity or usability. Do not launch a cleanup operation as an
@@ -88,11 +77,11 @@ Do not run commands against real projects solely as a presence check.
 
 ## Optional formulae
 
-Every row below is opt-in via [Module 13](../tools/13-enhanced-cli-tools.md).
+Every row below is opt-in via [Module 13](../../setup/manual/shell/README.md).
 The purpose descriptions mirror `config/catalogs/optional-formulae.tsv`. Installation
 does not activate shell hooks, trust a certificate authority, accept an App Store
 purchase or update a desired-state Brewfile. Use a reviewed Brewfile through
-[Module 16](../tools/16-brewfile-apps-and-editor.md) when deliberately adding
+[Module 16](../../setup/manual/apps/brewfile.md) when deliberately adding
 long-term ownership. The table is a supported selection catalogue, not all formulae
 that Homebrew or Module 16 may accept.
 
@@ -106,7 +95,7 @@ that Homebrew or Module 16 may accept.
 | Development | `act` | Run GitHub Actions workflows locally | `act`; inspect workflow code, secrets and container context |
 | Development | `actionlint` | Statically check GitHub Actions workflow files | `actionlint`; point at intended workflow |
 | Development | `httpie` | Human-friendly HTTP client | `http`, `https`; avoid tokens in command history |
-| Development | `mkcert` | Create locally trusted development certificates | `mkcert`; CA trust is a separate manual decision in [Module 19](../tools/19-macos-gui-and-local-https.md) |
+| Development | `mkcert` | Create locally trusted development certificates | `mkcert`; CA trust is a separate manual decision in [Module 19](../../setup/manual/macos.md) |
 | Development | `shellcheck` | Static analysis for shell scripts | `shellcheck`; checks text without running the script |
 | Development | `shfmt` | Format shell scripts consistently | `shfmt`; inspect a diff before write mode |
 | Development | `watchman` | Watch files and trigger rebuilds | `watchman`; scope watches to the intended project |
@@ -137,7 +126,7 @@ that Homebrew or Module 16 may accept.
 For a harmless install check, prefer `brew list --formula TOKEN` and
 `command -v COMMAND` (replace both placeholders). Shell plugins have no executable to find.
 Then use the tool's help in a test context; command presence does not prove shell
-activation or correct configuration. [Module 17](../tools/17-shell-and-package-automation.md)
+activation or correct configuration. [Module 17](../../setup/manual/shell/package-workflows.md)
 covers reviewed helper activation, not automatic trust of every shell plugin.
 
 ## Related tools with different owners
@@ -159,12 +148,9 @@ covers reviewed helper activation, not automatic trust of every shell plugin.
 
 ## Maintenance contract
 
-Sources of truth: `config/catalogs/applications.tsv`,
-`src/core/application-ownership.sh` (preset/auth filtering),
-`src/setup/setup.sh`'s `required_formulae`, and `config/catalogs/optional-formulae.tsv`.
-Catalogue fixtures check registered app IDs/casks, the required formula union,
-and optional formula descriptions. Update this guide and its selection wording
-when changing those sources; presence coverage alone cannot test prose semantics.
+Reference catalogues live in `config/catalogs/applications.tsv` and
+`config/catalogs/optional-formulae.tsv`. Update this guide when those references
+change and verify vendor package names before changing installation advice.
 
 Do not automatically remove unlisted installed software: users and organisations
 may own unrelated tools. Removing a package, deleting its data, revoking its account

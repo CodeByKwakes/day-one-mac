@@ -3,17 +3,42 @@
   "cliVersion": "1.7.4",
   "nodeMinimum": "22.20.0",
   "skills": [
-    { "name": "day-one-mac", "workflows": ["day-one-setup", "day-one-check", "day-one-maintain", "day-one-recover", "day-one-omniroute", "day-one-contribute"], "roles": true },
-    { "name": "day-one-setup", "roles": true },
-    { "name": "day-one-check" },
-    { "name": "day-one-maintain" },
-    { "name": "day-one-recover" },
-    { "name": "day-one-omniroute" },
-    { "name": "day-one-contribute" }
+    {
+      "name": "day-one-mac",
+      "workflows": [
+        "day-one-setup",
+        "day-one-check",
+        "day-one-maintain",
+        "day-one-recover",
+        "day-one-omniroute",
+        "day-one-contribute"
+      ],
+      "roles": true
+    },
+    {
+      "name": "day-one-setup",
+      "roles": true
+    },
+    {
+      "name": "day-one-check"
+    },
+    {
+      "name": "day-one-maintain"
+    },
+    {
+      "name": "day-one-recover"
+    },
+    {
+      "name": "day-one-omniroute"
+    },
+    {
+      "name": "day-one-contribute"
+    }
   ],
   "assets": [
     "config/profiles/vscode",
     "templates/phase-05-shell-files",
-    "extensions/second-brain/obsidian/assets/vault/99 Templates"
+    "extensions/second-brain/obsidian/assets/vault/99 Templates",
+    "helpers"
   ]
 }

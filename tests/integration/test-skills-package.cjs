@@ -39,7 +39,7 @@ if (require.main === module) {
  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'day-one-skills-'));
  try {
   const { regular, reference, writeAtomic } = require('../../tools/build-skills.cjs');
-  const inventory = path.join(temp, 'runtime inventory.txt');
+  const inventory = path.join(temp, 'skill inventory.txt');
   fs.writeFileSync(inventory, 'old complete inventory\n');
   const reader = fs.openSync(inventory, 'r');
   writeAtomic(inventory, Buffer.from('new complete inventory\n'));
@@ -52,6 +52,15 @@ if (require.main === module) {
     const folder = path.join(temp, `Independent é ${name}`);
     fs.cpSync(path.join(root, 'skills', name), folder, { recursive: true });
     validatePackage(folder);
+    const helper = path.join(folder, 'references/project/helpers/vscode/build.cjs');
+    const review = path.join(temp, `Profile output é ${name}`);
+    const generated = spawnSync(process.execPath, [helper, 'full-stack', '--output', review], { cwd: temp, encoding: 'utf8' });
+    assert.equal(generated.status, 0, generated.stdout + generated.stderr);
+    assert(fs.existsSync(path.join(review, 'full-stack.code-profile')));
+    const forbidden = spawnSync(process.execPath, [helper, 'default', '--output', path.join(folder,'private-output')], { cwd: temp, encoding: 'utf8' });
+    assert.equal(forbidden.status,1);
+    assert(!fs.existsSync(path.join(folder,'private-output')));
+    assert(!('sourceVersion' in JSON.parse(fs.readFileSync(path.join(folder, 'bundle.json'), 'utf8'))));
     const entry = fs.readFileSync(path.join(folder, 'SKILL.md'), 'utf8');
     assert(entry.startsWith(`---\nname: ${name}\n`));
     if (name === 'day-one-mac') {

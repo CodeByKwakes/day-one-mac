@@ -14,4 +14,4 @@ engineering decisions and evidence for people changing Day One Mac.
 
 Dated audits describe the state examined at that time. Keep their findings and
 resolution notes distinguishable. They are not current user procedures and are
-not included in standalone runtime packages.
+not included in installed skill packages.

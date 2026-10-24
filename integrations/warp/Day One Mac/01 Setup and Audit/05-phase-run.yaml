@@ -1,4 +1,0 @@
-name: "Day One · Read manual setup"
-command: "day-one-mac docs manual"
-tags: ["day-one-mac", "review"]
-shells: ["zsh"]

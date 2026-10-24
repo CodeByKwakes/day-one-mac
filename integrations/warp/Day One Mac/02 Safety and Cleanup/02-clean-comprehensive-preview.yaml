@@ -1,4 +1,0 @@
-name: "Day One · Read manual lifecycle"
-command: "day-one-mac docs open docs/setup/manual/lifecycle.md"
-tags: ["day-one-mac", "review"]
-shells: ["zsh"]

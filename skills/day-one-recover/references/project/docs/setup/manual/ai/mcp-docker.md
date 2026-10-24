@@ -1,4 +1,4 @@
-[← MCP module](../../../shared/tools/11-mcp-servers.md) · [Direct connections](mcp.md) · [Documentation index](../../../README.md)
+[← MCP module](mcp.md) · [Direct connections](mcp.md) · [Documentation index](../../../README.md)
 
 # Set up MCP servers with Docker
 
@@ -32,7 +32,7 @@ Use the version checks below; a different release can expose different controls.
 | Direct stdio | A tool needs the project's installed runtime or an IDE | Publisher's local process, such as Angular/Nx or DataGrip |
 | Docker MCP Toolkit | You want reviewed container servers managed through a named profile | Docker Desktop, gateway and selected server containers |
 
-Use [Module 11](../../../shared/tools/11-mcp-servers.md) for hosted connections and
+Use [Module 11](mcp.md) for hosted connections and
 [the direct connection reference](mcp.md) for project launchers.
 Do not keep direct and Docker copies of the same server active accidentally.
 DataGrip's built-in MCP remains an IDE service; installing Docker does not move
@@ -441,4 +441,4 @@ reviewing the effect on every remaining client. Do not automatically turn it on.
 - [ ] A harmless tool call and restart check pass in each selected client.
 - [ ] Configuration backups, reviewed image references and removal steps are recorded.
 
-[← MCP module](../../../shared/tools/11-mcp-servers.md) · [Advanced MCP reference](mcp.md)
+[← MCP module](mcp.md) · [Advanced MCP reference](mcp.md)

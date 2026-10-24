@@ -441,7 +441,7 @@ To import a trusted Workflow or Notebook:
 3. Choose **Import** and select a supported file or directory.
 4. Review every command before running it.
 
-The optional [Day One Warp Drive module](../../../shared/tools/14-warp-drive.md) imports
+The optional [Day One Warp Drive module](warp.md) imports
 the validated project workflow bundle. The version-controlled bundle contains
 no secrets and keeps cleanup actions in preview mode.
 
@@ -547,4 +547,4 @@ and the [GitHub Copilot CLI command reference](https://docs.github.com/en/copilo
 
 ---
 
-[← Configure Raycast](../apps/raycast.md) · [Configure VS Code →](../editors/vscode.md) · [Optional Warp Drive →](../../../shared/tools/14-warp-drive.md)
+[← Configure Raycast](../apps/raycast.md) · [Configure VS Code →](../editors/vscode.md) · [Optional Warp Drive →](warp.md)

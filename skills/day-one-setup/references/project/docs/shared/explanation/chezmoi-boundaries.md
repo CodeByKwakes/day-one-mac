@@ -39,7 +39,7 @@ If yes, it may belong in chezmoi. If no, it needs another owner.
 | Package desired state | `~/Brewfile` | Homebrew interprets it; chezmoi stores it |
 | Per-Mac selection | hosting track, stack, account labels | local chezmoi config or Day One Mac state |
 | Credential | private key, token, provider login, 1Password database | Keychain, 1Password, or provider CLI |
-| Installed runtime | Day One Mac runtime, Node, Python, package binaries | verified installer or package manager |
+| Installed runtime | Node, Python, package binaries | verified installer or package manager |
 | Volatile state | caches, browser sessions, logs, `node_modules` | owning application; recreate or back up separately |
 
 Chezmoi and a backup therefore complement one another. Chezmoi rebuilds
@@ -93,23 +93,10 @@ should fail clearly rather than produce an empty credential.
 
 ## Why the Day One Mac launcher is excluded
 
-The file below is owned by the standalone runtime installer:
-
-```text
-~/.local/bin/day-one-mac
-```
-
-The installer verifies and activates versioned runtime releases. If chezmoi
-also managed the launcher, applying an old dotfiles source could silently
-replace the verified launcher and point it at a removed or outdated checkout.
-
-The boundary is deliberate:
-
-- chezmoi owns human-readable configuration;
-- the Day One Mac installer owns the launcher and runtime;
-- `~/.day-one-mac` stores machine-specific operational state.
-
-One path should have one authoritative owner.
+The retired `~/.local/bin/day-one-mac` launcher must not be recreated by an old
+chezmoi source. Review it with the [legacy removal guide](../migration/remove-legacy-manager.md).
+Keep legacy state and recovery backups outside dotfile management. The current
+AI skill is managed by its skill installer; each path should have one owner.
 
 ## Why private Git is recommended
 
@@ -226,7 +213,7 @@ or `merge`.
 | Applying the whole source to fix one file | Unrelated drift shares the same apply boundary | Apply the named target |
 | Committing machine data | Per-Mac input is mistaken for portable output | Keep it in local config |
 | Putting a token in a template | A private repository is mistaken for a secret store | Use the credential owner and runtime references |
-| Managing the Day One Mac launcher | Two systems claim the same path | Keep runtime and dotfile ownership separate |
+| Managing the Day One Mac launcher | Two systems claim the same path | Do not restore a retired manager from old dotfiles |
 | Treating local-only as temporary | No remote is mistaken for no persistence requirement | Maintain an encrypted backup |
 | Using hooks for ordinary configuration | Automation hides external side effects | Prefer declarative targets and explicit package commands |
 

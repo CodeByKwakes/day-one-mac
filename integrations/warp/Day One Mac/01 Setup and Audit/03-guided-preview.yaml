@@ -1,4 +1,0 @@
-name: "Day One \u00b7 Migration help 03-guided-preview"
-command: "day-one-mac docs open docs/shared/migration/from-scripted-setup.md"
-tags: ["day-one-mac", "review"]
-shells: ["zsh"]

@@ -3,12 +3,12 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
-const markdown = require('../src/vendor/markdown-it/markdown-it.min.js')();
+const markdown = require('./vendor/markdown-it/markdown-it.min.js')();
 const root = path.resolve(__dirname, '..');
 const read = name => fs.readFileSync(path.join(root, name), 'utf8');
 const metadata = JSON.parse(read('config/catalogs/assistant-skills.json'));
 const aliases = JSON.parse(read('config/catalogs/document-aliases.json'));
-const sources = new Set(read('config/runtime-files.txt').split('\n').filter(name => name && !name.startsWith('#') && !name.startsWith('skills/')));
+const sources = new Set(read('config/skill-sources.txt').split('\n').filter(name => name && !name.startsWith('#') && !name.startsWith('skills/')));
 const hash = content => crypto.createHash('sha256').update(content).digest('hex');
 const external = href => /^[a-z][a-z\d+.-]*:|^\/\//i.test(href);
 const portableNotes = '\n## Installed package\n\n'
@@ -16,14 +16,13 @@ const portableNotes = '\n## Installed package\n\n'
   + 'The project reference snapshot is under `references/project/`; use its matching\n'
   + 'paths when a guide refers to supplied configuration or template files. Read only\n'
   + 'the guide needed for the current task. Keep this installed package unchanged.\n\n'
-  + 'The skill is already available after installation. Workspace export is an\n'
-  + 'optional alternative; do not require it to begin. Save approved private notes\n'
-  + 'in a user-selected workspace. The optional `day-one-mac` utility command needs\n'
-  + 'a separate installation; use the manual recipes when that command is absent.\n';
+  + 'Save private notes outside this installed package. No Day One Mac runtime is required.\n'
+  + 'Reviewed helpers are bundled under `references/project/helpers/`; inspect their\n'
+  + 'help and preview output before approving changes. Manual recipes need no helpers.\n';
 function regular(name) {
   if (!name || path.isAbsolute(name) || name.split('/').some(part => !part || part === '.' || part === '..')) throw new Error(`Unsafe source: ${name}`);
-  if (!/^(docs\/|config\/|templates\/|extensions\/second-brain\/obsidian\/assets\/|README\.md$|CONTRIBUTING\.md$|AGENTS\.md$|LICENSE$)/.test(name)) throw new Error(`Unapproved source: ${name}`);
-  if (!sources.has(name)) throw new Error(`Source is not in the reviewed runtime inventory: ${name}`);
+  if (!/^(docs\/|config\/|helpers\/|templates\/|extensions\/second-brain\/obsidian\/assets\/|README\.md$|CONTRIBUTING\.md$|AGENTS\.md$|LICENSE$)/.test(name)) throw new Error(`Unapproved source: ${name}`);
+  if (!sources.has(name)) throw new Error(`Source is not in the reviewed skill-source inventory: ${name}`);
   for (let current = name; current !== '.'; current = path.dirname(current)) {
     if (fs.lstatSync(path.join(root, current)).isSymbolicLink()) throw new Error(`Symlink source: ${current}`);
   }
@@ -111,7 +110,7 @@ function buildPackage(spec) {
     output.set(target, content);
   }
   output.set('bundle.json', Buffer.from(JSON.stringify({ schema: 1, skill: spec.name,
-    sourceVersion: read('VERSION').trim(), files: Object.fromEntries([...output].sort(([a],[b]) => a.localeCompare(b, 'en')).map(([name, content]) => [name, hash(content)])) }, null, 2) + '\n'));
+    files: Object.fromEntries([...output].sort(([a],[b]) => a.localeCompare(b, 'en')).map(([name, content]) => [name, hash(content)])) }, null, 2) + '\n'));
   return output;
 }
 function generatedFiles(directory) {
@@ -148,17 +147,6 @@ function main() {
       if (check) stale.push(file);
       else { fs.mkdirSync(path.dirname(full), { recursive: true }); writeAtomic(full, content); }
     }
-  }
-  const begin = '# BEGIN generated portable skills';
-  const end = '# END generated portable skills';
-  const inventory = read('config/runtime-files.txt');
-  const block = `${begin}\n${[...expected.keys()].sort().join('\n')}\n${end}\n`;
-  const nextInventory = inventory.includes(begin)
-    ? inventory.replace(new RegExp(`${begin}\\n[\\s\\S]*?${end}\\n`), block)
-    : inventory.trimEnd() + '\n' + block;
-  if (inventory !== nextInventory) {
-    if (check) stale.push('config/runtime-files.txt');
-    else writeAtomic(path.join(root, 'config/runtime-files.txt'), nextInventory);
   }
   if (stale.length) throw new Error(`Generated skills are stale (${stale.length} files). Run node tools/build-skills.cjs.`);
   console.log(`Portable skills ${check ? 'verified' : 'generated'}: ${metadata.skills.length} packages, ${expected.size} files.`);

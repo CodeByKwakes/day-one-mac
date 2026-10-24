@@ -4,8 +4,7 @@
 set -euo pipefail
 
 DAY_ONE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SCRIPT_DIR="$DAY_ONE_ROOT/scripts"
-PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_DIR="$DAY_ONE_ROOT"
 
 usage() {
   printf '%s\n' \
@@ -38,7 +37,7 @@ fi
 # Collect scripts deterministically, skipping Git metadata and third-party
 # dependencies. Dependencies are verified through the package lockfile; they
 # are not project source and must not be linted as if they were.
-scripts=("$PROJECT_DIR/install-day-one-mac" "$PROJECT_DIR/scripts/day-one-mac")
+scripts=()
 while IFS= read -r -d '' script; do
   scripts+=("$script")
 done < <(find "$PROJECT_DIR" \

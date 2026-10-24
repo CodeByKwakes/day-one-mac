@@ -1,4 +1,0 @@
-name: "Day One · Preview runtime removal"
-command: "day-one-mac uninstall-runtime"
-tags: ["day-one-mac", "review"]
-shells: ["zsh"]

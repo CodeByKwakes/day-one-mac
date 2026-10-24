@@ -1,4 +1,4 @@
-[← Advanced 18](../../../../shared/tools/18-hosting-identities-azure-and-worktrees.md) · [AI workspaces →](../ai-workspaces.md)
+[← Advanced 18](../../git/multiple-identities.md) · [AI workspaces →](../ai-workspaces.md)
 
 # Git worktrees: choose your workflow
 

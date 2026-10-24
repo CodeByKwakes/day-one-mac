@@ -1,4 +1,0 @@
-name: "Day One · Runtime status"
-command: "day-one-mac runtime-status"
-tags: ["day-one-mac", "review"]
-shells: ["zsh"]

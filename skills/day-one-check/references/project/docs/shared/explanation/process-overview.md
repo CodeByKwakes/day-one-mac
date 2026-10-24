@@ -22,9 +22,9 @@ The AI journey adds a reviewed plan, execution, evidence and resumption. Neither
 uses a whole-machine runner. Account sign-in, licence acceptance, permissions
 and recovery tests remain explicit human actions.
 
-The optional command exposes bounded utilities. A utility verifies its own
-prerequisites instead of requiring an unrelated phase marker. Locks, recorded
-ownership and recovery protections remain part of each applicable operation.
+Optional bundled helpers perform only their documented tasks. Profile replacement
+uses explicit approval and private recovery backups. No global command or
+background manager is installed.
 
 ## Keep intent separate from evidence
 
@@ -33,8 +33,8 @@ functional results describe observed evidence. A saved selection or historical
 completion marker does not establish current readiness. Recheck when resuming.
 
 Private session notes record unresolved work and recovery locations. Never put
-credentials or private inventories into the public repository. A runtime update
-changes Day One Mac assets; it does not upgrade every developer application.
+credentials or private inventories into the public repository. A skill update
+changes its bundled instructions; it does not upgrade developer applications.
 
 Use [Start here](../../START-HERE.md), [verification](../verification.md) and
 [migration](../migration/from-scripted-setup.md) for the relevant next action.

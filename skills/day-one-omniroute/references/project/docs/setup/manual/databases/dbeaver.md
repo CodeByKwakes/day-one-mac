@@ -1,4 +1,4 @@
-[← Application guides](../apps/README.md) · [Local database module](../../../shared/tools/09-databases.md) · [DataGrip alternative](datagrip.md) · [VS Code profiles](../../../shared/tools/vscode-profiles.md)
+[← Application guides](../apps/README.md) · [Local database module](containers.md) · [DataGrip alternative](datagrip.md) · [VS Code profiles](../../../shared/tools/vscode-profiles.md)
 
 # PostgreSQL setup with DBeaver Community and VS Code
 

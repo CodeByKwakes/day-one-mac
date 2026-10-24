@@ -28,8 +28,7 @@ device/account-bound evidence. Neither route replaces organization approval.
 Manual records identify the policy/baseline, device and account using private
 non-secret references, reviewer, check time, expiry and evidence location. Use
 the selected policy's evidence interval (personal default: seven days); renew
-after expiry or relevant policy/device/account changes. The scripted JSON
-format is needed only for assisted acceptance. Never mark an untested control
+after expiry or relevant policy/device/account changes. Both routes keep user-approved notes; no manager evidence file is required. Never mark an untested control
 as passed. An approved exception is distinct from an observed pass.
 
 ## Record results through the selected route
@@ -62,10 +61,9 @@ existence. FileVault and Gatekeeper remain required completion controls.
 
 ## Recovery by data class
 
-Module 20 stages selected regular-file bytes and detects collisions/drift. It
-intentionally does not restore hidden credentials, metadata, live application
-state or whole databases. Preserve that boundary and use separate restore
-methods for each selected class.
+Use the owning manual recovery procedure for each selected data class. Do not
+copy hidden credentials, live application state or whole database storage as
+ordinary files. Rehearse recovery in a separate destination before relying on it.
 
 | Data class | Recovery rehearsal | Record before destructive preparation |
 |---|---|---|
@@ -121,17 +119,10 @@ replace them for the actual workload and hardware.
 | Setup completion | Separate active work, downloads, OS updates and approvals | Investigate avoidable repeated questions or unexplained waits |
 | Recovery throughput | Same encrypted drive, connection, file mix and byte count | Meet agreed RPO/RTO; investigate regression without removing integrity checks |
 
-The AI-assisted route can record shell measurements explicitly:
-
-```bash
-day-one-mac readiness --benchmark-shell "$HOME/Downloads/shell-timings.json" --shell /bin/zsh
-```
-
-This deliberately executes the selected shell's startup files twenty times;
-it is not a read-only configuration inspection. Each launch has a five-second
-limit. Use `/opt/homebrew/bin/zsh` only when it is the selected approved shell.
-The command never runs automatically during onboarding. Do not interpret a
-fast plan command or small HTML file as evidence about application performance.
+Measure shell startup only with explicit approval: launching a login shell
+executes its startup files. Follow the [zsh guide](../setup/manual/shell/zsh.md)
+and record the command, environment and observed timing. No benchmark runs
+automatically during setup.
 
 Test keyboard-only navigation, visible focus, plain/ASCII terminal output,
 VoiceOver announcements, 200% zoom and narrow reader layouts. Confirm that an
