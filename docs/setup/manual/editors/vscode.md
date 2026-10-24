@@ -56,12 +56,12 @@ on 24 October 2026. Account, policy and version differences can affect availabil
 
 ## 1. Choose and create profiles
 
-| Profile | Purpose | Appearance | Normal database use |
-|---|---|---|---|
-| Default | Configuration, notes, general editing | Dark Modern; neutral | None |
-| Full Stack | Daily Angular/Nest/Nx development | Dark Modern; blue | Local/dev/test |
-| AI | Prompt authoring, reviews, debugging, agents and skills | Dark Modern; purple | Optional local/dev/test tools |
-| Operations | Containers, pipelines, databases, remote work | Dark Modern; green | Production read-only investigation |
+| Profile | Purpose | Appearance | Recommended profile icon | Normal database use |
+|---|---|---|---|---|
+| Default | Configuration, notes, general editing | Dark Modern; neutral | Built-in gear | None |
+| Full Stack | Daily Angular/Nest/Nx development | Dark Modern; purple | Code (`code`) | Local/dev/test |
+| AI | Prompt authoring, reviews, debugging, agents and skills | Dark Modern; blue | Robot (`robot`) | Optional local/dev/test tools |
+| Operations | Containers, pipelines, databases, remote work | Dark Modern; green | Server (`server`) | Production read-only investigation |
 
 Choose Default plus only the task profiles you need. Configure Default in
 sections 2 and 3 before creating the named profiles in section 4.
@@ -75,6 +75,33 @@ sections 2 and 3 before creating the named profiles in section 4.
 Expected result: the Profiles editor shows Default as active. Default normally
 has no profile name in the window title. Named-profile creation follows under
 [Apply profile settings](#4-apply-profile-settings).
+
+### Choose profile icons
+
+The Code icon identifies daily development, Robot identifies AI work, and
+Server identifies infrastructure and database work. Keep Default's built-in
+gear; the Default profile has no editable icon field in VS Code 1.143.1.
+
+After creating a named profile:
+
+1. Open **Manage → Profiles** and select **Full Stack**, **AI** or **Operations**.
+
+   Expected result: the selected profile's **Name** and **Icon** fields appear.
+
+2. Select **Profile Icon**, search for the identifier in the table above, and
+   select the matching icon.
+
+   Expected result: the profile list displays the chosen icon.
+
+3. Select **Use this Profile for Current Window** to check the result.
+
+   Expected result: the Manage button uses the profile icon. The title-bar
+   accent follows the profile's User Settings.
+
+These icons are native VS Code profile metadata, selected in the Profiles
+editor. No icon extension or `settings.json` key is needed for them. Material
+Icon Theme controls file and folder icons separately. See
+[VS Code profile icons](https://code.visualstudio.com/docs/configure/profiles#_check-the-current-profile).
 
 ### Choose how resources are shared
 
@@ -253,7 +280,8 @@ in each profile's own User Settings.
 | Git fetch/sync preferences and Conventional Commit instructions | Shared | Shared | Shared | Shared | User Settings |
 | `chat.tools.global.autoApprove` and `chat.tools.terminal.enableAutoApprove` | Off | Off | Off | Off | Shared User Settings; applies to supported VS Code chat flows |
 | Markdown/JSON formatting and Markdown extension preferences | Shared | Shared | Shared plus prose suggestions off | Shared | Profile User Settings; preserve nested language values |
-| Title-bar and badge colors | Neutral | Blue | Purple | Green | Profile User Settings; do not share across profiles |
+| Title-bar and badge colors | Neutral | Purple | Blue | Green | Profile User Settings; do not share across profiles |
+| Profile icon | Built-in gear | Code (`code`) | Robot (`robot`) | Server (`server`) | Profiles editor; separate from User Settings and file/folder icons |
 | Copilot inline suggestions | Off | On except excluded languages | Off | Off | Profile User Settings; chat availability is separate |
 | TS/JS, HTML, CSS/SCSS and Prisma formatting; import actions | No | Enabled | Enabled | No | Full Stack overrides, also combined into AI |
 | GitLens inline annotations | No | Off | Off | Off | Profile User Settings where GitLens is selected |

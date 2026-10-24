@@ -82,6 +82,11 @@ the optional Angular token palette, shell configuration, skills/agent files,
 MCP servers, and database connections still require the linked manual recipes.
 Credentials and account sign-in are not included.
 
+Profile icons are also selected manually in VS Code's Profiles editor; the
+generated settings and review bundle do not assign them. Follow
+[Choose profile icons](../../manual/editors/vscode.md#choose-profile-icons)
+after import, then return here to verify the profile.
+
 #### Import settings and extensions together
 
 **Does the script automatically override Default? No.** The default command only generates

@@ -299,9 +299,9 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
   "chatgpt.followUpQueueMode": "queue",
   "chatgpt.reviewDelivery": "inline",
   "workbench.colorCustomizations": {
-    "titleBar.activeBackground": "#163A63",
+    "titleBar.activeBackground": "#452568",
     "titleBar.activeForeground": "#FFFFFF",
-    "activityBarBadge.background": "#2563EB"
+    "activityBarBadge.background": "#9B6DDA"
   }
 }
 ```
@@ -340,8 +340,8 @@ Apply Full Stack overrides before these overrides.
 ```json
 {
   "workbench.colorCustomizations": {
-    "titleBar.activeBackground": "#452568",
-    "activityBarBadge.background": "#9B6DDA"
+    "titleBar.activeBackground": "#163A63",
+    "activityBarBadge.background": "#2563EB"
   },
   "github.copilot.enable": {
     "*": false

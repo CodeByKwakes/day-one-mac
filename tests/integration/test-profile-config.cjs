@@ -15,6 +15,10 @@ for (const profile of Object.values(expected)) {
 for (const pattern of ['azure-pipelines.yml', 'azure-pipelines.yaml', '**/.azure-pipelines/**/*.yml', '**/.azure-pipelines/**/*.yaml']) {
   expected.ai.settings['files.associations'][pattern] = 'yaml';
 }
+expected['full-stack'].settings['workbench.colorCustomizations']['titleBar.activeBackground'] = '#452568';
+expected['full-stack'].settings['workbench.colorCustomizations']['activityBarBadge.background'] = '#9B6DDA';
+expected.ai.settings['workbench.colorCustomizations']['titleBar.activeBackground'] = '#163A63';
+expected.ai.settings['workbench.colorCustomizations']['activityBarBadge.background'] = '#2563EB';
 for (const slug of Object.keys(expected)) assert.deepEqual(recipe(slug), expected[slug]);
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'day-one-profile-config-'));
 try {
