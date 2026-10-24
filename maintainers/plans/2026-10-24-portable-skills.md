@@ -25,8 +25,8 @@ the recovery archive. Machine-specific evidence stays outside this public reposi
 - [x] Integrate workspace export, documentation and generated-file checks.
 - [x] Verify actual CLI installation independently and with each selected client.
 - [x] Run repository gates, packaged checks and independent final review.
-- [ ] Commit the verified implementation.
-- [ ] Back up, retire and verify the old local manager; report recovery location.
+- [x] Commit the verified implementation.
+- [x] Back up, retire and verify the old local manager; report recovery location.
 
 ## Interfaces and review focus
 
@@ -80,3 +80,12 @@ the recovery archive. Machine-specific evidence stays outside this public reposi
   discovery, Git-source installation and the documented scoped update recipe.
 - The private retirement helper passed an isolated rehearsal covering backup
   verification, changed-file refusal, scoped archival and unrelated aliases.
+- Implementation commit: `b21b6dd`. Retirement followed that commit and a verified
+  private backup. The runtime and launcher are removed; the remaining state and
+  installer are archived. Only the obsolete manager alias block changed in the
+  shared shell configuration. Protected shell and profile files retained their
+  hashes. Recovery instructions and machine-specific evidence remain private.
+- No matching Day One Mac Shortcuts names or local Warp, LaunchAgent and checked
+  Raycast script references were found. Cloud-managed application integrations
+  were not inspected or changed. No skills were installed into real client
+  directories, and no branch was pushed or published.
