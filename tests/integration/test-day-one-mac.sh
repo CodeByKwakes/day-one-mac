@@ -124,14 +124,14 @@ grep -Fq 'Raycast AI — paid plan required for custom providers' \
 grep -Fq "copilot-app) label='GitHub Copilot app'" "$SCRIPT_DIR/../src/cli/bootstrap-day-one-mac.sh"
 grep -Fq 'GitHub Copilot app — standalone desktop client' \
   "$SCRIPT_DIR/../src/cli/bootstrap-day-one-mac.sh"
-grep -Fq 'day-one-mac applications --id copilot-app' \
-  "$SCRIPT_DIR/../docs/how-to/modules/optional/10-ai-agents.md"
+grep -Fq 'day-one-mac optional --module 10 --plan --clients' \
+  "$SCRIPT_DIR/../docs/setup/assisted/optional/10-ai-agents.md"
 grep -Fq 'github-copilot-app' "$SCRIPT_DIR/../config/catalogs/applications.tsv"
 grep -Fq 'brew uninstall --cask github-copilot-app' \
-  "$SCRIPT_DIR/../docs/how-to/modules/optional/10-ai-agents.md"
-grep -Fq 'docker context use orbstack' "$SCRIPT_DIR/../docs/how-to/modules/optional/10a-omniroute.md"
-grep -Fq 'Warp is the required graphical terminal' "$SCRIPT_DIR/../docs/how-to/modules/optional/10a-omniroute.md"
-grep -Fq 'There is no OmniRoute `.env` file' "$SCRIPT_DIR/../docs/how-to/modules/optional/10a-omniroute.md"
+  "$SCRIPT_DIR/../docs/setup/manual/ai/clients.md"
+grep -Fq 'docker context use orbstack' "$SCRIPT_DIR/../docs/setup/manual/ai/omniroute.md"
+grep -Fq 'Warp can run the selected CLI client' "$SCRIPT_DIR/../docs/setup/manual/ai/omniroute.md"
+grep -Fq 'There is no OmniRoute `.env` file' "$SCRIPT_DIR/../docs/setup/manual/ai/omniroute.md"
 grep -Fq 'optional/10a-omniroute.md' "$SCRIPT_DIR/../tools/validation/inventory.sh"
 "$SCRIPT_DIR/../src/operations/clean-development-state.sh" --help | grep -Fq 'applications not installed by'
 "$SCRIPT_DIR/../src/operations/clean-development-state.sh" --help | grep -Fq -- '--archive-ssh-private-keys'

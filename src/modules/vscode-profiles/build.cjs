@@ -57,26 +57,62 @@ function main(args) {
   let install = false;
   let code = 'code';
   const selected = [];
+  const replacementOptions = { replace: false, restore: undefined, settingsFile: undefined, execute: false, approve: undefined };
   while (args.length) {
     const arg = args.shift();
-    if (['--output', '--with', '--code'].includes(arg)) {
+    if (['--output', '--with', '--code', '--settings-file', '--restore', '--approve'].includes(arg)) {
       const value = args.shift();
       if (!value || value.startsWith('--')) throw new Error(`Missing value for ${arg}`);
       if (arg === '--output') output = path.resolve(value);
       if (arg === '--with') selected.push(value.toLowerCase());
       if (arg === '--code') code = value;
+      if (arg === '--settings-file') replacementOptions.settingsFile = value;
+      if (arg === '--restore') replacementOptions.restore = value;
+      if (arg === '--approve') replacementOptions.approve = value;
     } else if (arg === '--dry-run') dryRun = true;
     else if (arg === '--install-extensions') install = true;
+    else if (arg === '--replace-settings') replacementOptions.replace = true;
+    else if (arg === '--execute') replacementOptions.execute = true;
     else if (arg === '--help') {
       console.log('Usage: day-one-mac vscode-profile <profile> [--dry-run] [--output NEW_DIRECTORY]\n'
         + '  [--with OPTIONAL_EXTENSION_ID]... [--install-extensions] [--code CLI_PATH]\n'
         + 'Generates review files only by default. Requires Node.js 22+.\n'
         + 'Install mode requires current Phase 8 and adds missing extensions; it may create the named profile.\n'
-        + 'It never applies settings, removes extensions, or installs Copilot.');
+        + 'Normal generation/install mode never applies settings, removes extensions, or installs Copilot.\n'
+        + 'Explicit replacement: --replace-settings [--settings-file ABSOLUTE_PATH]\n'
+        + 'Replacement changes complete settings and shortcuts only; other installed extensions are kept.\n'
+        + 'Recovery preview: --restore ABSOLUTE_BACKUP_DIRECTORY\n'
+        + 'Replacement/restore preview by default. Apply: --execute --approve PREVIEW_SHA256.\n'
+        + 'Replacement requires current Phase 8; restore remains available without it.\n'
+        + 'Named replacement needs its own local VS Code settings path copied from the editor.');
       return;
     } else throw new Error(`Unknown option: ${arg}`);
   }
   const data = recipe(slug, selected);
+  const replacing = replacementOptions.replace || replacementOptions.restore !== undefined;
+  if (!replacing && (replacementOptions.execute || replacementOptions.approve !== undefined || replacementOptions.settingsFile !== undefined)) {
+    throw new Error('--execute, --approve and --settings-file require --replace-settings or --restore.');
+  }
+  if (replacing) {
+    if ((replacementOptions.replace && replacementOptions.restore) || install || output || selected.length || code !== 'code'
+      || (replacementOptions.restore && replacementOptions.settingsFile)) {
+      throw new Error('Replacement and restore are separate from generation/extension installation; do not combine their options.');
+    }
+    if (replacementOptions.execute && !dryRun && !/^[a-f0-9]{64}$/.test(replacementOptions.approve || '')) {
+      throw new Error('Preview first, then pass --execute --approve <exact preview hash>.');
+    }
+    if (replacementOptions.replace && replacementOptions.execute && !dryRun) {
+      const gate = spawnSync('/bin/bash', ['-c', 'source "$1"; day_one_phase_current 08',
+        'profile-prerequisite', path.join(root, 'src/core/module-execution.sh')], { encoding: 'utf8' });
+      if (gate.error || gate.status !== 0) {
+        console.error('Current Phase 8 completion is required before replacing profile settings. Restore and preview remain available.');
+        process.exitCode = 10;
+        return;
+      }
+    }
+    require('./replace.cjs').replacement(root, data, { ...replacementOptions, dryRun });
+    return;
+  }
   console.log(`${data.name}: ${data.extensions.length} selected extensions\n${data.extensions.join('\n')}`);
   if (dryRun) {
     console.log('Dry run: no files written and no VS Code commands run.');
@@ -115,9 +151,10 @@ function main(args) {
     + 'To update an existing profile (especially the built-in Default), switch to it and merge settings.json\n'
     + 'into Preferences: Open User Settings (JSON). Merge keybindings only after checking conflicts.\n'
     + 'Do not replace unrelated personal settings. Install-mode targets the original profile name, not Review.\n'
+    + 'For deliberate complete settings/shortcut replacement, use the separate --replace-settings preview and approval workflow.\n'
     + 'Copilot is intentionally excluded from the installation list. Account sign-in remains manual.\n'
     + 'Folder icon mappings, Angular token colours, shell files, skills, agents, MCP, and database\n'
-    + 'connections remain manual: follow docs/how-to/apps/VSCODE-PROFILES.md and VSCODE-TYPESCRIPT.md.\n');
+    + 'connections remain manual: follow docs/setup/manual/editors/vscode.md.\n');
   console.log(`Review files: ${output}`);
   if (!install) return;
   const run = extra => {

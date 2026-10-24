@@ -1,21 +1,21 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Advanced optional setup
 
-This guide moved to [README](../how-to/modules/advanced/README.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/assisted/advanced/README.md). This compatibility page preserves existing links.
 
 ## Recommended order
 
-Continue at [this section](../how-to/modules/advanced/README.md#recommended-order).
+See the [current instructions](../setup/assisted/advanced/README.md#recommended-order).
 
 ## Capability placement
 
-Continue at [this section](../how-to/modules/advanced/README.md#capability-placement).
+See the [current instructions](../setup/assisted/advanced/README.md#capability-placement).
 
 ## Global rules
 
-Continue at [this section](../how-to/modules/advanced/README.md#global-rules).
+See the [current instructions](../setup/assisted/advanced/README.md#global-rules).
 
 ## State and reset
 
-Continue at [this section](../how-to/modules/advanced/README.md#state-and-reset).
+See the [current instructions](../setup/assisted/advanced/README.md#state-and-reset).

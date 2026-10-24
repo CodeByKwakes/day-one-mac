@@ -1,13 +1,13 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Required Day One Mac setup
 
-This guide moved to [README](../setup/assisted/README.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/assisted/README.md). This compatibility page preserves existing links.
 
 ## Required order
 
-Continue at [this section](../setup/assisted/README.md#required-order).
+See the [current instructions](../setup/assisted/README.md#required-order).
 
 ## Preview, apply, check, and resume
 
-Continue at [this section](../setup/assisted/README.md#preview-apply-check-and-resume).
+See the [current instructions](../setup/assisted/README.md#preview-apply-check-and-resume).

@@ -27,6 +27,14 @@ if command -v starship >/dev/null 2>&1; then
   eval "$(starship init zsh)"
 fi
 
+# Search matching history in VS Code; preserve other terminals' keybindings.
+if [[ ${TERM_PROGRAM:-} == vscode ]]; then
+  bindkey '\e[A' history-beginning-search-backward
+  bindkey '\e[B' history-beginning-search-forward
+  bindkey '\eOA' history-beginning-search-backward
+  bindkey '\eOB' history-beginning-search-forward
+fi
+
 # Syntax highlighting must be the final shell integration.
 if [[ -r /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
   source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

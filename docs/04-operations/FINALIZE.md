@@ -1,29 +1,29 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Finalise or detach Day One Mac
 
-This guide moved to [FINALIZE](../how-to/recovery/FINALIZE.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/assisted/recovery/finalize.md). This compatibility page preserves existing links.
 
 ## Choose the intended result
 
-Continue at [this section](../how-to/recovery/FINALIZE.md#choose-the-intended-result).
+See the [current instructions](../setup/assisted/recovery/finalize.md#choose-the-intended-result).
 
 ### Optional rehearsal cleanup is separate
 
-Continue at [this section](../how-to/recovery/FINALIZE.md#optional-rehearsal-cleanup-is-separate).
+See the [current instructions](../setup/assisted/recovery/finalize.md#optional-rehearsal-cleanup-is-separate).
 
 ## Compact and retain operations — recommended
 
-Continue at [this section](../how-to/recovery/FINALIZE.md#compact-and-retain-operations--recommended).
+See the [current instructions](../setup/assisted/recovery/finalize.md#compact-and-retain-operations---recommended).
 
 ## Detach completely
 
-Continue at [this section](../how-to/recovery/FINALIZE.md#detach-completely).
+See the [current instructions](../setup/assisted/recovery/finalize.md#detach-completely).
 
 ## Restore a detached state
 
-Continue at [this section](../how-to/recovery/FINALIZE.md#restore-a-detached-state).
+See the [current instructions](../setup/assisted/recovery/finalize.md#restore-a-detached-state).
 
 ## Safety boundaries
 
-Continue at [this section](../how-to/recovery/FINALIZE.md#safety-boundaries).
+See the [current instructions](../setup/assisted/recovery/finalize.md#safety-boundaries).

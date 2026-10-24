@@ -973,7 +973,7 @@ run_optional_center() {
   ui_title '🧩' 'Optional setup centre'
   info "Saved modules: $(csv_label "$OPTIONAL_MODULES")"
   if [[ -n "$OPTIONAL_MODULES" ]]; then
-    info "Guides: $PROJECT_DIR/docs/how-to/modules/optional/"
+    info "Guides: $PROJECT_DIR/docs/setup/assisted/optional/"
     info 'Saving a selection does not claim installation; each selected module must verify its own outcome.'
     info 'Unified status: day-one-mac optional --status'
     if contains_csv "$OPTIONAL_MODULES" databases; then

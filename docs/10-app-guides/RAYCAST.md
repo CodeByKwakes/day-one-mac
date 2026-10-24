@@ -1,121 +1,121 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Set up, back up, and restore Raycast
 
-This guide moved to [RAYCAST](../how-to/apps/RAYCAST.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/manual/apps/raycast.md). This compatibility page preserves existing links.
 
 ## Outcome
 
-Continue at [this section](../how-to/apps/RAYCAST.md#outcome).
+See the [current instructions](../setup/manual/apps/raycast.md#outcome).
 
 ## Step 1 — Install or verify Raycast
 
-Continue at [this section](../how-to/apps/RAYCAST.md#step-1--install-or-verify-raycast).
+See the [current instructions](../setup/manual/apps/raycast.md#1-install-or-verify-raycast).
 
 ### Route A — Let Day One Mac check and offer the choices
 
-Continue at [this section](../how-to/apps/RAYCAST.md#route-a--let-day-one-mac-check-and-offer-the-choices).
+See the [current instructions](../setup/manual/apps/raycast.md).
 
 ### Route B — Install with Homebrew
 
-Continue at [this section](../how-to/apps/RAYCAST.md#route-b--install-with-homebrew).
+See the [current instructions](../setup/manual/apps/raycast.md).
 
 ### Route C — Install the official download manually
 
-Continue at [this section](../how-to/apps/RAYCAST.md#route-c--install-the-official-download-manually).
+See the [current instructions](../setup/manual/apps/raycast.md).
 
 ### Route D — Use Company Portal or another approved installer
 
-Continue at [this section](../how-to/apps/RAYCAST.md#route-d--use-company-portal-or-another-approved-installer).
+See the [current instructions](../setup/manual/apps/raycast.md).
 
 ## Step 2 — First launch
 
-Continue at [this section](../how-to/apps/RAYCAST.md#step-2--first-launch).
+See the [current instructions](../setup/manual/apps/raycast.md#2-first-launch).
 
 ## Step 3 — Choose how Raycast and Spotlight work together
 
-Continue at [this section](../how-to/apps/RAYCAST.md#step-3--choose-how-raycast-and-spotlight-work-together).
+See the [current instructions](../setup/manual/apps/raycast.md#3-choose-how-raycast-and-spotlight-work-together).
 
 ### Path A — Use Raycast alongside Spotlight
 
-Continue at [this section](../how-to/apps/RAYCAST.md#path-a--use-raycast-alongside-spotlight).
+See the [current instructions](../setup/manual/apps/raycast.md#path-a---use-raycast-alongside-spotlight).
 
 ### Path B — Use Raycast as the only keyboard launcher
 
-Continue at [this section](../how-to/apps/RAYCAST.md#path-b--use-raycast-as-the-only-keyboard-launcher).
+See the [current instructions](../setup/manual/apps/raycast.md#path-b---use-raycast-as-the-only-keyboard-launcher).
 
 ## Step 4 — Configure the baseline manually
 
-Continue at [this section](../how-to/apps/RAYCAST.md#step-4--configure-the-baseline-manually).
+See the [current instructions](../setup/manual/apps/raycast.md#4-configure-the-baseline-manually).
 
 ### Launcher
 
-Continue at [this section](../how-to/apps/RAYCAST.md#launcher).
+See the [current instructions](../setup/manual/apps/raycast.md#launcher).
 
 ### Fallback commands
 
-Continue at [this section](../how-to/apps/RAYCAST.md#fallback-commands).
+See the [current instructions](../setup/manual/apps/raycast.md#fallback-commands).
 
 ### Divide search responsibilities
 
-Continue at [this section](../how-to/apps/RAYCAST.md#divide-search-responsibilities).
+See the [current instructions](../setup/manual/apps/raycast.md#divide-search-responsibilities).
 
 ### File Search
 
-Continue at [this section](../how-to/apps/RAYCAST.md#file-search).
+See the [current instructions](../setup/manual/apps/raycast.md#file-search).
 
 ### Spotlight search settings
 
-Continue at [this section](../how-to/apps/RAYCAST.md#spotlight-search-settings).
+See the [current instructions](../setup/manual/apps/raycast.md#spotlight-search-settings).
 
 ### Shortcut audit
 
-Continue at [this section](../how-to/apps/RAYCAST.md#shortcut-audit).
+See the [current instructions](../setup/manual/apps/raycast.md#shortcut-audit).
 
 ### Clipboard History
 
-Continue at [this section](../how-to/apps/RAYCAST.md#clipboard-history).
+See the [current instructions](../setup/manual/apps/raycast.md#clipboard-history).
 
 ### Window Management
 
-Continue at [this section](../how-to/apps/RAYCAST.md#window-management).
+See the [current instructions](../setup/manual/apps/raycast.md#window-management).
 
 ### Raycast AI
 
-Continue at [this section](../how-to/apps/RAYCAST.md#raycast-ai).
+See the [current instructions](../setup/manual/apps/raycast.md#raycast-ai).
 
 ### Extensions
 
-Continue at [this section](../how-to/apps/RAYCAST.md#extensions).
+See the [current instructions](../setup/manual/apps/raycast.md#extensions).
 
 ## Step 5 — Grant permissions when needed
 
-Continue at [this section](../how-to/apps/RAYCAST.md#step-5--grant-permissions-when-needed).
+See the [current instructions](../setup/manual/apps/raycast.md#5-grant-permissions-when-needed).
 
 ## Step 6 — Test the required launcher
 
-Continue at [this section](../how-to/apps/RAYCAST.md#step-6--test-the-required-launcher).
+See the [current instructions](../setup/manual/apps/raycast.md#6-test-the-required-launcher).
 
 ## Export Raycast settings and data
 
-Continue at [this section](../how-to/apps/RAYCAST.md#export-raycast-settings-and-data).
+See the [current instructions](../setup/manual/apps/raycast.md#export-raycast-settings-and-data).
 
 ## Import without recreating old clutter
 
-Continue at [this section](../how-to/apps/RAYCAST.md#import-without-recreating-old-clutter).
+See the [current instructions](../setup/manual/apps/raycast.md#import-without-recreating-old-clutter).
 
 ## Change the setup later
 
-Continue at [this section](../how-to/apps/RAYCAST.md#change-the-setup-later).
+See the [current instructions](../setup/manual/apps/raycast.md#change-the-setup-later).
 
 ## Add optional integrations later
 
-Continue at [this section](../how-to/apps/RAYCAST.md#add-optional-integrations-later).
+See the [current instructions](../setup/manual/apps/raycast.md#add-optional-integrations-later).
 
 ## Troubleshooting
 
-Continue at [this section](../how-to/apps/RAYCAST.md#troubleshooting).
+See the [current instructions](../setup/manual/apps/raycast.md#troubleshooting).
 
 ## Raycast completion checklist 🚦
 
-Continue at [this section](../how-to/apps/RAYCAST.md#raycast-completion-checklist-).
+See the [current instructions](../setup/manual/apps/raycast.md#raycast-completion-checklist-).

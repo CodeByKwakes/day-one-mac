@@ -1,7 +1,7 @@
 # Project instructions for AI agents
 
 Day One Mac is a public, Apple-silicon-only macOS development-environment
-installer. Read `docs/START-HERE.md`, `docs/explanation/PROCESS-OVERVIEW.md` and the
+installer. Read `docs/START-HERE.md`, `docs/shared/explanation/process-overview.md` and the
 affected phase before changing behaviour.
 
 The normal user path is the public release installer, the versioned standalone

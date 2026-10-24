@@ -51,6 +51,22 @@ try {
   run(['advanced', '--module', '20', '--apply', '--manifest', restore, '--yes'], 10);
   // These markers are fixture-only, not evidence that machine onboarding ran.
   execute('/bin/bash', [path.join(__dirname, 'seed-required-state.sh'), state, path.join(runtime, 'scripts')], { env });
+  // Replacement and recovery must also work from the isolated installed archive.
+  const editorUser = path.join(env.HOME, 'Library/Application Support/Code/User');
+  fs.mkdirSync(editorUser, { recursive: true });
+  const editorSettings = path.join(editorUser, 'settings.json');
+  const originalSettings = '// Packaged replacement fixture\n{"editor.fontSize":19,}\n';
+  fs.writeFileSync(editorSettings, originalSettings);
+  const replacementPreview = run(['vscode-profile', 'default', '--replace-settings']);
+  const replacementHash = replacementPreview.match(/Approval hash: ([a-f0-9]{64})/)[1];
+  const replacementResult = run(['vscode-profile', 'default', '--replace-settings', '--execute', '--approve', replacementHash]);
+  const profileBackup = replacementResult.match(/Backup: (.+)/)[1];
+  need(JSON.parse(fs.readFileSync(editorSettings))['terminal.integrated.suggest.upArrowNavigatesHistory'] === true,
+    'Packaged replacement lost matching history configuration.');
+  const recoveryPreview = run(['vscode-profile', 'default', '--restore', profileBackup]);
+  const recoveryHash = recoveryPreview.match(/Approval hash: ([a-f0-9]{64})/)[1];
+  run(['vscode-profile', 'default', '--restore', profileBackup, '--execute', '--approve', recoveryHash]);
+  need(fs.readFileSync(editorSettings, 'utf8') === originalSettings, 'Packaged recovery changed original JSONC bytes.');
   for (const [id, manifest] of [['17', helpers], ['18', identities], ['20', restore]]) {
     run(['advanced', '--module', id, '--apply', '--manifest', manifest, '--yes']);
     run(['advanced', '--module', id, '--check']);

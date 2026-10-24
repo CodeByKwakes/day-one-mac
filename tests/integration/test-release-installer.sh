@@ -14,7 +14,7 @@ HOME="$TEST_ROOT/installed-home" TMPDIR="$TEST_ROOT/temporary" \
 HOME="$TEST_ROOT/installed-home" "$TEST_ROOT/installed-home/.local/bin/day-one-mac" verify >/dev/null
 HOME="$TEST_ROOT/installed-home" "$TEST_ROOT/installed-home/.local/bin/day-one-mac" \
   docs export --format html --output "$TEST_ROOT/export" >/dev/null
-[[ -f "$TEST_ROOT/export/index.html" && -f "$TEST_ROOT/export/docs/setup/manual/chezmoi.md" ]] \
+[[ -f "$TEST_ROOT/export/index.html" && -f "$TEST_ROOT/export/docs/setup/manual/shell/README.md" ]] \
   || fail 'installed release could not export its bundled handbook and chezmoi guides'
 for topic in second-brain-guide folders security 1password keychain ssh software; do
   doc_path="$(HOME="$TEST_ROOT/installed-home" "$TEST_ROOT/installed-home/.local/bin/day-one-mac" docs "$topic")"
@@ -23,7 +23,7 @@ done
 for guide in second-brain security 1password keychain-ssh ssh-signing-and-recovery; do
   [[ -f "$TEST_ROOT/export/docs/setup/manual/$guide.md" ]] || fail "export omitted handbook guide: $guide"
 done
-[[ -f "$TEST_ROOT/export/docs/reference/SOFTWARE-CATALOGUE.md" ]] || fail 'export omitted software catalogue'
+[[ -f "$TEST_ROOT/export/docs/shared/reference/software-catalogue.md" ]] || fail 'export omitted software catalogue'
 HOME="$TEST_ROOT/installed-home" "$TEST_ROOT/installed-home/.local/bin/day-one-mac" verify >/dev/null
 [[ -z "$(find "$TEST_ROOT/temporary" -mindepth 1 -print -quit)" ]] || fail 'installer leaked extraction directory'
 

@@ -1,33 +1,33 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Optional and advanced status dashboard
 
-This guide moved to [OPTIONAL-STATUS](../reference/OPTIONAL-STATUS.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/assisted/reference/optional-status.md). This compatibility page preserves existing links.
 
 ## Status meanings
 
-Continue at [this section](../reference/OPTIONAL-STATUS.md#status-meanings).
+See the [current instructions](../setup/assisted/reference/optional-status.md#status-meanings).
 
 ## Run the full audit
 
-Continue at [this section](../reference/OPTIONAL-STATUS.md#run-the-full-audit).
+See the [current instructions](../setup/assisted/reference/optional-status.md#run-the-full-audit).
 
 ## Use it as a verification gate
 
-Continue at [this section](../reference/OPTIONAL-STATUS.md#use-it-as-a-verification-gate).
+See the [current instructions](../setup/assisted/reference/optional-status.md#use-it-as-a-verification-gate).
 
 ## Resolve common results
 
-Continue at [this section](../reference/OPTIONAL-STATUS.md#resolve-common-results).
+See the [current instructions](../setup/assisted/reference/optional-status.md#resolve-common-results).
 
 ### Database is blocked
 
-Continue at [this section](../reference/OPTIONAL-STATUS.md#database-is-blocked).
+See the [current instructions](../setup/assisted/reference/optional-status.md#database-is-blocked).
 
 ### AI, OmniRoute, MCP, profiles, or Warp is partial
 
-Continue at [this section](../reference/OPTIONAL-STATUS.md#ai-omniroute-mcp-profiles-or-warp-is-partial).
+See the [current instructions](../setup/assisted/reference/optional-status.md#ai-omniroute-mcp-profiles-or-warp-is-partial).
 
 ### Advanced module needs review
 
-Continue at [this section](../reference/OPTIONAL-STATUS.md#advanced-module-needs-review).
+See the [current instructions](../setup/assisted/reference/optional-status.md#advanced-module-needs-review).

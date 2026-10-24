@@ -1,25 +1,25 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Workstation pilot acceptance and recovery
 
-This guide moved to [WORKSTATION-ACCEPTANCE](../how-to/recovery/WORKSTATION-ACCEPTANCE.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../shared/verification.md). This compatibility page preserves existing links.
 
 ## Support and test matrix
 
-Continue at [this section](../how-to/recovery/WORKSTATION-ACCEPTANCE.md#support-and-test-matrix).
+See the [current instructions](../shared/verification.md).
 
 ## Personal and managed onboarding pilot
 
-Continue at [this section](../how-to/recovery/WORKSTATION-ACCEPTANCE.md#personal-and-managed-onboarding-pilot).
+See the [current instructions](../shared/verification.md#personal-and-managed-onboarding-pilot).
 
 ## Recovery by data class
 
-Continue at [this section](../how-to/recovery/WORKSTATION-ACCEPTANCE.md#recovery-by-data-class).
+See the [current instructions](../shared/verification.md#recovery-by-data-class).
 
 ## Peripheral acceptance
 
-Continue at [this section](../how-to/recovery/WORKSTATION-ACCEPTANCE.md#peripheral-acceptance).
+See the [current instructions](../shared/verification.md#peripheral-acceptance).
 
 ## Performance and usability measurements
 
-Continue at [this section](../how-to/recovery/WORKSTATION-ACCEPTANCE.md#performance-and-usability-measurements).
+See the [current instructions](../shared/verification.md#performance-and-usability-measurements).

@@ -1,37 +1,37 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Git worktrees: choose your workflow
 
-This guide moved to [GIT-WORKTREES-VSCODE-AND-AI](../how-to/development/worktrees/GIT-WORKTREES-VSCODE-AND-AI.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/manual/development/worktrees/README.md). This compatibility page preserves existing links.
 
 ## Choose a route
 
-Continue at [this section](../how-to/development/worktrees/GIT-WORKTREES-VSCODE-AND-AI.md#choose-a-route).
+See the [current instructions](../setup/manual/development/worktrees/README.md#choose-a-route).
 
 ## Keep working, then finish
 
-Continue at [this section](../how-to/development/worktrees/GIT-WORKTREES-VSCODE-AND-AI.md#keep-working-then-finish).
+See the [current instructions](../setup/manual/development/worktrees/README.md#keep-working-then-finish).
 
 ## What is shared?
 
-Continue at [this section](../how-to/development/worktrees/GIT-WORKTREES-VSCODE-AND-AI.md#what-is-shared).
+See the [current instructions](../setup/manual/development/worktrees/README.md#what-is-shared).
 
 ## Start from main
 
-Continue at [this section](../how-to/development/worktrees/GIT-WORKTREES-VSCODE-AND-AI.md#start-from-main).
+See the [current instructions](../setup/manual/development/worktrees/README.md#start-from-main).
 
 ## Projectless task or worktree?
 
-Continue at [this section](../how-to/development/worktrees/GIT-WORKTREES-VSCODE-AND-AI.md#projectless-task-or-worktree).
+See the [current instructions](../setup/manual/development/worktrees/README.md#projectless-task-or-worktree).
 
 ## Canonical Day One layout
 
-Continue at [this section](../how-to/development/worktrees/GIT-WORKTREES-VSCODE-AND-AI.md#canonical-day-one-layout).
+See the [current instructions](../setup/manual/development/worktrees/README.md#canonical-day-one-layout).
 
 ## Core rules
 
-Continue at [this section](../how-to/development/worktrees/GIT-WORKTREES-VSCODE-AND-AI.md#core-rules).
+See the [current instructions](../setup/manual/development/worktrees/README.md#core-rules).
 
 ## Check prerequisites
 
-Continue at [this section](../how-to/development/worktrees/GIT-WORKTREES-VSCODE-AND-AI.md#check-prerequisites).
+See the [current instructions](../setup/manual/development/worktrees/README.md#check-prerequisites).

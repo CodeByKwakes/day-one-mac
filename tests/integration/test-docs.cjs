@@ -31,22 +31,22 @@ try {
     return result.stdout;
   };
   assert.match(run([]), /docs\/START-HERE.md/);
-  assert.match(run(['manual']), /setup\/manual\/MANUAL-SETUP-GUIDE.md/);
-  assert.match(run(['chezmoi']), /CHEZMOI-SETUP-TUTORIAL.md/);
+  assert.match(run(['manual']), /setup\/manual\/README.md/);
+  assert.match(run(['chezmoi']), /manual\/shell\/chezmoi.md/);
   assert.match(run(['handbook']), /manual\/README.md/);
-  assert.match(run(['chezmoi-guide']), /manual\/chezmoi.md/);
+  assert.match(run(['chezmoi-guide']), /manual\/shell\/README.md/);
   assert.match(run(['--list']), /chezmoi-daily/);
   assert.match(run(['second-brain']), /second-brain\/README.md/);
   const handbookTopics = {
-    'second-brain-guide': 'docs/setup/manual/second-brain.md',
-    folders: 'docs/setup/manual/developer-folders.md',
-    security: 'docs/setup/manual/security.md',
-    '1password': 'docs/setup/manual/1password.md',
-    keychain: 'docs/setup/manual/keychain-ssh.md',
-    ssh: 'docs/setup/manual/ssh-signing-and-recovery.md',
-    software: 'docs/reference/SOFTWARE-CATALOGUE.md',
-    worktrees: 'docs/how-to/development/worktrees/GIT-WORKTREES-VSCODE-AND-AI.md',
-    shortcuts: 'docs/how-to/apps/MACOS-SHORTCUTS.md',
+    'second-brain-guide': 'docs/setup/manual/second-brain/README.md',
+    folders: 'docs/setup/manual/development/folders.md',
+    security: 'docs/setup/manual/security/README.md',
+    '1password': 'docs/setup/manual/security/1password.md',
+    keychain: 'docs/setup/manual/security/keychain-ssh.md',
+    ssh: 'docs/setup/manual/security/ssh-signing-and-recovery.md',
+    software: 'docs/shared/reference/software-catalogue.md',
+    worktrees: 'docs/setup/manual/development/worktrees/README.md',
+    shortcuts: 'docs/setup/manual/apps/macos-shortcuts.md',
   };
   for (const [topic, file] of Object.entries(handbookTopics)) {
     assert.equal(fs.realpathSync(run([topic]).trim()), fs.realpathSync(path.join(fixture, file)));
@@ -104,8 +104,8 @@ try {
   assert.match(html, /Print \/ save PDF/);
   const embedded = new Map(Array.from(html.matchAll(/class="document-data" data-path="([^"]+)">([^<]+)<\/script>/g),
     match => [match[1], Buffer.from(match[2], 'base64').toString('utf8')]));
-  assert.equal(embedded.get('docs/setup/manual/chezmoi.md'), fs.readFileSync(path.join(root, 'docs/setup/manual/chezmoi.md'), 'utf8'));
-  const npmGuide = 'docs/setup/manual/azure-artifacts-npm.md';
+  assert.equal(embedded.get('docs/setup/manual/shell/README.md'), fs.readFileSync(path.join(root, 'docs/setup/manual/shell/README.md'), 'utf8'));
+  const npmGuide = 'docs/setup/manual/git/azure-artifacts-npm.md';
   assert.equal(embedded.get(npmGuide), fs.readFileSync(path.join(root, npmGuide), 'utf8'),
     'The private-registry guide is bundled in offline HTML');
   // Exercise the published encoder with synthetic input only. Replace the
@@ -132,7 +132,7 @@ try {
   for (const file of Object.values(handbookTopics)) {
     assert.equal(embedded.get(file), fs.readFileSync(path.join(root, file), 'utf8'));
   }
-  for (const file of ['docs/setup/manual/CHEZMOI-SETUP-TUTORIAL.md', 'docs/reference/MANAGING-DOTFILES-WITH-CHEZMOI.md', 'docs/reference/CHEZMOI-COMMAND-REFERENCE.md', 'docs/explanation/CHEZMOI-CONCEPTS-AND-BOUNDARIES.md']) {
+  for (const file of ['docs/setup/manual/shell/chezmoi.md', 'docs/setup/manual/shell/chezmoi.md', 'docs/shared/reference/chezmoi-commands.md', 'docs/shared/explanation/chezmoi-boundaries.md']) {
     assert.ok(embedded.has(file));
   }
   run(['export', '--format', 'html', '--output', htmlDir], 1);
@@ -143,7 +143,7 @@ try {
   const mdDir = path.join(temporary, 'markdown');
   run(['export', '--format', 'markdown', '--output', mdDir]);
   assert.ok(!fs.existsSync(path.join(mdDir, 'index.html')));
-  assert.equal(fs.readFileSync(path.join(mdDir, 'docs/setup/manual/chezmoi.md'), 'utf8'), embedded.get('docs/setup/manual/chezmoi.md'));
+  assert.equal(fs.readFileSync(path.join(mdDir, 'docs/setup/manual/shell/README.md'), 'utf8'), embedded.get('docs/setup/manual/shell/README.md'));
   assert.equal(fs.readFileSync(path.join(mdDir, npmGuide), 'utf8'), embedded.get(npmGuide),
     'The private-registry guide is included in Markdown exports');
   for (const file of Object.values(handbookTopics)) {
@@ -154,32 +154,32 @@ try {
   const { documentationRenderer, documentationNavigation, findDocumentation, resolveDocumentationRoute } = require(path.join(fixture, 'src/docs/docs-browser.js'));
   const navigation = documentationNavigation(embedded);
   const { coreSequence } = navigation;
-  assert.deepEqual(resolveDocumentationRoute('docs/10-app-guides/DATAGRIP.md', 'create-a-local-example-database-and-roles', embedded).path, 'docs/how-to/databases/DATAGRIP.md');
-  assert.equal(resolveDocumentationRoute('docs/10-app-guides/DATAGRIP.md', '4-create-a-local-example-database-and-roles', embedded).path, 'docs/how-to/databases/POSTGRESQL.md');
-  assert.deepEqual(navigation.groups.map(group => group.label), ['Start here', 'Core setup', 'Customisation', 'Reference and recovery']);
+  assert.deepEqual(resolveDocumentationRoute('docs/10-app-guides/DATAGRIP.md', 'create-a-local-example-database-and-roles', embedded).path, 'docs/setup/manual/databases/datagrip.md');
+  assert.equal(resolveDocumentationRoute('docs/10-app-guides/DATAGRIP.md', '4-create-a-local-example-database-and-roles', embedded).path, 'docs/setup/manual/databases/postgresql.md');
+  assert.deepEqual(navigation.groups.map(group => group.label), ['Start here', 'Scripted (Assisted) Setup', 'Manual Setup', 'Shared library']);
   const worktrees = navigation.groups.flatMap(group => group.sections).find(section => section.label === 'Git worktrees');
   assert.equal(worktrees.entries.length, 8);
-  assert.ok(worktrees.entries.some(entry => entry.path.endsWith('WORKTREES-COPILOT.md')));
-  assert.ok(worktrees.entries.some(entry => entry.path.endsWith('WORKTREES-VSCODE.md')));
+  assert.ok(worktrees.entries.some(entry => entry.path.endsWith('/copilot.md')));
+  assert.ok(worktrees.entries.some(entry => entry.path.endsWith('/vscode.md')));
   const listed = navigation.groups.flatMap(group => group.sections.flatMap(section => section.entries.map(entry => entry.path)));
   assert.equal(new Set(listed).size, listed.length, 'Each guide has one canonical navigation location');
   assert.deepEqual([...listed].sort(), [...embedded.keys()].filter(path => !embedded.get(path).includes('<!-- day-one-mac:compatibility-guide -->')).sort(), 'All canonical guides remain discoverable');
   assert.deepEqual(navigation.groups[1].sections[1].entries.map(entry => entry.path), coreSequence);
-  const registries = navigation.groups.find(group => group.label === 'Customisation')
-    .sections.find(section => section.label === 'Private package registries');
-  assert.deepEqual(registries.entries, [{ path: npmGuide, label: 'Azure Artifacts: npm authentication' }]);
+  const git = navigation.groups.find(group => group.label === 'Manual Setup')
+    .sections.find(section => section.label === 'Git and providers');
+  assert.ok(git.entries.some(entry => entry.path === npmGuide), 'Private registry setup is discoverable with Git and hosting');
   assert.ok(!coreSequence.includes(npmGuide), 'Private-registry setup is optional');
   assert.ok(coreSequence.indexOf('docs/setup/assisted/MACOS-SETTINGS.md') < coreSequence.indexOf('docs/setup/assisted/02-command-line-foundation.md'));
   assert.ok(coreSequence.indexOf('docs/setup/assisted/INSTALLATION-CENTRE.md') < coreSequence.indexOf('docs/setup/assisted/03-security-and-ssh.md'));
   assert.ok(findDocumentation(navigation.titles, ' CHEZMOI ').length > 1);
   assert.deepEqual(findDocumentation(navigation.titles, ''), []);
   assert.deepEqual(findDocumentation(navigation.titles, 'no-matching-guide-xyz'), []);
-  const render = text => documentationRenderer(markdownIt, embedded, 'docs/setup/manual/chezmoi.md').render(text);
-  const rendered = render('# Example\n\n# Example\n\n[Daily](../../reference/MANAGING-DOTFILES-WITH-CHEZMOI.md#recovery)\n\n[Here](#example)\n\n<script>alert(1)</script>\n\n![remote](https://example.org/pixel.png)\n\n[bad](javascript:alert(1))\n\n| A | B |\n|---|---|\n| 1 | 2 |\n\n```sh\n<unsafe>\n```');
+  const render = text => documentationRenderer(markdownIt, embedded, 'docs/setup/manual/shell/README.md').render(text);
+  const rendered = render('# Example\n\n# Example\n\n[Daily](../../../reference/MANAGING-DOTFILES-WITH-CHEZMOI.md#recovery)\n\n[Here](#example)\n\n<script>alert(1)</script>\n\n![remote](https://example.org/pixel.png)\n\n[bad](javascript:alert(1))\n\n| A | B |\n|---|---|\n| 1 | 2 |\n\n```sh\n<unsafe>\n```');
   assert.match(rendered, /id="example"/);
   assert.match(rendered, /id="example-1"/);
   assert.match(rendered, /href="#docs\/reference\/MANAGING-DOTFILES-WITH-CHEZMOI.md#recovery"/);
-  assert.match(rendered, /href="#docs\/setup\/manual\/chezmoi.md#example"/);
+  assert.match(rendered, /href="#docs\/setup\/manual\/shell\/README.md#example"/);
   assert.match(rendered, /<table>/);
   assert.match(rendered, /&lt;unsafe&gt;/);
   assert.ok(!rendered.includes('<script>'));
@@ -215,17 +215,17 @@ try {
   const browserTemp = path.join(temporary, 'browser space # percent %'); fs.mkdirSync(browserTemp);
   run(['chezmoi-guide', '--browser'], 0, { PATH: `${bin}:/usr/bin:/bin`, TMPDIR: browserTemp, DOCS_OPEN_LOG: openLog });
   const opened = fs.readFileSync(openLog, 'utf8').trim();
-  assert.match(opened, /index.html#docs\/setup\/manual\/chezmoi.md$/);
+  assert.match(opened, /index.html#docs\/setup\/manual\/shell\/README.md$/);
   assert.ok(fs.existsSync(decodeURIComponent(opened.slice('file://'.length).split('#')[0])));
   assert.deepEqual(fs.readdirSync(path.join(home, '.day-one-mac')), ['private.md']);
 
   // Reject symlinked listed inputs and symlink parents before writing output.
-  const guide = path.join(fixture, 'docs/setup/manual/chezmoi.md');
+  const guide = path.join(fixture, 'docs/setup/manual/shell/README.md');
   fs.unlinkSync(guide); fs.symlinkSync(path.join(home, '.day-one-mac/private.md'), guide);
   const rejected = path.join(temporary, 'rejected');
   run(['export', '--format', 'html', '--output', rejected], 1);
   assert.ok(!fs.existsSync(rejected));
-  fs.unlinkSync(guide); fs.copyFileSync(path.join(root, 'docs/setup/manual/chezmoi.md'), guide);
+  fs.unlinkSync(guide); fs.copyFileSync(path.join(root, 'docs/setup/manual/shell/README.md'), guide);
   fs.renameSync(path.join(fixture, 'docs/manual'), path.join(temporary, 'manual'));
   fs.symlinkSync(path.join(temporary, 'manual'), path.join(fixture, 'docs/manual'));
   run(['export', '--format', 'markdown', '--output', rejected], 1);

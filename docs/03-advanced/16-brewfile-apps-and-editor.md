@@ -1,61 +1,61 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Advanced 16 — Brewfile, applications, and editor inventory
 
-This guide moved to [16-brewfile-apps-and-editor](../how-to/modules/advanced/16-brewfile-apps-and-editor.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/assisted/advanced/16-brewfile-apps-and-editor.md). This compatibility page preserves existing links.
 
 ## Outcome
 
-Continue at [this section](../how-to/modules/advanced/16-brewfile-apps-and-editor.md#outcome).
+See the [current instructions](../setup/assisted/advanced/16-brewfile-apps-and-editor.md#outcome).
 
 ## Step 16.1 — Capture reality without changing it
 
-Continue at [this section](../how-to/modules/advanced/16-brewfile-apps-and-editor.md#step-161--capture-reality-without-changing-it).
+See the [current instructions](../setup/assisted/advanced/16-brewfile-apps-and-editor.md#1-capture-reality-without-changing-it).
 
 ### Executable selected-payload route
 
-Continue at [this section](../how-to/modules/advanced/16-brewfile-apps-and-editor.md#executable-selected-payload-route).
+See the [current instructions](../setup/assisted/advanced/16-brewfile-apps-and-editor.md#executable-selected-payload-route).
 
 ### Broader manual inventory
 
-Continue at [this section](../how-to/modules/advanced/16-brewfile-apps-and-editor.md#broader-manual-inventory).
+See the [current instructions](../setup/assisted/advanced/16-brewfile-apps-and-editor.md).
 
 ## Step 16.2 — Back up the desired-state file
 
-Continue at [this section](../how-to/modules/advanced/16-brewfile-apps-and-editor.md#step-162--back-up-the-desired-state-file).
+See the [current instructions](../setup/manual/apps/brewfile.md#2-back-up-the-desired-state-file).
 
 ## Step 16.3 — Structure the Brewfile for humans
 
-Continue at [this section](../how-to/modules/advanced/16-brewfile-apps-and-editor.md#step-163--structure-the-brewfile-for-humans).
+See the [current instructions](../setup/manual/apps/brewfile.md#3-structure-the-brewfile-for-humans).
 
 ## Step 16.4 — Treat the four categories differently
 
-Continue at [this section](../how-to/modules/advanced/16-brewfile-apps-and-editor.md#step-164--treat-the-four-categories-differently).
+See the [current instructions](../setup/manual/apps/brewfile.md#4-treat-the-four-categories-differently).
 
 ## Step 16.5 — Build choices from the current file
 
-Continue at [this section](../how-to/modules/advanced/16-brewfile-apps-and-editor.md#step-165--build-choices-from-the-current-file).
+See the [current instructions](../setup/manual/apps/brewfile.md#5-build-choices-from-the-current-file).
 
 ## Step 16.6 — Preview installation and drift
 
-Continue at [this section](../how-to/modules/advanced/16-brewfile-apps-and-editor.md#step-166--preview-installation-and-drift).
+See the [current instructions](../setup/manual/apps/brewfile.md#6-preview-installation-and-drift).
 
 ## Step 16.7 — Handle cask removal recoverably
 
-Continue at [this section](../how-to/modules/advanced/16-brewfile-apps-and-editor.md#step-167--handle-cask-removal-recoverably).
+See the [current instructions](../setup/manual/apps/brewfile.md#7-handle-cask-removal-recoverably).
 
 ## Step 16.8 — Handle VS Code removal recoverably
 
-Continue at [this section](../how-to/modules/advanced/16-brewfile-apps-and-editor.md#step-168--handle-vs-code-removal-recoverably).
+See the [current instructions](../setup/manual/apps/brewfile.md#8-handle-vs-code-removal-recoverably).
 
 ## Step 16.9 — Record the final state with chezmoi
 
-Continue at [this section](../how-to/modules/advanced/16-brewfile-apps-and-editor.md#step-169--record-the-final-state-with-chezmoi).
+See the [current instructions](../setup/manual/apps/brewfile.md#9-record-the-final-state-with-chezmoi).
 
 ## Rollback
 
-Continue at [this section](../how-to/modules/advanced/16-brewfile-apps-and-editor.md#rollback).
+See the [current instructions](../setup/manual/apps/brewfile.md#rollback).
 
 ## Advanced 16 completion checklist 🚦
 
-Continue at [this section](../how-to/modules/advanced/16-brewfile-apps-and-editor.md#advanced-16-completion-checklist-).
+See the [current instructions](../setup/assisted/advanced/16-brewfile-apps-and-editor.md#advanced-16-completion-checklist-).

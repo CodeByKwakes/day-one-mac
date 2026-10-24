@@ -66,6 +66,12 @@ fi
 
 for command_file in "$DAY_ONE_RAYCAST_COMMAND_DIR"/*.sh; do
   bash -n "$command_file"
+  guide_path="$(sed -n 's@^open_code "$(day_one_project_root)/\(.*\.md\)"$@\1@p' "$command_file")"
+  if [[ -n "$guide_path" ]]; then
+    [[ -f "$SCRIPT_DIR/../$guide_path" ]] || { printf 'Missing generated guide target: %s\n' "$guide_path" >&2; exit 1; }
+    ! grep -Fq 'day-one-mac:compatibility-guide' "$SCRIPT_DIR/../$guide_path" \
+      || { printf 'Generated command opens a compatibility stub: %s\n' "$guide_path" >&2; exit 1; }
+  fi
 done
 
 second_apply="$("$SCRIPT_DIR/../src/modules/configure-raycast.sh" \

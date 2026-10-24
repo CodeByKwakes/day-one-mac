@@ -83,8 +83,8 @@ async function run() {
     'docs/setup/assisted/01-first-boot-and-decisions.md': '# Phase 1',
     'docs/setup/assisted/MACOS-SETTINGS.md': '# Settings checkpoint',
     'docs/setup/assisted/02-command-line-foundation.md': '# Phase 2',
-    'docs/how-to/apps/MACOS-SHORTCUTS.md': fs.readFileSync(path.join(root, 'docs/how-to/apps/MACOS-SHORTCUTS.md'), 'utf8'),
-    'docs/how-to/modules/optional/09-databases.md': '# Databases',
+    'docs/setup/manual/apps/macos-shortcuts.md': fs.readFileSync(path.join(root, 'docs/setup/manual/apps/macos-shortcuts.md'), 'utf8'),
+    'docs/setup/assisted/optional/09-databases.md': '# Databases',
   };
   for (const [file, text] of Object.entries(pages)) {
     const node = document.createElement('script'); node.className = 'document-data'; node.setAttribute('data-path', file); node.textContent = Buffer.from(text).toString('base64'); document.body.append(node);
@@ -106,7 +106,7 @@ async function run() {
   const navigate = hash => { location.hash = hash; events.hashchange(); };
   const active = () => get('chapters').querySelectorAll('a').filter(node => node.getAttribute('aria-current') === 'page');
 
-  assert.ok(get('chapters').textContent.includes('macOS Shortcuts and Finder actions'));
+  assert.ok(get('chapters').textContent.includes('Optional macOS Shortcuts for development'));
   assert.equal(active().length, 1);
   assert.equal(active()[0].href, '#docs/START-HERE.md');
   assert.equal(document.activeElement, undefined, 'Initial rendering does not steal focus');
@@ -115,7 +115,7 @@ async function run() {
   assert.equal(visibleBlocks()[1].tagName, 'H1', 'Title appears before legacy guide navigation');
   assert.equal(visibleBlocks()[2].querySelector('a').href, '#docs/README.md', 'Original navigation survives title normalization');
   assert.equal(get('article').querySelectorAll('h1').length, 1, 'Title is moved, never duplicated');
-  assert.deepEqual(get('breadcrumbs').querySelectorAll('li').map(node => node.textContent), ['Handbook', 'Start here']);
+  assert.deepEqual(get('breadcrumbs').querySelectorAll('li').map(node => node.textContent), ['Handbook', 'Start here', 'Start']);
   assert.equal(get('breadcrumbs').querySelectorAll('li').at(-1).getAttribute('aria-current'), 'page');
   assert.equal(get('toc-links').children.length, 2);
   assert.equal(get('page-toc').open, true);
@@ -143,12 +143,12 @@ async function run() {
   assert.equal(document.activeElement, get('article').querySelector('h1'), 'Guide navigation focuses its heading, not the reading pane');
   assert.equal(get('page-sequence').querySelector('a').href, '#docs/setup/assisted/MACOS-SETTINGS.md');
   assert.equal(get('page-toc').hidden, true);
-  navigate('#docs/how-to/modules/optional/09-databases.md'); assert.equal(get('page-sequence').hidden, true);
-  assert.match(get('breadcrumbs').textContent, /Customisation/);
+  navigate('#docs/setup/assisted/optional/09-databases.md'); assert.equal(get('page-sequence').hidden, true);
+  assert.match(get('breadcrumbs').textContent, /Scripted \(Assisted\) Setup/);
   assert.equal(active().length, 1);
-  navigate('#docs/how-to/apps/MACOS-SHORTCUTS.md');
-  assert.ok(get('article').textContent.includes('day-one-mac shortcuts --import'));
-  assert.match(get('breadcrumbs').textContent, /Application guides/);
+  navigate('#docs/setup/manual/apps/macos-shortcuts.md');
+  assert.ok(get('article').textContent.includes('Open in VS Code'));
+  assert.match(get('breadcrumbs').textContent, /Editors and applications/);
   navigate('#missing.md'); assert.match(get('article').textContent, /Guide unavailable/); assert.equal(active().length, 0);
   assert.equal(document.activeElement, get('article').querySelector('h1'));
   navigate('#%ZZ'); assert.match(get('article').textContent, /malformed/);

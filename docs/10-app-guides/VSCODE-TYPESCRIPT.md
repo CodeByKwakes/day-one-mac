@@ -1,213 +1,213 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Advanced VS Code reference for TypeScript and AI workflows
 
-This guide moved to [VSCODE-TYPESCRIPT](../how-to/development/VSCODE-TYPESCRIPT.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/manual/editors/vscode.md). This compatibility page preserves existing links.
 
 ## Contents
 
-Continue at [this section](../how-to/development/VSCODE-TYPESCRIPT.md#contents).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## 1. Prepare the toolchain and profiles
 
-Continue at [this section](../how-to/development/VSCODE-TYPESCRIPT.md#1-prepare-the-toolchain-and-profiles).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ### Choose profiles in the main guide
 
-Continue at [this section](../how-to/development/VSCODE-TYPESCRIPT.md#choose-profiles-in-the-main-guide).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## 2. Extension capability reference
 
-Continue at [this section](../how-to/development/VSCODE-TYPESCRIPT.md#2-extension-capability-reference).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ### Native capabilities, accounts, and trade-offs
 
-Continue at [this section](../how-to/development/VSCODE-TYPESCRIPT.md#native-capabilities-accounts-and-trade-offs).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## 3. AI workflow reference
 
-Continue at [this section](../how-to/development/AI-WORKFLOWS.md#3-ai-workflow-reference).
+See the [current instructions](../setup/manual/ai/workflows.md#1-ai-workflow-reference).
 
 ### AI profile: focused agent work and prompt authoring
 
-Continue at [this section](../how-to/development/AI-WORKFLOWS.md#ai-profile-focused-agent-work-and-prompt-authoring).
+See the [current instructions](../setup/manual/ai/workflows.md#ai-profile-focused-agent-work-and-prompt-authoring).
 
 #### Claude Code in the AI profile
 
-Continue at [this section](../how-to/development/AI-WORKFLOWS.md#claude-code-in-the-ai-profile).
+See the [current instructions](../setup/manual/ai/workflows.md#claude-code-in-the-ai-profile).
 
 #### Prompt builder and optional evaluation extensions
 
-Continue at [this section](../how-to/development/AI-WORKFLOWS.md#prompt-builder-and-optional-evaluation-extensions).
+See the [current instructions](../setup/manual/ai/workflows.md#prompt-builder-and-optional-evaluation-extensions).
 
 #### Generate a good prompt with tools you already have
 
-Continue at [this section](../how-to/development/AI-WORKFLOWS.md#generate-a-good-prompt-with-tools-you-already-have).
+See the [current instructions](../setup/manual/ai/workflows.md#generate-a-good-prompt-with-tools-you-already-have).
 
 #### Store personal workflows without committing repository files
 
-Continue at [this section](../how-to/development/AI-WORKFLOWS.md#store-personal-workflows-without-committing-repository-files).
+See the [current instructions](../setup/manual/ai/workflows.md#store-personal-workflows-without-committing-repository-files).
 
 #### Keep MCP and context intentional
 
-Continue at [this section](../how-to/development/AI-WORKFLOWS.md#keep-mcp-and-context-intentional).
+See the [current instructions](../setup/manual/ai/workflows.md#keep-mcp-and-context-intentional).
 
 ## 4. Configure import cleanup and keyboard shortcuts
 
-Continue at [this section](../how-to/development/VSCODE-TYPESCRIPT.md#4-configure-import-cleanup-and-keyboard-shortcuts).
+See the [current instructions](../setup/manual/editors/vscode.md#5-configure-import-cleanup-and-keyboard-shortcuts).
 
 ### Choose one import policy
 
-Continue at [this section](../how-to/development/VSCODE-TYPESCRIPT.md#choose-one-import-policy).
+See the [current instructions](../setup/manual/editors/vscode.md#choose-one-import-policy).
 
 ### Useful built-in macOS shortcuts
 
-Continue at [this section](../how-to/development/VSCODE-TYPESCRIPT.md#useful-built-in-macos-shortcuts).
+See the [current instructions](../setup/manual/editors/vscode.md#useful-built-in-macos-shortcuts).
 
 ### Personal import shortcuts
 
-Continue at [this section](../how-to/development/VSCODE-TYPESCRIPT.md#personal-import-shortcuts).
+See the [current instructions](../setup/manual/editors/vscode.md#personal-import-shortcuts).
 
 ## 5. Edit environment files
 
-Continue at [this section](../how-to/development/VSCODE-TYPESCRIPT.md#5-edit-environment-files).
+See the [current instructions](../setup/manual/editors/vscode.md#6-edit-environment-files).
 
 ## 6. Configure Angular and NestJS folder icons
 
-Continue at [this section](../how-to/development/VSCODE-TYPESCRIPT.md#6-configure-angular-and-nestjs-folder-icons).
+See the [current instructions](../setup/manual/editors/vscode.md#7-configure-angular-and-nestjs-folder-icons).
 
 ## 7. Configure Angular HTML highlighting
 
-Continue at [this section](../how-to/development/VSCODE-TYPESCRIPT.md#7-configure-angular-html-highlighting).
+See the [current instructions](../setup/manual/editors/vscode.md#8-configure-angular-html-highlighting).
 
 ## 8. Create a native Git worktree: worked example
 
-Continue at [this section](../how-to/development/VSCODE-TYPESCRIPT.md#8-create-a-native-git-worktree-worked-example).
+See the [current instructions](../setup/manual/development/worktrees/vscode.md).
 
 ## 9. Share project instructions, skills, and agents
 
-Continue at [this section](../how-to/development/PROJECT-INSTRUCTIONS-AND-SKILLS.md#9-share-project-instructions-skills-and-agents).
+See the [current instructions](../setup/manual/ai/instructions-agents-skills.md#1-share-project-instructions-skills-and-agents).
 
 ### Canonical project layout
 
-Continue at [this section](../how-to/development/PROJECT-INSTRUCTIONS-AND-SKILLS.md#canonical-project-layout).
+See the [current instructions](../setup/manual/ai/instructions-agents-skills.md#canonical-project-layout).
 
 ### Shared instructions
 
-Continue at [this section](../how-to/development/PROJECT-INSTRUCTIONS-AND-SKILLS.md#shared-instructions).
+See the [current instructions](../setup/manual/ai/instructions-agents-skills.md#shared-instructions).
 
 ### One review policy, three small agent wrappers
 
-Continue at [this section](../how-to/development/PROJECT-INSTRUCTIONS-AND-SKILLS.md#one-review-policy-three-small-agent-wrappers).
+See the [current instructions](../setup/manual/ai/instructions-agents-skills.md#one-review-policy-three-small-agent-wrappers).
 
 ### Link project skills and the Claude adapter manually
 
-Continue at [this section](../how-to/development/PROJECT-INSTRUCTIONS-AND-SKILLS.md#link-project-skills-and-the-claude-adapter-manually).
+See the [current instructions](../setup/manual/ai/instructions-agents-skills.md#link-project-skills-and-the-claude-adapter-manually).
 
 ### Keep local project AI files out of Git
 
-Continue at [this section](../how-to/development/PROJECT-INSTRUCTIONS-AND-SKILLS.md#keep-local-project-ai-files-out-of-git).
+See the [current instructions](../setup/manual/ai/instructions-agents-skills.md#keep-local-project-ai-files-out-of-git).
 
 ## 10. Choose and install project skills
 
-Continue at [this section](../how-to/development/PROJECT-INSTRUCTIONS-AND-SKILLS.md#10-choose-and-install-project-skills).
+See the [current instructions](../setup/manual/ai/instructions-agents-skills.md#2-choose-and-install-project-skills).
 
 ### Core skills
 
-Continue at [this section](../how-to/development/PROJECT-INSTRUCTIONS-AND-SKILLS.md#core-skills).
+See the [current instructions](../setup/manual/ai/instructions-agents-skills.md#core-skills).
 
 ### Database skills: check Prisma's major version
 
-Continue at [this section](../how-to/development/PROJECT-INSTRUCTIONS-AND-SKILLS.md#database-skills-check-prismas-major-version).
+See the [current instructions](../setup/manual/ai/instructions-agents-skills.md#database-skills-check-prismas-major-version).
 
 ### Containers, investigation, and verification
 
-Continue at [this section](../how-to/development/PROJECT-INSTRUCTIONS-AND-SKILLS.md#containers-investigation-and-verification).
+See the [current instructions](../setup/manual/ai/instructions-agents-skills.md#containers-investigation-and-verification).
 
 ### Optional specialized skills
 
-Continue at [this section](../how-to/development/PROJECT-INSTRUCTIONS-AND-SKILLS.md#optional-specialized-skills).
+See the [current instructions](../setup/manual/ai/instructions-agents-skills.md#optional-specialized-skills).
 
 ## 11. Configure project and global MCP servers
 
-Continue at [this section](../how-to/development/MCP-CONNECTIONS.md#11-configure-project-and-global-mcp-servers).
+See the [current instructions](../setup/manual/ai/mcp.md#1-configure-project-and-global-mcp-servers).
 
 ### Useful server reference
 
-Continue at [this section](../how-to/development/MCP-CONNECTIONS.md#useful-server-reference).
+See the [current instructions](../setup/manual/ai/mcp.md#useful-server-reference).
 
 ### Understand configuration locations
 
-Continue at [this section](../how-to/development/MCP-CONNECTIONS.md#understand-configuration-locations).
+See the [current instructions](../setup/manual/ai/mcp.md#understand-configuration-locations).
 
 ### Copilot and Claude: project installation
 
-Continue at [this section](../how-to/development/MCP-CONNECTIONS.md#copilot-and-claude-project-installation).
+See the [current instructions](../setup/manual/ai/mcp.md#copilot-and-claude-project-installation).
 
 ### Copilot: global installation
 
-Continue at [this section](../how-to/development/MCP-CONNECTIONS.md#copilot-global-installation).
+See the [current instructions](../setup/manual/ai/mcp.md#copilot-global-installation).
 
 ### Codex: project and global installation
 
-Continue at [this section](../how-to/development/MCP-CONNECTIONS.md#codex-project-and-global-installation).
+See the [current instructions](../setup/manual/ai/mcp.md#codex-project-and-global-installation).
 
 ### Claude: global installation
 
-Continue at [this section](../how-to/development/MCP-CONNECTIONS.md#claude-global-installation).
+See the [current instructions](../setup/manual/ai/mcp.md#claude-global-installation).
 
 ### Azure DevOps: remote for Copilot, local when needed
 
-Continue at [this section](../how-to/development/MCP-CONNECTIONS.md#azure-devops-remote-for-copilot-local-when-needed).
+See the [current instructions](../setup/manual/ai/mcp.md#azure-devops-remote-for-copilot-local-when-needed).
 
 ### PostgreSQL: optional project connection
 
-Continue at [this section](../how-to/development/MCP-CONNECTIONS.md#postgresql-optional-project-connection).
+See the [current instructions](../setup/manual/ai/mcp.md#postgresql-optional-project-connection).
 
 ### GitHub: conditional global connection
 
-Continue at [this section](../how-to/development/MCP-CONNECTIONS.md#github-conditional-global-connection).
+See the [current instructions](../setup/manual/ai/mcp.md#github-conditional-global-connection).
 
 ## 12. Use Zsh consistently in VS Code and Warp
 
-Continue at [this section](../how-to/development/ZSH-AND-TERMINALS.md#12-use-zsh-consistently-in-vs-code-and-warp).
+See the [current instructions](../setup/manual/shell/zsh.md#1-use-zsh-consistently-in-vs-code-and-warp).
 
 ### Choose one shell executable
 
-Continue at [this section](../how-to/development/ZSH-AND-TERMINALS.md#choose-one-shell-executable).
+See the [current instructions](../setup/manual/shell/zsh.md#choose-one-shell-executable).
 
 ### Put initialization in the right files
 
-Continue at [this section](../how-to/development/ZSH-AND-TERMINALS.md#put-initialization-in-the-right-files).
+See the [current instructions](../setup/manual/shell/zsh.md#put-initialization-in-the-right-files).
 
 ### Configure VS Code's terminal in every editor profile
 
-Continue at [this section](../how-to/development/ZSH-AND-TERMINALS.md#configure-vs-codes-terminal-in-every-editor-profile).
+See the [current instructions](../setup/manual/shell/zsh.md#configure-vs-codes-terminal-in-every-editor-profile).
 
 ### Keep Warp's completion separate from Zsh plugins
 
-Continue at [this section](../how-to/development/ZSH-AND-TERMINALS.md#keep-warps-completion-separate-from-zsh-plugins).
+See the [current instructions](../setup/manual/shell/zsh.md#keep-warps-completion-separate-from-zsh-plugins).
 
 ### Choose a prompt for Warp
 
-Continue at [this section](../how-to/development/ZSH-AND-TERMINALS.md#choose-a-prompt-for-warp).
+See the [current instructions](../setup/manual/shell/zsh.md).
 
 ### Use terminal shortcuts deliberately
 
-Continue at [this section](../how-to/development/ZSH-AND-TERMINALS.md#use-terminal-shortcuts-deliberately).
+See the [current instructions](../setup/manual/shell/zsh.md#use-terminal-shortcuts-deliberately).
 
 ### Verify the same project in both applications
 
-Continue at [this section](../how-to/development/ZSH-AND-TERMINALS.md#verify-the-same-project-in-both-applications).
+See the [current instructions](../setup/manual/shell/zsh.md#verify-the-same-project-in-both-applications).
 
 ## 13. Verify, troubleshoot, and maintain the setup
 
-Continue at [this section](../how-to/development/VSCODE-TYPESCRIPT.md#13-verify-troubleshoot-and-maintain-the-setup).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ### First verification
 
-Continue at [this section](../how-to/development/VSCODE-TYPESCRIPT.md#first-verification).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## 14. DataGrip and PostgreSQL connections
 
-Continue at [this section](../how-to/development/VSCODE-TYPESCRIPT.md#14-datagrip-and-postgresql-connections).
+See the [current instructions](../setup/manual/databases/README.md).

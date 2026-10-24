@@ -376,7 +376,7 @@ if [[ "$SETUP_ALIASES" == 1 ]]; then cli_aliases_apply; fi
 MODULE_VERIFIED=1
 
 printf '\nOther shell integrations remain manual. Use --aliases for optional eza aliases.\n'
-printf 'Review docs/how-to/modules/optional/13-enhanced-cli-tools.md for eza, zoxide and Zsh plugin snippets.\n'
+printf 'Review docs/setup/assisted/optional/13-enhanced-cli-tools.md for eza, zoxide and Zsh plugin snippets.\n'
 if [[ -e "$HOME/Brewfile" ]]; then
   printf 'Add the selected declarations to the chezmoi-managed Brewfile after review:\n'
   for formula in "${CHOSEN[@]}"; do printf '  brew "%s"\n' "$formula"; done

@@ -1,29 +1,29 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Developer Resources
 
-This guide moved to [README](../../reference/developer-resources/README.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../../setup/manual/development/resources.md). This compatibility page preserves existing links.
 
 ## Folder guide
 
-Continue at [this section](../../reference/developer-resources/README.md#folder-guide).
+See the [current instructions](../../setup/manual/development/resources.md#folder-guide).
 
 ## Material for a particular project
 
-Continue at [this section](../../reference/developer-resources/README.md#material-for-a-particular-project).
+See the [current instructions](../../setup/manual/development/resources.md#material-for-a-particular-project).
 
 ## Shared resources and editor exports
 
-Continue at [this section](../../reference/developer-resources/README.md#shared-resources-and-editor-exports).
+See the [current instructions](../../setup/manual/development/resources.md#shared-resources-and-editor-exports).
 
 ## Archive finished work
 
-Continue at [this section](../../reference/developer-resources/README.md#archive-finished-work).
+See the [current instructions](../../setup/manual/development/resources.md#archive-finished-work).
 
 ## Database backups
 
-Continue at [this section](../../reference/developer-resources/README.md#database-backups).
+See the [current instructions](../../setup/manual/development/resources.md#database-backups).
 
 ## Care and maintenance
 
-Continue at [this section](../../reference/developer-resources/README.md#care-and-maintenance).
+See the [current instructions](../../setup/manual/development/resources.md#care-and-maintenance).

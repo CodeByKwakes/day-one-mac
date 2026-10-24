@@ -1,363 +1,104 @@
-[← Day One Mac home](README.md) · [Complete command reference](reference/COMMAND-REFERENCE.md) · [Manual and script-assisted routes](setup/manual/MANUAL-SETUP-GUIDE.md) · [Whole process overview](explanation/PROCESS-OVERVIEW.md) · [Glossary](reference/GLOSSARY.md) · [Start Phase 1 →](setup/assisted/01-first-boot-and-decisions.md)
-
 # Start here
 
-This page is the short, beginner-safe route through Day One Mac. Use it before
-opening an individual phase, especially if Terminal, Git, or Homebrew is new to
-you.
+Choose one setup route for your Apple-silicon Mac. Both routes prepare the same
+selected development capabilities; they record and recover changes differently.
 
-## What this project does
-
-Day One Mac turns a new or factory-reset Apple-silicon Mac into a working
-development computer. Intel Macs and terminals running under Rosetta are not
-supported. The eight required phases and one installation checkpoint prepare
-the base tools, connect the chosen code-hosting account, manage configuration
-files with your selected owner, optionally set up the Starship prompt, install the selected
-programming languages, prepare VS Code, and verify that the result can be
-rebuilt.
-
-Choose from [four developer layouts with optional ghq](setup/manual/developer-folders.md).
-The wizard collects these choices separately; ghq is not preselected. Existing
-setups must review them before resuming affected phases. Non-interactive setup
-must supply `--layout none|repository|purpose|existing` and `--ghq no|yes`, or
-have saved choices. Configuration ownership, shell, and prompt are also
-independent choices: see [Phase 5 choices](setup/assisted/05-dotfiles-and-shell.md#choose-ownership-shell-and-prompt-first).
-Fresh direct runs must supply `--dotfiles-versioning none|local|git`,
-`--shell keep|apple|homebrew`, and `--prompt none|starship`.
-
-The setup is resumable. A phase receives a ✓ only after its checks pass. If a
-phase stops, earlier completed phases stay saved and the screen explains what
-is complete, what remains, and what to do next.
-
-For a one-page map of Stage 0, every required phase, optional modules, advanced
-setup, saved state, and rollback, read the [whole process overview](explanation/PROCESS-OVERVIEW.md).
+| Route | Use it when | Begin |
+|---|---|---|
+| Scripted (Assisted) Setup | Policy permits local scripts and you want resumable checks and recorded ownership | [Assisted setup](setup/assisted/README.md) |
+| Manual Setup | You want to perform each installation and edit yourself, or policy prohibits the project scripts | [Manual setup](setup/manual/README.md) |
 
 ## Before you begin
 
-You need:
+Read the [shared prerequisites](shared/prerequisites.md), then complete the
+[decision worksheet](shared/decisions.md). Keep the worksheet and recovery
+information privately. If this Mac holds the only copy of important data, stop
+and verify a separate backup before proceeding.
 
-- an Apple-silicon Mac running natively as `arm64`;
-- a personal administrator account, or a managed standard account with an approved elevation process;
-- power and a reliable internet connection;
-- at least 30 GB of free storage for the required base; full Xcode, container
-  images, databases, AI models, and project dependencies need additional space;
-- a separate, readable backup of anything you need from the old Mac;
-- credentials and recovery information for the selected Git authentication
-  mode; 1Password details are needed only in `1password` mode;
-- a GitHub account, an Azure DevOps account, or both, depending on your track;
-- one repository clone URL for each provider on Tracks 1–3, preferably a
-  private repository you can read; Track 4 keeps repository access self-managed;
-- a half day for the first complete pass, plus download and macOS-update time.
-
-Stop if the Mac still contains the only copy of an important file. This setup
-does not migrate or recover old data. If the Mac is not new or factory-reset,
-start with [Stage 0 — Safely prepare an existing Mac](setup/existing-mac/README.md). Its
-wizard first shows Route A (erase with Apple) and Route B (keep the account),
-then makes the read-only safety report the first step for either route.
-
-## Personal or managed Mac
-
-Choose the deployment mode in the wizard. A managed Mac needs an approved
-policy, standard daily account and current enrollment/elevation evidence before
-developer setup. IT owns managed settings. Personal setup also requires current
-recovery evidence at Phase 8. Read [workstation readiness](reference/WORKSTATION-READINESS.md)
-for policy/evidence commands and [pilot acceptance](how-to/recovery/WORKSTATION-ACCEPTANCE.md)
-for hardware, migration and performance checks. Local evidence is not independent
-compliance certification.
+A managed Mac needs your organisation's approved software, identity and elevation
+process. Mobile device management (MDM) settings remain owned by IT.
 
 ## Choose one setup route
 
-Choose once and stay on that route unless a troubleshooting instruction tells
-you to switch. Both routes include shared manual actions that macOS or an
-account provider requires you to approve.
+The assisted route installs the standalone `day-one-mac` command. It does not
+need a permanent Git checkout. Its required work ends with Phase 8; optional
+modules remain separate.
+
+The manual route uses macOS and the selected tools directly. It does not install
+or call Day One Mac scripts, create phase markers or promise automated rollback.
+Record each result and backup yourself.
+
+Both routes include human actions such as accepting licences, approving account
+access and testing a backup. An assisted guide links to the exact manual task
+and states when to return. Complete that task once.
+
+## Get help or continue later
+
+- [Troubleshooting](shared/troubleshooting.md) routes a symptom to its owning guide.
+- [Terminal basics](shared/terminal-basics.md) explains commands and placeholders.
+- [Glossary](shared/glossary.md) defines unfamiliar terms.
+- [Process overview](shared/explanation/process-overview.md) explains the two journeys.
+- [All documentation](README.md) lists tasks by route and topic.
+
+Do not treat a successful installation command as proof of account access,
+application permissions or recoverability. Use the guide's verification step.
+
+## Previously published section links
+
+These entries preserve bookmarks from the previous structure. Each points to the current task; follow the main guide above for the normal sequence.
+
+## What this project does
+
+Continue with the [current guide](shared/explanation/process-overview.md).
+
+## Personal or managed Mac
+
+Continue with the [current guide](shared/prerequisites.md).
 
 ### Script-assisted route — recommended
 
-Use this route when local policy allows the Day One Mac scripts and you want
-resumable phases, saved verification, and recorded ownership.
-
-1. Finish macOS Setup Assistant and reach the approved OS/update level. On managed Macs, follow IT enrollment and update policy.
-2. Install the standalone command as shown below. A repository checkout is not
-   required.
-3. Run `day-one-mac --wizard`, then choose **Start or resume required setup**.
-4. Complete the eight required phases in order. Press Return when the wizard
-   offers the next phase; use `q` when you need to stop.
-5. When a phase stops, read **only that phase's** printed `Guide:` path and its
-   **Troubleshooting** section. Perform the displayed next action, then rerun
-   the same wizard command. Completed phases remain saved.
-6. Stop after Phase 8 when you need only the working development foundation.
-   Databases, AI clients, MCP servers, profiles, and advanced tools are optional
-   and remain available later.
-
-The setup centre also lets you browse **Required phases**, **Optional modules**,
-**Advanced modules**, and **Other actions**. Use Up/Down or `j`/`k` to move,
-Enter or Space to choose, and `b`, Left Arrow, or the **Back** entry to return.
-During required setup questions, `b` or Left Arrow returns to the previous
-setup section; type `:back` at a text prompt. Accepted answers stay in memory
-until you confirm the review screen. Going back from the hosting section
-returns to the centre without saving. Press `q` to stop the current wizard.
-Long lists show one page at a time as you move. Colours and symbols highlight
-the current choice; `NO_COLOR=1` disables colours and `DAY_ONE_MAC_ASCII=1`
-uses plain symbols.
-
-Choose a required phase to preview changes, check it, read its guide, or run it
-with saved choices. Start with the full required setup on a new Mac; selecting
-one phase does not run earlier phases or the Installation Centre automatically.
-Recorded status is saved evidence, and the runner revalidates it before reuse.
-
-Optional and advanced modules offer a guide, preview, component check, new
-selection, and saved-selection run. Apply remains locked until Phase 8 passes.
-New selections are previewed before you choose **Apply**; modules that need a
-reviewed TSV ask for its path. CLI tools open their existing interactive picker.
-AI and application modules ask how to install missing apps through the existing
-ownership-aware prompts; external installations are preserved.
-**Other actions** includes settings, status reports, folder previews, Stage 0,
-and removal. Removal and rollback keep their existing preview and confirmation
-steps. Browsing the centre does not save choices or acquire an operation lock.
+Continue with the [current guide](setup/assisted/README.md).
 
 ### Manual route — no Day One Mac scripts
 
-Use this route when policy prohibits the project scripts or when you want to
-perform and record every underlying change yourself. Do not install the
-standalone runtime. Follow the [complete manual setup flow](setup/manual/MANUAL-SETUP-GUIDE.md#manual-setup-flow)
-from Manual 1 through Manual 8, including every checkpoint. The manual route
-does not create phase markers, ownership manifests, or precise automated
-rollback evidence, so keep your own completion record.
-
-Every required phase follows the same reading pattern: **Outcome** explains the
-result, **How to use this phase** gives the recommended command, numbered steps
-explain decisions and recovery, **Troubleshooting** covers common failures, and
-the final checklist states exactly what must be true before continuing.
+Continue with the [current guide](setup/manual/README.md).
 
 ## Terminal basics used in this guide
 
-New to Terminal? Read [Terminal basics](reference/TERMINAL-BASICS.md) before
-copying commands. It explains passwords, placeholders, stopping commands, and
-colour-independent status symbols.
+Continue with the [current guide](shared/terminal-basics.md).
 
 ## Terminal colours and symbols
 
-A ✓ means a check passed; ⚠ means review is needed. See the
-[full symbol reference](reference/TERMINAL-BASICS.md#terminal-colours-and-symbols).
+Continue with the [current guide](shared/terminal-basics.md).
 
 ## Install the standalone command for the script-assisted route
 
-Skip this section if you chose the manual route. The script-assisted setup does
-not require you to keep a Git repository. It
-installs a checksum-verified runtime under your home folder.
-
-On a factory-reset Mac, first ask macOS to install the Apple command-line
-tools:
-
-```bash
-xcode-select --install
-```
-
-Wait for the installer window to finish. Then download the public installer:
-
-```bash
-INSTALLER="$HOME/Downloads/install-day-one-mac"
-curl --proto '=https' --tlsv1.2 -fsSL \
-  https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac \
-  -o "$INSTALLER"
-# Or, if GNU wget with HTTPS support is already installed:
-# wget --https-only --secure-protocol=TLSv1_2 -O "$INSTALLER" \
-#   https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac
-chmod 700 "$INSTALLER"
-less "$INSTALLER"
-"$INSTALLER"
-export PATH="$HOME/.local/bin:$PATH"
-day-one-mac --wizard
-```
-
-Read the file in `less`, then press `q` before running it. The installer
-downloads a release archive and its SHA-256 checksum separately and refuses to
-install them when verification fails. A checksum detects corruption; it does
-not independently prove who published the download. See
-[release trust and optional provenance checks](reference/PORTABLE-COMMAND.md#release-trust-and-provenance).
-The `export` affects only this Terminal
-window; future login shells load the saved path automatically.
-
-Downloads use `curl` when available, otherwise GNU `wget` with HTTPS support.
-Choose one download command above. Local `--archive` and `--source` installs
-need neither tool; see [portable installation](reference/PORTABLE-COMMAND.md).
-
-The Git clone route remains available for contributors. See
-[Install and manage the standalone runtime](reference/PORTABLE-COMMAND.md).
+Continue with the [current guide](setup/assisted/runtime.md).
 
 ## Run the recommended route
 
-After installing the portable command above:
-
-```bash
-day-one-mac --wizard
-```
-
-Use Up/Down or `j`/`k` to move, Space to select, and Return to continue.
-The wizard reviews all choices before saving them.
-
-Choose a software preset:
-
-- **Recommended productivity** (the existing default): includes VS Code,
-  Raycast, Warp, and the Nerd Font alongside the command-line foundation.
-- **Core**: skips those desktop applications and Phase 7 editor configuration.
-  Authentication, shell, language tools, and Phase 8 verification still apply.
-  1Password and its CLI are required only with 1Password authentication.
-
-For the productivity preset, the editor question controls **Git and chezmoi
-integration**, not whether VS Code is installed. Core leaves existing editor
-settings alone. To change presets later, review the wizard choices again;
-switching to core does not uninstall previously installed applications.
-
-Choose your hosting account, language stack, Git identity, authentication mode,
-and dotfiles protection. Private Git provides a remote copy; local-only
-chezmoi needs an encrypted backup. Compare authentication modes in
-[Phase 3](setup/assisted/03-security-and-ssh.md).
-
-For HTTPS, the wizard also asks which credential helper to use. GCM is
-recommended for Azure browser sign-in. CLI login and Git access are separate:
-Phase 4 reads your selected repository without cloning it, and Phase 8 repeats
-the check. Complete the first browser sign-in or PAT entry in your own terminal
-when prompted; see [HTTPS setup and recovery](setup/assisted/04-core-tools-and-hosting.md#step-46--run-or-resume-the-phase).
-
-Follow this sequence:
-
-1. Phase 1 confirms your decisions and backup boundary.
-2. Configure or skip the optional macOS preferences checkpoint.
-3. Phase 2 prepares Homebrew; the Installation Centre then checks the selected
-   software and preserves valid company-managed or externally installed apps.
-4. Phases 3–7 configure authentication, hosting, dotfiles, languages, and the
-   selected editor baseline. Complete manual approvals when prompted.
-5. Phase 8 verifies the result. Choose **Finish and exit**; extras remain
-   available through `day-one-mac optional --guided`.
-
-Read [the whole process](explanation/PROCESS-OVERVIEW.md) only when you need the detailed
-map; you do not need to repeat phase reference commands after the runner passes.
+Continue with the [current guide](setup/assisted/README.md).
 
 ## Understand preview and apply
 
-Use a preview when you want to see commands without changing the Mac:
-
-```bash
-day-one-mac --wizard --dry-run
-```
-
-`--dry-run` means preview only. The normal wizard performs the approved work.
-Cleanup tools use the word `--execute` for their separate destructive action;
-they never erase or format the drive.
-
-For an existing Mac, use this one guided command:
-
-```bash
-day-one-mac prepare-existing --guided
-```
-
-To create only the read-only safety report, use:
-
-```bash
-day-one-mac safety-report --guided
-```
-
-Use the current command names shown above. Upgrade-only aliases and retired
-state names are documented separately in
-[Upgrade notes](reference/UPGRADE-NOTES.md), so a first-time setup does not
-need to learn them.
+Continue with the [current guide](setup/assisted/README.md).
 
 ## One change that needs your password
 
-If you select Homebrew zsh, the Installation Centre installs it and Phase 5
-offers to make it your login shell. This step asks twice — once to add the shell to `/etc/shells`, once
-to switch. Declining leaves your shell untouched and stops Phase 5 safely as
-incomplete; the phase passes only when Directory Services confirms Homebrew
-zsh.
-
-Selecting Apple zsh uses `/bin/zsh`; selecting `keep` preserves and verifies
-your existing zsh login shell. Those choices do not switch to Homebrew zsh.
-
-If it is ever broken, recover from any working shell with:
-
-```bash
-chsh -s /bin/zsh
-```
+Continue with the [current guide](setup/assisted/runtime.md).
 
 ## Stop, resume, and get help
 
-It is safe to quit between phases. To see the current state:
-
-```bash
-day-one-mac --status
-```
-
-To retry one phase:
-
-```bash
-day-one-mac setup --phase 03
-```
-
-Replace `03` with the phase number shown in the error. When a phase stops,
-follow its **Next action** first, then use the linked phase guide for details.
+Continue with the [current guide](shared/troubleshooting.md).
 
 ## How to read each phase
 
-Each required phase follows the same practical route, although short phases may
-combine closely related explanations:
-
-1. Read **Outcome** and **How to use this phase**.
-2. Complete any clearly labelled manual batch near the beginning.
-3. Follow the numbered steps in order; command blocks explain or recover the
-   script-assisted route unless the text explicitly asks you to run them.
-4. If a gate stops, use **Troubleshooting** and the terminal's **Next action**.
-5. Continue only when the phase completion checklist is true.
-
-Reference commands in a phase explain or diagnose the automation; they are not
-a second checklist that must be repeated after the runner succeeds.
-
-The early command installer makes `day-one-mac` available immediately without
-a permanent clone. The standalone runtime remains its sole owner; Phase 5
-keeps it out of chezmoi and safely migrates older managed copies. If the
-portable command is unavailable, run
-the matching script from this repository. The
-[complete command reference](reference/COMMAND-REFERENCE.md) shows both forms and when to
-use every setup, report, workspace, finalisation, rollback, and removal command.
+Continue with the [current guide](setup/assisted/README.md).
 
 ## Set up the required applications
 
-The Installation Centre checks software required by your preset and authentication
-mode before Phase 3 begins. If Company Portal, the
-Mac App Store, or another approved installer already supplied a valid copy, the runner
-keeps it and reports that Homebrew does not own it. Only missing applications
-trigger a choice: install with Homebrew, use another approved installer and
-recheck, or stop safely and resume later.
-
-Open the [required application setup hub](how-to/apps/README.md) after Phase 4.
-It gives a beginner-safe order and full setup, settings, import, export, backup,
-and later-change instructions for each app. Complete the VS Code guide alongside
-Phase 7. Optional extensions, AI features, profiles, and Warp Drive imports do
-not block the required setup.
-
-Read [Application ownership](reference/APPLICATION-OWNERSHIP.md) if this is a managed
-work Mac or if you want to understand what rollback can remove.
+Continue with the [current guide](setup/assisted/INSTALLATION-CENTRE.md).
 
 ## After Phase 8
 
-The base Mac is complete. Add only optional modules a real project needs.
-Databases, AI clients, the OmniRoute AI gateway, Model Context Protocol (MCP)
-servers, VS Code profiles, enhanced Terminal tools, Warp Drive workflows,
-advanced modules, and the Second Brain are not required for a successful base
-setup. OmniRoute and MCP can be selected only with at least one AI client; see
-the saved wizard review for the clients you chose.
-
-You may now compact the retained setup records while keeping status, restore,
-and rollback support. Preview this optional action first:
-
-```bash
-day-one-mac finalize
-```
-
-Read [Finalise or detach Day One Mac](how-to/recovery/FINALIZE.md) before executing it or
-removing `~/.day-one-mac`. Deleting that folder manually would discard
-ownership manifests, captured originals, and settings-restore evidence.
-
----
-
-[Command reference](reference/COMMAND-REFERENCE.md) · [Glossary](reference/GLOSSARY.md) · [Start Phase 1 →](setup/assisted/01-first-boot-and-decisions.md)
+Continue with the [current guide](setup/assisted/optional/README.md).

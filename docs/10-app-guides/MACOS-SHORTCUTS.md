@@ -1,81 +1,81 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Optional macOS Shortcuts for development
 
-This guide moved to [MACOS-SHORTCUTS](../how-to/apps/MACOS-SHORTCUTS.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/manual/apps/macos-shortcuts.md). This compatibility page preserves existing links.
 
 ## Choose a shortcut
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#choose-a-shortcut).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md#choose-a-shortcut).
 
 ## Script-assisted setup — import the ready-made shortcut
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#script-assisted-setup--import-the-ready-made-shortcut).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md).
 
 ## Find this guide in the docs browser
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#find-this-guide-in-the-docs-browser).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md).
 
 ## Create Open in VS Code
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#create-open-in-vs-code).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md#create-open-in-vs-code).
 
 ### 1. Create the shortcut and enable Finder
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#1-create-the-shortcut-and-enable-finder).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md#1-create-the-shortcut-and-enable-finder).
 
 ### 2. Choose the input type
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#2-choose-the-input-type).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md#2-choose-the-input-type).
 
 ### 3. Add the Open File action
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#3-add-the-open-file-action).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md#3-add-the-open-file-action).
 
 ### 4. Verify it from Finder
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#4-verify-it-from-finder).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md#4-verify-it-from-finder).
 
 ## Add a Finder toolbar button
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#add-a-finder-toolbar-button).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md#add-a-finder-toolbar-button).
 
 ### 1. Give the toolbar copy its own folder input
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#1-give-the-toolbar-copy-its-own-folder-input).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md#1-give-the-toolbar-copy-its-own-folder-input).
 
 ### 2. Create the launcher and pin it
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#2-create-the-launcher-and-pin-it).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md#2-create-the-launcher-and-pin-it).
 
 ### 3. Test and tidy up
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#3-test-and-tidy-up).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md#3-test-and-tidy-up).
 
 ## Add Open Project in VS Code
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#add-open-project-in-vs-code).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md#add-open-project-in-vs-code).
 
 ## Add Open Developer Folder
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#add-open-developer-folder).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md#add-open-developer-folder).
 
 ## Add Open Setup Report
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#add-open-setup-report).
+See the [current instructions](../setup/assisted/integrations/shortcuts.md#add-open-setup-report).
 
 ## Use existing terminal services
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#use-existing-terminal-services).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md#use-existing-terminal-services).
 
 ## Copy a folder path without creating a shortcut
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#copy-a-folder-path-without-creating-a-shortcut).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md#copy-a-folder-path-without-creating-a-shortcut).
 
 ## Keep, move, or remove these shortcuts
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#keep-move-or-remove-these-shortcuts).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md#keep-move-or-remove-these-shortcuts).
 
 ## Troubleshooting
 
-Continue at [this section](../how-to/apps/MACOS-SHORTCUTS.md#troubleshooting).
+See the [current instructions](../setup/manual/apps/macos-shortcuts.md#troubleshooting).

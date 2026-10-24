@@ -1,15 +1,15 @@
 # id	layer	mode	prerequisite	title	guide
-09	optional	executable	08	Local databases	docs/how-to/modules/optional/09-databases.md
-10	optional	executable	08	AI client payloads	docs/how-to/modules/optional/10-ai-agents.md
-10A	optional	executable	08	Owned OmniRoute container	docs/how-to/modules/optional/10a-omniroute.md
-11	optional	executable	08	MCP configuration artifacts	docs/how-to/modules/optional/11-mcp-servers.md
-13	optional	executable	08	Enhanced CLI tools	docs/how-to/modules/optional/13-enhanced-cli-tools.md
-14	optional	executable	08	Warp Drive export	docs/how-to/modules/optional/14-warp-drive.md
-15	advanced	executable	08	Dotfile inventory and proposals	docs/how-to/modules/advanced/15-full-dotfiles-and-bootstrap.md
-16	advanced	executable	08	Applications and editor inventory	docs/how-to/modules/advanced/16-brewfile-apps-and-editor.md
-17	advanced	executable	08	Reviewed shell helper bundles	docs/how-to/modules/advanced/17-shell-and-package-automation.md
-18	advanced	executable	08	Identity and worktree review artifacts	docs/how-to/modules/advanced/18-hosting-identities-azure-and-worktrees.md
-19	advanced	executable	08	Selected macOS scalar preferences	docs/how-to/modules/advanced/19-macos-gui-and-local-https.md
-20	advanced	executable	08	Checksummed restore staging	docs/how-to/modules/advanced/20-restore-and-migrate.md
-21	advanced	executable	08	Audit evidence snapshots	docs/how-to/modules/advanced/21-audit-maintenance-and-rebuild.md
-22	advanced	executable	08	AI governance evidence	docs/how-to/modules/advanced/22-ai-skills-and-mcp-operations.md
+09	optional	executable	08	Local databases	docs/setup/assisted/optional/09-databases.md
+10	optional	executable	08	AI client payloads	docs/setup/assisted/optional/10-ai-agents.md
+10A	optional	executable	08	Owned OmniRoute container	docs/setup/assisted/optional/10a-omniroute.md
+11	optional	executable	08	MCP configuration artifacts	docs/setup/assisted/optional/11-mcp-servers.md
+13	optional	executable	08	Enhanced CLI tools	docs/setup/assisted/optional/13-enhanced-cli-tools.md
+14	optional	executable	08	Warp Drive export	docs/setup/assisted/optional/14-warp-drive.md
+15	advanced	executable	08	Dotfile inventory and proposals	docs/setup/assisted/advanced/15-full-dotfiles-and-bootstrap.md
+16	advanced	executable	08	Applications and editor inventory	docs/setup/assisted/advanced/16-brewfile-apps-and-editor.md
+17	advanced	executable	08	Reviewed shell helper bundles	docs/setup/assisted/advanced/17-shell-and-package-automation.md
+18	advanced	executable	08	Identity and worktree review artifacts	docs/setup/assisted/advanced/18-hosting-identities-azure-and-worktrees.md
+19	advanced	executable	08	Selected macOS scalar preferences	docs/setup/assisted/advanced/19-macos-gui-and-local-https.md
+20	advanced	executable	08	Checksummed restore staging	docs/setup/assisted/advanced/20-restore-and-migrate.md
+21	advanced	executable	08	Audit evidence snapshots	docs/setup/assisted/advanced/21-audit-maintenance-and-rebuild.md
+22	advanced	executable	08	AI governance evidence	docs/setup/assisted/advanced/22-ai-skills-and-mcp-operations.md

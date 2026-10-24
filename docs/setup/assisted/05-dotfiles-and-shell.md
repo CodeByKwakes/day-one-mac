@@ -2,13 +2,13 @@
 
 # Phase 5 — Configuration ownership, shell, and prompt
 
-**Time:** 25–45 minutes · **Required:** everyone
+**Time:** 25-45 minutes · **Required:** everyone
 
 A **dotfile** is a configuration file whose name begins with a dot, such as
 `~/.zshrc` or `~/.gitconfig`. macOS hides these in Finder by default. They hold
 your personal settings for the shell, Git, and similar tools. **chezmoi** keeps
 a master copy of each one in a single folder so they can be reviewed, versioned,
-and restored on another Mac. See [GLOSSARY.md](../../reference/GLOSSARY.md) for related terms.
+and restored on another Mac. See [GLOSSARY.md](../../shared/glossary.md) for related terms.
 
 ## Outcome
 
@@ -45,7 +45,7 @@ day-one-mac setup --phase 05 --resume
 **Fully manual route:** follow the shared shell-file steps below, editing files
 directly for `none`. Skip every chezmoi initialization, adoption, apply, and
 remote command. For `local` or `git`, use the chezmoi sections. Choose the shell
-and Starship branches in [Manual 5](../manual/MANUAL-SETUP-GUIDE.md#manual-5--configure-chezmoi-zsh-and-starship).
+and Starship branches in [Manual 5](../manual/shell/zsh.md).
 No Day One Mac command is required by that route.
 
 Declining a component does not uninstall it, remove its existing configuration,
@@ -60,7 +60,7 @@ replace it.
 ## How to use this phase
 
 - **Manual route:** complete
-  [Manual 5](../manual/MANUAL-SETUP-GUIDE.md#manual-5--configure-chezmoi-zsh-and-starship)
+  [Manual 5](../manual/shell/zsh.md)
   and use the file explanations below as reference. Do not install or manage
   the portable `day-one-mac` launcher.
 - **Script-assisted route:** run `day-one-mac setup --phase 05`. For a new source, the runner creates
@@ -101,10 +101,10 @@ Use it for comparison only; merge reviewed differences through chezmoi rather
 than copying the complete folder over an existing setup.
 
 First-time users should follow the
-[complete chezmoi setup tutorial](../manual/CHEZMOI-SETUP-TUTORIAL.md),
+[complete chezmoi setup tutorial](../manual/shell/chezmoi.md),
 which keeps the script-assisted and fully manual paths explicit through Phase
 8. For every later edit, follow
-[Daily chezmoi workflows](../../reference/MANAGING-DOTFILES-WITH-CHEZMOI.md).
+[Daily chezmoi workflows](../manual/shell/chezmoi.md).
 It shows the source → preview → apply → validate → private Git commit or
 local-only backup flow, including when `add`, `apply`, `merge`, or `forget` is
 correct.
@@ -171,220 +171,51 @@ repository history.
 
 ## Step 5.2 — Configure the login shell
 
-`~/.zprofile` is loaded by a login zsh. It delegates environment paths to one
-shared file so login and non-login shells cannot drift apart:
-
-```zsh
-[[ -r "$HOME/.config/zsh/path.zsh" ]] && source "$HOME/.config/zsh/path.zsh"
-```
-
-The managed `~/.config/zsh/path.zsh` contains the idempotent PATH setup:
-
-```zsh
-typeset -U path PATH
-if [[ -x /opt/homebrew/bin/brew ]] && {
-  [[ ${HOMEBREW_PREFIX:-} != /opt/homebrew ]] ||
-  [[ ":$PATH:" != *":/opt/homebrew/bin:"* ]] ||
-  [[ ":$PATH:" != *":/opt/homebrew/sbin:"* ]]
-}; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
-
-case ":$PATH:" in
-  *":$HOME/.local/bin:"*) ;;
-  *) export PATH="$HOME/.local/bin:$PATH" ;;
-esac
-
-export PNPM_HOME="$HOME/Library/pnpm" # Node.js selections only
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-```
-
-`typeset -U path PATH` tells zsh to keep only the first occurrence of each
-PATH directory. That protects repeated sourcing and partially configured
-company-managed environments from accumulating duplicates.
-
-Do not duplicate these blocks in `.zprofile` or `.zshrc`. Both startup files
-source `path.zsh`; its guards make repeated sourcing safe.
+The runner prepares missing files for the saved selection and preserves
+existing configuration. Use `day-one-mac shell-status` to inspect the result.
+For an existing file needing a merge, complete the linked manual task through
+the selected file owner, then return and rerun Phase 5.
+Expected result: one PATH/completion/prompt initialisation and a working new
+session; unselected Homebrew Zsh, Starship or aliases are not required.
 
 ## Step 5.3 — Configure interactive zsh
 
-The full example includes Starship. When it is not selected, omit the entire
-`if command -v starship ... fi` block; command presence alone is not consent to
-enable it. Existing files are preserved rather than rewritten when choices change.
-
-`~/.zshrc` runs for **every** interactive shell. It loads the shared PATH,
-keeps persistent history, initializes completion exactly once, loads fnm and
-safe aliases, then starts Starship. Optional syntax highlighting remains last:
-
-```zsh
-[[ -r "$HOME/.config/zsh/path.zsh" ]] && source "$HOME/.config/zsh/path.zsh"
-
-HISTFILE="$HOME/.zsh_history"
-HISTSIZE=50000
-SAVEHIST=10000
-setopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_REDUCE_BLANKS HIST_VERIFY
-
-for completion_dir in /opt/homebrew/share/zsh/site-functions /opt/homebrew/share/zsh-completions; do
-  [[ -d "$completion_dir" ]] || continue
-  (( ${fpath[(Ie)$completion_dir]} )) || fpath=("$completion_dir" $fpath)
-done
-unset completion_dir
-autoload -Uz compinit
-compinit
-
-if command -v fnm >/dev/null 2>&1; then
-  eval "$(fnm env --use-on-cd --shell zsh)"
-fi
-
-[[ -r "$HOME/.config/zsh/aliases.zsh" ]] && source "$HOME/.config/zsh/aliases.zsh"
-
-if [[ -r /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
-  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-fi
-
-if command -v starship >/dev/null 2>&1; then
-  eval "$(starship init zsh)"
-fi
-
-if [[ -r /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
-  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
-```
-
-The completion paths and guarded plugin blocks above belong to both the
-manual and script-assisted baselines. Installing the optional plugins enables
-them on the next shell only when these blocks are present. Existing `.zshrc`
-files are preserved, so merge missing blocks through your selected
-configuration owner; follow
-[Optional 13's activation steps](../../how-to/modules/optional/13-enhanced-cli-tools.md#add-shell-integration-with-your-selected-configuration-owner).
-Do not append a second `compinit` or duplicate plugin sources.
+The runner prepares missing files for the saved selection and preserves
+existing configuration. Use `day-one-mac shell-status` to inspect the result.
+For an existing file needing a merge, complete the linked manual task through
+the selected file owner, then return and rerun Phase 5.
+Expected result: one PATH/completion/prompt initialisation and a working new
+session; unselected Homebrew Zsh, Starship or aliases are not required.
 
 ### Why both startup files load the shared PATH setup
 
-zsh reads `~/.zprofile` only for **login** shells. A plain `zsh`, a tmux pane,
-and some IDE terminals are interactive but *not* login shells, so they never
-see it.
-
-That matters because the blocks below are guarded by `command -v`. Without
-Homebrew on `PATH`, `command -v starship` simply fails and the shell starts
-with **no Starship prompt, no fnm, and no pnpm** — silently, with no error to
-explain it. The same gap makes uv-installed Python invisible and is what
-prompts uv to suggest `uv python update-shell`.
-
-The shared file makes its work a no-op when the entries already exist. Phase 5
-starts the selected zsh with an almost empty environment and verifies both shell
-kinds, so it cannot accidentally pass because the parent terminal already had
-Homebrew on PATH.
-
-Every required command, alias, and PATH check must pass in each shell; a later
-successful check cannot hide an earlier failure. When Node.js is selected, the
-pnpm environment checks must pass too. A stricter check may expose a problem
-that an earlier run missed; review the failure before retrying rather than
-assuming the existing configuration needs replacing.
-
-`SHARE_HISTORY` makes commands entered in one Warp tab available in another.
-Remove only that option using the selected configuration owner if separate per-tab
-history is preferred; the history file and the remaining safety options still
-work.
+Complete the relevant action in the [manual task](../manual/shell/zsh.md), then return
+to this phase. Preserve existing credentials and configuration; verify the
+result before rerunning the gate.
 
 ### Existing `.zshenv` files
 
-Day One Mac does not create `.zshenv`, because that file affects every zsh,
-including scripts. Before initializing chezmoi or adopting files, Phase 5
-checks the existing `.zshenv` for recognized `ZDOTDIR` assignments and
-`unsetopt RCS` settings that redirect or disable normal startup files. If it
-finds one, it stops for review and leaves the layout intact. Review it with
-whoever maintains that configuration before retrying; do not remove it merely
-to make the check pass.
-
-This is a limited text check, not a complete analysis of arbitrary shell code.
-It does not execute `.zshenv` during inspection or certify a remote dotfiles
-repository. Phase 5 repeats the check after an explicitly reviewed apply from
-an existing chezmoi source, before adopting the standard shell files. The
-safety report and cleanup inventory include `.zshenv`, but never rewrite it
-blindly.
+Complete the relevant action in the [manual task](../manual/shell/zsh.md), then return
+to this phase. Preserve existing credentials and configuration; verify the
+result before rerunning the gate.
 
 ## Step 5.3a — Safe aliases
 
-Aliases live in `~/.config/zsh/aliases.zsh`, not in the middle of `.zshrc`.
-The base contains only readable, non-destructive shortcuts:
-
-```text
-cdayone                 cd "$(day-one-mac root)"
-gs / gd / gds / gl      Git status, diffs, and a short graph
-gremotes                Git remote URLs
-cm / cmstatus           chezmoi and its status inspection
-cmdiff / cmdifftext     visual VS Code diff / terminal text diff
-cmmerge                 VS Code three-way merge for one target
-cmverify / cmdoctor     chezmoi verification
-brewcheck / brewout     Homebrew inspection
-brewcleanpreview        cleanup preview only
-brewautopreview         autoremove preview only
-```
-
-They are added during Phase 5 when their dependencies exist. The file is
-user-owned in unmanaged mode, or adopted into chezmoi when selected. The `cm*`
-aliases are required only with chezmoi. The `cdayone` alias uses the portable
-command installed at the start; that executable is never adopted into chezmoi.
-No alias performs a
-force push, cleanup, prune, publication, database deletion, or other
-destructive action. Raycast command aliases are separate and do not belong in
-this file.
-
-For the complete edit, save, syntax-check, apply, reload, and removal workflow,
-read [Add, edit, save, and remove Zsh aliases](../../reference/ZSH-ALIASES.md).
-
-This baseline is deliberately small. Optional shell behaviour — including
-`setopt AUTO_CD`, which makes a bare `~` change to your home directory instead
-of failing with `permission denied` — is offered in
-[Module 13 — Enhanced CLI tools](../../how-to/modules/optional/13-enhanced-cli-tools.md).
-
-**Do not run `uv python update-shell`.** Its job is to add `~/.local/bin` to
-`PATH`, which the lines above already do. Running it appends a competing line
-to a chezmoi-managed file; `chezmoi diff` will then show drift and a later
-`chezmoi apply` will revert it. This is the same rule as Phase 6's "do not run
-`pnpm setup`".
-
-If `compinit` reports insecure directories, inspect them first:
-
-```bash
-zsh -f -c 'autoload -Uz compaudit && compaudit'
-```
-
-Remove group/other write permission only from the specific reported paths you
-own. Do not apply a recursive chmod to `/opt/homebrew` or `$HOME`.
+The runner prepares missing files for the saved selection and preserves
+existing configuration. Use `day-one-mac shell-status` to inspect the result.
+For an existing file needing a merge, complete the linked manual task through
+the selected file owner, then return and rerun Phase 5.
+Expected result: one PATH/completion/prompt initialisation and a working new
+session; unselected Homebrew Zsh, Starship or aliases are not required.
 
 ## Step 5.4 — Configure Starship
 
-Skip this section when Starship is not selected; leave any existing prompt alone.
-
-The runner creates `~/.config/starship.toml` only when absent:
-
-```toml
-add_newline = false
-command_timeout = 1000
-
-[character]
-success_symbol = "[❯](bold green)"
-error_symbol = "[❯](bold red)"
-```
-
-This is intentionally small. Add language, Git, cloud, or timing modules only
-after confirming they are useful and do not slow every prompt.
-
-Verify the file independently of the shell:
-
-```bash
-STARSHIP_CONFIG="$HOME/.config/starship.toml" starship prompt
-```
-
-This prints one rendered prompt, which looks like a stray `❯` possibly
-surrounded by colour codes. That odd-looking line means the configuration
-parsed correctly. A message mentioning an error or an unknown key is the
-failure case; fix the named line in `starship.toml` and run it again.
+The runner prepares missing files for the saved selection and preserves
+existing configuration. Use `day-one-mac shell-status` to inspect the result.
+For an existing file needing a merge, complete the linked manual task through
+the selected file owner, then return and rerun Phase 5.
+Expected result: one PATH/completion/prompt initialisation and a working new
+session; unselected Homebrew Zsh, Starship or aliases are not required.
 
 ## Step 5.5 — Store machine-local data
 
@@ -438,7 +269,7 @@ never stall its drift gate or make an empty stdout look like a clean source.
 This walkthrough applies only to `--shell homebrew`. With `--shell keep`,
 skip account changes. With `--shell apple`, use `/bin/zsh` as the target; the
 runner verifies it and changes the account only if necessary. See
-[Manual 5](../manual/MANUAL-SETUP-GUIDE.md#manual-5--configure-chezmoi-zsh-and-starship)
+[Manual 5](../manual/shell/zsh.md)
 for the corresponding manual branches.
 
 Homebrew zsh tracks Homebrew updates; Apple's `/bin/zsh` tracks macOS releases.
@@ -481,7 +312,7 @@ zsh 5.9.2 (arm64-apple-darwin25.0)
 
 This is the failure mode worth knowing before you agree. If Homebrew's zsh is
 later removed or broken, your login shell points at a missing binary. Recover
-from any working shell — Terminal will still open with a fallback, and macOS
+from any working shell - Terminal will still open with a fallback, and macOS
 Recovery always works:
 
 ```bash
@@ -497,7 +328,7 @@ The checksum-verified runtime installer remains the sole owner of this file;
 Phase 5 verifies it but never adds it to chezmoi. This boundary allows
 `day-one-mac update` to switch versions without a dotfiles apply restoring a
 launcher from an earlier installation. See the
-[early installer and download guide](../../reference/PORTABLE-COMMAND.md).
+[early installer and download guide](runtime.md).
 
 When Phase 5 detects a launcher managed by an earlier Day One Mac installation,
 it backs up that source entry below
@@ -506,7 +337,7 @@ it backs up that source entry below
 preserved. It also merges only the reviewed Phase 4 Git keys into a plain
 earlier `dot_gitconfig`; a templated Git source stops for a manual review. The
 exact compatibility names are isolated in
-[Upgrade notes](../../reference/UPGRADE-NOTES.md).
+[Upgrade notes](../../shared/upgrade-notes.md).
 
 The command reads one machine-local value:
 
@@ -556,7 +387,7 @@ day-one-mac advanced --list
 day-one-mac workspace --help
 ```
 
-The [complete command reference](../../reference/COMMAND-REFERENCE.md) maps every portable
+The [complete command reference](reference/command-reference.md) maps every portable
 command to its direct project script, lists compatibility aliases, and explains
 when to choose finalisation, recorded rollback, sectional removal, or broad
 cleanup.
@@ -590,314 +421,71 @@ chezmoi apply ~/.zshrc
 
 ## Reference — what every Phase 5 file should contain
 
-These are the **minimal Day One Mac baselines**, not a rule that every byte
-must match. An existing private source may contain additional reviewed aliases,
-Git includes, SSH hosts, or Starship modules. Phase 5 preserves existing files
-and checks the required behaviour instead of deleting legitimate additions.
-
-Use these commands to compare a target with its chezmoi source:
-
-```bash
-chezmoi source-path "$HOME/.zshrc"
-chezmoi cat "$HOME/.zshrc"
-chezmoi diff
-```
-
-Typical source names are:
-
-| Target on the Mac | Typical chezmoi source path |
-|---|---|
-| `~/.zprofile` | `dot_zprofile` |
-| `~/.zshrc` | `dot_zshrc` |
-| `~/.config/zsh/path.zsh` | `dot_config/zsh/path.zsh` |
-| `~/.config/zsh/aliases.zsh` | `dot_config/zsh/aliases.zsh` |
-| `~/.gitconfig` | `dot_gitconfig` |
-| `~/.gitignore_global` | `dot_gitignore_global` |
-| `~/.ssh/config` | `dot_ssh/config` |
-| `~/.config/starship.toml` | `dot_config/starship.toml` |
-
-chezmoi may use a different encoded name when attributes or templates are
-involved. Trust `chezmoi source-path TARGET` rather than guessing a filename.
+The [versioned shell templates](../../../templates/phase-05-shell-files/README.md)
+own the generated baseline. The [manual Zsh task](../manual/shell/zsh.md) owns
+personal terminal changes, including Warp guards and prefix-history keys.
+Inspect the selected source through its owner; do not paste a second complete
+initialisation block over an existing file.
 
 ### `~/.zprofile`
 
-The required content is one guarded source line:
-
-```zsh
-[[ -r "$HOME/.config/zsh/path.zsh" ]] && source "$HOME/.config/zsh/path.zsh"
-```
-
-The early portable installer may also leave the explanatory comment
-`# Day One Mac shared shell path` above it. That is expected.
+Complete the relevant action in the [manual task](../manual/shell/zsh.md), then return
+to this phase. Preserve existing credentials and configuration; verify the
+result before rerunning the gate.
 
 ### `~/.config/zsh/path.zsh`
 
-All machines use this base:
-
-```zsh
-# Shared PATH setup for login and non-login interactive zsh.
-# Keep this file idempotent: both ~/.zprofile and ~/.zshrc source it.
-typeset -U path PATH
-if [[ -x /opt/homebrew/bin/brew ]] && {
-  [[ ${HOMEBREW_PREFIX:-} != /opt/homebrew ]] ||
-  [[ ":$PATH:" != *":/opt/homebrew/bin:"* ]] ||
-  [[ ":$PATH:" != *":/opt/homebrew/sbin:"* ]]
-}; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
-
-case ":$PATH:" in
-  *":$HOME/.local/bin:"*) ;;
-  *) export PATH="$HOME/.local/bin:$PATH" ;;
-esac
-```
-
-Node selections append this block; Python-only selections do not:
-
-```zsh
-export PNPM_HOME="$HOME/Library/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-```
+Complete the relevant action in the [manual task](../manual/shell/zsh.md), then return
+to this phase. Preserve existing credentials and configuration; verify the
+result before rerunning the gate.
 
 ### `~/.zshrc`
 
-The minimal interactive-shell file is:
-
-```zsh
-[[ -r "$HOME/.config/zsh/path.zsh" ]] && source "$HOME/.config/zsh/path.zsh"
-
-HISTFILE="$HOME/.zsh_history"
-HISTSIZE=50000
-SAVEHIST=10000
-setopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_REDUCE_BLANKS HIST_VERIFY
-
-for completion_dir in /opt/homebrew/share/zsh/site-functions /opt/homebrew/share/zsh-completions; do
-  [[ -d "$completion_dir" ]] || continue
-  (( ${fpath[(Ie)$completion_dir]} )) || fpath=("$completion_dir" $fpath)
-done
-unset completion_dir
-autoload -Uz compinit
-compinit
-
-if command -v fnm >/dev/null 2>&1; then
-  eval "$(fnm env --use-on-cd --shell zsh)"
-fi
-
-[[ -r "$HOME/.config/zsh/aliases.zsh" ]] && source "$HOME/.config/zsh/aliases.zsh"
-
-if [[ -r /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
-  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-fi
-
-if command -v starship >/dev/null 2>&1; then
-  eval "$(starship init zsh)"
-fi
-
-# Syntax highlighting must be the final shell integration.
-if [[ -r /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
-  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
-```
-
-The fnm guard may remain on Python-only machines; it does nothing when fnm is
-absent. Syntax highlighting must remain the final integration when installed.
+Complete the relevant action in the [manual task](../manual/shell/zsh.md), then return
+to this phase. Preserve existing credentials and configuration; verify the
+result before rerunning the gate.
 
 ### `~/.config/zsh/aliases.zsh`
 
-The base alias file is deliberately non-destructive:
-
-```zsh
-# Safe, readable aliases selected by Day One Mac.
-# Keep destructive, publishing, force-push and prune commands explicit.
-if command -v day-one-mac >/dev/null 2>&1; then
-  alias cdayone='cd "$(day-one-mac root)"'
-fi
-
-if command -v git >/dev/null 2>&1; then
-  alias gs='git status --short --branch'
-  alias gd='git diff'
-  alias gds='git diff --staged'
-  alias gl='git log --oneline --graph --decorate -20'
-  alias gremotes='git remote --verbose'
-fi
-
-if command -v chezmoi >/dev/null 2>&1; then
-  alias cm='chezmoi'
-  alias cmstatus='chezmoi status'
-  alias cmdiff='chezmoi diff'
-  alias cmdifftext='chezmoi --use-builtin-diff diff --no-pager'
-  alias cmmerge='chezmoi merge'
-  alias cmverify='chezmoi verify'
-  alias cmdoctor='chezmoi doctor'
-fi
-
-if command -v brew >/dev/null 2>&1; then
-  alias brewcheck='brew bundle check --file="$HOME/Brewfile" --no-upgrade'
-  alias brewout='brew outdated --greedy'
-  alias brewcleanpreview='brew cleanup --dry-run'
-  alias brewautopreview='brew autoremove --dry-run'
-fi
-```
-
-Follow [the alias editing guide](../../reference/ZSH-ALIASES.md) instead of editing
-the applied target and losing the change at the next `chezmoi apply`.
+Complete the relevant action in the [manual task](../manual/shell/zsh.md), then return
+to this phase. Preserve existing credentials and configuration; verify the
+result before rerunning the gate.
 
 ### `~/.gitconfig`
 
-Git may reorder sections, and GitHub CLI can add an HTTPS credential-helper
-section. The required values are equivalent to:
-
-```gitconfig
-[user]
-    name = Your Name
-    email = you@example.com
-[init]
-    defaultBranch = main
-[pull]
-    ff = only
-[fetch]
-    prune = true
-[push]
-    autoSetupRemote = true
-[core]
-    excludesFile = /Users/your-name/.gitignore_global
-[merge]
-    conflictStyle = zdiff3
-```
-
-When VS Code was selected as the primary IDE, additional `core.editor`,
-`merge.tool`, `mergetool.vscode`, `diff.tool`, and `difftool.vscode` values are
-expected. Their executable path may be `code` or the absolute command inside
-`/Applications/Visual Studio Code.app`; both are valid. They are deliberately
-absent when another primary IDE was selected.
-
-Check semantics without relying on formatting:
-
-```bash
-git config --global --get user.name
-git config --global --get user.email
-git config --global --get init.defaultBranch
-git config --global --get pull.ff
-git config --global --get fetch.prune
-git config --global --get push.autoSetupRemote
-git config --global --get core.excludesFile
-git config --global --get merge.conflictStyle
-```
+Complete the relevant action in the [manual task](../manual/shell/zsh.md), then return
+to this phase. Preserve existing credentials and configuration; verify the
+result before rerunning the gate.
 
 ### `~/.gitignore_global`
 
-ghq is optional. Preserve its reviewed configuration in the owning source;
-do not copy a universal root into every Mac's Git config. See the
-[manual folder and ghq guide](../manual/developer-folders.md) for plain files,
-chezmoi templates, and multi-root setups.
-
-The managed baseline contains only operating-system and temporary editor
-files. Add project-specific patterns to the repository's own `.gitignore`.
-
-```gitignore
-.DS_Store
-.AppleDouble
-.LSOverride
-._*
-.Trashes
-*.swp
-*.swo
-*~
-```
+Complete the relevant action in the [manual task](../manual/shell/zsh.md), then return
+to this phase. Preserve existing credentials and configuration; verify the
+result before rerunning the gate.
 
 ### `~/.ssh/config`
 
-The exact host blocks depend on the saved track and authentication mode. A
-GitHub-only machine using the default 1Password route normally has:
-
-```sshconfig
-# >>> Day One Mac: SSH authentication >>>
-# Generated for auth mode '1password' from the saved hosting track.
-Host github.com
-    HostName github.com
-    User git
-    IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-    IdentityFile ~/.ssh/github-auth.pub
-    IdentitiesOnly yes
-    ServerAliveInterval 60
-    ServerAliveCountMax 3
-# <<< Day One Mac: SSH authentication <<<
-```
-
-Track 2 or Track 3 also contains an `ssh.dev.azure.com` block. It uses
-`~/.ssh/azure-devops-auth.pub` for 1Password. Other authentication modes vary:
-
-- **Keychain:** `UseKeychain yes`, `AddKeysToAgent yes`, and the corresponding
-  on-disk private-key path.
-- **External agent:** no `IdentityAgent`; an `IdentityFile` is present only
-  when a public key was deliberately pinned.
-- **HTTPS:** no SSH identity is configured. If no prior file exists, Phase 5
-  creates only `# Day One Mac: HTTPS Git authentication selected; no SSH identity is configured.`
-
-An existing personal or company SSH configuration can follow the marked block
-and is preserved. `IdentitiesOnly yes` must never appear without an adjacent
-`IdentityFile`.
+Complete the relevant action in the [manual task](../manual/shell/zsh.md), then return
+to this phase. Preserve existing credentials and configuration; verify the
+result before rerunning the gate.
 
 ### `~/.config/starship.toml`
 
-The minimal prompt configuration is:
-
-```toml
-add_newline = false
-command_timeout = 1000
-
-[character]
-success_symbol = "[❯](bold green)"
-error_symbol = "[❯](bold red)"
-```
+Complete the relevant action in the [manual task](../manual/shell/zsh.md), then return
+to this phase. Preserve existing credentials and configuration; verify the
+result before rerunning the gate.
 
 ### `~/.config/chezmoi/chezmoi.toml` — machine-local, not managed
 
-This file stores per-Mac values and therefore stays outside the chezmoi source:
-
-```toml
-[edit]
-command = "code"
-args = ["--wait"]
-
-[diff]
-command = "code"
-args = ["--wait", "--diff"]
-
-[merge]
-command = "bash"
-args = [
-  "-c",
-  "cp {{ .Target | quote }} {{ printf \"%s.base\" .Target | quote }} && code --new-window --wait --merge {{ .Destination | quote }} {{ .Target | quote }} {{ printf \"%s.base\" .Target | quote }} {{ .Source | quote }}",
-]
-
-[data]
-track = "github"
-stack = "both"
-name = "Your Name"
-email = "you@example.com"
-```
-
-`track` can be `github`, `azure`, or `github+azure`; `stack` can be `node`,
-`python`, or `both`.
+Complete the relevant action in the [manual task](../manual/shell/zsh.md), then return
+to this phase. Preserve existing credentials and configuration; verify the
+result before rerunning the gate.
 
 ### `~/.local/bin/day-one-mac`
 
-This is an executable dispatcher, not a hand-edited configuration file. It is
-installed outside chezmoi and must resolve the verified active runtime:
-
-```bash
-printf 'mode: %s\n' "$(stat -f '%Lp' "$HOME/.local/bin/day-one-mac")"
-day-one-mac runtime-status
-day-one-mac root
-```
-
-Expected mode is `700`, and runtime integrity must be `verified`. If either
-check fails, run `day-one-mac update`, verify `day-one-mac runtime-status`, and
-then rerun Phase 5. Do not add the launcher back to chezmoi.
+Complete the relevant action in the [manual task](../manual/shell/zsh.md), then return
+to this phase. Preserve existing credentials and configuration; verify the
+result before rerunning the gate.
 
 ## Never add these to chezmoi
 
@@ -916,37 +504,15 @@ cd "$(chezmoi source-path)"
 find . -path ./.git -prune -o -type f -print | sort
 ```
 
-Then read the contents, one file at a time with a clear header before each:
-
-```bash
-cd "$(chezmoi source-path)"
-find . -path ./.git -prune -o -type f -print | sort | while IFS= read -r file; do
-  printf '\n===== %s =====\n' "$file"
-  cat "$file"
-done
-```
-
-Expected output looks like this:
-
-```text
-===== ./dot_zshrc =====
-source "$HOME/.config/zsh/path.zsh"
-autoload -Uz compinit
-compinit
-...
-
-===== ./dot_gitconfig =====
-[user]
-	name = Your Name
-```
-
-Read every block. Do not publish until the source is secret-free.
+Review each selected source file privately in your editor. Do not publish the
+source until credentials and private keys are excluded. A filename scan alone
+does not establish that content is secret-free.
 
 ## Step 5.8 — Verify a new login shell
 
 The examples below use Homebrew zsh with Node and Starship. Substitute `/bin/zsh`
 for the Apple choice, or the verified current zsh path for `keep`. Omit checks
-for unselected tools. Fully manual users also omit the `day-one-mac` commands.
+for unselected tools. This is the assisted verification procedure; the independent manual route has its own shell task.
 
 Open a new terminal or run:
 
@@ -1090,7 +656,7 @@ only when the intended outcome is to undo broader setup work.
 - [ ] Directory Services reports the selected shell; `keep` did not change it.
 - [ ] `day-one-mac shell-status` checks the saved shell/prompt choices and completion permissions pass `compaudit`.
 - [ ] `day-one-mac root` returns the current self-contained project directory.
-- [ ] `day-one-mac advanced --list` shows Modules 15–22.
+- [ ] `day-one-mac advanced --list` shows Modules 15-22.
 - [ ] Node selections expose `PNPM_HOME` on PATH.
 - [ ] The source contains no tokens, private keys, or provider credential files.
 

@@ -11,7 +11,7 @@ day_one_retired_profile_module() {
     'Preview: day-one-mac vscode-profile full-stack --dry-run' \
     'Choose default, full-stack, ai or operations; import remains manual.' \
     'Existing Module 12 selections and generated files are preserved; they are not migrated or checked.' >&2
-  printf 'Guide: %s/docs/how-to/apps/VSCODE-PROFILES.md\n' "$1" >&2
+  printf 'Guide: %s/docs/setup/assisted/optional/vscode-profiles.md\n' "$1" >&2
 }
 
 day_one_module_begin() {

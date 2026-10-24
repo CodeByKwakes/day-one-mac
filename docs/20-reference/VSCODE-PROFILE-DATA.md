@@ -1,45 +1,45 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # VS Code profile configuration reference
 
-This guide moved to [VSCODE-PROFILE-DATA](../reference/VSCODE-PROFILE-DATA.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../shared/reference/vscode-profile-data.md). This compatibility page preserves existing links.
 
 ## Shared settings
 
-Continue at [this section](../reference/VSCODE-PROFILE-DATA.md#shared-settings).
+See the [current instructions](../shared/reference/vscode-profile-data.md#shared-settings).
 
 ## Default
 
-Continue at [this section](../reference/VSCODE-PROFILE-DATA.md#default).
+See the [current instructions](../shared/reference/vscode-profile-data.md#default).
 
 ### Default overrides
 
-Continue at [this section](../reference/VSCODE-PROFILE-DATA.md#default-overrides).
+See the [current instructions](../shared/reference/vscode-profile-data.md#default-overrides).
 
 ## Full Stack
 
-Continue at [this section](../reference/VSCODE-PROFILE-DATA.md#full-stack).
+See the [current instructions](../shared/reference/vscode-profile-data.md#full-stack).
 
 ### Full Stack overrides
 
-Continue at [this section](../reference/VSCODE-PROFILE-DATA.md#full-stack-overrides).
+See the [current instructions](../shared/reference/vscode-profile-data.md#full-stack-overrides).
 
 ## AI
 
-Continue at [this section](../reference/VSCODE-PROFILE-DATA.md#ai).
+See the [current instructions](../shared/reference/vscode-profile-data.md#ai).
 
 ### AI overrides
 
-Continue at [this section](../reference/VSCODE-PROFILE-DATA.md#ai-overrides).
+See the [current instructions](../shared/reference/vscode-profile-data.md#ai-overrides).
 
 ## Operations
 
-Continue at [this section](../reference/VSCODE-PROFILE-DATA.md#operations).
+See the [current instructions](../shared/reference/vscode-profile-data.md#operations).
 
 ### Operations overrides
 
-Continue at [this section](../reference/VSCODE-PROFILE-DATA.md#operations-overrides).
+See the [current instructions](../shared/reference/vscode-profile-data.md#operations-overrides).
 
 ## Import keybindings
 
-Continue at [this section](../reference/VSCODE-PROFILE-DATA.md#import-keybindings).
+See the [current instructions](../shared/reference/vscode-profile-data.md#import-keybindings).

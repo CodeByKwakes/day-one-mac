@@ -137,7 +137,8 @@ case "${1:-}" in
       ''|help|-h|--help)
         printf '%s\n' 'Usage: day-one-mac vscode-profile default|full-stack|ai|operations [options]' \
           'Generate private review bundles; --dry-run previews without writes.' \
-          'Use <profile> --help for options. Extension installation requires current Phase 8.'
+          'Use <profile> --help for options. Extension installation and approved settings replacement require current Phase 8.' \
+          '--replace-settings previews a bounded replacement; --restore BACKUP previews recovery.'
         ;;
       *) printf 'Unknown profile. Choose default, full-stack, ai, or operations.\n' >&2; exit 2 ;;
     esac
@@ -250,7 +251,7 @@ case "${1:-}" in
       '  shortcuts         preview or import the optional Finder shortcut' \
       '  raycast           manage optional Day One Raycast commands' \
       '  workspace         create and open bounded projectless tasks' \
-      '  vscode-profile    generate reviewed VS Code settings/extension bundles' \
+      '  vscode-profile    generate bundles or preview approved settings replacement/recovery' \
       '  macos-settings    configure or restore optional macOS preferences' \
       '  optional          choose modules; --status shows or audits Modules 09–22' \
       '                    --list lists capabilities; --module ID --plan|--apply|--check|--resume' \

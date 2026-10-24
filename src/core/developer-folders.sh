@@ -71,7 +71,7 @@ folders_inspect_paths() {
     path="$(folders_resources_readme)"
     day_one_safe_state_path "$path" || return 11
     [[ ! -e "$path" || -f "$path" ]] || { err "Not a regular file: $path"; return 11; }
-    [[ -r "$SCRIPT_DIR/../docs/reference/developer-resources/README.md" ]] || {
+    [[ -r "$SCRIPT_DIR/../docs/setup/manual/development/resources.md" ]] || {
       err 'Resources README template is unavailable.'; return 11; }
   fi
 }
@@ -219,7 +219,7 @@ folders_apply() {
   fi
   while IFS= read -r path; do create_directory "$path" || return $?; done < <(folders_paths)
   if [[ "$FOLDER_LAYOUT" == purpose && ! -e "$(folders_resources_readme)" ]]; then
-    write_text_file "$(folders_resources_readme)" "$(cat "$SCRIPT_DIR/../docs/reference/developer-resources/README.md")"$'\n' || return $?
+    write_text_file "$(folders_resources_readme)" "$(cat "$SCRIPT_DIR/../docs/setup/manual/development/resources.md")"$'\n' || return $?
   fi
   if [[ "$GHQ_CHOICE" == yes && "$FOLDERS_WRITE_ROOT" == 1 ]]; then
     if [[ "$DRY_RUN" != 1 ]]; then record_path_before_write "$HOME/.gitconfig" || return $?; fi

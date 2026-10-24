@@ -1,29 +1,29 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Chezmoi learning path
 
-This guide moved to [chezmoi](../setup/manual/chezmoi.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/manual/shell/README.md). This compatibility page preserves existing links.
 
 ## Choose the guide for your task
 
-Continue at [this section](../setup/manual/chezmoi.md#choose-the-guide-for-your-task).
+See the [current instructions](../setup/manual/shell/README.md).
 
 ## What Day One Mac does for you
 
-Continue at [this section](../setup/manual/chezmoi.md#what-day-one-mac-does-for-you).
+See the [current instructions](../setup/manual/shell/README.md).
 
 ## Understand the direction before choosing a command
 
-Continue at [this section](../setup/manual/chezmoi.md#understand-the-direction-before-choosing-a-command).
+See the [current instructions](../setup/manual/shell/README.md).
 
 ## Ownership, templates and secrets
 
-Continue at [this section](../setup/manual/chezmoi.md#ownership-templates-and-secrets).
+See the [current instructions](../setup/manual/shell/README.md).
 
 ## Completion and recovery
 
-Continue at [this section](../setup/manual/chezmoi.md#completion-and-recovery).
+See the [current instructions](../setup/manual/shell/README.md).
 
 ## Open a specific guide
 
-Continue at [this section](../setup/manual/chezmoi.md#open-a-specific-guide).
+See the [current instructions](../setup/manual/shell/README.md).

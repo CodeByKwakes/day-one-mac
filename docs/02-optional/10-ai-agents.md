@@ -1,57 +1,57 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Optional 10 — AI clients
 
-This guide moved to [10-ai-agents](../how-to/modules/optional/10-ai-agents.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/assisted/optional/10-ai-agents.md). This compatibility page preserves existing links.
 
 ## Outcome
 
-Continue at [this section](../how-to/modules/optional/10-ai-agents.md#outcome).
+See the [current instructions](../setup/assisted/optional/10-ai-agents.md).
 
 ## Step 10.1 — Select clients before installing
 
-Continue at [this section](../how-to/modules/optional/10-ai-agents.md#step-101--select-clients-before-installing).
+See the [current instructions](../setup/assisted/optional/10-ai-agents.md).
 
 ## Step 10.2 — Claude Code option
 
-Continue at [this section](../how-to/modules/optional/10-ai-agents.md#step-102--claude-code-option).
+See the [current instructions](../setup/assisted/optional/10-ai-agents.md).
 
 ### Install selected payloads together
 
-Continue at [this section](../how-to/modules/optional/10-ai-agents.md#install-selected-payloads-together).
+See the [current instructions](../setup/assisted/optional/10-ai-agents.md#install-selected-payloads-together).
 
 ### Configure Claude Code
 
-Continue at [this section](../how-to/modules/optional/10-ai-agents.md#configure-claude-code).
+See the [current instructions](../setup/assisted/optional/10-ai-agents.md).
 
 ## Step 10.3 — Codex option
 
-Continue at [this section](../how-to/modules/optional/10-ai-agents.md#step-103--codex-option).
+See the [current instructions](../setup/assisted/optional/10-ai-agents.md).
 
 ## Step 10.4 — GitHub Copilot app option
 
-Continue at [this section](../how-to/modules/optional/10-ai-agents.md#step-104--github-copilot-app-option).
+See the [current instructions](../setup/assisted/optional/10-ai-agents.md).
 
 ## Step 10.5 — GitHub Copilot in VS Code option
 
-Continue at [this section](../how-to/modules/optional/10-ai-agents.md#step-105--github-copilot-in-vs-code-option).
+See the [current instructions](../setup/assisted/optional/10-ai-agents.md).
 
 ## Step 10.6 — GitHub Copilot CLI option
 
-Continue at [this section](../how-to/modules/optional/10-ai-agents.md#step-106--github-copilot-cli-option).
+See the [current instructions](../setup/assisted/optional/10-ai-agents.md).
 
 ## Step 10.7 — Raycast AI option
 
-Continue at [this section](../how-to/modules/optional/10-ai-agents.md#step-107--raycast-ai-option).
+See the [current instructions](../setup/assisted/optional/10-ai-agents.md).
 
 ## Step 10.8 — Store configuration safely
 
-Continue at [this section](../how-to/modules/optional/10-ai-agents.md#step-108--store-configuration-safely).
+See the [current instructions](../setup/assisted/optional/10-ai-agents.md).
 
 ## Step 10.9 — Verification and removal
 
-Continue at [this section](../how-to/modules/optional/10-ai-agents.md#step-109--verification-and-removal).
+See the [current instructions](../setup/assisted/optional/10-ai-agents.md).
 
 ## Optional completion checklist 🚦
 
-Continue at [this section](../how-to/modules/optional/10-ai-agents.md#optional-completion-checklist-).
+See the [current instructions](../setup/assisted/optional/10-ai-agents.md).

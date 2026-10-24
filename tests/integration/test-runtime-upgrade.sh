@@ -11,6 +11,7 @@ export DAY_ONE_MAC_STATE_DIR="$DAY_ONE_MAC_STATE_ROOT"
 unset DAY_ONE_MAC_RUNTIME_HOME DAY_ONE_MAC_PROJECT_ROOT DAY_ONE_MAC_ROOT || true
 mkdir -p "$HOME" "$TASK_TMP/archive"
 /bin/bash "$BASE_SOURCE/scripts/install-portable-command.sh" --source "$BASE_SOURCE" --version test-baseline --standalone > "$TASK_TMP/install-baseline.log"
+"$HOME/.local/bin/day-one-mac" docs manual > "$TASK_TMP/baseline-docs-path"
 # Produce genuine old-version fingerprints in an isolated fixture.
 (
   source "$BASE_SOURCE/scripts/setup.sh"
@@ -38,8 +39,8 @@ grep -Fq 'Integrity: verified' "$TASK_TMP/status"
 "$portable" setup --status > "$TASK_TMP/setup-status"
 grep -Fq 'changed — revalidate' "$TASK_TMP/setup-status"
 "$portable" docs manual > "$TASK_TMP/docs-path"
-grep -Fq '/docs/setup/manual/MANUAL-SETUP-GUIDE.md' "$TASK_TMP/docs-path"
-[[ -f "$HOME/.local/share/day-one-mac/current/docs/how-to/databases/DATAGRIP.md" ]]
+grep -Fq '/docs/setup/manual/README.md' "$TASK_TMP/docs-path"
+[[ -f "$HOME/.local/share/day-one-mac/current/docs/setup/manual/databases/datagrip.md" ]]
 "$portable" vscode-profile full-stack --dry-run > "$TASK_TMP/profiles"
 "$portable" folders --help > "$TASK_TMP/folders"
 diff -r "$TASK_TMP/completed-before" "$DAY_ONE_MAC_STATE_ROOT/completed"
@@ -53,6 +54,6 @@ grep -Fq 'Version:   test-baseline' "$TASK_TMP/status"
 grep -Fq 'Integrity: verified' "$TASK_TMP/status"
 "$portable" verify > "$TASK_TMP/verify"
 "$portable" docs manual > "$TASK_TMP/docs-path"
-grep -Fq '/docs/20-reference/MANUAL-SETUP-GUIDE.md' "$TASK_TMP/docs-path"
+cmp "$TASK_TMP/baseline-docs-path" "$TASK_TMP/docs-path"
 diff -r "$TASK_TMP/completed-before" "$DAY_ONE_MAC_STATE_ROOT/completed"
 printf 'PASS: previous layout → packaged candidate → rollback; state, ownership and shell files preserved.\n'

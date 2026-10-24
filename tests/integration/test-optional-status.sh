@@ -16,7 +16,7 @@ printf 'postgres\n' > "$TEST_STATE/database-services"
 printf 'claude\n' > "$TEST_STATE/ai-clients"
 printf 'brew-formula\tbat\n' > "$TEST_STATE/install-manifest.tsv"
 printf 'complete\n' > "$TEST_STATE/completed/08"
-shasum -a 256 "$PROJECT_DIR/docs/how-to/modules/advanced/15-full-dotfiles-and-bootstrap.md" \
+shasum -a 256 "$PROJECT_DIR/docs/setup/assisted/advanced/15-full-dotfiles-and-bootstrap.md" \
   | awk '{print $1}' > "$TEST_STATE/advanced/completed/15"
 
 cat > "$MOCK_BIN/docker" <<'EOF'

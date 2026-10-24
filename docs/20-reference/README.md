@@ -1,5 +1,5 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Day One Mac reference library
 
-This guide moved to [README](../reference/README.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../shared/README.md). This compatibility page preserves existing links.

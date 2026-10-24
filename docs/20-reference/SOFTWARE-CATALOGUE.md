@@ -1,29 +1,29 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Applications and formulae catalogue
 
-This guide moved to [SOFTWARE-CATALOGUE](../reference/SOFTWARE-CATALOGUE.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../shared/reference/software-catalogue.md). This compatibility page preserves existing links.
 
 ## Selection and ownership
 
-Continue at [this section](../reference/SOFTWARE-CATALOGUE.md#selection-and-ownership).
+See the [current instructions](../shared/reference/software-catalogue.md#selection-and-ownership).
 
 ## Registered applications, CLI casks and font
 
-Continue at [this section](../reference/SOFTWARE-CATALOGUE.md#registered-applications-cli-casks-and-font).
+See the [current instructions](../shared/reference/software-catalogue.md#registered-applications-cli-casks-and-font).
 
 ## Required and conditional formulae
 
-Continue at [this section](../reference/SOFTWARE-CATALOGUE.md#required-and-conditional-formulae).
+See the [current instructions](../shared/reference/software-catalogue.md#required-and-conditional-formulae).
 
 ## Optional formulae
 
-Continue at [this section](../reference/SOFTWARE-CATALOGUE.md#optional-formulae).
+See the [current instructions](../shared/reference/software-catalogue.md#optional-formulae).
 
 ## Related tools with different owners
 
-Continue at [this section](../reference/SOFTWARE-CATALOGUE.md#related-tools-with-different-owners).
+See the [current instructions](../shared/reference/software-catalogue.md#related-tools-with-different-owners).
 
 ## Maintenance contract
 
-Continue at [this section](../reference/SOFTWARE-CATALOGUE.md#maintenance-contract).
+See the [current instructions](../shared/reference/software-catalogue.md#maintenance-contract).

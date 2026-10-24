@@ -49,6 +49,12 @@
       "skillPath": "skills/systematic-debugging/SKILL.md",
       "computedHash": "276fb0aadb002ab930cc2a56de89e16995a2e3e70b33587652bf0a5fb123148d"
     },
+    "technical-writing": {
+      "source": "riekelt/technical-writer",
+      "sourceType": "github",
+      "skillPath": "plugins/technical-writer/skills/technical-writing/SKILL.md",
+      "computedHash": "50a8b22b6fcc011b84802b691efbf566d8294e16513d1eed86343587114875ec"
+    },
     "verification-before-completion": {
       "source": "obra/superpowers",
       "sourceType": "github",

@@ -1,109 +1,109 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Day One Mac command reference
 
-This guide moved to [COMMAND-REFERENCE](../reference/COMMAND-REFERENCE.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/assisted/reference/command-reference.md). This compatibility page preserves existing links.
 
 ## Understand the two command forms
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#understand-the-two-command-forms).
+See the [current instructions](../setup/assisted/reference/command-reference.md#understand-the-two-command-forms).
 
 ### Portable command — recommended from the beginning
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#portable-command--recommended-from-the-beginning).
+See the [current instructions](../setup/assisted/reference/command-reference.md#portable-command---recommended-from-the-beginning).
 
 ### Direct scripts — fallback and maintenance
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#direct-scripts--fallback-and-maintenance).
+See the [current instructions](../setup/assisted/reference/command-reference.md#direct-scripts---fallback-and-maintenance).
 
 ## Complete portable command list
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#complete-portable-command-list).
+See the [current instructions](../setup/assisted/reference/command-reference.md#complete-portable-command-list).
 
 ## Required setup commands
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#required-setup-commands).
+See the [current instructions](../setup/assisted/reference/command-reference.md#required-setup-commands).
 
 ### Main wizard and eight phases
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#main-wizard-and-eight-phases).
+See the [current instructions](../setup/assisted/reference/command-reference.md#main-wizard-and-eight-phases).
 
 ### Change or reset the hosting track
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#change-or-reset-the-hosting-track).
+See the [current instructions](../setup/assisted/reference/command-reference.md#change-or-reset-the-hosting-track).
 
 ### Required-phase action contract
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#required-phase-action-contract).
+See the [current instructions](../setup/assisted/reference/command-reference.md#required-phase-action-contract).
 
 ### Local check coverage and limits
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#local-check-coverage-and-limits).
+See the [current instructions](../setup/assisted/reference/command-reference.md#local-check-coverage-and-limits).
 
 ### Inspection output and exit codes
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#inspection-output-and-exit-codes).
+See the [current instructions](../setup/assisted/reference/command-reference.md#inspection-output-and-exit-codes).
 
 ### Compatibility and validation scope
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#compatibility-and-validation-scope).
+See the [current instructions](../setup/assisted/reference/command-reference.md#compatibility-and-validation-scope).
 
 ### Installation Centre and application ownership
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#installation-centre-and-application-ownership).
+See the [current instructions](../setup/assisted/reference/command-reference.md#installation-centre-and-application-ownership).
 
 ### 1Password public-key pinning
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#1password-public-key-pinning).
+See the [current instructions](../setup/assisted/reference/command-reference.md#1password-public-key-pinning).
 
 ### macOS settings
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#macos-settings).
+See the [current instructions](../setup/assisted/reference/command-reference.md#macos-settings).
 
 ### Raycast commands and extension recommendations
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#raycast-commands-and-extension-recommendations).
+See the [current instructions](../setup/assisted/reference/command-reference.md#raycast-commands-and-extension-recommendations).
 
 ## Projectless workspace commands
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#projectless-workspace-commands).
+See the [current instructions](../setup/assisted/reference/command-reference.md#projectless-workspace-commands).
 
 ## Existing-Mac Stage 0 commands
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#existing-mac-stage-0-commands).
+See the [current instructions](../setup/assisted/reference/command-reference.md#existing-mac-stage-0-commands).
 
 ### Safety report only
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#safety-report-only).
+See the [current instructions](../setup/assisted/reference/command-reference.md#safety-report-only).
 
 ### Resumable preparation dashboard
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#resumable-preparation-dashboard).
+See the [current instructions](../setup/assisted/reference/command-reference.md#resumable-preparation-dashboard).
 
 ## Reports, optional tools, and advanced modules
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#reports-optional-tools-and-advanced-modules).
+See the [current instructions](../setup/assisted/reference/command-reference.md#reports-optional-tools-and-advanced-modules).
 
 ## Finalisation, rollback, and removal
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#finalisation-rollback-and-removal).
+See the [current instructions](../setup/assisted/reference/command-reference.md#finalisation-rollback-and-removal).
 
 ## Script-only maintenance commands
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#script-only-maintenance-commands).
+See the [current instructions](../setup/assisted/reference/command-reference.md#script-only-maintenance-commands).
 
 ## Get exact option help
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#get-exact-option-help).
+See the [current instructions](../setup/assisted/reference/command-reference.md#get-exact-option-help).
 
 ## Optional macOS shortcut import
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#optional-macos-shortcut-import).
+See the [current instructions](../setup/assisted/reference/command-reference.md#optional-macos-shortcut-import).
 
 ## VS Code profile bundles
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#vs-code-profile-bundles).
+See the [current instructions](../setup/assisted/reference/command-reference.md#vs-code-profile-bundles).
 
 ## Workstation readiness
 
-Continue at [this section](../reference/COMMAND-REFERENCE.md#workstation-readiness).
+See the [current instructions](../setup/assisted/reference/command-reference.md#workstation-readiness).

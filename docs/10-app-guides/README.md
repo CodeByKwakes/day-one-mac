@@ -1,33 +1,33 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Required application setup
 
-This guide moved to [README](../how-to/apps/README.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/manual/apps/README.md). This compatibility page preserves existing links.
 
 ## What is required
 
-Continue at [this section](../how-to/apps/README.md#what-is-required).
+See the [current instructions](../setup/manual/apps/README.md).
 
 ## Recommended order
 
-Continue at [this section](../how-to/apps/README.md#recommended-order).
+See the [current instructions](../setup/manual/apps/README.md).
 
 ## Choose fresh setup or restore
 
-Continue at [this section](../how-to/apps/README.md#choose-fresh-setup-or-restore).
+See the [current instructions](../setup/manual/apps/README.md).
 
 ## Create a safe export location
 
-Continue at [this section](../how-to/apps/README.md#create-a-safe-export-location).
+See the [current instructions](../setup/manual/apps/README.md).
 
 ## Check the required font
 
-Continue at [this section](../how-to/apps/README.md#check-the-required-font).
+See the [current instructions](../setup/manual/apps/README.md).
 
 ## What the automation does and does not do
 
-Continue at [this section](../how-to/apps/README.md#what-the-automation-does-and-does-not-do).
+See the [current instructions](../setup/manual/apps/README.md).
 
 ## Required app completion checklist 🚦
 
-Continue at [this section](../how-to/apps/README.md#required-app-completion-checklist-).
+See the [current instructions](../setup/manual/apps/README.md).

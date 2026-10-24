@@ -15,6 +15,7 @@
     "lint:markdown": "markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.agents\"",
     "validate": "tools/validate.sh",
     "test:vscode-profiles": "node tests/integration/test-vscode-profiles.cjs",
+    "test:vscode-profile-replacement": "node tests/integration/test-vscode-profile-replacement.cjs",
     "acceptance:plan": "tools/release-readiness.sh --plan",
     "acceptance:package": "tests/integration/test-packaged-modules.sh",
     "acceptance:native:plan": "tools/rehearse-mounted-restore.sh --plan",

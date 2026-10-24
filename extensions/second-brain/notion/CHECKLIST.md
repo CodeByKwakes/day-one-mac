@@ -1,44 +1,29 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Notion Second Brain completion checklist
 
-[← Notion home](README.md)
+Continue with the [current guide](../../../docs/setup/manual/second-brain/notion/checklist.md). This compatibility page preserves existing links.
 
 ## Boundary
 
-- [ ] Personal and work information use approved accounts and workspaces.
-- [ ] Domain sensitivity and AI policy have been reviewed.
-- [ ] No filter or checkbox is being treated as access control.
+See the [current instructions](../../../docs/setup/manual/second-brain/notion/checklist.md#boundary).
 
 ## Structure
 
-- [ ] Second Brain HQ exists.
-- [ ] Domains, Knowledge, Projects, and Sources exist.
-- [ ] Relations work in both directions.
-- [ ] Tasks was created only if Notion owns task management.
+See the [current instructions](../../../docs/setup/manual/second-brain/notion/checklist.md#structure).
 
 ## Workflow
 
-- [ ] Quick Capture creates an Inbox item.
-- [ ] One Development Note was processed.
-- [ ] One content idea was moved through at least two statuses.
-- [ ] One Source links to Knowledge.
-- [ ] One Weekly Review was completed.
+See the [current instructions](../../../docs/setup/manual/second-brain/notion/checklist.md#workflow).
 
 ## Dashboard
 
-- [ ] Inbox, Active Projects, Sources to Verify, and AI Review are visible.
-- [ ] Domain and content pipeline views display the expected pages.
-- [ ] Charts or linked-view fallbacks show useful counts.
+See the [current instructions](../../../docs/setup/manual/second-brain/notion/checklist.md#dashboard).
 
 ## Integrations
 
-- [ ] Raycast commands open only the intended URLs, if enabled.
-- [ ] AI access was tested with non-sensitive content, if enabled.
-- [ ] AI output requires human review.
-- [ ] Unused integrations are disconnected.
+See the [current instructions](../../../docs/setup/manual/second-brain/notion/checklist.md#integrations).
 
 ## Recovery
 
-- [ ] A Markdown/CSV export exists outside Notion.
-- [ ] It has been opened and inspected.
-- [ ] It is copied to independent encrypted storage.
-- [ ] The limits of export-based recovery are understood.
+See the [current instructions](../../../docs/setup/manual/second-brain/notion/checklist.md#recovery).

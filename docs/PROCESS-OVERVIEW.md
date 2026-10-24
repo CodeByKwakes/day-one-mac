@@ -1,85 +1,85 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Day One Mac process overview
 
-This guide moved to [PROCESS-OVERVIEW](explanation/PROCESS-OVERVIEW.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](shared/explanation/process-overview.md). This compatibility page preserves existing links.
 
 ## 1. Choose the correct starting point
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#1-choose-the-correct-starting-point).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ### New or factory-reset Mac
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#new-or-factory-reset-mac).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ### Existing Mac
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#existing-mac).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## 2. Make the setup decisions
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#2-make-the-setup-decisions).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ### Hosting track
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#hosting-track).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ### Git authentication
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#git-authentication).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ### Development stack
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#development-stack).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ### Identity and dotfiles
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#identity-and-dotfiles).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## 3. Complete the eight required phases
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#3-complete-the-eight-required-phases).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## 4. Decide what happens after Phase 8
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#4-decide-what-happens-after-phase-8).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## 5. Understand required applications
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#5-understand-required-applications).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## 6. Understand the chezmoi boundary
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#6-understand-the-chezmoi-boundary).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## 7. Expected runtime and project layout
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#7-expected-runtime-and-project-layout).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## 8. Know which actions remain manual
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#8-know-which-actions-remain-manual).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## 9. Add optional modules only after Phase 8
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#9-add-optional-modules-only-after-phase-8).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## 10. Add advanced capabilities when justified
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#10-add-advanced-capabilities-when-justified).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## 11. Add the Second Brain separately
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#11-add-the-second-brain-separately).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## 12. Stop, resume, and inspect progress
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#12-stop-resume-and-inspect-progress).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## 13. Understand cleanup and rollback
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#13-understand-cleanup-and-rollback).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## Completion point
 
-Continue at [this section](explanation/PROCESS-OVERVIEW.md#completion-point).
+See the [current instructions](shared/explanation/process-overview.md).

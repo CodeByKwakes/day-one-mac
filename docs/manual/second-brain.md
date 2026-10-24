@@ -1,45 +1,45 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Build and use your Second Brain
 
-This guide moved to [second-brain](../setup/manual/second-brain.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/manual/second-brain/README.md). This compatibility page preserves existing links.
 
 ## 1. Choose a home and privacy boundary
 
-Continue at [this section](../setup/manual/second-brain.md#1-choose-a-home-and-privacy-boundary).
+See the [current instructions](../setup/manual/second-brain/README.md).
 
 ## 2A. Obsidian walkthrough
 
-Continue at [this section](../setup/manual/second-brain.md#2a-obsidian-walkthrough).
+See the [current instructions](../setup/manual/second-brain/README.md).
 
 ### Script-assisted layout
 
-Continue at [this section](../setup/manual/second-brain.md#script-assisted-layout).
+See the [current instructions](../setup/manual/second-brain/README.md).
 
 ### Entirely manual layout
 
-Continue at [this section](../setup/manual/second-brain.md#entirely-manual-layout).
+See the [current instructions](../setup/manual/second-brain/README.md).
 
 ### Choose an integration
 
-Continue at [this section](../setup/manual/second-brain.md#choose-an-integration).
+See the [current instructions](../setup/manual/second-brain/README.md).
 
 ## 2B. Notion walkthrough
 
-Continue at [this section](../setup/manual/second-brain.md#2b-notion-walkthrough).
+See the [current instructions](../setup/manual/second-brain/README.md).
 
 ## 3. Use it before expanding it
 
-Continue at [this section](../setup/manual/second-brain.md#3-use-it-before-expanding-it).
+See the [current instructions](../setup/manual/second-brain/README.md).
 
 ### Link a repository without syncing its contents
 
-Continue at [this section](../setup/manual/second-brain.md#link-a-repository-without-syncing-its-contents).
+See the [current instructions](../setup/manual/second-brain/README.md#link-a-repository-without-syncing-its-contents).
 
 ### Keep a useful review routine
 
-Continue at [this section](../setup/manual/second-brain.md#keep-a-useful-review-routine).
+See the [current instructions](../setup/manual/second-brain/README.md).
 
 ## 4. Back up and practise recovery
 
-Continue at [this section](../setup/manual/second-brain.md#4-back-up-and-practise-recovery).
+See the [current instructions](../setup/manual/second-brain/README.md).

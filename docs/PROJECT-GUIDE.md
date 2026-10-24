@@ -1,77 +1,77 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Complete Day One Mac project guide
 
-This guide moved to [PROJECT-GUIDE](explanation/PROJECT-GUIDE.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](shared/explanation/process-overview.md). This compatibility page preserves existing links.
 
 ## What belongs to this project
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#what-belongs-to-this-project).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## Assumptions
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#assumptions).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## macOS 27 Golden Gate compatibility
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#macos-27-golden-gate-compatibility).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## Choose a hosting track
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#choose-a-hosting-track).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## Choose a development stack
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#choose-a-development-stack).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## Start the setup
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#start-the-setup).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ### Option A — install the standalone runtime
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#option-a--install-the-standalone-runtime).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ### Option B — clone for development, then install the runtime
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#option-b--clone-for-development-then-install-the-runtime).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ### Upgrading an earlier installation
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#upgrading-an-earlier-installation).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## Required phase sequence
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#required-phase-sequence).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## Optional modules
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#optional-modules).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## Second Brain — Day One Mac
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#second-brain--day-one-mac).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## Advanced optional setup
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#advanced-optional-setup).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## What the required setup installs
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#what-the-required-setup-installs).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## Two cleanup modes
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#two-cleanup-modes).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ### Clean the complete development state
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#clean-the-complete-development-state).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ### Undo only this runner
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#undo-only-this-runner).
+See the [current instructions](shared/explanation/process-overview.md).
 
 ## Maintenance after Phase 8
 
-Continue at [this section](explanation/PROJECT-GUIDE.md#maintenance-after-phase-8).
+See the [current instructions](shared/explanation/process-overview.md).

@@ -9,7 +9,7 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/../src/core/terminal-ui.sh"
 BUNDLE="$PROJECT_DIR/integrations/warp/Day One Mac"
 NOTEBOOK="$BUNDLE/00 Day One Mac Command Catalogue.md"
-IMPORT_GUIDE="$PROJECT_DIR/docs/how-to/modules/optional/14-warp-drive.md"
+IMPORT_GUIDE="$PROJECT_DIR/docs/setup/assisted/optional/14-warp-drive.md"
 FAILURES=0
 
 pass() { ui_success "$@"; }

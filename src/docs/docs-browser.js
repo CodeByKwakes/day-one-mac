@@ -80,71 +80,53 @@ function resolveDocumentationRoute(path, anchor, documents) {
   const url = new URL(target, `https://docs.invalid/${path}`);
   const destination = decodeURIComponent(url.pathname.slice(1));
   return url.origin === 'https://docs.invalid' && documents.has(destination)
-    ? { path: destination, anchor: url.hash ? decodeURIComponent(url.hash.slice(1)) : anchor }
+    ? { path: destination, anchor: url.hash ? decodeURIComponent(url.hash.slice(1)) : '' }
     : { path, anchor };
 }
 
 function documentationNavigation(documents) {
   const claimed = new Set();
   const coreSequence = requiredSequence(documents);
-  const canonical = path => !documents.get(path)?.includes('<!-- day-one-mac:compatibility-guide -->');
-  const titles = new Map(Array.from(documents).filter(([path]) => canonical(path)).map(([path, text]) => [path, text.match(/^# (.+)$/m)?.[1] || path]));
-  const labels = {
-    'docs/START-HERE.md': 'Start here',
-    'docs/explanation/PROCESS-OVERVIEW.md': 'How setup fits together',
-    'docs/setup/existing-mac/README.md': 'Before changing an existing Mac',
-    'docs/reference/TERMINAL-BASICS.md': 'Terminal basics',
-    'docs/setup/manual/MANUAL-SETUP-GUIDE.md': 'Manual walkthrough',
-    'docs/setup/assisted/README.md': 'Script-assisted overview',
-    'docs/setup/assisted/MACOS-SETTINGS.md': 'Checkpoint: macOS preferences (optional)',
-    'docs/setup/assisted/INSTALLATION-CENTRE.md': 'Checkpoint: Installation Centre',
-    'docs/how-to/apps/MACOS-SHORTCUTS.md': 'macOS Shortcuts and Finder actions',
-    'docs/setup/manual/README.md': 'Manual learning guides',
-    'docs/setup/manual/chezmoi.md': 'Chezmoi and dotfiles',
-    'docs/setup/manual/developer-folders.md': 'Developer folders and ghq',
-    'docs/setup/manual/second-brain.md': 'Second Brain setup',
-    'docs/setup/manual/security.md': 'Security, SSH and signing',
-    'docs/setup/manual/azure-artifacts-npm.md': 'Azure Artifacts: npm authentication',
-  };
-  const entries = paths => paths.filter(path => documents.has(path) && canonical(path) && !claimed.has(path)).map(path => {
-    claimed.add(path);
-    return { path, label: labels[path] || titles.get(path) };
+  const canonical = file => !documents.get(file)?.includes('<!-- day-one-mac:compatibility-guide -->');
+  const titles = new Map(Array.from(documents).filter(([file]) => canonical(file))
+    .map(([file, text]) => [file, text.match(/^# (.+)$/m)?.[1] || file]));
+  const entries = paths => paths.filter(file => documents.has(file) && canonical(file) && !claimed.has(file)).map(file => {
+    claimed.add(file);
+    return { path: file, label: titles.get(file) };
   });
-  const matching = prefix => Array.from(documents.keys()).filter(path => path.startsWith(prefix))
+  const matching = prefix => Array.from(documents.keys()).filter(file => file.startsWith(prefix))
     .sort((a, b) => Number(!a.endsWith('/README.md')) - Number(!b.endsWith('/README.md')) || a.localeCompare(b, 'en', { numeric: true }));
+  const group = (label, sections) => ({ label, sections: sections.map(([name, paths]) => ({ label: name, entries: entries(paths) })) });
   const groups = [
-    { label: 'Start here', sections: [{ label: '', entries: entries([
-      'docs/START-HERE.md', 'docs/explanation/PROCESS-OVERVIEW.md', 'docs/setup/existing-mac/README.md', 'docs/reference/TERMINAL-BASICS.md',
-    ]) }] },
-    { label: 'Core setup', sections: [
-      { label: '', entries: entries(['docs/setup/manual/MANUAL-SETUP-GUIDE.md']) },
-      { label: 'Script-assisted phases', entries: entries(coreSequence) },
-    ] },
-    { label: 'Customisation', sections: [
-      { label: 'Private package registries', entries: entries(['docs/setup/manual/azure-artifacts-npm.md']) },
-      { label: 'Manual learning guides', entries: entries(matching('docs/setup/manual/')) },
-      { label: 'Application guides', entries: entries(matching('docs/how-to/apps/')) },
-      { label: 'Database setup', entries: entries(matching('docs/how-to/databases/')) },
-      { label: 'Optional modules', entries: entries(matching('docs/how-to/modules/optional/')) },
-      { label: 'Git worktrees', entries: entries([
-        'docs/how-to/development/worktrees/GIT-WORKTREES-VSCODE-AND-AI.md',
-        'docs/how-to/development/worktrees/WORKTREES-TERMINAL.md',
-        'docs/how-to/development/worktrees/WORKTREES-VSCODE.md',
-        'docs/how-to/development/worktrees/WORKTREES-COPILOT.md',
-        'docs/how-to/development/worktrees/WORKTREES-CODEX.md',
-        'docs/how-to/development/worktrees/WORKTREES-CLAUDE.md',
-        'docs/how-to/development/worktrees/WORKTREES-ENVIRONMENT.md',
-        'docs/how-to/development/worktrees/WORKTREES-TROUBLESHOOTING.md',
-      ]) },
-      { label: 'Development workflows', entries: entries(matching('docs/how-to/development/')) },
-      { label: 'Advanced modules', entries: entries(matching('docs/how-to/modules/advanced/')) },
-    ] },
-    { label: 'Reference and recovery', sections: [
-      { label: 'Recovery and cleanup', entries: entries(matching('docs/how-to/recovery/')) },
-      { label: 'Reference library', entries: entries(matching('docs/reference/')) },
-      { label: 'Second Brain library', entries: entries(matching('extensions/second-brain/')) },
-      { label: 'More bundled guides', entries: entries(Array.from(documents.keys())) },
-    ] },
+    group('Start here', [['', ['docs/START-HERE.md', 'docs/README.md']]]),
+    group('Scripted (Assisted) Setup', [
+      ['Install and prepare', ['docs/setup/assisted/runtime.md', ...matching('docs/setup/assisted/existing-mac/')]],
+      ['Required phases and checkpoints', coreSequence],
+      ['Optional operations', matching('docs/setup/assisted/optional/')],
+      ['Advanced operations', matching('docs/setup/assisted/advanced/')],
+      ['Integrations', matching('docs/setup/assisted/integrations/')],
+      ['Recovery', matching('docs/setup/assisted/recovery/')],
+      ['Command and state reference', matching('docs/setup/assisted/reference/')],
+      ['Other assisted tasks', matching('docs/setup/assisted/')],
+    ]),
+    group('Manual Setup', [
+      ['Base setup', ['docs/setup/manual/README.md', 'docs/setup/manual/macos.md', 'docs/setup/manual/homebrew.md',
+        'docs/setup/manual/languages.md', 'docs/setup/manual/backup-and-restore.md', 'docs/setup/manual/maintenance.md']],
+      ['Preparation and security', [...matching('docs/setup/manual/preparation/'), ...matching('docs/setup/manual/security/')]],
+      ['Git and providers', matching('docs/setup/manual/git/')],
+      ['Shell and terminals', [...matching('docs/setup/manual/shell/'), ...matching('docs/setup/manual/terminals/')]],
+      ['Editors and applications', [...matching('docs/setup/manual/editors/'), ...matching('docs/setup/manual/apps/')]],
+      ['Databases', matching('docs/setup/manual/databases/')],
+      ['AI, agents, skills and MCP', matching('docs/setup/manual/ai/')],
+      ['Git worktrees', matching('docs/setup/manual/development/worktrees/')],
+      ['Development workflows', matching('docs/setup/manual/development/')],
+      ['Second Brain', matching('docs/setup/manual/second-brain/')],
+      ['Other manual tasks', matching('docs/setup/manual/')],
+    ]),
+    group('Shared library', [
+      ['Prerequisites, choices and help', matching('docs/shared/')],
+      ['Bundled templates and project information', Array.from(documents.keys())],
+    ]),
   ];
   return { groups, titles, coreSequence };
 }

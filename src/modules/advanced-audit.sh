@@ -243,7 +243,7 @@ for module in 15 16 17 18 19 20 21 22; do
     21) document=21-audit-maintenance-and-rebuild.md ;;
     22) document=22-ai-skills-and-mcp-operations.md ;;
   esac
-  expected="$(shasum -a 256 "$SCRIPT_DIR/../docs/how-to/modules/advanced/$document" | awk '{print $1}')"
+  expected="$(shasum -a 256 "$SCRIPT_DIR/../docs/setup/assisted/advanced/$document" | awk '{print $1}')"
   recorded="$(sed -n '1p' "$marker")"
   if [[ "$expected" == "$recorded" ]]; then ADVANCED_CURRENT=$((ADVANCED_CURRENT + 1))
   else ADVANCED_REVIEW=$((ADVANCED_REVIEW + 1)); fi

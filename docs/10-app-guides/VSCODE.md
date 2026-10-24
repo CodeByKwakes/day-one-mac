@@ -1,97 +1,97 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Set up, back up, and restore VS Code
 
-This guide moved to [VSCODE](../how-to/apps/VSCODE.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/manual/editors/vscode.md). This compatibility page preserves existing links.
 
 ## Outcome
 
-Continue at [this section](../how-to/apps/VSCODE.md#outcome).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## What Phase 7 already does
 
-Continue at [this section](../how-to/apps/VSCODE.md#what-phase-7-already-does).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## Step 1 — Open VS Code and install the Terminal command
 
-Continue at [this section](../how-to/apps/VSCODE.md#step-1--open-vs-code-and-install-the-terminal-command).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## Optional — open a Finder folder in VS Code
 
-Continue at [this section](../how-to/apps/VSCODE.md#optional--open-a-finder-folder-in-vs-code).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## Step 2 — Decide whether this is a clean setup
 
-Continue at [this section](../how-to/apps/VSCODE.md#step-2--decide-whether-this-is-a-clean-setup).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ### Route A — Clean local setup — recommended
 
-Continue at [this section](../how-to/apps/VSCODE.md#route-a--clean-local-setup--recommended).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ### Route B — Import one reviewed profile
 
-Continue at [this section](../how-to/apps/VSCODE.md#route-b--import-one-reviewed-profile).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ### Route C — Restore through Settings Sync
 
-Continue at [this section](../how-to/apps/VSCODE.md#route-c--restore-through-settings-sync).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## Step 3 — Apply the Day One baseline
 
-Continue at [this section](../how-to/apps/VSCODE.md#step-3--apply-the-day-one-baseline).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## Step 4 — Understand settings levels
 
-Continue at [this section](../how-to/apps/VSCODE.md#step-4--understand-settings-levels).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ### Optional — show Git worktrees as separate working folders
 
-Continue at [this section](../how-to/apps/VSCODE.md#optional--show-git-worktrees-as-separate-working-folders).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## Step 5 — Install only relevant extensions
 
-Continue at [this section](../how-to/apps/VSCODE.md#step-5--install-only-relevant-extensions).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## Step 6 — Test the integrated terminal
 
-Continue at [this section](../how-to/apps/VSCODE.md#step-6--test-the-integrated-terminal).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## Step 7 — Review and merge chezmoi changes visually
 
-Continue at [this section](../how-to/apps/VSCODE.md#step-7--review-and-merge-chezmoi-changes-visually).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## Export and back up the configuration
 
-Continue at [this section](../how-to/apps/VSCODE.md#export-and-back-up-the-configuration).
+See the [current instructions](../setup/manual/editors/vscode.md#export-and-back-up-the-configuration).
 
 ### Export a portable profile — preferred
 
-Continue at [this section](../how-to/apps/VSCODE.md#export-a-portable-profile--preferred).
+See the [current instructions](../setup/manual/editors/vscode.md#export-a-portable-profile---preferred).
 
 ### Record the extension inventory
 
-Continue at [this section](../how-to/apps/VSCODE.md#record-the-extension-inventory).
+See the [current instructions](../setup/manual/editors/vscode.md#record-the-extension-inventory).
 
 ### Back up the complete local user folder — recovery copy
 
-Continue at [this section](../how-to/apps/VSCODE.md#back-up-the-complete-local-user-folder--recovery-copy).
+See the [current instructions](../setup/manual/editors/vscode.md#back-up-the-complete-local-user-folder---recovery-copy).
 
 ## Reset selected local settings or profiles
 
-Continue at [this section](../how-to/apps/VSCODE.md#reset-selected-local-settings-or-profiles).
+See the [current instructions](../setup/manual/editors/vscode.md#reset-selected-local-settings-or-profiles).
 
 ## Change or clear Settings Sync later
 
-Continue at [this section](../how-to/apps/VSCODE.md#change-or-clear-settings-sync-later).
+See the [current instructions](../setup/manual/editors/vscode.md#change-or-clear-settings-sync-later).
 
 ## Change settings later
 
-Continue at [this section](../how-to/apps/VSCODE.md#change-settings-later).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## Troubleshooting
 
-Continue at [this section](../how-to/apps/VSCODE.md#troubleshooting).
+See the [current instructions](../setup/manual/editors/vscode.md#troubleshooting).
 
 ## VS Code completion checklist 🚦
 
-Continue at [this section](../how-to/apps/VSCODE.md#vs-code-completion-checklist-).
+See the [current instructions](../setup/manual/editors/vscode.md).

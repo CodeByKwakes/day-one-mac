@@ -2,19 +2,19 @@
 
 # Required Installation Centre
 
-**Time:** 15–45 minutes · **Required:** everyone · **Runs once after Phase 2**
+**Time:** 15-45 minutes · **Required:** everyone · **Runs once after Phase 2**
 
 The lists below describe the default **recommended-productivity** preset.
 The **core** preset skips Raycast, Warp, the Nerd Font, and VS Code; Phase 7
 records a no-op. Both presets retain command-line tools and security gates.
 1Password and its CLI are required only for 1Password authentication. Changing
-the preset does not uninstall existing software. See [Start here](../../START-HERE.md#run-the-recommended-route).
+the preset does not uninstall existing software. See [Start here](README.md).
 
 ## Why this checkpoint exists
 
 The setup is easier when software installation and software configuration are
 separate. Phase 2 installs Homebrew. This checkpoint then prepares every app,
-font, and Terminal tool needed by Phases 3–8. Those later phases can therefore
+font, and Terminal tool needed by Phases 3-8. Those later phases can therefore
 focus on signing in, choosing settings, and verifying the result.
 
 This is a required checkpoint, not a ninth phase. Its completion is saved and
@@ -23,13 +23,15 @@ required catalogue changes, the checkpoint opens again.
 
 ## What it installs or accepts
 
-### Required applications and font
+### Applications and font selected by the preset
+
+The following four items apply only to the productivity selection; core skips them:
 
 - JetBrains Mono Nerd Font
 - Raycast
 - Visual Studio Code
 - Warp
-- 1Password and 1Password CLI (`op`) — **only in the `1password` authentication
+- 1Password and 1Password CLI (`op`) - **only in the `1password` authentication
   mode**, which is the default. Choosing `keychain`, `external`, or `https` in
   [Phase 3 Step 3.0](03-security-and-ssh.md) removes both from this list, and
   the checkpoint stops asking for them.
@@ -49,7 +51,7 @@ If you select an external installer, finish that installer and return to the
 Terminal. The checkpoint inspects the real application or command again; it
 does not treat a confirmation alone as proof.
 
-For Raycast specifically, the [Raycast installation guide](../../how-to/apps/RAYCAST.md#step-1--install-or-verify-raycast)
+For Raycast specifically, the [Raycast installation guide](../manual/apps/raycast.md#1-install-or-verify-raycast)
 shows the Homebrew, official-download and Company Portal routes, plus the exact
 ownership recheck. A valid external installation is accepted and remains
 owned by its original installer.
@@ -64,7 +66,7 @@ git  jq  ripgrep
 
 ghq is installed only when explicitly selected alongside the developer layout.
 An existing compatible copy is reused without adopting its package ownership.
-See [folder choices and optional ghq](../manual/developer-folders.md).
+See [folder choices and optional ghq](../manual/development/folders.md).
 
 The saved choices add only the relevant tools:
 
@@ -79,7 +81,7 @@ The saved choices add only the relevant tools:
 | Track 2 or 3 (Azure DevOps) | `azure-cli` (cask; existing formula installs are accepted) |
 
 A Homebrew command-line package is called a **formula**. A Homebrew macOS app
-or font is called a **cask**. See [Glossary](../../reference/GLOSSARY.md) for more terms.
+or font is called a **cask**. See [Glossary](../../shared/glossary.md) for more terms.
 
 Azure CLI is now distributed as a Homebrew **cask**, even though it is a
 command-line tool. Install a missing copy with `brew install --cask azure-cli`;
@@ -91,17 +93,6 @@ still fails, its formula-only check may be rejecting the cask. Confirm with
 `brew list --cask --versions azure-cli` and `az --version`, then update the
 Day One Mac runtime to a release containing the fix. Reinstalling the cask
 alone cannot repair version 1.5.0's incorrect package-type check.
-
-## Manual route — install and verify each item
-
-Manual-route readers do not run the Installation Centre. Use the catalogue
-above to check each item, preserve an existing approved owner, and install only
-missing software. Run the version or application check for every item before
-continuing to Manual 3. Keep your own record of the selected installer because
-the manual route does not create provenance or rollback manifests.
-
-The complete commands and checks are in
-[Manual 3 and Manual 4](../manual/MANUAL-SETUP-GUIDE.md#manual-3--configure-git-authentication-and-filevault).
 
 ## Script-assisted route — recommended automatic flow
 
@@ -186,7 +177,8 @@ merely because it may be useful later.
 ## Completion checklist 🚦
 
 - [ ] Every required application/font entry for your authentication mode is
-      present with an understood owner — six in `1password` mode, four otherwise.
+      present with an understood owner. Core omits the four productivity items;
+      authentication tools depend on the selected mode/helper.
 - [ ] Every formula for the selected track and stack is installed.
 - [ ] No ownership conflict remains.
 - [ ] `--status` reports the Installation Centre as current.
@@ -195,3 +187,15 @@ merely because it may be useful later.
 ---
 
 [← Phase 2](02-command-line-foundation.md) · [Continue to Phase 3 →](03-security-and-ssh.md)
+
+## Previously published section links
+
+These entries preserve bookmarks from the previous structure. Each points to the current task; follow the main guide above for the normal sequence.
+
+### Required applications and font
+
+Continue with the [current guide](../../shared/reference/software-catalogue.md).
+
+## Manual route — install and verify each item
+
+Continue with the [current guide](../manual/apps/README.md).

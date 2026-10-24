@@ -12,6 +12,10 @@ else
   fail "release archive and installer regressions failed"
 fi
 
+run_fixture "documentation routes preserve canonical ownership and old section links" \
+  "documentation route compatibility failed" \
+  node "$SCRIPT_DIR/../tests/integration/test-documentation-routes.cjs" || true
+
 run_fixture "all 96 base selection plans preserve read-only behavior" \
   "selection matrix failed" \
   /usr/bin/env python3 -I -B "$SCRIPT_DIR/../tests/integration/test-selection-matrix.py" || true
@@ -147,6 +151,8 @@ else
 fi
 
 run_fixture "profile configuration remains independent of guides" "profile configuration regression failed" node "$PROJECT_DIR/tests/integration/test-profile-config.cjs" || true
+run_fixture "profile replacement previews and restores preserve existing user files" \
+  "profile replacement regression failed" node "$PROJECT_DIR/tests/integration/test-vscode-profile-replacement.cjs" || true
 run_fixture "phase dependencies isolate optional changes" "phase dependency regression failed" /bin/bash "$PROJECT_DIR/tests/integration/test-phase-dependencies.sh" || true
 
 run_fixture "restructure safety regressions fail closed" \

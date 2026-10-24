@@ -2,7 +2,7 @@
 
 # Phase 6 — Language toolchains and pnpm
 
-**Time:** 15–35 minutes · **Required:** selected stack only
+**Time:** 15-35 minutes · **Required:** selected stack only
 
 ## Outcome
 
@@ -14,15 +14,15 @@ guide does not freeze versions that will become stale.
 ## How to use this phase
 
 - **Manual route:** complete the selected stack under
-  [Manual 6](../manual/MANUAL-SETUP-GUIDE.md#manual-6--install-the-selected-language-toolchains),
+  [Manual 6](../manual/languages.md),
   then use the checks below.
 - **Script-assisted route:** run `day-one-mac setup --phase 06`. It performs
   only the Node and/or Python route saved in Phase 1. The detailed commands
   below are for understanding and recovery. **LTS** means a longer-supported Node release; a **lockfile**
-records exact project dependencies. See [GLOSSARY.md](../../reference/GLOSSARY.md).
+records exact project dependencies. See [GLOSSARY.md](../../shared/glossary.md).
 
 If your selected Node project needs private Azure Artifacts packages, use the
-[manual npm authentication guide](../manual/azure-artifacts-npm.md) after Node.js
+[manual npm authentication guide](../manual/git/azure-artifacts-npm.md) after Node.js
 and npm work. It is optional, not a Phase 6 completion gate. The fully manual
 and script-assisted routes use the same guide; no PAT belongs in setup state.
 
@@ -98,7 +98,7 @@ v24.21.0
 ```
 
 `command -v node` and `command -v npm` should point inside fnm's active
-multishell path — that is, a path containing `fnm_multishells`, as above. If
+multishell path - that is, a path containing `fnm_multishells`, as above. If
 either instead prints something under `/opt/homebrew` or `/usr/local`, a second
 Node installation is shadowing fnm; resolve that before continuing.
 

@@ -1,5 +1,5 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Plain-English glossary
 
-This guide moved to [GLOSSARY](../reference/GLOSSARY.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../shared/glossary.md). This compatibility page preserves existing links.

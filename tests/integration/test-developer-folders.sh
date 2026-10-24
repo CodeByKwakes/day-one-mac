@@ -61,7 +61,7 @@ for name in Projects Experiments Project-Materials Exports; do
 done
 [[ "$(cat "$HOME/Developer/Resources/VSCode/Profiles/personal.code-profile")" == 'keep profile' ]]
 ! grep -Fq "$HOME/Developer/Resources/VSCode/Profiles" "$PATH_MANIFEST"
-cmp "$SCRIPT_DIR/../docs/reference/developer-resources/README.md" "$HOME/Developer/Resources/README.md"
+cmp "$SCRIPT_DIR/../docs/setup/manual/development/resources.md" "$HOME/Developer/Resources/README.md"
 grep -Fq "$HOME/Developer/Resources/README.md" "$PATH_MANIFEST"
 [[ ! -e "$HOME/Developer/Resources/Project-Materials/example-app" ]]
 before="$(shasum -a 256 "$PATH_MANIFEST" "$HOME/Developer/Resources/README.md")"
@@ -248,7 +248,7 @@ expect_exit 0 env HOME="$cli_home" DAY_ONE_MAC_STATE_ROOT="$cli_state" /bin/bash
 rm "$cli_home/Developer/Resources/README.md"
 expect_exit 11 env HOME="$cli_home" DAY_ONE_MAC_STATE_ROOT="$cli_state" /bin/bash "$SCRIPT_DIR/../src/modules/configure-folders.sh" --check
 expect_exit 0 env HOME="$cli_home" DAY_ONE_MAC_STATE_ROOT="$cli_state" /bin/bash "$SCRIPT_DIR/../src/modules/configure-folders.sh" --resume
-cmp "$SCRIPT_DIR/../docs/reference/developer-resources/README.md" "$cli_home/Developer/Resources/README.md"
+cmp "$SCRIPT_DIR/../docs/setup/manual/development/resources.md" "$cli_home/Developer/Resources/README.md"
 before="$(shasum -a 256 "$cli_state/path-manifest.tsv" "$cli_state/setup.log")"
 expect_exit 0 env HOME="$cli_home" DAY_ONE_MAC_STATE_ROOT="$cli_state" "$SCRIPT_DIR/day-one-mac" folders --check
 [[ "$before" == "$(shasum -a 256 "$cli_state/path-manifest.tsv" "$cli_state/setup.log")" ]]

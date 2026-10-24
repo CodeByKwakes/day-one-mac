@@ -307,22 +307,22 @@ write_action_body() {
     inventory) printf '%s\n' 'day_one inventory' >> "$file" ;;
     validate) printf '%s\n' 'day_one validate' >> "$file" ;;
     finalize-status) printf '%s\n' 'day_one finalize --status' >> "$file" ;;
-    open-start) printf '%s\n' 'open_code "$(day_one_project_root)/START-HERE.md"' >> "$file" ;;
-    open-command-reference) printf '%s\n' 'open_code "$(day_one_project_root)/reference/COMMAND-REFERENCE.md"' >> "$file" ;;
+    open-start) printf '%s\n' 'open_code "$(day_one_project_root)/docs/START-HERE.md"' >> "$file" ;;
+    open-command-reference) printf '%s\n' 'open_code "$(day_one_project_root)/docs/setup/assisted/reference/command-reference.md"' >> "$file" ;;
     open-project) printf '%s\n' 'open_code "$(day_one_project_root)"' >> "$file" ;;
     open-project-terminal) printf '%s\n' 'open_warp_path "$(day_one_project_root)"' >> "$file" ;;
-    open-optional) printf '%s\n' 'open_code "$(day_one_project_root)/optional/README.md"' >> "$file" ;;
+    open-optional) printf '%s\n' 'open_code "$(day_one_project_root)/docs/setup/assisted/optional/README.md"' >> "$file" ;;
     removal-inventory) printf '%s\n' 'day_one remove --inventory' >> "$file" ;;
     rollback-preview) printf '%s\n' 'day_one rollback' >> "$file" ;;
     cleanup-preview) printf '%s\n' 'day_one clean' >> "$file" ;;
     workspace-list) printf '%s\n' 'day_one workspace list' >> "$file" ;;
     workspace-folder) printf '%s\n' 'mkdir -p "$HOME/Developer/_Projectless/tasks"' 'open "$HOME/Developer/_Projectless/tasks"' >> "$file" ;;
-    workspace-guide) printf '%s\n' 'open_code "$(day_one_project_root)/reference/AI-WORKSPACES.md"' >> "$file" ;;
+    workspace-guide) printf '%s\n' 'open_code "$(day_one_project_root)/docs/setup/assisted/optional/ai-workspaces.md"' >> "$file" ;;
     new-codex-task) printf '%s\n' 'create_ai_task codex "${1:-Untitled}"' >> "$file" ;;
     new-claude-task) printf '%s\n' 'create_ai_task claude "${1:-Untitled}"' >> "$file" ;;
     new-copilot-task) printf '%s\n' 'create_ai_task copilot "${1:-Untitled}"' >> "$file" ;;
     open-copilot-app) printf '%s\n' 'if [[ -d "/Applications/GitHub Copilot.app" ]]; then open -a "GitHub Copilot"; else open -a Copilot; fi' >> "$file" ;;
-    raycast-ai-guide) printf '%s\n' 'open_code "$(day_one_project_root)/optional/10-ai-agents.md"' >> "$file" ;;
+    raycast-ai-guide) printf '%s\n' 'open_code "$(day_one_project_root)/docs/setup/manual/ai/clients.md"' >> "$file" ;;
     github-auth) printf '%s\n' 'command -v gh >/dev/null 2>&1 || { echo "gh is unavailable; rerun Phase 4." >&2; exit 1; }' 'gh auth status' >> "$file" ;;
     github-repository) cat >> "$file" <<'EOF'
 root="$(day_one_project_root)"
@@ -337,7 +337,7 @@ EOF
       ;;
     azure-account) printf '%s\n' 'command -v az >/dev/null 2>&1 || { echo "az is unavailable; rerun Phase 4." >&2; exit 1; }' 'az account show --output table' >> "$file" ;;
     azure-repositories) printf '%s\n' 'command -v az >/dev/null 2>&1 || { echo "az is unavailable; rerun Phase 4." >&2; exit 1; }' 'az repos list --output table' >> "$file" ;;
-    second-brain-guide) printf '%s\n' 'open_code "$(day_one_project_root)/extensions/second-brain/README.md"' >> "$file" ;;
+    second-brain-guide) printf '%s\n' 'open_code "$(day_one_project_root)/docs/setup/manual/second-brain/README.md"' >> "$file" ;;
     *) die "unknown Raycast catalogue action: $action" ;;
   esac
 }

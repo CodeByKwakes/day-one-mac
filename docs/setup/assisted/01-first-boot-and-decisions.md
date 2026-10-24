@@ -2,7 +2,7 @@
 
 # Phase 1 — First boot and setup decisions
 
-**Time:** 20–45 minutes plus system updates · **Required:** everyone
+**Time:** 20-45 minutes plus system updates · **Required:** everyone
 
 ## Outcome
 
@@ -22,7 +22,7 @@ blocks are checks or explanations; do not repeat them after the phase passes.
 The [Start Here guide](../../START-HERE.md) explains Terminal, placeholders, preview
 mode, and how to resume.
 
-For managed Macs, first complete [managed provisioning and preflight evidence](../../reference/WORKSTATION-READINESS.md).
+For managed Macs, first complete [managed provisioning and preflight evidence](../../shared/verification.md).
 The local scripts never repair enrollment, demote accounts or handle recovery
 keys. The preferences checkpoint is skipped when policy ownership is managed.
 
@@ -44,7 +44,7 @@ later.
 ### If this Mac is not actually clean
 
 Do not confirm the clean-machine gate yet. Open
-[Stage 0 — Safely prepare an existing Mac](../existing-mac/README.md). The wizard
+[Stage 0 - Safely prepare an existing Mac](existing-mac/README.md). The wizard
 first explains Route A and Route B. Both start with a read-only safety report
 that finds applications, packages, containers, startup components, dirty Git
 repositories, and repositories with no remote copy.
@@ -90,7 +90,7 @@ Press `q` after reviewing the installer in `less`. The verified runtime is
 stored under `~/.local/share/day-one-mac`. Contributors may additionally
 clone the public repository under `~/Developer/github.com/CodeByKwakes`; that
 checkout is not required for ordinary setup. The complete filesystem map is
-documented in [EXPECTED-LAYOUT.md](../../reference/EXPECTED-LAYOUT.md).
+documented in [EXPECTED-LAYOUT.md](../../shared/reference/expected-layout.md).
 
 ## Step 1.1 — Finish Setup Assistant
 
@@ -169,12 +169,12 @@ Choose exactly one:
 
 | Track | Select when | What later phases do |
 |---|---|---|
-| **1 — GitHub** | Repositories are hosted only on GitHub | Install `gh` and verify GitHub SSH |
-| **2 — Azure DevOps 🏢** | Work is hosted only in Azure DevOps | Install `az` and omit every GitHub gate |
-| **3 — GitHub + Azure DevOps 🏢** | This Mac uses both providers | Install `gh` and `az` and verify both |
-| **4 — None of the above** | You manage repository access yourself | No mandatory provider CLI or sign-in; compare Phase 3 methods |
+| **1 - GitHub** | Repositories are hosted only on GitHub | Install `gh` and verify GitHub SSH |
+| **2 - Azure DevOps 🏢** | Work is hosted only in Azure DevOps | Install `az` and omit every GitHub gate |
+| **3 - GitHub + Azure DevOps 🏢** | This Mac uses both providers | Install `gh` and `az` and verify both |
+| **4 - None of the above** | You manage repository access yourself | No mandatory provider CLI or sign-in; compare Phase 3 methods |
 
-Choose the [developer layout and optional ghq](../manual/developer-folders.md)
+Choose the [developer layout and optional ghq](../manual/development/folders.md)
 separately. Four layouts are available; no ghq installation is preselected.
 Existing folders and repositories are never moved by this choice.
 
@@ -222,8 +222,8 @@ this question. With the productivity preset, this choice controls Git integratio
 
 | Choice | Git behavior |
 |---|---|
-| **Yes — VS Code is primary** | Configure VS Code for commit messages, visual diffs and merge conflicts |
-| **No — another IDE is primary** | Do not add or change Git editor, diff or merge-tool settings |
+| **Yes - VS Code is primary** | Configure VS Code for commit messages, visual diffs and merge conflicts |
+| **No - another IDE is primary** | Do not add or change Git editor, diff or merge-tool settings |
 
 Selecting **No** does not uninstall VS Code. It also does not erase an editor
 setting that already belongs to you or company policy.
@@ -257,7 +257,7 @@ day-one-mac --wizard
 ```
 
 For the route that does not use Day One Mac scripts, record the same decisions
-in the worksheet under [Record the setup decisions](../manual/MANUAL-SETUP-GUIDE.md#record-the-setup-decisions),
+in the worksheet under [Record the setup decisions](../../shared/decisions.md),
 then continue with Manual 1. Do not create or edit runner state files.
 
 Use Up/Down (or `j`/`k`) to move. Space or Enter accepts one highlighted

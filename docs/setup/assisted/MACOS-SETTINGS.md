@@ -2,7 +2,7 @@
 
 # Early macOS Settings Wizard
 
-**Time:** 10–25 minutes · **Required:** no · **Runs:** after Phase 1 and before Phase 2
+**Time:** 10-25 minutes · **Required:** no · **Runs:** after Phase 1 and before Phase 2
 
 ## Why this happens early
 
@@ -21,7 +21,7 @@ skipping optional preferences.
 **Personal Macs only.** Managed setup skips this checkpoint, and local preference
 apply/resume/restore is blocked. Ask IT to change managed preferences through
 the approved policy; inspection does not authorize local changes. See
-[workstation ownership](../../reference/WORKSTATION-READINESS.md#choose-ownership-before-setup).
+[workstation ownership](../../shared/decisions.md).
 
 ```text
 macOS preferences are optional and run before development tools.
@@ -33,7 +33,7 @@ wizard, `s` to continue directly to Phase 2, or `q` to stop safely. Rerunning
 the required setup resumes at this checkpoint. Saved choices remain available,
 but an implementation or policy change can make phase fingerprints stale.
 Review setup status and revalidate affected phases; see
-[completion and migration](../../explanation/ARCHITECTURE-AND-STATE.md#completion-and-migration).
+[completion and migration](../../shared/explanation/architecture-and-state.md#completion-and-migration).
 
 The menu shows a window of preferences that fits your terminal. Use Up/Down
 or `j`/`k` to reach every item, Space to toggle it, and Enter to review. The
@@ -165,7 +165,7 @@ entire preferences domain over unrelated application settings.
 | `not run` | No settings decision has been applied yet |
 
 After completion or an intentional skip, continue to
-[Phase 2 — Command-line foundation](02-command-line-foundation.md).
+[Phase 2 - Command-line foundation](02-command-line-foundation.md).
 
 ## Current safety and tooling rules
 

@@ -1,131 +1,37 @@
-[← Advanced 18](../../modules/advanced/18-hosting-identities-azure-and-worktrees.md) · [AI workspaces →](../../../reference/AI-WORKSPACES.md)
+<!-- day-one-mac:compatibility-guide -->
 
 # Git worktrees: choose your workflow
 
-A worktree gives an existing Git repository several checked-out folders.
-Use one for each feature, fix, review, or test run that needs separate files.
-This is optional; complete the required Day One Mac phases first.
-
-Open this overview in the installed docs browser:
-
-```bash
-day-one-mac docs worktrees --browser
-```
+Continue with the [current guide](../../../setup/manual/development/worktrees/README.md). This compatibility page preserves existing links.
 
 ## Choose a route
 
-| Route | Use it when |
-|---|---|
-| [Git worktrees from Terminal](WORKTREES-TERMINAL.md) | You want explicit branches, bases, and paths for features, hotfixes, PR reviews, and tests |
-| [VS Code GUI](WORKTREES-VSCODE.md) | You prefer a worked GUI example with clearly marked terminal steps for reviews and tests |
-| [VS Code Agents and GitHub Copilot](WORKTREES-COPILOT.md) | You want agent-assisted features, fixes, reviews, and tests in VS Code |
-| [Codex](WORKTREES-CODEX.md) | You want app-managed isolation or Codex in a manually created worktree |
-| [Claude](WORKTREES-CLAUDE.md) | You want Claude-managed isolation or Claude in a manually created worktree |
-| [Environment files and running applications](WORKTREES-ENVIRONMENT.md) | You need independent `.env` files, ports, databases, and dependencies |
-| [Troubleshooting](WORKTREES-TROUBLESHOOTING.md) | The path, branch, environment, or cleanup is not behaving as expected |
-
-Choose one creation route, prepare the environment before running code, then
-review, integrate, and clean up through the tool that owns the worktree.
-These are manual workflows using Git and the named clients; Day One Mac bundles
-the instructions but does not automatically create worktrees or copy secrets.
+See the [current instructions](../../../setup/manual/development/worktrees/README.md#choose-a-route).
 
 ## Keep working, then finish
 
-- [Bring latest main into a feature worktree](WORKTREES-TERMINAL.md#bring-the-latest-main-into-an-active-worktree).
-- [Finish through a PR](WORKTREES-TERMINAL.md#route-a-complete-through-a-pull-request) or [merge locally into main](WORKTREES-TERMINAL.md#route-b-merge-locally-into-main).
-- [Pull the merged result into local main](WORKTREES-TERMINAL.md#pull-the-merged-result-into-local-main), then [clean up](WORKTREES-TERMINAL.md#safe-cleanup).
-
-Each tool route also includes its own update and completion steps. Updating
-main, updating a feature from main, and merging a feature into main are three
-different operations.
+See the [current instructions](../../../setup/manual/development/worktrees/README.md#keep-working-then-finish).
 
 ## What is shared?
 
-```text
-Repository history, branches, and remotes (shared)
-├── acme/                         main
-├── acme.worktrees/feature-auth/   feature/auth
-└── acme.worktrees/test-main/      detached snapshot
-
-Each folder: own files, staging area, and ignored environment files
-Separate configuration needed: ports, databases, containers, external services
-```
+See the [current instructions](../../../setup/manual/development/worktrees/README.md#what-is-shared).
 
 ## Start from main
 
-`main` means your local branch, including local commits. `origin/main` means
-its remote reference as of your last fetch. Choose deliberately: starting
-from a branch does not mean checking out that same branch twice.
-
-For a new feature, create a new branch from the chosen base. For a parallel
-main test, use a detached snapshot while the primary folder remains on `main`.
-Manual Git worktrees do not inherit uncommitted edits. App-managed modes can
-have different starting-state options, explained on their route pages.
-
-See the [complete main setup](WORKTREES-TERMINAL.md#start-from-main).
+See the [current instructions](../../../setup/manual/development/worktrees/README.md#start-from-main).
 
 ## Projectless task or worktree?
 
-| Work | Use |
-|---|---|
-| Standalone research or document with no repository | `_Projectless` task |
-| Change to an existing repository | Worktree |
-| New maintained software | Create a repository, commit a baseline, then use worktrees if needed |
-| Read-only conversation with no files | Client-managed chat |
-
-Do not copy a repository into `_Projectless`. Do not create a worktree for a
-plain projectless task.
+See the [current instructions](../../../setup/manual/development/worktrees/README.md#projectless-task-or-worktree).
 
 ## Canonical Day One layout
 
-Keep each manual worktree container beside its primary checkout:
-
-```text
-~/Developer/github.com/example/acme/
-~/Developer/github.com/example/acme.worktrees/
-├── codex-payment-timeout/
-├── claude-auth-refactor/
-└── review-pr-482/
-```
-
-For Azure DevOps, the same rule applies below the repository's real ghq path.
-The `.worktrees` suffix is plural because the directory can hold several linked
-worktrees. Keeping it under the same provider/owner prefix preserves Day One
-Mac's `includeIf gitdir:` identity routing.
-
-Tool-managed worktrees may use internal locations. If a tool created the
-worktree, let that tool archive, finish, hand off, or remove it. Use the manual
-layout only when you own the lifecycle.
+See the [current instructions](../../../setup/manual/development/worktrees/README.md#canonical-day-one-layout).
 
 ## Core rules
 
-1. One worktree has one purpose and one checked-out branch or detached snapshot.
-2. One AI client is the primary writer in a worktree.
-3. Open each worktree in its own VS Code window or Warp tab.
-4. Verify the path and branch before editing, committing, or pushing.
-5. Use distinct ports, databases, and container project names for concurrent
-   applications.
-6. Remove a worktree through Git or its owning application—never Finder or
-   `rm -rf`.
+See the [current instructions](../../../setup/manual/development/worktrees/README.md#core-rules).
 
 ## Check prerequisites
 
-```bash
-git --version
-code --version
-# Optional, only if you use ghq:
-ghq root
-```
-
-From the primary checkout:
-
-```bash
-git status --short --branch
-git worktree list --verbose
-git remote -v
-```
-
-Keep the primary checkout clean and on its normal integration branch whenever
-practical.
-
-Read the [Git worktree reference](https://git-scm.com/docs/git-worktree) for Git semantics.
+See the [current instructions](../../../setup/manual/development/worktrees/README.md#check-prerequisites).

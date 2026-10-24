@@ -73,7 +73,7 @@ select_one() {
 }
 centre_guide() { printf '%s\n' "$1" > "$TASK_TMP/selected-guide"; }
 centre_docs
-[[ "$(cat "$TASK_TMP/selected-guide")" == "$ROOT/docs/explanation/PROCESS-OVERVIEW.md" ]] || fail 'setup centre opens a legacy guide stub'
+[[ "$(cat "$TASK_TMP/selected-guide")" == "$ROOT/docs/shared/explanation/process-overview.md" ]] || fail 'setup centre opens a legacy guide stub'
 printf '\nif then\n' >> "$TASK_TMP/src/setup/phases/03-security.sh"
 if /bin/bash "$TASK_TMP/src/operations/verify.sh" > "$TASK_TMP/verification" 2>&1; then fail 'verification ignores invalid relocated phase syntax'; fi
 [[ "$failures" == 0 ]] || exit 1

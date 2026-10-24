@@ -2,7 +2,7 @@
 
 # Phase 2 — Command-line foundation
 
-**Time:** 20–40 minutes · **Required:** everyone
+**Time:** 20-40 minutes · **Required:** everyone
 
 The script-assisted installer downloads Homebrew to a private state file,
 checks its shell syntax, prints its SHA-256 and review path, and asks before
@@ -19,10 +19,8 @@ that follows this phase.
 
 ## How to use this phase
 
-- **Manual route:** complete Steps 2.1–2.3 and verify every item in the final
-  checklist. Do not run Step 2.4.
 - **Script-assisted route:** run `day-one-mac setup --phase 02` from any
-  directory. Use Steps 2.1–2.3 to understand a pause, but do not repeat
+  directory. Use Steps 2.1-2.3 to understand a pause, but do not repeat
   successful installation commands.
 
 See [Start Here](../../START-HERE.md) for Terminal basics.
@@ -89,27 +87,14 @@ Expected output:
 
 ```text
 package-id: com.apple.pkg.CLTools_Executables
-version: 27.0.0.0.1788430756
+version: <installed Apple tools version>
 volume: /
 location: /
 ```
 
-The package version follows **Xcode's** release numbering, not the macOS
-version, and Xcode normally runs at or ahead of macOS. On macOS 26.7, for
-example, the current package already reports `27.x`. So a number higher than
-your macOS version is normal and correct.
-
-What matters is the opposite case: a package version **lower** than your macOS
-major version means the tools are stale. Install the current ones from Software
-Update, or rerun `xcode-select --install`.
-
-If the command reports `No receipt for 'com.apple.pkg.CLTools_Executables'
-found at '/'`, the standalone package is not installed. That is fine when
-`xcode-select -p` points inside `Xcode.app`, because full Xcode supplies the
-same tools.
-
-If the installer says the tools are unavailable, finish all macOS updates,
-restart, and try again.
+The package version follows Apple developer-tool release numbering. Compare it
+with the approved toolchain; do not infer compatibility from matching the OS
+major number alone.
 
 ## Step 2.2 — Install Homebrew
 
@@ -168,7 +153,7 @@ else
 fi
 ```
 
-On success this block prints nothing — it only adds Homebrew to the current
+On success this block prints nothing - it only adds Homebrew to the current
 terminal's `PATH`. Silence is the expected result. The last line reports failure
 correctly whether the block is pasted into your shell or saved into a file,
 which is why it lists two ways of stopping.
@@ -206,7 +191,7 @@ Warning: You have unlinked kegs in your Cellar.
 Warning: Some installed formulae are deprecated or disabled.
 ```
 
-A message beginning `Error:` is different — resolve that before continuing.
+A message beginning `Error:` is different - resolve that before continuing.
 Do not react by applying `sudo chmod -R` to `/opt/homebrew` or the
 home directory. Broad permission changes make later upgrades less predictable.
 
@@ -251,7 +236,7 @@ begins. This removes the repeated install-and-stop cycle from later phases.
 - [ ] `clang --version` succeeds.
 - [ ] Full Xcode, when selected, passes `xcodebuild -checkFirstLaunchStatus`.
 - [ ] A standalone Command Line Tools package, if used, is not older than the
-      macOS major version (a higher number is normal — it tracks Xcode).
+      macOS major version (a higher number is normal - it tracks Xcode).
 - [ ] `brew --version` succeeds in the current terminal.
 - [ ] Phase 2 explicitly reported either that existing Homebrew was found or
       that Day One Mac installed it.

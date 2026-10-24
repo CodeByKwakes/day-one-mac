@@ -1,5 +1,5 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Finalise, roll back, remove, or clean Day One Mac
 
-This guide moved to [README](../how-to/recovery/README.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/assisted/recovery/README.md). This compatibility page preserves existing links.

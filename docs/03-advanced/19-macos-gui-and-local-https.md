@@ -1,61 +1,61 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Advanced 19 — macOS, GUI applications, and local HTTPS
 
-This guide moved to [19-macos-gui-and-local-https](../how-to/modules/advanced/19-macos-gui-and-local-https.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/assisted/advanced/19-macos-gui-and-local-https.md). This compatibility page preserves existing links.
 
 ## Outcome
 
-Continue at [this section](../how-to/modules/advanced/19-macos-gui-and-local-https.md#outcome).
+See the [current instructions](../setup/assisted/advanced/19-macos-gui-and-local-https.md#outcome).
 
 ## Executable selected-preference route
 
-Continue at [this section](../how-to/modules/advanced/19-macos-gui-and-local-https.md#executable-selected-preference-route).
+See the [current instructions](../setup/assisted/advanced/19-macos-gui-and-local-https.md#executable-selected-preference-route).
 
 ## Step 19.1 — Separate preferences from security controls
 
-Continue at [this section](../how-to/modules/advanced/19-macos-gui-and-local-https.md#step-191--separate-preferences-from-security-controls).
+See the [current instructions](../setup/assisted/advanced/19-macos-gui-and-local-https.md).
 
 ## Step 19.2 — Capture current defaults
 
-Continue at [this section](../how-to/modules/advanced/19-macos-gui-and-local-https.md#step-192--capture-current-defaults).
+See the [current instructions](../setup/assisted/advanced/19-macos-gui-and-local-https.md).
 
 ## Step 19.3 — Preview a conservative preference set
 
-Continue at [this section](../how-to/modules/advanced/19-macos-gui-and-local-https.md#step-193--preview-a-conservative-preference-set).
+See the [current instructions](../setup/assisted/advanced/19-macos-gui-and-local-https.md).
 
 ## Step 19.4 — Apply only approved preferences
 
-Continue at [this section](../how-to/modules/advanced/19-macos-gui-and-local-https.md#step-194--apply-only-approved-preferences).
+See the [current instructions](../setup/assisted/advanced/19-macos-gui-and-local-https.md).
 
 ## Step 19.5 — Complete manual security and permission review
 
-Continue at [this section](../how-to/modules/advanced/19-macos-gui-and-local-https.md#step-195--complete-manual-security-and-permission-review).
+See the [current instructions](../setup/manual/macos.md).
 
 ## Step 19.6 — Review login items and background services
 
-Continue at [this section](../how-to/modules/advanced/19-macos-gui-and-local-https.md#step-196--review-login-items-and-background-services).
+See the [current instructions](../setup/manual/macos.md#review-login-items-and-background-services).
 
 ## Step 19.7 — Configure Raycast and menu-bar tools intentionally
 
-Continue at [this section](../how-to/modules/advanced/19-macos-gui-and-local-https.md#step-197--configure-raycast-and-menu-bar-tools-intentionally).
+See the [current instructions](../setup/manual/apps/raycast.md).
 
 ## Step 19.8 — Choose browsers by role
 
-Continue at [this section](../how-to/modules/advanced/19-macos-gui-and-local-https.md#step-198--choose-browsers-by-role).
+See the [current instructions](../setup/manual/macos.md).
 
 ## Step 19.9 — Create a new local HTTPS authority
 
-Continue at [this section](../how-to/modules/advanced/19-macos-gui-and-local-https.md#step-199--create-a-new-local-https-authority).
+See the [current instructions](../setup/manual/local-https.md).
 
 ## Step 19.10 — Record reproducible versus manual state
 
-Continue at [this section](../how-to/modules/advanced/19-macos-gui-and-local-https.md#step-1910--record-reproducible-versus-manual-state).
+See the [current instructions](../setup/manual/macos.md).
 
 ## Rollback
 
-Continue at [this section](../how-to/modules/advanced/19-macos-gui-and-local-https.md#rollback).
+See the [current instructions](../setup/assisted/advanced/19-macos-gui-and-local-https.md).
 
 ## Advanced 19 completion checklist 🚦
 
-Continue at [this section](../how-to/modules/advanced/19-macos-gui-and-local-https.md#advanced-19-completion-checklist-).
+See the [current instructions](../setup/assisted/advanced/19-macos-gui-and-local-https.md).

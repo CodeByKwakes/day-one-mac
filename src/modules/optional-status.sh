@@ -83,20 +83,20 @@ module_title() {
 
 module_doc() {
   case "$1" in
-    09) printf '%s/docs/how-to/modules/optional/09-databases.md\n' "$PROJECT_DIR" ;;
-    10) printf '%s/docs/how-to/modules/optional/10-ai-agents.md\n' "$PROJECT_DIR" ;;
-    10A) printf '%s/docs/how-to/modules/optional/10a-omniroute.md\n' "$PROJECT_DIR" ;;
-    11) printf '%s/docs/how-to/modules/optional/11-mcp-servers.md\n' "$PROJECT_DIR" ;;
-    13) printf '%s/docs/how-to/modules/optional/13-enhanced-cli-tools.md\n' "$PROJECT_DIR" ;;
-    14) printf '%s/docs/how-to/modules/optional/14-warp-drive.md\n' "$PROJECT_DIR" ;;
-    15) printf '%s/docs/how-to/modules/advanced/15-full-dotfiles-and-bootstrap.md\n' "$PROJECT_DIR" ;;
-    16) printf '%s/docs/how-to/modules/advanced/16-brewfile-apps-and-editor.md\n' "$PROJECT_DIR" ;;
-    17) printf '%s/docs/how-to/modules/advanced/17-shell-and-package-automation.md\n' "$PROJECT_DIR" ;;
-    18) printf '%s/docs/how-to/modules/advanced/18-hosting-identities-azure-and-worktrees.md\n' "$PROJECT_DIR" ;;
-    19) printf '%s/docs/how-to/modules/advanced/19-macos-gui-and-local-https.md\n' "$PROJECT_DIR" ;;
-    20) printf '%s/docs/how-to/modules/advanced/20-restore-and-migrate.md\n' "$PROJECT_DIR" ;;
-    21) printf '%s/docs/how-to/modules/advanced/21-audit-maintenance-and-rebuild.md\n' "$PROJECT_DIR" ;;
-    22) printf '%s/docs/how-to/modules/advanced/22-ai-skills-and-mcp-operations.md\n' "$PROJECT_DIR" ;;
+    09) printf '%s/docs/setup/assisted/optional/09-databases.md\n' "$PROJECT_DIR" ;;
+    10) printf '%s/docs/setup/assisted/optional/10-ai-agents.md\n' "$PROJECT_DIR" ;;
+    10A) printf '%s/docs/setup/assisted/optional/10a-omniroute.md\n' "$PROJECT_DIR" ;;
+    11) printf '%s/docs/setup/assisted/optional/11-mcp-servers.md\n' "$PROJECT_DIR" ;;
+    13) printf '%s/docs/setup/assisted/optional/13-enhanced-cli-tools.md\n' "$PROJECT_DIR" ;;
+    14) printf '%s/docs/setup/assisted/optional/14-warp-drive.md\n' "$PROJECT_DIR" ;;
+    15) printf '%s/docs/setup/assisted/advanced/15-full-dotfiles-and-bootstrap.md\n' "$PROJECT_DIR" ;;
+    16) printf '%s/docs/setup/assisted/advanced/16-brewfile-apps-and-editor.md\n' "$PROJECT_DIR" ;;
+    17) printf '%s/docs/setup/assisted/advanced/17-shell-and-package-automation.md\n' "$PROJECT_DIR" ;;
+    18) printf '%s/docs/setup/assisted/advanced/18-hosting-identities-azure-and-worktrees.md\n' "$PROJECT_DIR" ;;
+    19) printf '%s/docs/setup/assisted/advanced/19-macos-gui-and-local-https.md\n' "$PROJECT_DIR" ;;
+    20) printf '%s/docs/setup/assisted/advanced/20-restore-and-migrate.md\n' "$PROJECT_DIR" ;;
+    21) printf '%s/docs/setup/assisted/advanced/21-audit-maintenance-and-rebuild.md\n' "$PROJECT_DIR" ;;
+    22) printf '%s/docs/setup/assisted/advanced/22-ai-skills-and-mcp-operations.md\n' "$PROJECT_DIR" ;;
   esac
 }
 

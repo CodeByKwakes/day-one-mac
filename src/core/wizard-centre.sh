@@ -151,7 +151,7 @@ centre_modules() {
 centre_docs() {
   local guide
   while :; do
-    SINGLE_VALUES=(START-HERE.md explanation/PROCESS-OVERVIEW.md reference/COMMAND-REFERENCE.md how-to/modules/optional/README.md how-to/modules/advanced/README.md how-to/apps/MACOS-SHORTCUTS.md back)
+    SINGLE_VALUES=(START-HERE.md shared/explanation/process-overview.md setup/assisted/reference/command-reference.md setup/assisted/optional/README.md setup/assisted/advanced/README.md setup/manual/apps/macos-shortcuts.md back)
     SINGLE_LABELS=('Start here' 'Whole process overview' 'Command reference' 'Optional module index' 'Advanced module index' 'macOS Shortcuts and Finder actions' 'Back to other actions')
     select_one 'Documentation · choose a bundled guide' 0
     guide="$SINGLE_RESULT"

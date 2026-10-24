@@ -112,6 +112,26 @@ grep -Fqx 'starship=yes' <<<"$nonlogin" \
 grep -Fqx 'brewcount=1'  <<<"$nonlogin" || fail_test "a non-login shell has a duplicated Homebrew PATH entry: $(grep brewcount <<<"$nonlogin")"
 grep -Fqx 'localcount=1' <<<"$nonlogin" || fail_test "a non-login shell has a duplicated ~/.local/bin entry: $(grep localcount <<<"$nonlogin")"
 
+# Test actual Zsh keymaps in an isolated home, including application-cursor keys.
+# The sentinel binding must survive in Warp and in shells without TERM_PROGRAM.
+history_probe=$'bindkey "^[[A" up-history\nbindkey "^[[B" down-history\nbindkey "^[OA" up-history\nbindkey "^[OB" down-history\nsource "$HOME/.zshrc"\nbindkey "^[[A"\nbindkey "^[[B"\nbindkey "^[OA"\nbindkey "^[OB"'
+for terminal_program in vscode WarpTerminal ''; do
+  bindings="$(env -i HOME="$home" USER="$(id -un)" DOM_PREFIX="$prefix" \
+    PATH='/usr/bin:/bin:/usr/sbin:/sbin' TERM=xterm-256color TERM_PROGRAM="$terminal_program" \
+    /bin/zsh -fic "$history_probe" 2>/dev/null)"
+  if [[ "$terminal_program" == vscode ]]; then
+    [[ "$(grep -c 'history-beginning-search-backward' <<<"$bindings")" == 2 ]] \
+      || fail_test 'VS Code Up does not search matching history for both key sequences'
+    [[ "$(grep -c 'history-beginning-search-forward' <<<"$bindings")" == 2 ]] \
+      || fail_test 'VS Code Down does not search matching history for both key sequences'
+  else
+    [[ "$(grep -c ' up-history$' <<<"$bindings")" == 2 ]] \
+      || fail_test 'VS Code history bindings changed another terminal'
+    [[ "$(grep -c ' down-history$' <<<"$bindings")" == 2 ]] \
+      || fail_test 'VS Code history bindings changed another terminal'
+  fi
+done
+
 # PNPM_HOME is owned by the shared path file so both shell kinds receive it
 # without duplicating a PATH block in either startup file.
 grep -Fq 'PNPM_HOME' "$home/.config/zsh/path.zsh" || fail_test 'path.zsh no longer exports PNPM_HOME'
@@ -269,6 +289,8 @@ done
 
 # Phase 6 must not accept runtimes visible only in its own fnm-initialized
 # process. Mock package operations and the selected shell; never install tools.
+# These mocks are called by the sourced phase_06, which staged-file lint cannot follow.
+# shellcheck disable=SC2329
 (
   export HOME="$home"
   source "$SCRIPT_DIR/../src/setup/phases/06-toolchains.sh"

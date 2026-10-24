@@ -1,33 +1,33 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Read and export documentation offline
 
-This guide moved to [DOCUMENTATION-COMMANDS](../reference/DOCUMENTATION-COMMANDS.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../shared/reading-and-export.md). This compatibility page preserves existing links.
 
 ## Browser walkthrough
 
-Continue at [this section](../reference/DOCUMENTATION-COMMANDS.md#browser-walkthrough).
+See the [current instructions](../shared/reading-and-export.md#browser-walkthrough).
 
 ## Export a durable copy
 
-Continue at [this section](../reference/DOCUMENTATION-COMMANDS.md#export-a-durable-copy).
+See the [current instructions](../shared/reading-and-export.md#export-a-durable-copy).
 
 ## PDF and print
 
-Continue at [this section](../reference/DOCUMENTATION-COMMANDS.md#pdf-and-print).
+See the [current instructions](../shared/reading-and-export.md#pdf-and-print).
 
 ## Command reference
 
-Continue at [this section](../reference/DOCUMENTATION-COMMANDS.md#command-reference).
+See the [current instructions](../shared/reading-and-export.md#command-reference).
 
 ## Contents, safety and cleanup
 
-Continue at [this section](../reference/DOCUMENTATION-COMMANDS.md#contents-safety-and-cleanup).
+See the [current instructions](../shared/reading-and-export.md#contents-safety-and-cleanup).
 
 ## Maintainer notes
 
-Continue at [this section](../reference/DOCUMENTATION-COMMANDS.md#maintainer-notes).
+See the [current instructions](../shared/reading-and-export.md#maintainer-notes).
 
 ## macOS Shortcuts guide
 
-Continue at [this section](../reference/DOCUMENTATION-COMMANDS.md#macos-shortcuts-guide).
+See the [current instructions](../shared/reading-and-export.md#macos-shortcuts-guide).

@@ -21,8 +21,7 @@ Thank you for improving Day One Mac.
 ## Source ownership
 
 Runtime behavior lives in `src/`; `scripts/` preserves the public launcher and
-old entry points. Edit canonical guides in `docs/setup`, `docs/how-to`,
-`docs/reference` and `docs/explanation`. Old numbered guide folders are aliases.
+old entry points. Edit canonical guides in `docs/setup/assisted`, `docs/setup/manual` and `docs/shared`. Old numbered guide folders are aliases.
 Contributor history and release procedures belong in `maintainers/`.
 
 Application, module, phase and dependency catalogues live in `config/catalogs/`.
@@ -55,8 +54,9 @@ git status --short
 
 Run `pnpm install --frozen-lockfile` once after cloning to install the
 contributor tools and activate the shared Husky hooks. See the
-[contributor-tooling setup guide](https://github.com/CodeByKwakes/day-one-mac/blob/main/maintainers/contributing/CONTRIBUTOR-TOOLING.md)
-for prerequisites, hook behaviour, troubleshooting, and safe bypasses.
+contributor-tooling setup guide (`maintainers/contributing/CONTRIBUTOR-TOOLING.md` in a source checkout)
+for prerequisites, hook behaviour, troubleshooting, and safe bypasses. These
+maintainer files belong to a source checkout and are not in the standalone runtime.
 
 ## Release workflow
 
@@ -75,7 +75,7 @@ manifest. Review and merge that pull request when the changes are ready to
 publish. The workflow creates the tag and a draft release, validates that exact
 candidate and archive, then attaches the runtime, checksum, installer and
 provenance/evidence before publishing. Failed candidates remain drafts; see the
-[release and retry procedure](https://github.com/CodeByKwakes/day-one-mac/blob/main/maintainers/contributing/GIT-WORKFLOW.md#release-lifecycle-and-failed-draft-retry).
+release and retry procedure (`maintainers/contributing/GIT-WORKFLOW.md#release-lifecycle-and-failed-draft-retry` in a source checkout).
 
 Repository maintainers must keep the narrowly scoped `RELEASE_PLEASE_TOKEN`
 Actions secret available so the generated release pull request receives the
@@ -92,3 +92,18 @@ op://<vault>/<item>/<field>
 ```
 
 Never use a realistic token, even when it has been revoked.
+
+## Setup-guide template
+
+Keep one complete procedure in its owning route. A shared human action lives in the Manual Setup topic; the assisted guide links to that task and says when to return. Shared prerequisites, terminology, acceptance criteria and troubleshooting navigation live under `docs/shared`.
+
+Use this order for a new or substantially revised setup guide:
+
+1. **Outcome and scope:** who needs the task, what changes and what remains outside it.
+2. **Prerequisites:** selected tools, permissions, versions and backups. Link shared requirements once.
+3. **Numbered actions:** one action per step, followed by the expected result. Define unfamiliar terms on first use and mark placeholders explicitly.
+4. **Verification:** observable checks of the finished behavior, not just command exit status.
+5. **Troubleshooting and recovery:** likely symptoms, the relevant owner and a scoped way to undo the change.
+6. **Next steps and sources:** where to continue, vendor references, and anything not verified on real hardware or in the published release.
+
+Reference pages may use tables instead of a procedure. Compatibility pages preserve old headings and forward to the current owner; they must not grow a second copy of the instructions. Update the reader, aliases and runtime inventory with every move.

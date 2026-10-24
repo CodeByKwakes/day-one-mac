@@ -2,13 +2,13 @@
 
 # Phase 7 — VS Code base
 
-**Time:** 20–35 minutes · **Required:** everyone
+**Time:** 20-35 minutes · **Required:** everyone
 
 The lists below describe the default **recommended-productivity** preset.
 The **core** preset skips Raycast, Warp, the Nerd Font, and VS Code; Phase 7
 records a no-op. Both presets retain command-line tools and security gates.
 1Password and its CLI are required only for 1Password authentication. Changing
-the preset does not uninstall existing software. See [Start here](../../START-HERE.md#run-the-recommended-route).
+the preset does not uninstall existing software. See [Start here](README.md).
 
 ## Outcome
 
@@ -24,7 +24,7 @@ installed.
 ## How to use this phase
 
 - **Manual route:** complete
-  [Manual 7](../manual/MANUAL-SETUP-GUIDE.md#manual-7--configure-vs-code-warp-and-raycast)
+  [Manual 7](../manual/editors/vscode.md)
   and the relevant first-launch steps in the application guide.
 - **Script-assisted route:** run `day-one-mac setup --phase 07`. The runner creates the minimal
 settings file only when none exists; it does not overwrite an existing file.
@@ -33,7 +33,7 @@ launcher. Profiles and large extension sets are not part of this required gate.
 
 For the complete first-launch, settings-level, selective import, export,
 Settings Sync, clean-cloud reset, and later-change procedure, keep the
-[detailed VS Code application guide](../../how-to/apps/VSCODE.md) open alongside this
+[detailed VS Code application guide](../manual/editors/vscode.md) open alongside this
 phase. This phase remains the concise required gate; the application guide
 explains every shared manual decision.
 
@@ -90,7 +90,7 @@ Open **Preferences: Open User Settings (JSON)**.
 
 If the file is empty or contains only `{}`, paste the whole block below. If it
 already contains settings, **merge** these keys into the existing `{ ... }`
-rather than replacing the file — copy the individual lines in, and make sure
+rather than replacing the file - copy the individual lines in, and make sure
 every line except the last ends with a comma.
 
 ```jsonc
@@ -102,6 +102,7 @@ every line except the last ends with a comma.
   "terminal.integrated.defaultProfile.osx": "zsh",
   "terminal.integrated.shellIntegration.enabled": true,
   "terminal.integrated.suggest.enabled": true,
+  "terminal.integrated.suggest.upArrowNavigatesHistory": true,
   "terminal.integrated.fontFamily": "'JetBrainsMono Nerd Font'",
   "chat.tools.global.autoApprove": false,
   "chat.tools.terminal.enableAutoApprove": false
@@ -112,9 +113,11 @@ Why this stays small:
 
 - Formatting behavior is predictable without selecting a global formatter.
 - Git fetches metadata but does not push or merge automatically.
-- Integrated terminals use the shell configured in Phases 5–6.
+- Integrated terminals use the shell configured in Phases 5-6.
 - Shell integration and terminal suggestions are enabled for commands, paths
   and arguments. Press `Ctrl+Space` to open suggestions manually.
+- Up reaches Zsh even when the suggestion dropdown is visible. Phase 5's
+  VS Code-only history bindings then filter previous commands by the typed prefix.
 - Starship symbols render through the installed Nerd Font.
 - AI tools cannot globally or terminal-auto-approve actions if enabled later.
 
@@ -127,12 +130,16 @@ A project can override settings in `.vscode/settings.json` without making every
 workspace inherit framework-specific choices.
 
 For shell Tab completion, history suggestions and syntax highlighting, follow
-[Optional 13's shell activation steps](../../how-to/modules/optional/13-enhanced-cli-tools.md#add-shell-integration-with-your-selected-configuration-owner).
+[Optional 13's shell activation steps](optional/13-enhanced-cli-tools.md#add-shell-integration-with-your-selected-configuration-owner).
 These Zsh plugins are separate from VS Code's suggestion dropdown. The same
 shell setup works in Warp and other Zsh terminals. Existing settings are
-preserved by the script-assisted phase: merge these two terminal settings
+preserved by the script-assisted phase: merge these terminal settings
 manually when upgrading an existing setup. Close old terminals with the trash
 icon and create a new terminal after changing shell files or settings.
+
+For an existing `.zshrc`, follow the shared manual
+[matching-history setup](../manual/shell/zsh.md#search-matching-commands-with-up-and-down).
+The editor setting alone does not change Zsh's keybindings.
 
 See [VS Code terminal suggestions](https://code.visualstudio.com/docs/terminal/shell-integration#_intellisense)
 for the supported settings and shortcuts.
@@ -182,8 +189,8 @@ Settings Sync is optional. Before enabling it:
 
 1. Confirm whether the account is personal or work-owned.
 2. Export or back up the current profile.
-3. Review which categories—settings, extensions, profiles, keybindings, UI
-   state—should synchronize.
+3. Review which categories: settings, extensions, profiles, keybindings, UI
+   state: should synchronize.
 4. Resolve conflicts on one machine before enabling another.
 
 For the clean base, leaving Sync off until Phase 8 completes is safest.
@@ -242,7 +249,7 @@ In VS Code:
 
 Reference: [VS Code on macOS](https://code.visualstudio.com/docs/setup/mac) and
 [Settings Sync](https://code.visualstudio.com/docs/configure/settings-sync).
-See also the [full Day One VS Code setup guide](../../how-to/apps/VSCODE.md).
+See also the [full Day One VS Code setup guide](../manual/editors/vscode.md).
 
 ---
 

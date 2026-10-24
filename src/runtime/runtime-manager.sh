@@ -173,29 +173,29 @@ open_docs() {
       'TOPIC' 'INSTALLED DOCUMENT' \
       'start' "$RUNTIME_ROOT/docs/START-HERE.md" \
       'index' "$RUNTIME_ROOT/docs/README.md" \
-      'manual' "$RUNTIME_ROOT/docs/setup/manual/MANUAL-SETUP-GUIDE.md" \
-      'process' "$RUNTIME_ROOT/docs/explanation/PROCESS-OVERVIEW.md" \
-      'project' "$RUNTIME_ROOT/docs/explanation/PROJECT-GUIDE.md" \
-      'commands' "$RUNTIME_ROOT/docs/reference/COMMAND-REFERENCE.md" \
-      'chezmoi' "$RUNTIME_ROOT/docs/setup/manual/CHEZMOI-SETUP-TUTORIAL.md" \
+      'manual' "$RUNTIME_ROOT/docs/setup/manual/README.md" \
+      'process' "$RUNTIME_ROOT/docs/shared/explanation/process-overview.md" \
+      'project' "$RUNTIME_ROOT/docs/shared/explanation/process-overview.md" \
+      'commands' "$RUNTIME_ROOT/docs/setup/assisted/reference/command-reference.md" \
+      'chezmoi' "$RUNTIME_ROOT/docs/setup/manual/shell/chezmoi.md" \
       'handbook' "$RUNTIME_ROOT/docs/setup/manual/README.md" \
-      'second-brain-guide' "$RUNTIME_ROOT/docs/setup/manual/second-brain.md" \
-      'security' "$RUNTIME_ROOT/docs/setup/manual/security.md" \
-      '1password' "$RUNTIME_ROOT/docs/setup/manual/1password.md" \
-      'keychain' "$RUNTIME_ROOT/docs/setup/manual/keychain-ssh.md" \
-      'ssh' "$RUNTIME_ROOT/docs/setup/manual/ssh-signing-and-recovery.md" \
-      'software' "$RUNTIME_ROOT/docs/reference/SOFTWARE-CATALOGUE.md" \
-      'worktrees' "$RUNTIME_ROOT/docs/how-to/development/worktrees/GIT-WORKTREES-VSCODE-AND-AI.md" \
-      'shortcuts' "$RUNTIME_ROOT/docs/how-to/apps/MACOS-SHORTCUTS.md" \
-      'chezmoi-guide' "$RUNTIME_ROOT/docs/setup/manual/chezmoi.md" \
-      'folders' "$RUNTIME_ROOT/docs/setup/manual/developer-folders.md" \
-      'chezmoi-daily' "$RUNTIME_ROOT/docs/reference/MANAGING-DOTFILES-WITH-CHEZMOI.md" \
-      'chezmoi-reference' "$RUNTIME_ROOT/docs/reference/CHEZMOI-COMMAND-REFERENCE.md" \
-      'chezmoi-concepts' "$RUNTIME_ROOT/docs/explanation/CHEZMOI-CONCEPTS-AND-BOUNDARIES.md" \
-      'status' "$RUNTIME_ROOT/docs/reference/OPTIONAL-STATUS.md" \
-      'optional' "$RUNTIME_ROOT/docs/how-to/modules/optional/README.md" \
-      'advanced' "$RUNTIME_ROOT/docs/how-to/modules/advanced/README.md" \
-      'second-brain' "$RUNTIME_ROOT/extensions/second-brain/README.md"
+      'second-brain-guide' "$RUNTIME_ROOT/docs/setup/manual/second-brain/README.md" \
+      'security' "$RUNTIME_ROOT/docs/setup/manual/security/README.md" \
+      '1password' "$RUNTIME_ROOT/docs/setup/manual/security/1password.md" \
+      'keychain' "$RUNTIME_ROOT/docs/setup/manual/security/keychain-ssh.md" \
+      'ssh' "$RUNTIME_ROOT/docs/setup/manual/security/ssh-signing-and-recovery.md" \
+      'software' "$RUNTIME_ROOT/docs/shared/reference/software-catalogue.md" \
+      'worktrees' "$RUNTIME_ROOT/docs/setup/manual/development/worktrees/README.md" \
+      'shortcuts' "$RUNTIME_ROOT/docs/setup/manual/apps/macos-shortcuts.md" \
+      'chezmoi-guide' "$RUNTIME_ROOT/docs/setup/manual/shell/README.md" \
+      'folders' "$RUNTIME_ROOT/docs/setup/manual/development/folders.md" \
+      'chezmoi-daily' "$RUNTIME_ROOT/docs/setup/manual/shell/chezmoi.md" \
+      'chezmoi-reference' "$RUNTIME_ROOT/docs/shared/reference/chezmoi-commands.md" \
+      'chezmoi-concepts' "$RUNTIME_ROOT/docs/shared/explanation/chezmoi-boundaries.md" \
+      'status' "$RUNTIME_ROOT/docs/setup/assisted/reference/optional-status.md" \
+      'optional' "$RUNTIME_ROOT/docs/setup/assisted/optional/README.md" \
+      'advanced' "$RUNTIME_ROOT/docs/setup/assisted/advanced/README.md" \
+      'second-brain' "$RUNTIME_ROOT/docs/setup/manual/second-brain/README.md"
     return 0
   fi
 
@@ -205,29 +205,29 @@ open_docs() {
     case "$topic" in
       start) target="$RUNTIME_ROOT/docs/START-HERE.md" ;;
       index) target="$RUNTIME_ROOT/docs/README.md" ;;
-      manual) target="$RUNTIME_ROOT/docs/setup/manual/MANUAL-SETUP-GUIDE.md" ;;
-      process) target="$RUNTIME_ROOT/docs/explanation/PROCESS-OVERVIEW.md" ;;
-      project) target="$RUNTIME_ROOT/docs/explanation/PROJECT-GUIDE.md" ;;
-      commands) target="$RUNTIME_ROOT/docs/reference/COMMAND-REFERENCE.md" ;;
-      chezmoi) target="$RUNTIME_ROOT/docs/setup/manual/CHEZMOI-SETUP-TUTORIAL.md" ;;
+      manual) target="$RUNTIME_ROOT/docs/setup/manual/README.md" ;;
+      process) target="$RUNTIME_ROOT/docs/shared/explanation/process-overview.md" ;;
+      project) target="$RUNTIME_ROOT/docs/shared/explanation/process-overview.md" ;;
+      commands) target="$RUNTIME_ROOT/docs/setup/assisted/reference/command-reference.md" ;;
+      chezmoi) target="$RUNTIME_ROOT/docs/setup/manual/shell/chezmoi.md" ;;
       handbook) target="$RUNTIME_ROOT/docs/setup/manual/README.md" ;;
-      second-brain-guide) target="$RUNTIME_ROOT/docs/setup/manual/second-brain.md" ;;
-      security) target="$RUNTIME_ROOT/docs/setup/manual/security.md" ;;
-      1password) target="$RUNTIME_ROOT/docs/setup/manual/1password.md" ;;
-      keychain) target="$RUNTIME_ROOT/docs/setup/manual/keychain-ssh.md" ;;
-      ssh) target="$RUNTIME_ROOT/docs/setup/manual/ssh-signing-and-recovery.md" ;;
-      worktrees) target="$RUNTIME_ROOT/docs/how-to/development/worktrees/GIT-WORKTREES-VSCODE-AND-AI.md" ;;
-      shortcuts) target="$RUNTIME_ROOT/docs/how-to/apps/MACOS-SHORTCUTS.md" ;;
-      software) target="$RUNTIME_ROOT/docs/reference/SOFTWARE-CATALOGUE.md" ;;
-      chezmoi-guide) target="$RUNTIME_ROOT/docs/setup/manual/chezmoi.md" ;;
-      folders) target="$RUNTIME_ROOT/docs/setup/manual/developer-folders.md" ;;
-      chezmoi-daily) target="$RUNTIME_ROOT/docs/reference/MANAGING-DOTFILES-WITH-CHEZMOI.md" ;;
-      chezmoi-reference) target="$RUNTIME_ROOT/docs/reference/CHEZMOI-COMMAND-REFERENCE.md" ;;
-      chezmoi-concepts) target="$RUNTIME_ROOT/docs/explanation/CHEZMOI-CONCEPTS-AND-BOUNDARIES.md" ;;
-      status) target="$RUNTIME_ROOT/docs/reference/OPTIONAL-STATUS.md" ;;
-      optional) target="$RUNTIME_ROOT/docs/how-to/modules/optional/README.md" ;;
-      advanced) target="$RUNTIME_ROOT/docs/how-to/modules/advanced/README.md" ;;
-      second-brain) target="$RUNTIME_ROOT/extensions/second-brain/README.md" ;;
+      second-brain-guide) target="$RUNTIME_ROOT/docs/setup/manual/second-brain/README.md" ;;
+      security) target="$RUNTIME_ROOT/docs/setup/manual/security/README.md" ;;
+      1password) target="$RUNTIME_ROOT/docs/setup/manual/security/1password.md" ;;
+      keychain) target="$RUNTIME_ROOT/docs/setup/manual/security/keychain-ssh.md" ;;
+      ssh) target="$RUNTIME_ROOT/docs/setup/manual/security/ssh-signing-and-recovery.md" ;;
+      worktrees) target="$RUNTIME_ROOT/docs/setup/manual/development/worktrees/README.md" ;;
+      shortcuts) target="$RUNTIME_ROOT/docs/setup/manual/apps/macos-shortcuts.md" ;;
+      software) target="$RUNTIME_ROOT/docs/shared/reference/software-catalogue.md" ;;
+      chezmoi-guide) target="$RUNTIME_ROOT/docs/setup/manual/shell/README.md" ;;
+      folders) target="$RUNTIME_ROOT/docs/setup/manual/development/folders.md" ;;
+      chezmoi-daily) target="$RUNTIME_ROOT/docs/setup/manual/shell/chezmoi.md" ;;
+      chezmoi-reference) target="$RUNTIME_ROOT/docs/shared/reference/chezmoi-commands.md" ;;
+      chezmoi-concepts) target="$RUNTIME_ROOT/docs/shared/explanation/chezmoi-boundaries.md" ;;
+      status) target="$RUNTIME_ROOT/docs/setup/assisted/reference/optional-status.md" ;;
+      optional) target="$RUNTIME_ROOT/docs/setup/assisted/optional/README.md" ;;
+      advanced) target="$RUNTIME_ROOT/docs/setup/assisted/advanced/README.md" ;;
+      second-brain) target="$RUNTIME_ROOT/docs/setup/manual/second-brain/README.md" ;;
       *)
         printf 'Unknown documentation topic: %s\n' "$topic" >&2
         printf 'Run `day-one-mac docs --list` to see available topics.\n' >&2

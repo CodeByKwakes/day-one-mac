@@ -124,7 +124,7 @@ fi
 if rg_scan -n -i \
   -e 'fresh-start|fresh[ -]mac|\.fresh-mac-setup|FRESH_START|older 20-phase|legacy playbook|zam-state|mac-setup' \
   "$PROJECT_DIR/docs" "$PROJECT_DIR/second-brain" \
-  --glob '*.md' --glob '!UPGRADE-NOTES.md'; then
+  --glob '*.md' --glob '!UPGRADE-NOTES.md' --glob '!upgrade-notes.md'; then
   if [[ "$RG_STATUS" -eq 0 ]]; then
     fail "normal guides contain retired project names that belong only in UPGRADE-NOTES.md"
     printf '%s\n' "$RG_OUTPUT" | sed 's/^/      /' >&2
@@ -148,9 +148,9 @@ if awk -F '\t' '
   END {exit !found}
 ' "$PROJECT_DIR/config/catalogs/applications.tsv" \
    && grep -Fq 'Leave scheduled cleaning disabled.' \
-      "$PROJECT_DIR/docs/how-to/modules/advanced/21-audit-maintenance-and-rebuild.md" \
+      "$PROJECT_DIR/docs/setup/assisted/advanced/21-audit-maintenance-and-rebuild.md" \
    && grep -Fq 'Purge is never invoked by a Day One Mac script' \
-      "$PROJECT_DIR/docs/how-to/modules/advanced/21-audit-maintenance-and-rebuild.md"; then
+      "$PROJECT_DIR/docs/setup/assisted/advanced/21-audit-maintenance-and-rebuild.md"; then
   pass "Purge remains optional, fully qualified, and manual at every destructive boundary"
 else
   fail "Purge catalogue identity or manual-only safety guidance has drifted"
@@ -242,22 +242,13 @@ while IFS= read -r link_record; do
 done <<<"$RG_OUTPUT"
 [[ "$anchor_failed" == 0 ]] && pass "all local Markdown section links resolve"
 
-# The pinned 1Password version statement in Phase 3 goes stale quietly. Print a
-# reminder once it is over six months old. This never fails the build: the
-# numbers are documentation, not a gate, and a date should not break CI.
-version_review_date="$(sed -n 's/.*day-one-mac:version-review \([0-9-]*\).*/\1/p' \
-  "$PROJECT_DIR/docs/setup/assisted/03-security-and-ssh.md" | head -1)"
-if [[ -z "$version_review_date" ]]; then
-  fail "Phase 3 has no day-one-mac:version-review marker to date its pinned versions"
+# Vendor patch numbers are no longer setup prerequisites. Keep the provider's
+# authoritative instructions next to the manually owned authentication task.
+if grep -Fq 'https://developer.1password.com/docs/ssh/agent/config/' \
+  "$PROJECT_DIR/docs/setup/manual/security/1password.md"; then
+  pass "manual authentication task links to current provider configuration documentation"
 else
-  review_epoch="$(date -j -f '%Y-%m-%d' "$version_review_date" '+%s' 2>/dev/null || true)"
-  if [[ -z "$review_epoch" ]]; then
-    fail "the day-one-mac:version-review marker is not a YYYY-MM-DD date: $version_review_date"
-  elif [[ "$(( ( $(date '+%s') - review_epoch ) / 86400 ))" -gt 183 ]]; then
-    ui_warning "Phase 3's pinned 1Password versions were last reviewed on $version_review_date; recheck them and update the marker."
-  else
-    pass "the pinned 1Password version statement was reviewed within the last six months"
-  fi
+  fail "manual authentication task lacks its provider configuration source"
 fi
 
 
@@ -430,13 +421,13 @@ if rg -n '\./(bootstrap-day-one-mac|setup|prepare-existing-mac|preflight-audit|c
   "$PROJECT_DIR/docs/setup/assisted" \
   "$PROJECT_DIR/docs/how-to/modules/optional" \
   "$PROJECT_DIR/docs/how-to/apps" \
-  --glob '*.md' --glob '!03-account-preserving-cleanup.md' >/dev/null 2>&1; then
+  --glob '*.md' --glob '!03-account-preserving-cleanup.md' --glob '!command-reference.md' >/dev/null 2>&1; then
   fail "a normal user guide bypasses the standalone day-one-mac command"
   semantic_failed=1
 fi
-if ! grep -Fq 'releases/latest/download/install-day-one-mac' "$PROJECT_DIR/README.md" \
+if ! grep -Fq 'releases/latest/download/install-day-one-mac' "$PROJECT_DIR/docs/setup/assisted/runtime.md" \
    || ! grep -Fq 'Move an already-completed Mac to standalone mode' \
-      "$PROJECT_DIR/docs/reference/PORTABLE-COMMAND.md" \
+      "$PROJECT_DIR/docs/setup/assisted/runtime.md" \
    || ! grep -Fq 'active versioned runtime' \
       "$PROJECT_DIR/docs/setup/assisted/08-verify-and-reproduce.md"; then
   fail "standalone installation, migration, or Phase 8 runtime guidance is incomplete"
@@ -458,40 +449,40 @@ else
   fail "generated profile reference is stale"
 fi
 if grep -Fq '~/.config/Code/User/settings.json' \
-  "$PROJECT_DIR/docs/how-to/modules/advanced/15-full-dotfiles-and-bootstrap.md"; then
+  "$PROJECT_DIR/docs/setup/assisted/advanced/15-full-dotfiles-and-bootstrap.md"; then
   fail "the advanced dotfiles guide still uses the non-macOS VS Code settings path"
   semantic_failed=1
 fi
-if grep -Fq 'Capture to Second Brain' "$PROJECT_DIR/extensions/second-brain/obsidian/GUIDE-1-OBSIDIAN-RAYCAST.md" \
-   || grep -Fq 'Open Second Brain Dashboard' "$PROJECT_DIR/extensions/second-brain/obsidian/GUIDE-1-OBSIDIAN-RAYCAST.md"; then
+if grep -Fq 'Capture to Second Brain' "$PROJECT_DIR/docs/setup/manual/second-brain/obsidian/raycast.md" \
+   || grep -Fq 'Open Second Brain Dashboard' "$PROJECT_DIR/docs/setup/manual/second-brain/obsidian/raycast.md"; then
   fail "the Raycast guide still uses retired dynamic command names"
   semantic_failed=1
 fi
-if grep -Fq 'The user request' "$PROJECT_DIR/docs/how-to/recovery/ROLLBACK.md" \
-   || ! grep -Fq 'cp -p "$RECOVERY/home/.config/starship.toml"' "$PROJECT_DIR/docs/how-to/recovery/ROLLBACK.md"; then
+if grep -Fq 'The user request' "$PROJECT_DIR/docs/setup/assisted/recovery/rollback.md" \
+   || ! grep -Fq 'cp -p "$RECOVERY/home/.config/starship.toml"' "$PROJECT_DIR/docs/setup/assisted/recovery/rollback.md"; then
   fail "rollback guidance contains conversation residue or removes its recovery copy"
   semantic_failed=1
 fi
-if ! grep -Fq 'docker inspect --format=' "$PROJECT_DIR/docs/how-to/modules/optional/09-databases.md" \
-   || ! grep -Fq -- "--health-cmd='mongosh" "$PROJECT_DIR/docs/how-to/modules/optional/09-databases.md"; then
+if ! grep -Fq 'docker inspect --format=' "$PROJECT_DIR/docs/setup/manual/databases/containers.md" \
+   || ! grep -Fq -- "--health-cmd='mongosh" "$PROJECT_DIR/docs/setup/manual/databases/containers.md"; then
   fail "MongoDB documentation promises health without defining and inspecting a health check"
   semantic_failed=1
 fi
-if ! grep -Fq -- '--tools raycast' "$PROJECT_DIR/extensions/second-brain/obsidian/README.md" \
+if ! grep -Fq -- '--tools raycast' "$PROJECT_DIR/docs/setup/assisted/optional/second-brain.md" \
    || ! grep -Fq -- '--tools|--stack' "$PROJECT_DIR/extensions/second-brain/obsidian/scripts/setup-second-brain.sh" \
-   || grep -Fq '| **Multi domain**' "$PROJECT_DIR/extensions/second-brain/obsidian/README.md"; then
+   || grep -Fq '| **Multi domain**' "$PROJECT_DIR/docs/setup/assisted/optional/second-brain.md"; then
   fail "Second Brain user-facing commands or layout names have drifted from the dynamic manager"
   semantic_failed=1
 fi
 # Phase 3 must still state the recommended default and point at the reference.
-if ! grep -Fq 'Application and terminal session' "$PROJECT_DIR/docs/setup/assisted/03-security-and-ssh.md" \
-   || ! grep -Fq 'Until 1Password locks' "$PROJECT_DIR/docs/setup/assisted/03-security-and-ssh.md" \
-   || ! grep -Fq '1PASSWORD-SSH-APPROVAL.md' "$PROJECT_DIR/docs/setup/assisted/03-security-and-ssh.md"; then
+if ! grep -Fq 'Application and terminal session' "$PROJECT_DIR/docs/setup/manual/security/1password.md" \
+   || ! grep -Fq 'Until 1Password locks' "$PROJECT_DIR/docs/setup/manual/security/1password.md" \
+   || ! grep -Fq '../manual/security/1password.md' "$PROJECT_DIR/docs/setup/assisted/03-security-and-ssh.md"; then
   fail "Phase 3 does not state the SSH approval default or link to the approval guide"
   semantic_failed=1
 fi
 # The full approval reference moved out of Phase 3; it must survive intact.
-approval_guide="$PROJECT_DIR/docs/how-to/apps/1PASSWORD-SSH-APPROVAL.md"
+approval_guide="$PROJECT_DIR/docs/setup/manual/security/1password.md"
 if ! grep -Fq 'Application and terminal session' "$approval_guide" \
    || ! grep -Fq 'Until 1Password locks' "$approval_guide" \
    || ! grep -Fq '4, 12, or 24 hours' "$approval_guide" \
@@ -504,10 +495,10 @@ if ! grep -Fq 'Application and terminal session' "$approval_guide" \
   fail "the 1Password approval guide is missing scope, duration, revocation, or separate CLI session guidance"
   semantic_failed=1
 fi
-if ! grep -Fq 'Import Profile…' "$PROJECT_DIR/docs/how-to/apps/VSCODE.md" \
-   || ! grep -Fq '.code-profile' "$PROJECT_DIR/docs/how-to/apps/VSCODE.md" \
-   || ! grep -Fq 'clear all cloud data' "$PROJECT_DIR/docs/how-to/apps/VSCODE.md" \
-   || ! grep -Fq 'Settings Sync is intentionally on or intentionally off' "$PROJECT_DIR/docs/how-to/apps/VSCODE.md"; then
+if ! grep -Fq 'Import Profile…' "$PROJECT_DIR/docs/setup/manual/editors/vscode.md" \
+   || ! grep -Fq '.code-profile' "$PROJECT_DIR/docs/setup/manual/editors/vscode.md" \
+   || ! grep -Fq 'clear all cloud data' "$PROJECT_DIR/docs/setup/manual/editors/vscode.md" \
+   || ! grep -Fq 'Settings Sync is intentionally on or intentionally off' "$PROJECT_DIR/docs/setup/manual/editors/vscode.md"; then
   fail "VS Code app guide is missing selective import, export, sync reset, or verification guidance"
   semantic_failed=1
 fi
@@ -533,71 +524,71 @@ if ! grep -Fq 'Create a new GitHub Ed25519 key' "$PROJECT_DIR"/src/setup/*.sh "$
    || ! grep -Fq 'update_homebrew_1password_if_needed' "$PROJECT_DIR"/src/setup/*.sh "$PROJECT_DIR"/src/setup/phases/*.sh \
    || ! grep -Fq 'Import a trusted existing key' "$PROJECT_DIR/docs/setup/assisted/03-security-and-ssh.md" \
    || ! grep -Fq 'Step 3.7 — Pin provider keys when needed' "$PROJECT_DIR/docs/setup/assisted/03-security-and-ssh.md" \
-   || ! grep -Fq 'Azure DevOps does not accept Ed25519' "$PROJECT_DIR/docs/setup/manual/MANUAL-SETUP-GUIDE.md" \
+   || ! grep -Fq 'Azure DevOps: use RSA' "$PROJECT_DIR/docs/setup/manual/security/1password.md" \
    || ! grep -Fq -- '--web --skip-ssh-key' "$PROJECT_DIR"/src/setup/*.sh "$PROJECT_DIR"/src/setup/phases/*.sh \
    || grep -Eq 'gh auth login .*--web[[:space:]]*$' "$PROJECT_DIR"/src/setup/*.sh "$PROJECT_DIR"/src/setup/phases/*.sh; then
   fail "Phase 3 does not cover provider-compatible new keys, existing-key import, and Track 3 routing"
   semantic_failed=1
 fi
-if ! grep -Fq 'Export Settings & Data' "$PROJECT_DIR/docs/how-to/apps/RAYCAST.md" \
-   || ! grep -Fq '.rayconfig' "$PROJECT_DIR/docs/how-to/apps/RAYCAST.md" \
-   || ! grep -Fq 'import is additive' "$PROJECT_DIR/docs/how-to/apps/RAYCAST.md" \
-   || ! grep -Fq 'Path A — Use Raycast alongside Spotlight' "$PROJECT_DIR/docs/how-to/apps/RAYCAST.md" \
-   || ! grep -Fq 'Path B — Use Raycast as the only keyboard launcher' "$PROJECT_DIR/docs/how-to/apps/RAYCAST.md" \
-   || ! grep -Fq 'Raycast uses `⌥Space` in both supported paths' "$PROJECT_DIR/docs/how-to/apps/RAYCAST.md" \
-   || ! grep -Fq 'Keep Spotlight indexing enabled in both launcher modes' "$PROJECT_DIR/docs/how-to/apps/RAYCAST.md" \
-   || ! grep -Fq 'Divide search responsibilities' "$PROJECT_DIR/docs/how-to/apps/RAYCAST.md" \
-   || ! grep -Fq 'Fallback commands appear when Root Search has no direct match' "$PROJECT_DIR/docs/how-to/apps/RAYCAST.md" \
-   || ! grep -Fq 'Clipboard Search' "$PROJECT_DIR/docs/how-to/apps/RAYCAST.md" \
-   || ! grep -Fq 'Globally Allowed Tools' "$PROJECT_DIR/docs/how-to/apps/RAYCAST.md"; then
+if ! grep -Fq 'Export Settings & Data' "$PROJECT_DIR/docs/setup/manual/apps/raycast.md" \
+   || ! grep -Fq '.rayconfig' "$PROJECT_DIR/docs/setup/manual/apps/raycast.md" \
+   || ! grep -Fq 'import is additive' "$PROJECT_DIR/docs/setup/manual/apps/raycast.md" \
+   || ! grep -Fq 'Path A - Use Raycast alongside Spotlight' "$PROJECT_DIR/docs/setup/manual/apps/raycast.md" \
+   || ! grep -Fq 'Path B - Use Raycast as the only keyboard launcher' "$PROJECT_DIR/docs/setup/manual/apps/raycast.md" \
+   || ! grep -Fq 'Raycast uses `⌥Space` in both supported paths' "$PROJECT_DIR/docs/setup/manual/apps/raycast.md" \
+   || ! grep -Fq 'Keep Spotlight indexing enabled in both launcher modes' "$PROJECT_DIR/docs/setup/manual/apps/raycast.md" \
+   || ! grep -Fq 'Divide search responsibilities' "$PROJECT_DIR/docs/setup/manual/apps/raycast.md" \
+   || ! grep -Fq 'Fallback commands appear when Root Search has no direct match' "$PROJECT_DIR/docs/setup/manual/apps/raycast.md" \
+   || ! grep -Fq 'Clipboard Search' "$PROJECT_DIR/docs/setup/manual/apps/raycast.md" \
+   || ! grep -Fq 'Globally Allowed Tools' "$PROJECT_DIR/docs/setup/manual/apps/raycast.md"; then
   fail "Raycast app guide is missing dual-mode shortcuts, indexing, export, import, or permission guidance"
   semantic_failed=1
 fi
-if ! grep -Fq 'Install the official download manually' "$PROJECT_DIR/docs/how-to/apps/RAYCAST.md" \
-   || ! grep -Fq 'External installation' "$PROJECT_DIR/docs/how-to/apps/RAYCAST.md" \
-   || ! grep -Fq 'raycast-manual' "$PROJECT_DIR/docs/how-to/apps/RAYCAST-COMMANDS.md" \
-   || ! grep -Fq 'Never add `--execute`' "$PROJECT_DIR/docs/how-to/apps/RAYCAST-COMMANDS.md" \
-   || ! grep -Fq 'Bring Your Own Key' "$PROJECT_DIR/docs/how-to/apps/RAYCAST-AI-PROVIDERS.md" \
-   || ! grep -Fq 'http://127.0.0.1:20128/v1' "$PROJECT_DIR/docs/how-to/apps/RAYCAST-AI-PROVIDERS.md" \
-   || ! grep -Fq '.config/raycast/ai/providers.yaml' "$PROJECT_DIR/docs/how-to/apps/RAYCAST-AI-PROVIDERS.md"; then
+if ! grep -Fq 'https://www.raycast.com/download' "$PROJECT_DIR/docs/setup/manual/apps/raycast.md" \
+   || ! grep -Fq 'existing installation owner is recorded' "$PROJECT_DIR/docs/setup/manual/apps/raycast.md" \
+   || ! grep -Fq 'raycast-manual' "$PROJECT_DIR/docs/setup/assisted/integrations/raycast.md" \
+   || ! grep -Fq 'Never add `--execute`' "$PROJECT_DIR/docs/setup/assisted/integrations/raycast.md" \
+   || ! grep -Fq 'Bring Your Own Key' "$PROJECT_DIR/docs/setup/manual/apps/raycast-ai-providers.md" \
+   || ! grep -Fq 'http://127.0.0.1:20128/v1' "$PROJECT_DIR/docs/setup/manual/apps/raycast-ai-providers.md" \
+   || ! grep -Fq '.config/raycast/ai/providers.yaml' "$PROJECT_DIR/docs/setup/manual/apps/raycast-ai-providers.md"; then
   fail "Raycast manual installation, command, or provider guidance is incomplete"
   semantic_failed=1
 fi
-if ! grep -Fq 'Recommended global shortcut ownership' "$PROJECT_DIR/docs/how-to/apps/KEYBOARD-SHORTCUTS.md" \
-   || ! grep -Fq 'That conflicts with 1Password' "$PROJECT_DIR/docs/how-to/apps/KEYBOARD-SHORTCUTS.md" \
-   || ! grep -Fq 'Spotlight indexing remains enabled' "$PROJECT_DIR/docs/how-to/apps/KEYBOARD-SHORTCUTS.md" \
-   || ! grep -Fq 'Raycast always owns `⌥Space`' "$PROJECT_DIR/docs/how-to/apps/KEYBOARD-SHORTCUTS.md" \
-   || ! grep -Fq '⌘K ⌘S' "$PROJECT_DIR/docs/how-to/apps/KEYBOARD-SHORTCUTS.md"; then
+if ! grep -Fq 'Recommended global shortcut ownership' "$PROJECT_DIR/docs/setup/manual/apps/keyboard-shortcuts.md" \
+   || ! grep -Fq 'That conflicts with 1Password' "$PROJECT_DIR/docs/setup/manual/apps/keyboard-shortcuts.md" \
+   || ! grep -Fq 'Spotlight indexing remains enabled' "$PROJECT_DIR/docs/setup/manual/apps/keyboard-shortcuts.md" \
+   || ! grep -Fq 'Raycast always owns `⌥Space`' "$PROJECT_DIR/docs/setup/manual/apps/keyboard-shortcuts.md" \
+   || ! grep -Fq '⌘K ⌘S' "$PROJECT_DIR/docs/setup/manual/apps/keyboard-shortcuts.md"; then
   fail "application keyboard-shortcut reference is missing ownership, conflict, Spotlight, or editor guidance"
   semantic_failed=1
 fi
-if ! grep -Fq 'day-one-mac workspace --guided' "$PROJECT_DIR/docs/reference/AI-WORKSPACES.md" \
-   || ! grep -Fq 'app-storage/codex-projectless' "$PROJECT_DIR/docs/reference/AI-WORKSPACES.md" \
-   || ! grep -Fq 'app-storage/claude-cowork' "$PROJECT_DIR/docs/reference/AI-WORKSPACES.md" \
-   || ! grep -Fq 'do not permanently add `~/Developer`' "$PROJECT_DIR/docs/reference/AI-WORKSPACES.md" \
-   || ! grep -Fq 'CLAUDE.md -> AGENTS.md' "$PROJECT_DIR/docs/reference/AI-WORKSPACES.md" \
-   || ! grep -Fq 'only one client should actively modify it at a time' "$PROJECT_DIR/docs/reference/AI-WORKSPACES.md" \
-   || ! grep -Fq 'project.worktrees/' "$PROJECT_DIR/docs/how-to/modules/advanced/18-hosting-identities-azure-and-worktrees.md" \
-   || ! grep -Fq 'One AI client is the primary writer' "$PROJECT_DIR/docs/how-to/development/worktrees/GIT-WORKTREES-VSCODE-AND-AI.md" \
+if ! grep -Fq 'day-one-mac workspace --guided' "$PROJECT_DIR/docs/setup/assisted/optional/ai-workspaces.md" \
+   || ! grep -Fq 'app-storage/codex-projectless' "$PROJECT_DIR/docs/setup/assisted/optional/ai-workspaces.md" \
+   || ! grep -Fq 'app-storage/claude-cowork' "$PROJECT_DIR/docs/setup/assisted/optional/ai-workspaces.md" \
+   || ! grep -Fq 'do not permanently add `~/Developer`' "$PROJECT_DIR/docs/setup/assisted/optional/ai-workspaces.md" \
+   || ! grep -Fq 'CLAUDE.md -> AGENTS.md' "$PROJECT_DIR/docs/setup/assisted/optional/ai-workspaces.md" \
+   || ! grep -Fq 'only one client should actively modify it at a time' "$PROJECT_DIR/docs/setup/assisted/optional/ai-workspaces.md" \
+   || ! grep -Fq 'project.worktrees/' "$PROJECT_DIR/docs/setup/manual/git/multiple-identities.md" \
+   || ! grep -Fq 'One AI client is the primary writer' "$PROJECT_DIR/docs/setup/manual/development/worktrees/README.md" \
    || ! grep -Fq 'never moves an active task' "$SCRIPT_DIR/../src/modules/workspace-manager.sh"; then
   fail "projectless-task and worktree documentation or manager semantics have drifted"
   semantic_failed=1
 fi
-if ! grep -Fq '## Complete portable command list' "$PROJECT_DIR/docs/reference/COMMAND-REFERENCE.md" \
-   || ! grep -Fq '`day-one-mac safety-report [options]`' "$PROJECT_DIR/docs/reference/COMMAND-REFERENCE.md" \
-   || ! grep -Fq '`day-one-mac workspace [command]`' "$PROJECT_DIR/docs/reference/COMMAND-REFERENCE.md" \
-   || ! grep -Fq '`./validate-warp-drive.sh`' "$PROJECT_DIR/docs/reference/COMMAND-REFERENCE.md" \
-   || ! grep -Fq '[Upgrade notes](UPGRADE-NOTES.md)' "$PROJECT_DIR/docs/reference/COMMAND-REFERENCE.md"; then
+if ! grep -Fq '## Complete portable command list' "$PROJECT_DIR/docs/setup/assisted/reference/command-reference.md" \
+   || ! grep -Fq '`day-one-mac safety-report [options]`' "$PROJECT_DIR/docs/setup/assisted/reference/command-reference.md" \
+   || ! grep -Fq '`day-one-mac workspace [command]`' "$PROJECT_DIR/docs/setup/assisted/reference/command-reference.md" \
+   || ! grep -Fq '`./validate-warp-drive.sh`' "$PROJECT_DIR/docs/setup/assisted/reference/command-reference.md" \
+   || ! grep -Fq '[Upgrade notes](../../../shared/upgrade-notes.md)' "$PROJECT_DIR/docs/setup/assisted/reference/command-reference.md"; then
   fail "command reference is missing portable, direct-script, maintenance, or upgrade coverage"
   semantic_failed=1
 fi
-if ! grep -Fq 'Shell (PS1)' "$PROJECT_DIR/docs/how-to/apps/WARP.md" \
-   || ! grep -Fq 'Settings Sync' "$PROJECT_DIR/docs/how-to/apps/WARP.md" \
-   || ! grep -Fq 'Export all Warp Drive objects' "$PROJECT_DIR/docs/how-to/apps/WARP.md" \
-   || ! grep -Fq 'plain `.env`' "$PROJECT_DIR/docs/how-to/apps/WARP.md" \
-   || ! grep -Fq 'claude auth status --text' "$PROJECT_DIR/docs/how-to/apps/WARP.md" \
-   || ! grep -Fq 'codex login status' "$PROJECT_DIR/docs/how-to/apps/WARP.md" \
-   || ! grep -Fq 'copilot login' "$PROJECT_DIR/docs/how-to/apps/WARP.md"; then
+if ! grep -Fq 'Shell (PS1)' "$PROJECT_DIR/docs/setup/manual/terminals/warp.md" \
+   || ! grep -Fq 'Settings Sync' "$PROJECT_DIR/docs/setup/manual/terminals/warp.md" \
+   || ! grep -Fq 'Export all Warp Drive objects' "$PROJECT_DIR/docs/setup/manual/terminals/warp.md" \
+   || ! grep -Fq 'plain `.env`' "$PROJECT_DIR/docs/setup/manual/terminals/warp.md" \
+   || ! grep -Fq 'claude auth status --text' "$PROJECT_DIR/docs/setup/manual/terminals/warp.md" \
+   || ! grep -Fq 'codex login status' "$PROJECT_DIR/docs/setup/manual/terminals/warp.md" \
+   || ! grep -Fq 'copilot login' "$PROJECT_DIR/docs/setup/manual/terminals/warp.md"; then
   fail "Warp app guide is missing Starship, sync, export, or secret-handling guidance"
   semantic_failed=1
 fi
@@ -607,7 +598,7 @@ if ! grep -Fq 'For the script-assisted route, start the Day One Mac wizard' "$PR
    || ! grep -Fq 'Existing Homebrew found at' "$PROJECT_DIR"/src/setup/*.sh "$PROJECT_DIR"/src/setup/phases/*.sh \
    || ! grep -Fq 'Choose one setup route' "$PROJECT_DIR/docs/START-HERE.md" \
    || ! grep -Fq 'day-one-mac finalize' "$PROJECT_DIR/docs/setup/assisted/05-dotfiles-and-shell.md" \
-   || ! grep -Fq 'Read **Outcome** and **How to use this phase**' "$PROJECT_DIR/docs/START-HERE.md" \
+   || ! grep -Fq 'Required sequence' "$PROJECT_DIR/docs/setup/assisted/README.md" \
    || ! grep -Fq 'report_check "post-setup finalisation command" day-one-mac finalize --help' "$PROJECT_DIR"/src/setup/*.sh "$PROJECT_DIR"/src/setup/phases/*.sh; then
   fail "required-phase navigation, finalisation, or onboarding wording has drifted"
   semantic_failed=1
@@ -628,7 +619,7 @@ for advanced_doc in "$PROJECT_DIR"/docs/how-to/modules/advanced/[1-2][0-9]-*.md;
   [[ -s "$advanced_doc" ]] && advanced_docs=$((advanced_docs + 1))
 done
 if [[ "$advanced_docs" == 8 ]] \
-   && grep -Fq 'Capability placement' "$PROJECT_DIR/docs/how-to/modules/advanced/README.md" \
+   && grep -Fq 'Capability placement' "$PROJECT_DIR/docs/setup/assisted/advanced/README.md" \
    && grep -Fq 'Modules 15–22' "$SCRIPT_DIR/../src/modules/advanced-setup.sh" \
    && grep -Fq 'advanced-audit.md' "$SCRIPT_DIR/../src/modules/advanced-audit.sh" \
    && grep -Fq 'repository-audit.tsv' "$SCRIPT_DIR/../src/modules/advanced-audit.sh"; then
@@ -708,7 +699,7 @@ if grep -Fq 'applications.tsv' "$SCRIPT_DIR/../src/preflight/preflight-audit.sh"
    && grep -Fq 'encrypted external APFS' "$SCRIPT_DIR/../src/preflight/prepare-existing-mac.sh" \
    && grep -Fq 'ACCOUNT PRESERVING CLEANUP' "$SCRIPT_DIR/../src/preflight/prepare-existing-mac.sh" \
    && grep -Fq 'confirm_repair_assistant_ready' "$SCRIPT_DIR/../src/preflight/prepare-existing-mac.sh" \
-   && grep -Fq 'Repair Assistant' "$PROJECT_DIR/docs/setup/existing-mac/00-existing-mac-decision.md" \
+   && grep -Fq 'Repair Assistant' "$PROJECT_DIR/docs/setup/assisted/existing-mac/00-existing-mac-decision.md" \
    && grep -Fq 'exec "$CLEAN_SCRIPT" --execute' "$SCRIPT_DIR/../src/preflight/prepare-existing-mac.sh" \
    && ! grep -Eq 'eraseDisk|diskutil[[:space:]]+erase|rm[[:space:]]+-rf|brew[[:space:]]+uninstall|docker[[:space:]]+(stop|rm)' \
         "$SCRIPT_DIR/../src/preflight/preflight-audit.sh" "$SCRIPT_DIR/../src/preflight/prepare-existing-mac.sh" "$SCRIPT_DIR/../src/core/apfs-volume.sh"; then
@@ -730,7 +721,7 @@ if grep -Fq 'databases) shift; exec "$PROJECT_ROOT/scripts/configure-databases.s
    && grep -Fq -- '--services CSV' "$SCRIPT_DIR/../src/modules/configure-databases.sh" \
    && grep -Fq 'Existing containers and named volumes are preserved.' "$SCRIPT_DIR/../src/modules/configure-databases.sh" \
    && grep -Fq 'Install or resume the selected database services now' "$SCRIPT_DIR/../src/cli/bootstrap-day-one-mac.sh" \
-   && grep -Fq "optional) target=\"\$RUNTIME_ROOT/docs/how-to/modules/optional/README.md\"" "$SCRIPT_DIR/../src/runtime/runtime-manager.sh"; then
+   && grep -Fq "optional) target=\"\$RUNTIME_ROOT/docs/setup/assisted/optional/README.md\"" "$SCRIPT_DIR/../src/runtime/runtime-manager.sh"; then
   pass "optional database selections have a resumable installer and explicit verification"
 else
   fail "optional database installer or selector handoff is incomplete"
@@ -740,7 +731,7 @@ if grep -Fq 'if [[ "$dashboard" == 1 ]]' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq 'optional-status|modules) shift; exec "$PROJECT_ROOT/scripts/optional-status.sh"' "$SCRIPT_DIR/day-one-mac" \
    && grep -Fq -- '--audit' "$SCRIPT_DIR/../src/modules/optional-status.sh" \
    && grep -Fq 'Modules 09–22' "$SCRIPT_DIR/../src/modules/optional-status.sh" \
-   && grep -Fq 'OPTIONAL-STATUS.md' "$PROJECT_DIR/docs/reference/README.md"; then
+   && grep -Fq 'optional-status.md' "$PROJECT_DIR/docs/setup/assisted/reference/README.md"; then
   pass "Modules 09–22 have one read-only status and audit dashboard"
 else
   fail "unified optional and advanced status dashboard is incomplete"

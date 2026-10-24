@@ -1,8 +1,8 @@
-[← Phase 7](07-vscode-base.md) · **Phase 8** · [Optional modules →](../../how-to/modules/optional/09-databases.md)
+[← Phase 7](07-vscode-base.md) · **Phase 8** · [Optional modules →](optional/09-databases.md)
 
 # Phase 8 — Verify, record, and reproduce
 
-**Time:** 20–40 minutes · **Required:** everyone
+**Time:** 20-40 minutes · **Required:** everyone
 
 ## Outcome
 
@@ -18,26 +18,26 @@ Raycast and Warp applications themselves are required for non-core presets;
 core omits those desktop gates. Homebrew ownership is not required: valid
 external installations satisfy the same selected application gate.
 
-Phase 8 also requires the current [workstation acceptance controls](../../reference/WORKSTATION-READINESS.md#acceptance-controls-for-both-setup-routes)
+Phase 8 also requires the current [workstation acceptance controls](../../shared/verification.md#acceptance-controls-for-both-setup-routes)
 and policy-bound evidence. FileVault and Gatekeeper must be enabled; an exception
 cannot make those two checks pass. Managed accounts, enrollment, recovery and
 organization controls must meet the approved policy. A stored phase marker is
 not a substitute for a fresh check after evidence expires or the device changes.
 
-After the phase passes, use [Finalise or detach Day One Mac](../../how-to/recovery/FINALIZE.md) to
+After the phase passes, use [Finalise or detach Day One Mac](recovery/finalize.md) to
 compact the retained operational evidence or deliberately detach the portable
 command and state. Finalisation is optional and never uninstalls the completed
 environment.
 
 If this is your first chezmoi setup, the
-[complete chezmoi tutorial](../manual/CHEZMOI-SETUP-TUTORIAL.md) connects
+[complete chezmoi tutorial](../manual/shell/chezmoi.md) connects
 the Phase 5 source and target work to this phase's Brewfile, secret scan,
 private-Git, and local-only protection gates.
 
 ## How to use this phase
 
 - **Manual route:** complete
-  [Manual 8](../manual/MANUAL-SETUP-GUIDE.md#manual-8--record-and-verify-the-finished-environment)
+  [Manual 8](../manual/backup-and-restore.md)
   and retain your own verification record. The manual route has no runner
   ownership manifest or phase marker.
 - **Script-assisted route:** run `day-one-mac setup --phase 08`. The runner performs Step 8.1,
@@ -64,7 +64,7 @@ application or account is configured; the next step audits the machine.
 
 The standalone runtime does not ship repository tests or contributor tooling.
 Contributors run `tools/validate.sh` and `pnpm run lint` from their source
-checkout; see [Contributor tooling](https://github.com/CodeByKwakes/day-one-mac/blob/main/maintainers/contributing/CONTRIBUTOR-TOOLING.md). The old
+checkout; see Contributor tooling (source-checkout maintainer material; excluded from the runtime). The old
 `day-one-mac validate` command is an alias for `verify` in installed runtimes.
 
 With the core preset, VS Code and the omitted desktop applications are not
@@ -150,7 +150,7 @@ the 1Password agent, and the effective SSH configuration to use that socket,
 that pin alone, and `IdentitiesOnly yes`. An unrelated agent identity is not
 enough. A missing pin, configuration override, locked/unavailable agent or
 failed provider test stops the audit. Diagnostics are suppressed; use the
-[SSH troubleshooting guide](../manual/ssh-signing-and-recovery.md#troubleshoot-without-weakening-the-boundary)
+[SSH troubleshooting guide](../manual/security/ssh-signing-and-recovery.md#troubleshoot-without-weakening-the-boundary)
 locally, and independently confirm the provider identifies the intended account.
 HTTPS mode skips SSH tests; CLI sessions are checked separately and do not
 prove HTTPS access to every repository. Authentication is not commit-signature
@@ -399,12 +399,12 @@ day-one-mac clean
 day-one-mac rollback
 ```
 
-Both commands default to read-only previews. Read [ROLLBACK.md](../../how-to/recovery/ROLLBACK.md)
+Both commands default to read-only previews. Read [ROLLBACK.md](recovery/rollback.md)
 before adding `--execute`.
 
 ## Step 8.8 — Compare the completed layout
 
-Review [EXPECTED-LAYOUT.md](../../reference/EXPECTED-LAYOUT.md) after the machine audit. It
+Review [EXPECTED-LAYOUT.md](../../shared/reference/expected-layout.md) after the machine audit. It
 records the standalone runtime, optional contributor source checkout, `ghq`
 project layout, required applications, Homebrew prefix, chezmoi source, shell
 configuration, toolchain data, and private `~/.day-one-mac` evidence.
@@ -418,7 +418,7 @@ locations with `brew --prefix`, `chezmoi source-path`, `pnpm store path`, and
 Phase 8 now runs `day-one-mac readiness --check`. The default personal policy
 requires FileVault, Gatekeeper, firewall, SIP and current recovery evidence;
 managed mode also requires the approved policy's account, network, software,
-hardware and onboarding controls. See [workstation readiness](../../reference/WORKSTATION-READINESS.md)
+hardware and onboarding controls. See [workstation readiness](../../shared/verification.md)
 for private templates, current evidence and explicit exceptions. UNKNOWN does
 not pass. Default editor-file checks do not establish effective workspace,
 profile or enterprise policy settings; review those scopes separately.
@@ -451,7 +451,7 @@ Reconcile changes deliberately; verification does not fetch or push for you.
 - [ ] The machine verification report contains no failed gate or pending review.
 - [ ] Each retained encrypted legacy key is explicitly reviewed; the report does
       not describe a setup with retained disk keys as vault-only.
-- [ ] Selected folders exist; if ghq was selected, its roots match the [reviewed layout](../manual/developer-folders.md).
+- [ ] Selected folders exist; if ghq was selected, its roots match the [reviewed layout](../manual/development/folders.md).
 - [ ] `day-one-mac runtime-status` reports `standalone runtime` and `Integrity: verified`.
 - [ ] `day-one-mac root` reports the active versioned runtime (or the intentional linked source for contributors).
 - [ ] `day-one-mac finalize --help` confirms that post-setup record
@@ -477,4 +477,4 @@ modules that a real project needs.
 
 ---
 
-[← Phase 7](07-vscode-base.md) · [Expected layout](../../reference/EXPECTED-LAYOUT.md) · [Add databases (optional) →](../../how-to/modules/optional/09-databases.md) · [Project home](../../README.md)
+[← Phase 7](07-vscode-base.md) · [Expected layout](../../shared/reference/expected-layout.md) · [Add databases (optional) →](optional/09-databases.md) · [Project home](../../README.md)

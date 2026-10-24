@@ -1,65 +1,65 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Optional 11 — Model Context Protocol (MCP) servers
 
-This guide moved to [11-mcp-servers](../how-to/modules/optional/11-mcp-servers.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/assisted/optional/11-mcp-servers.md). This compatibility page preserves existing links.
 
 ## Outcome
 
-Continue at [this section](../how-to/modules/optional/11-mcp-servers.md#outcome).
+See the [current instructions](../setup/assisted/optional/11-mcp-servers.md).
 
 ## Executable workspace-snippet route
 
-Continue at [this section](../how-to/modules/optional/11-mcp-servers.md#executable-workspace-snippet-route).
+See the [current instructions](../setup/assisted/optional/11-mcp-servers.md#executable-workspace-snippet-route).
 
 ## Step 11.1 — Choose the smallest useful set
 
-Continue at [this section](../how-to/modules/optional/11-mcp-servers.md#step-111--choose-the-smallest-useful-set).
+See the [current instructions](../setup/assisted/optional/11-mcp-servers.md).
 
 ## Step 11.2 — Decide user or workspace scope
 
-Continue at [this section](../how-to/modules/optional/11-mcp-servers.md#step-112--decide-user-or-workspace-scope).
+See the [current instructions](../setup/assisted/optional/11-mcp-servers.md).
 
 ## Step 11.3 — Add servers to Claude Code
 
-Continue at [this section](../how-to/modules/optional/11-mcp-servers.md#step-113--add-servers-to-claude-code).
+See the [current instructions](../setup/assisted/optional/11-mcp-servers.md).
 
 ## Step 11.4 — Add servers to Codex CLI
 
-Continue at [this section](../how-to/modules/optional/11-mcp-servers.md#step-114--add-servers-to-codex-cli).
+See the [current instructions](../setup/assisted/optional/11-mcp-servers.md).
 
 ## Step 11.5 — Add servers to VS Code and built-in Copilot
 
-Continue at [this section](../how-to/modules/optional/11-mcp-servers.md#step-115--add-servers-to-vs-code-and-built-in-copilot).
+See the [current instructions](../setup/assisted/optional/11-mcp-servers.md).
 
 ## Step 11.6 — Add servers to GitHub Copilot CLI and the GitHub Copilot app
 
-Continue at [this section](../how-to/modules/optional/11-mcp-servers.md#step-116--add-servers-to-github-copilot-cli-and-the-github-copilot-app).
+See the [current instructions](../setup/assisted/optional/11-mcp-servers.md).
 
 ### GitHub Copilot CLI
 
-Continue at [this section](../how-to/modules/optional/11-mcp-servers.md#github-copilot-cli).
+See the [current instructions](../setup/assisted/optional/11-mcp-servers.md).
 
 ### GitHub Copilot app
 
-Continue at [this section](../how-to/modules/optional/11-mcp-servers.md#github-copilot-app).
+See the [current instructions](../setup/assisted/optional/11-mcp-servers.md).
 
 ## Step 11.7 — Add servers to Raycast AI
 
-Continue at [this section](../how-to/modules/optional/11-mcp-servers.md#step-117--add-servers-to-raycast-ai).
+See the [current instructions](../setup/assisted/optional/11-mcp-servers.md).
 
 ## Step 11.8 — Handle secrets safely
 
-Continue at [this section](../how-to/modules/optional/11-mcp-servers.md#step-118--handle-secrets-safely).
+See the [current instructions](../setup/assisted/optional/11-mcp-servers.md).
 
 ## Step 11.9 — Prove the connection with a read-only task
 
-Continue at [this section](../how-to/modules/optional/11-mcp-servers.md#step-119--prove-the-connection-with-a-read-only-task).
+See the [current instructions](../setup/assisted/optional/11-mcp-servers.md).
 
 ## Troubleshooting
 
-Continue at [this section](../how-to/modules/optional/11-mcp-servers.md#troubleshooting).
+See the [current instructions](../setup/assisted/optional/11-mcp-servers.md).
 
 ## Completion checklist 🚦
 
-Continue at [this section](../how-to/modules/optional/11-mcp-servers.md#completion-checklist-).
+See the [current instructions](../setup/assisted/optional/11-mcp-servers.md).

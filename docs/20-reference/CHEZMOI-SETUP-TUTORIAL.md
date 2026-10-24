@@ -1,125 +1,125 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Set up chezmoi with Day One Mac
 
-This guide moved to [CHEZMOI-SETUP-TUTORIAL](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/manual/shell/chezmoi.md). This compatibility page preserves existing links.
 
 ## What you will finish with
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#what-you-will-finish-with).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ## 1. Understand when chezmoi is used
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#1-understand-when-chezmoi-is-used).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ## 2. Learn the three locations
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#2-learn-the-three-locations).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ## 3. Confirm the prerequisites
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#3-confirm-the-prerequisites).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ### Script-assisted route
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#script-assisted-route).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ### Manual route
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#manual-route).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ## 4. Choose how to protect the source
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#4-choose-how-to-protect-the-source).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ### Script-assisted route
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#script-assisted-route-1).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ### Manual route
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#manual-route-1).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ## 5. Configure this Mac
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#5-configure-this-mac).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ### Script-assisted route
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#script-assisted-route-2).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ### Manual route
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#manual-route-2).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ## 6. Establish the required managed targets
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#6-establish-the-required-managed-targets).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ### Script-assisted route
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#script-assisted-route-3).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ### Manual route
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#manual-route-3).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ## 7. Preserve the Day One Mac runtime boundary
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#7-preserve-the-day-one-mac-runtime-boundary).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ### Both routes
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#both-routes).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ## 8. Preview and apply safely
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#8-preview-and-apply-safely).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ### Script-assisted route
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#script-assisted-route-4).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ### Manual route
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#manual-route-4).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ## 9. Validate the active configuration
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#9-validate-the-active-configuration).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ### Both routes
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#both-routes-1).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ## 10. Record Homebrew desired state in Phase 8
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#10-record-homebrew-desired-state-in-phase-8).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ### Script-assisted route
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#script-assisted-route-5).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ### Manual route
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#manual-route-5).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ## 11. Protect the source
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#11-protect-the-source).
+See the [current instructions](../setup/manual/shell/chezmoi.md#7-protect-the-source).
 
 ### Private-Git mode
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#private-git-mode).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ### Local-only mode
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#local-only-mode).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ## 12. Make your first routine change
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#12-make-your-first-routine-change).
+See the [current instructions](../setup/manual/shell/chezmoi.md).
 
 ## Completion checklist
 
-Continue at [this section](../setup/manual/CHEZMOI-SETUP-TUTORIAL.md#completion-checklist).
+See the [current instructions](../setup/manual/shell/chezmoi.md).

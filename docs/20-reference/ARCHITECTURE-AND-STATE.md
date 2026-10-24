@@ -1,33 +1,33 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Runtime architecture and state contract
 
-This guide moved to [ARCHITECTURE-AND-STATE](../explanation/ARCHITECTURE-AND-STATE.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../shared/explanation/architecture-and-state.md). This compatibility page preserves existing links.
 
 ## Execution boundaries
 
-Continue at [this section](../explanation/ARCHITECTURE-AND-STATE.md#execution-boundaries).
+See the [current instructions](../shared/explanation/architecture-and-state.md#execution-boundaries).
 
 ## Selection contract
 
-Continue at [this section](../explanation/ARCHITECTURE-AND-STATE.md#selection-contract).
+See the [current instructions](../shared/explanation/architecture-and-state.md#selection-contract).
 
 ## Completion and migration
 
-Continue at [this section](../explanation/ARCHITECTURE-AND-STATE.md#completion-and-migration).
+See the [current instructions](../shared/explanation/architecture-and-state.md#completion-and-migration).
 
 ## Atomic writes and concurrent operations
 
-Continue at [this section](../explanation/ARCHITECTURE-AND-STATE.md#atomic-writes-and-concurrent-operations).
+See the [current instructions](../shared/explanation/architecture-and-state.md#atomic-writes-and-concurrent-operations).
 
 ## Runtime ownership and switching
 
-Continue at [this section](../explanation/ARCHITECTURE-AND-STATE.md#runtime-ownership-and-switching).
+See the [current instructions](../shared/explanation/architecture-and-state.md#runtime-ownership-and-switching).
 
 ## Verification and trust
 
-Continue at [this section](../explanation/ARCHITECTURE-AND-STATE.md#verification-and-trust).
+See the [current instructions](../shared/explanation/architecture-and-state.md#verification-and-trust).
 
 ## Contributor verification
 
-Continue at [this section](../explanation/ARCHITECTURE-AND-STATE.md#contributor-verification).
+See the [current instructions](../shared/explanation/architecture-and-state.md#contributor-verification).

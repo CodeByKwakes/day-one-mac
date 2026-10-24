@@ -26,6 +26,7 @@ try {
     assert.equal(data.settings['github.copilot.chat.commitMessageGeneration.instructions'].length, 5);
     assert.equal(data.settings['chat.tools.global.autoApprove'], false);
     assert.equal(data.settings['chat.tools.terminal.enableAutoApprove'], false);
+    assert.equal(data.settings['terminal.integrated.suggest.upArrowNavigatesHistory'], true);
     run(slug, ['--output', output, '--dry-run', '--install-extensions', '--code', '/does/not/exist']);
     assert(!fs.existsSync(output));
     run(slug, ['--output', output]);

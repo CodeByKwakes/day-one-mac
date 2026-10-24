@@ -1,181 +1,181 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Day One Mac — complete manual and script-assisted setup
 
-This guide moved to [MANUAL-SETUP-GUIDE](../setup/manual/MANUAL-SETUP-GUIDE.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/manual/README.md). This compatibility page preserves existing links.
 
 ## Contents
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#contents).
+See the [current instructions](../setup/manual/README.md).
 
 ## Choose a route
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#choose-a-route).
+See the [current instructions](../setup/manual/README.md).
 
 ## Prepare before either route
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#prepare-before-either-route).
+See the [current instructions](../shared/prerequisites.md).
 
 ### Hardware and account checklist
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#hardware-and-account-checklist).
+See the [current instructions](../shared/prerequisites.md).
 
 ### Choose the correct starting point
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#choose-the-correct-starting-point).
+See the [current instructions](../setup/manual/README.md).
 
 ### Install the initial Apple tools
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#install-the-initial-apple-tools).
+See the [current instructions](../setup/manual/README.md).
 
 ### Script-assisted route only — install the standalone runtime
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#script-assisted-route-only--install-the-standalone-runtime).
+See the [current instructions](../setup/assisted/README.md).
 
 ## Software preset for the script-assisted route
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#software-preset-for-the-script-assisted-route).
+See the [current instructions](../setup/assisted/README.md).
 
 ## Record the setup decisions
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#record-the-setup-decisions).
+See the [current instructions](../shared/decisions.md).
 
 ### Deployment and acceptance policy
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#deployment-and-acceptance-policy).
+See the [current instructions](../shared/decisions.md).
 
 ### Hosting track
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#hosting-track).
+See the [current instructions](../shared/decisions.md).
 
 ### Development stack
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#development-stack).
+See the [current instructions](../shared/decisions.md).
 
 ### Identity and configuration
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#identity-and-configuration).
+See the [current instructions](../shared/decisions.md).
 
 ## Manual setup flow
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#manual-setup-flow).
+See the [current instructions](../setup/manual/README.md).
 
 ### Manual 1 — finish macOS and security prerequisites
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#manual-1--finish-macos-and-security-prerequisites).
+See the [current instructions](../setup/manual/macos.md).
 
 #### Optional early macOS settings
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#optional-early-macos-settings).
+See the [current instructions](../setup/manual/README.md).
 
 ### Manual 2 — install Command Line Tools and Homebrew
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#manual-2--install-command-line-tools-and-homebrew).
+See the [current instructions](../setup/manual/homebrew.md).
 
 ### Manual 3 — configure Git authentication and FileVault
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#manual-3--configure-git-authentication-and-filevault).
+See the [current instructions](../setup/manual/security/README.md).
 
 ### Manual 4 — install core tools, applications, and hosting CLIs
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#manual-4--install-core-tools-applications-and-hosting-clis).
+See the [current instructions](../setup/manual/git/setup.md).
 
 ### Manual 5 — configure chezmoi, zsh, and Starship
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#manual-5--configure-chezmoi-zsh-and-starship).
+See the [current instructions](../setup/manual/shell/zsh.md).
 
 ### Manual 6 — install the selected language toolchains
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#manual-6--install-the-selected-language-toolchains).
+See the [current instructions](../setup/manual/languages.md).
 
 #### Node route
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#node-route).
+See the [current instructions](../setup/manual/README.md).
 
 #### Python route
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#python-route).
+See the [current instructions](../setup/manual/README.md).
 
 #### Verify in a new shell
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#verify-in-a-new-shell).
+See the [current instructions](../setup/manual/README.md).
 
 ### Manual 7 — configure VS Code, Warp, and Raycast
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#manual-7--configure-vs-code-warp-and-raycast).
+See the [current instructions](../setup/manual/editors/vscode.md).
 
 #### VS Code
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#vs-code).
+See the [current instructions](../setup/manual/README.md).
 
 #### Warp and Raycast
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#warp-and-raycast).
+See the [current instructions](../setup/manual/README.md).
 
 ### Manual 8 — record and verify the finished environment
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#manual-8--record-and-verify-the-finished-environment).
+See the [current instructions](../setup/manual/backup-and-restore.md).
 
 ## Script-assisted setup flow
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#script-assisted-setup-flow).
+See the [current instructions](../setup/assisted/README.md).
 
 ### Script-assisted 1 — preview the complete plan
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#script-assisted-1--preview-the-complete-plan).
+See the [current instructions](../setup/assisted/README.md).
 
 ### Script-assisted 2 — run or resume the wizard
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#script-assisted-2--run-or-resume-the-wizard).
+See the [current instructions](../setup/assisted/README.md).
 
 ### Script-assisted 2a — choose optional work only after Phase 8
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#script-assisted-2a--choose-optional-work-only-after-phase-8).
+See the [current instructions](../setup/assisted/README.md).
 
 ### Script-assisted 3 — complete shared manual actions when prompted
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#script-assisted-3--complete-shared-manual-actions-when-prompted).
+See the [current instructions](../setup/assisted/README.md).
 
 ### Script-assisted 4 — inspect status and retry only what failed
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#script-assisted-4--inspect-status-and-retry-only-what-failed).
+See the [current instructions](../setup/assisted/README.md).
 
 ### Script-assisted 5 — review the reports
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#script-assisted-5--review-the-reports).
+See the [current instructions](../setup/assisted/README.md).
 
 ### Script-assisted 6 — complete application setup
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#script-assisted-6--complete-application-setup).
+See the [current instructions](../setup/assisted/README.md).
 
 ### Script-assisted 7 — verify the runtime and machine state
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#script-assisted-7--verify-the-runtime-and-machine-state).
+See the [current instructions](../setup/assisted/README.md).
 
 ## Compare the routes
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#compare-the-routes).
+See the [current instructions](../setup/manual/README.md).
 
 ## Final ready-for-work checklist
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#final-ready-for-work-checklist).
+See the [current instructions](../setup/manual/README.md).
 
 ### Security and operating system
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#security-and-operating-system).
+See the [current instructions](../setup/manual/README.md).
 
 ### Source control and hosting
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#source-control-and-hosting).
+See the [current instructions](../setup/manual/README.md).
 
 ### Shell and configuration
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#shell-and-configuration).
+See the [current instructions](../setup/manual/README.md).
 
 ### Languages and editor
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#languages-and-editor).
+See the [current instructions](../setup/manual/README.md).
 
 ### Real project proof
 
-Continue at [this section](../setup/manual/MANUAL-SETUP-GUIDE.md#real-project-proof).
+See the [current instructions](../setup/manual/README.md).

@@ -105,9 +105,9 @@ grep -Fq 'manual' <<<"$docs_list" \
   || fail_test 'installed runtime did not list documentation topics'
 grep -Fq 'chezmoi' <<<"$docs_list" \
   || fail_test 'installed runtime did not list the chezmoi documentation topic'
-[[ "$(HOME="$test_home" "$portable" docs manual)" == *'/docs/setup/manual/MANUAL-SETUP-GUIDE.md' ]] \
+[[ "$(HOME="$test_home" "$portable" docs manual)" == *'/docs/setup/manual/README.md' ]] \
   || fail_test 'installed runtime did not resolve the manual setup guide'
-[[ "$(HOME="$test_home" "$portable" docs chezmoi)" == *'/docs/setup/manual/CHEZMOI-SETUP-TUTORIAL.md' ]] \
+[[ "$(HOME="$test_home" "$portable" docs chezmoi)" == *'/docs/setup/manual/shell/chezmoi.md' ]] \
   || fail_test 'installed runtime did not resolve the chezmoi setup tutorial'
 [[ "$(HOME="$test_home" "$portable" docs --folder)" == *'/docs' ]] \
   || fail_test 'installed runtime did not resolve the documentation folder'

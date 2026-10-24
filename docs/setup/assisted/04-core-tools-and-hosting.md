@@ -2,13 +2,13 @@
 
 # Phase 4 — Core tools, folders, Git, and hosting
 
-**Time:** 25–50 minutes · **Required:** everyone; hosting work is track-aware
+**Time:** 25-50 minutes · **Required:** everyone; hosting work is track-aware
 
 The lists below describe the default **recommended-productivity** preset.
 The **core** preset skips Raycast, Warp, the Nerd Font, and VS Code; Phase 7
 records a no-op. Both presets retain command-line tools and security gates.
 1Password and its CLI are required only for 1Password authentication. Changing
-the preset does not uninstall existing software. See [Start here](../../START-HERE.md#run-the-recommended-route).
+the preset does not uninstall existing software. See [Start here](README.md).
 
 ## Outcome
 
@@ -20,7 +20,7 @@ check using the chosen HTTPS or SSH transport.
 ## How to use this phase
 
 - **Manual route:** complete
-  [Manual 4](../manual/MANUAL-SETUP-GUIDE.md#manual-4--install-core-tools-applications-and-hosting-clis),
+  [Manual 4](../manual/git/setup.md),
   then use this page to verify the selected track. Do not invoke the runner.
 - **Script-assisted route:** run `day-one-mac setup --phase 04`. The runner rechecks the required
 applications and command-line tools prepared by the
@@ -31,7 +31,7 @@ the Installation Centre and then return to Phase 4.
 
 Homebrew calls a command-line package a **formula** and a macOS app or font a
 **cask**. A **CLI** is a tool used through Terminal. See
-[GLOSSARY.md](../../reference/GLOSSARY.md) for recurring terms.
+[GLOSSARY.md](../../shared/glossary.md) for recurring terms.
 
 ## Step 4.1 — Verify the prepared package selection
 
@@ -53,7 +53,7 @@ applications are not required. Raycast and Warp are intentionally part of the
 base desktop workflow; their optional integrations are configured later.
 
 After this phase verifies the applications, use the
-[required application setup hub](../../how-to/apps/README.md) for the first-launch
+[required application setup hub](../manual/apps/README.md) for the first-launch
 steps. The detailed Raycast and Warp guides explain safe permissions, account
 choices, synchronization, and private exports. VS Code is configured in Phase
 7. The runner does not make these privacy-sensitive choices automatically.
@@ -81,7 +81,7 @@ Run the read-only check at any time:
 day-one-mac applications --required
 ```
 
-See [Application ownership](../../reference/APPLICATION-OWNERSHIP.md) for Company Portal,
+See [Application ownership](../../shared/reference/application-ownership.md) for Company Portal,
 optional application, reporting, and rollback behaviour.
 
 For a missing application, rerun the Installation Centre. Select its batch
@@ -130,7 +130,7 @@ and `Archive`, plus the Resources subfolders and a local README described in
 the folder guide. Existing README files and contents are preserved. No choice
 moves existing repositories.
 
-Follow [Developer folders and optional ghq](../manual/developer-folders.md) for
+Follow [Developer folders and optional ghq](../manual/development/folders.md) for
 the full manual walkthrough, where to place different kinds of work, and the
 standalone CLI. ghq is a separate opt-in. Existing setups must explicitly review
 these choices; earlier phase completion does not select a layout or ghq.
@@ -145,12 +145,12 @@ day-one-mac workspace init
 ```
 
 Do not initialise `_Projectless` itself as a Git repository. See
-[AI workspaces, chats, and projectless tasks](../../reference/AI-WORKSPACES.md) before opening
+[AI workspaces, chats, and projectless tasks](../manual/development/ai-workspaces.md) before opening
 an individual task in Claude, Codex, Copilot, Raycast, VS Code, or Warp. A
 change to an existing repository belongs in a Git worktree instead.
 
 The canonical playbook location and complete post-setup filesystem map are in
-[EXPECTED-LAYOUT.md](../../reference/EXPECTED-LAYOUT.md).
+[EXPECTED-LAYOUT.md](../../shared/reference/expected-layout.md).
 
 ## Step 4.3 — Configure global Git defaults
 
@@ -228,7 +228,7 @@ git config --global difftool.vscode.cmd \
 ```
 
 Do not run those five commands when another IDE is primary. Rerun the main
-wizard, change the primary-IDE choice, and revalidate Phases 4–5 instead.
+wizard, change the primary-IDE choice, and revalidate Phases 4-5 instead.
 
 Because of `pull.ff only`, a `git pull` will sometimes stop with:
 
@@ -299,7 +299,7 @@ On the script-assisted route, Phase 4 configures GCM after CLI login, or runs
 `gh auth setup-git` on the `existing` route. See
 [helper selection and recovery](#step-46--run-or-resume-the-phase).
 
-The SSH reachability tests below are skipped in this mode — there is no SSH
+The SSH reachability tests below are skipped in this mode - there is no SSH
 identity to test.
 
 🏢 **Azure CLI login and Azure Git access are separate.** For Git, choose GCM
@@ -316,8 +316,8 @@ was registered in [Phase 3's GitHub section](03-security-and-ssh.md#step-34--git
 In HTTPS mode, there is no SSH key to generate. `gh` should not create another
 identity in either case.
 
-Without this flag, `gh` inspects `~/.ssh` for `.pub` files and — finding none,
-because this project deliberately never writes keys there — offers:
+Without this flag, `gh` inspects `~/.ssh` for `.pub` files and - finding none,
+because this project deliberately never writes keys there - offers:
 
 ```text
 ? Generate a new SSH key to add to your GitHub account? (Y/n)
@@ -359,17 +359,17 @@ meet them if you rerun it by hand, so they are worth recognising:
 
 | Prompt | What to answer here |
 |---|---|
-| `? What is your preferred protocol for Git operations on this host?` | **SSH** — supplied by `--git-protocol ssh` |
+| `? What is your preferred protocol for Git operations on this host?` | **SSH** - supplied by `--git-protocol ssh` |
 | `? Upload your SSH public key to your GitHub account?` | **Skip**. This appears only when `~/.ssh` holds a `.pub` file, such as the `github-auth.pub` from Step 3.7. The key is already registered, so uploading it again just asks for the `admin:public_key` scope for nothing |
-| `? Generate a new SSH key to add to your GitHub account? (Y/n)` | **n** — see the warning above |
+| `? Generate a new SSH key to add to your GitHub account? (Y/n)` | **n** - see the warning above |
 | `? Enter a passphrase for your new SSH key (Optional):` | You should never reach this. It appears only after answering **Y** above, and it protects a key this project does not want on disk |
-| `? Title for your SSH key: (GitHub CLI)` | Only asked when a key is being uploaded. Press Return to accept `GitHub CLI`, or give a name that identifies the Mac, such as `MacBook Pro — Day One Mac` |
-| `? How would you like to authenticate GitHub CLI?` | **Login with a web browser** — supplied by `--web` |
+| `? Title for your SSH key: (GitHub CLI)` | Only asked when a key is being uploaded. Press Return to accept `GitHub CLI`, or give a name that identifies the Mac, such as `MacBook Pro - Day One Mac` |
+| `? How would you like to authenticate GitHub CLI?` | **Login with a web browser** - supplied by `--web` |
 
 **On passphrases generally:** the Day One Mac flow has no SSH passphrase to
 choose. 1Password holds the private key and your Mac login plus Touch ID is what
 unlocks it. The only time you type an SSH passphrase is Phase 3’s provider-specific import step, when
-importing an *existing* protected key — and you type the old key's existing
+importing an *existing* protected key - and you type the old key's existing
 passphrase once, so 1Password can decrypt and re-protect it.
 
 ### Confirm the CLI is signed in
@@ -405,7 +405,7 @@ Hi your-username! You've successfully authenticated, but GitHub does not provide
 ```
 
 GitHub intentionally does not provide shell access, so that sentence is the
-expected result — not a failure — even though `ssh` returns a non-zero status.
+expected result - not a failure - even though `ssh` returns a non-zero status.
 Check that the username shown is the account that received your public key.
 
 ## Step 4.5 — Authenticate Azure DevOps on Tracks 2 and 3 🏢
@@ -542,7 +542,7 @@ configuration rollback.
 
 You may choose a destination beneath your ghq root. Custom paths are not
 automatically reused by a later `ghq get URL`, which derives its own path from
-the URL. The [developer folder guide](../manual/developer-folders.md) explains
+the URL. The [developer folder guide](../manual/development/folders.md) explains
 the root choices.
 
 ```bash
@@ -596,3 +596,43 @@ to the Installation Centre instead of starting another installer here.
 ---
 
 [← Phase 3](03-security-and-ssh.md) · [Continue to Phase 5 →](05-dotfiles-and-shell.md)
+
+## Safety, state and recovery reference
+
+- **Plan/check:** read-only; no state writes, package installation, source apply,
+  login, clone, or completion claim. An unresolved conflict returns non-zero.
+- **Apply:** explicit approval; inspects path and root conflicts first. It saves
+  intent before execution, journals only new directories/new installations and
+  the new Resources README, and backs up an unmanaged Git config before adding
+  a previously absent root.
+- **Resume:** uses saved choices and reruns live checks/creation idempotently.
+  It never treats an old phase marker as proof of the new choices. Change choices
+  with plan/apply, not resume.
+- **Records:** `folder-layout`, `ghq-choice`, and `folder-ghq-root` live in the
+  existing private setup state alongside the install/path manifests. Saved
+  choices are intent, not evidence that an interrupted apply finished.
+  If choice saving itself was interrupted, `ghq-choice` remains `pending` and
+  resume refuses to guess. Review and supply all choices again with plan/apply.
+- **Conflicts:** files or symlinks at template paths stop creation. Existing
+  ghq roots, Git includes, XDG Git configuration, environment overrides, or
+  evidence of a chezmoi source/configuration stop a proposed root write for manual review. Matching
+  effective roots need no write, regardless of their owner.
+  An existing default `~/ghq` directory also needs review before changing roots;
+  leaving it behind silently could hide repositories from later discovery.
+  The ownership check is deliberately conservative: it does not run chezmoi or
+  render templates to decide whether `.gitconfig` is managed. If it is unmanaged,
+  review and set the root yourself; a matching rerun needs no further write.
+- **Exit codes:** `0` successful bounded action; `2` missing/invalid choices;
+  `10` manual review/prerequisite; `11` failed local check.
+
+Resolve conflicts in the owning tool, inspect again, then rerun. The pilot does
+not convert symlink-based Developer layouts; keep them unchanged and follow the
+manual route until you have chosen a physical-path arrangement. Do not delete
+folders to satisfy a check. Preview `day-one-mac rollback` if you want to reverse
+recorded setup changes; it covers the shared journal, not just this capability.
+Existing directories, external roots and repository data are not adopted or
+automatically removed. Changing layouts never cleans up the old layout.
+
+The advanced repository audit uses absolute ghq paths only when ghq is selected.
+It is not a whole-disk repository inventory. Cleanup remains bounded to its
+documented Developer scope and does not acquire authority over external ghq roots.

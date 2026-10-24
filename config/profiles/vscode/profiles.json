@@ -43,6 +43,7 @@
     "terminal.integrated.defaultProfile.osx": "Zsh — development",
     "terminal.integrated.shellIntegration.enabled": true,
     "terminal.integrated.suggest.enabled": true,
+    "terminal.integrated.suggest.upArrowNavigatesHistory": true,
     "terminal.integrated.inheritEnv": true,
     "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font, monospace",
     "terminal.integrated.fontSize": 13,

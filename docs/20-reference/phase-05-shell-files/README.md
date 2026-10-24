@@ -1,17 +1,17 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Phase 5 shell-file reference
 
-This guide moved to [README](../../../templates/phase-05-shell-files/README.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../../../templates/phase-05-shell-files/README.md). This compatibility page preserves existing links.
 
 ## Reference tree
 
-Continue at [this section](../../../templates/phase-05-shell-files/README.md#reference-tree).
+See the [current instructions](../../../templates/phase-05-shell-files/README.md#reference-tree).
 
 ## Compare without changing anything
 
-Continue at [this section](../../../templates/phase-05-shell-files/README.md#compare-without-changing-anything).
+See the [current instructions](../../../templates/phase-05-shell-files/README.md#compare-without-changing-anything).
 
 ## Safely adopt a required reference change
 
-Continue at [this section](../../../templates/phase-05-shell-files/README.md#safely-adopt-a-required-reference-change).
+See the [current instructions](../../../templates/phase-05-shell-files/README.md#safely-adopt-a-required-reference-change).

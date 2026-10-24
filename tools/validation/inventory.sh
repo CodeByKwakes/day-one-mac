@@ -19,18 +19,18 @@ required_docs=(
   README.md
   docs/README.md
   docs/setup/manual/README.md
-  docs/setup/manual/chezmoi.md
-  docs/setup/manual/second-brain.md
-  docs/setup/manual/security.md
-  docs/setup/manual/1password.md
-  docs/setup/manual/keychain-ssh.md
-  docs/setup/manual/ssh-signing-and-recovery.md
-  docs/reference/SOFTWARE-CATALOGUE.md
-  docs/reference/DOCUMENTATION-COMMANDS.md
+  docs/setup/manual/shell/README.md
+  docs/setup/manual/second-brain/README.md
+  docs/setup/manual/security/README.md
+  docs/setup/manual/security/1password.md
+  docs/setup/manual/security/keychain-ssh.md
+  docs/setup/manual/security/ssh-signing-and-recovery.md
+  docs/shared/reference/software-catalogue.md
+  docs/shared/reading-and-export.md
   docs/START-HERE.md
-  docs/explanation/PROCESS-OVERVIEW.md
+  docs/shared/explanation/process-overview.md
   docs/reference/NEW-DEVICE-SETUP-BLUEPRINT.md
-  docs/explanation/PROJECT-GUIDE.md
+  docs/shared/explanation/process-overview.md
   maintainers/contributing/GIT-WORKFLOW.md
   maintainers/contributing/CONTRIBUTOR-TOOLING.md
   maintainers/releasing/RELEASE-TOKEN-SETUP.md
@@ -46,75 +46,75 @@ required_docs=(
   docs/setup/assisted/06-language-toolchains.md
   docs/setup/assisted/07-vscode-base.md
   docs/setup/assisted/08-verify-and-reproduce.md
-  docs/reference/README.md
-  docs/reference/COMMAND-REFERENCE.md
-  docs/reference/OPTIONAL-STATUS.md
-  docs/reference/UPGRADE-NOTES.md
-  docs/reference/GLOSSARY.md
-  docs/reference/GITHUB-PRIVATE-REPOSITORY.md
-  docs/reference/APPLICATION-OWNERSHIP.md
-  docs/reference/AI-WORKSPACES.md
-  docs/reference/EXPECTED-LAYOUT.md
-  docs/setup/manual/MANUAL-SETUP-GUIDE.md
-  docs/setup/manual/CHEZMOI-SETUP-TUTORIAL.md
-  docs/reference/CHEZMOI-COMMAND-REFERENCE.md
-  docs/explanation/CHEZMOI-CONCEPTS-AND-BOUNDARIES.md
-  docs/reference/MANAGING-DOTFILES-WITH-CHEZMOI.md
+  docs/shared/README.md
+  docs/setup/assisted/reference/command-reference.md
+  docs/setup/assisted/reference/optional-status.md
+  docs/shared/upgrade-notes.md
+  docs/shared/glossary.md
+  docs/setup/manual/git/github-private-repository.md
+  docs/shared/reference/application-ownership.md
+  docs/setup/manual/development/ai-workspaces.md
+  docs/shared/reference/expected-layout.md
+  docs/setup/manual/README.md
+  docs/setup/manual/shell/chezmoi.md
+  docs/shared/reference/chezmoi-commands.md
+  docs/shared/explanation/chezmoi-boundaries.md
+  docs/setup/manual/shell/chezmoi.md
   templates/phase-05-shell-files/README.md
-  docs/reference/developer-resources/README.md
-  docs/how-to/recovery/README.md
-  docs/how-to/recovery/FINALIZE.md
-  docs/how-to/recovery/REMOVE-DAY-ONE-MAC.md
-  docs/how-to/recovery/ROLLBACK.md
+  docs/setup/manual/development/resources.md
+  docs/setup/assisted/recovery/README.md
+  docs/setup/assisted/recovery/finalize.md
+  docs/setup/assisted/recovery/remove-day-one-mac.md
+  docs/setup/assisted/recovery/rollback.md
   maintainers/audits/README.md
   maintainers/audits/DOCUMENTATION-AUDIT.md
-  docs/how-to/apps/README.md
-  docs/how-to/apps/MACOS-SHORTCUTS.md
-  docs/how-to/apps/KEYBOARD-SHORTCUTS.md
-  docs/how-to/apps/RAYCAST.md
-  docs/how-to/apps/RAYCAST-COMMANDS.md
-  docs/how-to/apps/RAYCAST-AI-PROVIDERS.md
-  docs/how-to/apps/VSCODE.md
-  docs/how-to/apps/WARP.md
-  docs/how-to/apps/1PASSWORD-SSH-APPROVAL.md
-  docs/setup/existing-mac/README.md
-  docs/setup/existing-mac/00-existing-mac-decision.md
-  docs/setup/existing-mac/01-private-inventory.md
-  docs/setup/existing-mac/ENCRYPTED-BACKUP-DRIVE.md
-  docs/setup/existing-mac/02-backup-readiness.md
-  docs/setup/existing-mac/03-account-preserving-cleanup.md
-  docs/setup/existing-mac/04-handoff-to-day-one.md
-  docs/how-to/modules/optional/09-databases.md
-  docs/how-to/modules/optional/README.md
-  docs/how-to/modules/optional/10-ai-agents.md
-  docs/how-to/modules/optional/10a-omniroute.md
-  docs/how-to/modules/optional/11-mcp-servers.md
-  docs/how-to/modules/optional/12-vscode-profiles.md
-  docs/how-to/modules/optional/13-enhanced-cli-tools.md
-  docs/how-to/modules/optional/14-warp-drive.md
-  docs/how-to/modules/advanced/README.md
-  docs/how-to/modules/advanced/15-full-dotfiles-and-bootstrap.md
-  docs/how-to/modules/advanced/16-brewfile-apps-and-editor.md
-  docs/how-to/modules/advanced/17-shell-and-package-automation.md
-  docs/how-to/modules/advanced/18-hosting-identities-azure-and-worktrees.md
-  docs/how-to/development/worktrees/GIT-WORKTREES-VSCODE-AND-AI.md
-  docs/how-to/modules/advanced/19-macos-gui-and-local-https.md
-  docs/how-to/modules/advanced/20-restore-and-migrate.md
-  docs/how-to/modules/advanced/21-audit-maintenance-and-rebuild.md
-  docs/how-to/modules/advanced/22-ai-skills-and-mcp-operations.md
-  extensions/second-brain/README.md
-  extensions/second-brain/obsidian/README.md
-  extensions/second-brain/notion/README.md
-  extensions/second-brain/notion/01-PREREQUISITES.md
-  extensions/second-brain/notion/02-WORKSPACE-AND-DOMAINS.md
-  extensions/second-brain/notion/03-DATABASES-AND-PROPERTIES.md
-  extensions/second-brain/notion/04-TEMPLATES.md
-  extensions/second-brain/notion/05-DASHBOARD.md
-  extensions/second-brain/notion/06-RAYCAST-INTEGRATION.md
-  extensions/second-brain/notion/07-AI-INTEGRATION.md
-  extensions/second-brain/notion/08-OPERATING-WORKFLOW.md
-  extensions/second-brain/notion/09-BACKUP-AND-EXPORT.md
-  extensions/second-brain/notion/CHECKLIST.md
+  docs/setup/manual/apps/README.md
+  docs/setup/manual/apps/macos-shortcuts.md
+  docs/setup/manual/apps/keyboard-shortcuts.md
+  docs/setup/manual/apps/raycast.md
+  docs/setup/assisted/integrations/raycast.md
+  docs/setup/manual/apps/raycast-ai-providers.md
+  docs/setup/manual/editors/vscode.md
+  docs/setup/manual/terminals/warp.md
+  docs/setup/manual/security/1password.md
+  docs/setup/assisted/existing-mac/README.md
+  docs/setup/assisted/existing-mac/00-existing-mac-decision.md
+  docs/setup/assisted/existing-mac/01-private-inventory.md
+  docs/setup/manual/preparation/encrypted-backup.md
+  docs/setup/assisted/existing-mac/02-backup-readiness.md
+  docs/setup/assisted/existing-mac/03-account-preserving-cleanup.md
+  docs/setup/assisted/existing-mac/04-handoff-to-day-one.md
+  docs/setup/assisted/optional/09-databases.md
+  docs/setup/assisted/optional/README.md
+  docs/setup/assisted/optional/10-ai-agents.md
+  docs/setup/assisted/optional/10a-omniroute.md
+  docs/setup/assisted/optional/11-mcp-servers.md
+  docs/setup/assisted/optional/12-vscode-profiles.md
+  docs/setup/assisted/optional/13-enhanced-cli-tools.md
+  docs/setup/assisted/optional/14-warp-drive.md
+  docs/setup/assisted/advanced/README.md
+  docs/setup/assisted/advanced/15-full-dotfiles-and-bootstrap.md
+  docs/setup/assisted/advanced/16-brewfile-apps-and-editor.md
+  docs/setup/assisted/advanced/17-shell-and-package-automation.md
+  docs/setup/assisted/advanced/18-hosting-identities-azure-and-worktrees.md
+  docs/setup/manual/development/worktrees/README.md
+  docs/setup/assisted/advanced/19-macos-gui-and-local-https.md
+  docs/setup/assisted/advanced/20-restore-and-migrate.md
+  docs/setup/assisted/advanced/21-audit-maintenance-and-rebuild.md
+  docs/setup/assisted/advanced/22-ai-skills-and-mcp-operations.md
+  docs/setup/manual/second-brain/README.md
+  docs/setup/manual/second-brain/obsidian/README.md
+  docs/setup/manual/second-brain/notion/README.md
+  docs/setup/manual/second-brain/notion/01-prerequisites.md
+  docs/setup/manual/second-brain/notion/02-workspace-and-domains.md
+  docs/setup/manual/second-brain/notion/03-databases-and-properties.md
+  docs/setup/manual/second-brain/notion/04-templates.md
+  docs/setup/manual/second-brain/notion/05-dashboard.md
+  docs/setup/manual/second-brain/notion/06-raycast-integration.md
+  docs/setup/manual/second-brain/notion/07-ai-integration.md
+  docs/setup/manual/second-brain/notion/08-operating-workflow.md
+  docs/setup/manual/second-brain/notion/09-backup-and-export.md
+  docs/setup/manual/second-brain/notion/checklist.md
   "integrations/warp/Day One Mac/00 Day One Mac Command Catalogue.md"
   config/catalogs/applications.tsv
   config/catalogs/optional-formulae.tsv

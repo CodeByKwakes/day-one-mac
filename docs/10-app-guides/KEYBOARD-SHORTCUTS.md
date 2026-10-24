@@ -1,53 +1,53 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Day One Mac keyboard shortcuts
 
-This guide moved to [KEYBOARD-SHORTCUTS](../how-to/apps/KEYBOARD-SHORTCUTS.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/manual/apps/keyboard-shortcuts.md). This compatibility page preserves existing links.
 
 ## Key symbols
 
-Continue at [this section](../how-to/apps/KEYBOARD-SHORTCUTS.md#key-symbols).
+See the [current instructions](../setup/manual/apps/keyboard-shortcuts.md#key-symbols).
 
 ## Recommended global shortcut ownership
 
-Continue at [this section](../how-to/apps/KEYBOARD-SHORTCUTS.md#recommended-global-shortcut-ownership).
+See the [current instructions](../setup/manual/apps/keyboard-shortcuts.md#recommended-global-shortcut-ownership).
 
 ## Optional Vorssaint ownership
 
-Continue at [this section](../how-to/apps/KEYBOARD-SHORTCUTS.md#optional-vorssaint-ownership).
+See the [current instructions](../setup/manual/apps/keyboard-shortcuts.md#optional-vorssaint-ownership).
 
 ## 1Password
 
-Continue at [this section](../how-to/apps/KEYBOARD-SHORTCUTS.md#1password).
+See the [current instructions](../setup/manual/apps/keyboard-shortcuts.md#1password).
 
 ### Everyday global actions
 
-Continue at [this section](../how-to/apps/KEYBOARD-SHORTCUTS.md#everyday-global-actions).
+See the [current instructions](../setup/manual/apps/keyboard-shortcuts.md#everyday-global-actions).
 
 ### In the 1Password app or Quick Access
 
-Continue at [this section](../how-to/apps/KEYBOARD-SHORTCUTS.md#in-the-1password-app-or-quick-access).
+See the [current instructions](../setup/manual/apps/keyboard-shortcuts.md#in-the-1password-app-or-quick-access).
 
 ## Raycast
 
-Continue at [this section](../how-to/apps/KEYBOARD-SHORTCUTS.md#raycast).
+See the [current instructions](../setup/manual/apps/keyboard-shortcuts.md#raycast).
 
 ## Warp
 
-Continue at [this section](../how-to/apps/KEYBOARD-SHORTCUTS.md#warp).
+See the [current instructions](../setup/manual/apps/keyboard-shortcuts.md#warp).
 
 ## Visual Studio Code
 
-Continue at [this section](../how-to/apps/KEYBOARD-SHORTCUTS.md#visual-studio-code).
+See the [current instructions](../setup/manual/apps/keyboard-shortcuts.md#visual-studio-code).
 
 ## Finder and macOS essentials
 
-Continue at [this section](../how-to/apps/KEYBOARD-SHORTCUTS.md#finder-and-macos-essentials).
+See the [current instructions](../setup/manual/apps/keyboard-shortcuts.md#finder-and-macos-essentials).
 
 ## Optional Finder Quick Actions and launchers
 
-Continue at [this section](../how-to/apps/KEYBOARD-SHORTCUTS.md#optional-finder-quick-actions-and-launchers).
+See the [current instructions](../setup/manual/apps/keyboard-shortcuts.md#optional-finder-quick-actions-and-launchers).
 
 ## Shortcut verification checklist 🚦
 
-Continue at [this section](../how-to/apps/KEYBOARD-SHORTCUTS.md#shortcut-verification-checklist-).
+See the [current instructions](../setup/manual/apps/keyboard-shortcuts.md#shortcut-verification-checklist-).

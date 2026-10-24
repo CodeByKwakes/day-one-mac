@@ -214,22 +214,24 @@ while IFS= read -r -d '' base; do
 done < <(find "$PROJECT_DIR/assets/vault" "$PROJECT_DIR/assets/three-vaults" -type f -name '*.base' -print0)
 [[ "$base_failed" == 0 ]] && pass 'all Obsidian Base files contain filters and views'
 
-if grep -Fq 'Guide release 2.3.0.0' "$PROJECT_DIR/README.md" \
-   && grep -Fq 'Raycast 2.3.x' "$PROJECT_DIR/GUIDE-1-OBSIDIAN-RAYCAST.md" \
-   && grep -Fq 'No Obsidian AI' "$PROJECT_DIR/GUIDE-2-OBSIDIAN-CLAUDE-CODE.md" \
-   && grep -Fq 'Obsidian AI plugin' "$PROJECT_DIR/GUIDE-3-OBSIDIAN-CODEX.md" \
+# Canonical prose belongs to the route guides; extension assets stay here.
+REPOSITORY_ROOT="$(cd "$PROJECT_DIR/../../.." && pwd)"
+MANUAL_DOCS="$REPOSITORY_ROOT/docs/setup/manual/second-brain/obsidian"
+ASSISTED_GUIDE="$REPOSITORY_ROOT/docs/setup/assisted/optional/second-brain.md"
+if grep -Fq 'No Obsidian AI' "$MANUAL_DOCS/claude.md" \
+   && grep -Fq 'Obsidian AI plugin' "$MANUAL_DOCS/codex.md" \
    && grep -Fq 'ai_allowed' "$PROJECT_DIR/assets/vault/CLAUDE.md" \
    && grep -Fq 'ai_allowed' "$PROJECT_DIR/assets/vault/AGENTS.md" \
-   && grep -Fq 'second-brain-manager.sh --guided' "$PROJECT_DIR/README.md" \
-   && grep -Fq -- '--tools raycast' "$PROJECT_DIR/README.md" \
+   && grep -Fq 'day-one-mac second-brain obsidian --guided' "$ASSISTED_GUIDE" \
+   && grep -Fq -- '--tools raycast' "$ASSISTED_GUIDE" \
    && grep -Fq -- '--tools|--stack' "$SCRIPT_DIR/setup-second-brain.sh" \
-   && grep -Fq 'Capture Knowledge Item' "$PROJECT_DIR/GUIDE-1-OBSIDIAN-RAYCAST.md" \
-   && grep -Fq 'Open Knowledge Vault' "$PROJECT_DIR/GUIDE-1-OBSIDIAN-RAYCAST.md" \
-   && ! grep -Fq 'all four starter Bases' "$PROJECT_DIR/CHECKLIST.md" \
-   && grep -Fq 'updates only files bearing its ownership marker' "$PROJECT_DIR/README.md" \
-   && grep -Fq 'unrecognised existing note' "$PROJECT_DIR/README.md" \
-   && grep -Fq 'Sync alone is not treated as backup' "$PROJECT_DIR/README.md"; then
-  pass 'version, integration, privacy, idempotency, and backup guidance is explicit'
+   && grep -Fq 'Capture Knowledge Item' "$PROJECT_DIR/assets/manager/raycast/capture-knowledge-vault.sh" \
+   && grep -Fq 'Open Knowledge Vault' "$PROJECT_DIR/assets/manager/raycast/open-knowledge-vault.sh" \
+   && ! grep -Fq 'all four starter Bases' "$MANUAL_DOCS/checklist.md" \
+   && grep -Fq 'Only files bearing the manager ownership marker' "$ASSISTED_GUIDE" \
+   && grep -Fq 'An existing file without the manager marker is preserved' "$ASSISTED_GUIDE" \
+   && grep -Fq 'Sync is not an independent backup' "$MANUAL_DOCS/README.md"; then
+  pass 'integration, privacy, idempotency, route ownership and backup guidance is explicit'
 else
   fail 'a core guide contract is missing'
 fi

@@ -1,25 +1,25 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Security setup: choose one key owner
 
-This guide moved to [security](../setup/manual/security.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/manual/security/README.md). This compatibility page preserves existing links.
 
 ## Before starting
 
-Continue at [this section](../setup/manual/security.md#before-starting).
+See the [current instructions](../setup/manual/security/README.md#before-starting).
 
 ## Follow the setup in order
 
-Continue at [this section](../setup/manual/security.md#follow-the-setup-in-order).
+See the [current instructions](../setup/manual/security/README.md#follow-the-setup-in-order).
 
 ## Private package registry credentials
 
-Continue at [this section](../setup/manual/security.md#private-package-registry-credentials).
+See the [current instructions](../setup/manual/security/README.md#private-package-registry-credentials).
 
 ## FileVault and recovery
 
-Continue at [this section](../setup/manual/security.md#filevault-and-recovery).
+See the [current instructions](../setup/manual/security/README.md#filevault-and-recovery).
 
 ## Completion checklist
 
-Continue at [this section](../setup/manual/security.md#completion-checklist).
+See the [current instructions](../setup/manual/security/README.md#completion-checklist).

@@ -1,41 +1,41 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Remove Day One Mac safely
 
-This guide moved to [REMOVE-DAY-ONE-MAC](../how-to/recovery/REMOVE-DAY-ONE-MAC.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/assisted/recovery/remove-day-one-mac.md). This compatibility page preserves existing links.
 
 ## Start with the guided wizard
 
-Continue at [this section](../how-to/recovery/REMOVE-DAY-ONE-MAC.md#start-with-the-guided-wizard).
+See the [current instructions](../setup/assisted/recovery/remove-day-one-mac.md#start-with-the-guided-wizard).
 
 ## Choose the correct removal meaning
 
-Continue at [this section](../how-to/recovery/REMOVE-DAY-ONE-MAC.md#choose-the-correct-removal-meaning).
+See the [current instructions](../setup/assisted/recovery/remove-day-one-mac.md#choose-the-correct-removal-meaning).
 
 ## Section choices
 
-Continue at [this section](../how-to/recovery/REMOVE-DAY-ONE-MAC.md#section-choices).
+See the [current instructions](../setup/assisted/recovery/remove-day-one-mac.md#section-choices).
 
 ## Reset configuration without removing software
 
-Continue at [this section](../how-to/recovery/REMOVE-DAY-ONE-MAC.md#reset-configuration-without-removing-software).
+See the [current instructions](../setup/assisted/recovery/remove-day-one-mac.md#reset-configuration-without-removing-software).
 
 ## How Homebrew ownership works
 
-Continue at [this section](../how-to/recovery/REMOVE-DAY-ONE-MAC.md#how-homebrew-ownership-works).
+See the [current instructions](../setup/assisted/recovery/remove-day-one-mac.md#how-homebrew-ownership-works).
 
 ## Developer-folder choices
 
-Continue at [this section](../how-to/recovery/REMOVE-DAY-ONE-MAC.md#developer-folder-choices).
+See the [current instructions](../setup/assisted/recovery/remove-day-one-mac.md#developer-folder-choices).
 
 ## Container and credential boundaries
 
-Continue at [this section](../how-to/recovery/REMOVE-DAY-ONE-MAC.md#container-and-credential-boundaries).
+See the [current instructions](../setup/assisted/recovery/remove-day-one-mac.md#container-and-credential-boundaries).
 
 ## Useful previews
 
-Continue at [this section](../how-to/recovery/REMOVE-DAY-ONE-MAC.md#useful-previews).
+See the [current instructions](../setup/assisted/recovery/remove-day-one-mac.md#useful-previews).
 
 ## Recovery output
 
-Continue at [this section](../how-to/recovery/REMOVE-DAY-ONE-MAC.md#recovery-output).
+See the [current instructions](../setup/assisted/recovery/remove-day-one-mac.md#recovery-output).

@@ -1,49 +1,49 @@
+<!-- day-one-mac:compatibility-guide -->
+
 # Create an encrypted external backup drive
 
-This guide moved to [ENCRYPTED-BACKUP-DRIVE](../setup/existing-mac/ENCRYPTED-BACKUP-DRIVE.md). Use that page for the maintained instructions.
-
-<!-- day-one-mac:compatibility-guide -->
+Continue with the [current guide](../setup/manual/preparation/encrypted-backup.md). This compatibility page preserves existing links.
 
 ## What you need
 
-Continue at [this section](../setup/existing-mac/ENCRYPTED-BACKUP-DRIVE.md#what-you-need).
+See the [current instructions](../setup/manual/preparation/encrypted-backup.md).
 
 ## Format and encrypt a dedicated backup drive
 
-Continue at [this section](../setup/existing-mac/ENCRYPTED-BACKUP-DRIVE.md#format-and-encrypt-a-dedicated-backup-drive).
+See the [current instructions](../setup/manual/preparation/encrypted-backup.md).
 
 ## Let Day One create the backup folder
 
-Continue at [this section](../setup/existing-mac/ENCRYPTED-BACKUP-DRIVE.md#let-day-one-create-the-backup-folder).
+See the [current instructions](../setup/manual/preparation/encrypted-backup.md).
 
 ## Verify the drive yourself
 
-Continue at [this section](../setup/existing-mac/ENCRYPTED-BACKUP-DRIVE.md#verify-the-drive-yourself).
+See the [current instructions](../setup/manual/preparation/encrypted-backup.md).
 
 ## If you also want Time Machine
 
-Continue at [this section](../setup/existing-mac/ENCRYPTED-BACKUP-DRIVE.md#if-you-also-want-time-machine).
+See the [current instructions](../setup/manual/preparation/encrypted-backup.md).
 
 ## Common problems
 
-Continue at [this section](../setup/existing-mac/ENCRYPTED-BACKUP-DRIVE.md#common-problems).
+See the [current instructions](../setup/manual/preparation/encrypted-backup.md).
 
 ### The drive does not appear under `/Volumes`
 
-Continue at [this section](../setup/existing-mac/ENCRYPTED-BACKUP-DRIVE.md#the-drive-does-not-appear-under-volumes).
+See the [current instructions](../setup/manual/preparation/encrypted-backup.md).
 
 ### The wizard says the drive is internal or virtual
 
-Continue at [this section](../setup/existing-mac/ENCRYPTED-BACKUP-DRIVE.md#the-wizard-says-the-drive-is-internal-or-virtual).
+See the [current instructions](../setup/manual/preparation/encrypted-backup.md).
 
 ### The wizard says the drive is not encrypted APFS
 
-Continue at [this section](../setup/existing-mac/ENCRYPTED-BACKUP-DRIVE.md#the-wizard-says-the-drive-is-not-encrypted-apfs).
+See the [current instructions](../setup/manual/preparation/encrypted-backup.md).
 
 ### The folder already exists
 
-Continue at [this section](../setup/existing-mac/ENCRYPTED-BACKUP-DRIVE.md#the-folder-already-exists).
+See the [current instructions](../setup/manual/preparation/encrypted-backup.md).
 
 ## Official Apple references
 
-Continue at [this section](../setup/existing-mac/ENCRYPTED-BACKUP-DRIVE.md#official-apple-references).
+See the [current instructions](../setup/manual/preparation/encrypted-backup.md).

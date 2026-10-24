@@ -1,136 +1,29 @@
-[← Worktree overview](GIT-WORKTREES-VSCODE-AND-AI.md) · [Environment files](WORKTREES-ENVIRONMENT.md) · [Troubleshooting](WORKTREES-TROUBLESHOOTING.md)
+<!-- day-one-mac:compatibility-guide -->
 
 # Git worktrees with Codex
 
-Choose **one** route: let the app manage the worktree, or create a folder
-manually and open it as a local project. Use one primary writer per folder.
+Continue with the [current guide](../../../setup/manual/development/worktrees/codex.md). This compatibility page preserves existing links.
 
 ## Codex-managed worktree
 
-For example, to improve Day One Mac's guide:
-
-1. Select the Day One Mac Git project and start a new chat.
-2. Choose **Worktree** below the composer and select the intended starting branch, such as `main`.
-3. Submit: “Improve the worktree documentation. First report the worktree path and starting commit, then make the documentation change and run its checks.”
-4. Confirm the reported path is a separate checkout before reviewing edits.
-
-The selected local branch may be behind its remote: fetch and update it first
-when you need current `main`. App-managed worktrees can start detached; create
-a branch using the app's Git controls before publishing branch-based work.
-Use the app's handoff and worktree archive controls for its managed checkout.
-A plain chat fork sharing a folder does not isolate files.
-
-See [official OpenAI worktree documentation](https://learn.chatgpt.com/docs/environments/git-worktrees)
-for current app behavior and setup options. Configure dependencies and local
-files using the [shared environment guide](WORKTREES-ENVIRONMENT.md).
+See the [current instructions](../../../setup/manual/development/worktrees/codex.md#codex-managed-worktree).
 
 ## Manual worktree — recommended for this layout
 
-```bash
-REPO="$HOME/Developer/github.com/example/acme"
-WORKTREE_ROOT="${REPO}.worktrees"
-git -C "$REPO" fetch --prune origin
-mkdir -p "$WORKTREE_ROOT"
-```
-
-Replace the example repository path before running these commands.
-
-```bash
-WORKTREE="$WORKTREE_ROOT/codex-payment-timeout"
-
-git -C "$REPO" worktree add --no-track \
-  -b codex/payment-timeout \
-  "$WORKTREE" \
-  origin/main
-
-codex -C "$WORKTREE" \
-  --sandbox workspace-write \
-  --ask-for-approval on-request
-```
-
-For Codex GUI, open the manual worktree folder as a local project and start one
-task there. Confirm the branch and directory before approving work.
-
-For the hotfix example, replace the base `origin/main` with the verified
-release branch or commit. For a feature, use a new feature branch and folder.
-Starting from local `main` instead of `origin/main` includes its committed
-local state, not uncommitted edits.
+See the [current instructions](../../../setup/manual/development/worktrees/codex.md#manual-worktree---recommended-for-this-layout).
 
 ## Verify the active worktree
 
-Before changing or committing files, check:
-
-```bash
-printf 'root:   %s\nbranch: %s\n' \
-  "$(git rev-parse --show-toplevel)" \
-  "$(git branch --show-current)"
-
-git status --short --branch
-git worktree list --verbose
-```
-
-In VS Code also check the window title, Status Bar branch, Source Control
-repository heading, and active integrated-terminal path. Recreate old terminal
-tabs after changing the folder shown in a VS Code window.
+See the [current instructions](../../../setup/manual/development/worktrees/codex.md#verify-the-active-worktree).
 
 ## Example tasks
 
-Choose the worktree and starting revision first, then give one bounded task:
-
-| Task | Starting point | Example prompt |
-|---|---|---|
-| Feature | Fresh `main` | “Add login validation and its tests. Work only in this worktree. Show the diff and test results.” |
-| Bugfix | Fresh `main` | “Reproduce the login error, add a regression test, and fix it. Report the root cause and checks.” |
-| Hotfix | Deployed release branch or commit | “Fix the payment timeout on this release baseline. Keep the change focused and run the regression checks.” |
-| PR review | Fetched PR head | “Review this commit against origin/main. Report actionable findings with file locations; do not change files or submit a review.” |
-| Tests | Exact main or feature commit | “Run the documented checks here using disposable test settings. Report the commit, commands, and failures. Do not fix files yet.” |
-
-Replace the example task and target branch with the real ones. A prompt saying
-“use main” does not verify the actual starting commit. For PR and test
-snapshots, create the folder with the [terminal recipes](WORKTREES-TERMINAL.md)
-and open it through the manual route above. Review code before running it and
-use [separate environment files and services](WORKTREES-ENVIRONMENT.md).
+See the [current instructions](../../../setup/manual/development/worktrees/codex.md#example-tasks).
 
 ## Update from main and complete the work
 
-For a manually created feature worktree, use this example prompt:
-
-> Confirm the path and feature branch, inspect for pending changes, then fetch
-> origin and merge origin/main into this feature without rewriting history.
-> Stop if the worktree is dirty and explain what needs preserving. Resolve
-> conflicts only when the intended behavior is clear, run the required checks,
-> and report the resulting diff and commit.
-
-See [the exact update commands](WORKTREES-TERMINAL.md#bring-the-latest-main-into-an-active-worktree).
-For a managed detached worktree, create a named branch first if continuing
-feature development. Keep PR review and test snapshots at their intended
-revision. A release hotfix should receive its release-base updates, not
-unreleased main changes.
-
-Choose the completion instruction that matches your repository:
-
-- **PR:** “Review and commit these changes on the feature branch, push it, and
-  create a PR targeting main with the test results.” Inspect the PR and wait
-  for the required checks and reviews; creating it is not merging it.
-- **Local merge:** “In the clean checkout that owns main, fast-forward from
-  origin/main, merge the completed feature branch, and run checks. Report the
-  result before pushing main.” Use only when direct updates are allowed.
-
-After the PR is merged, update the checkout that owns main with
-`git pull --ff-only origin main`. The
-[completion walkthrough](WORKTREES-TERMINAL.md#review-and-integrate) explains
-verification, conflicts, squash merges, and cleanup. For an app-managed
-checkout, use its branch/publish or handoff controls to preserve the work
-before integration, and its worktree cleanup controls afterward. Archiving
-alone does not merge code.
+See the [current instructions](../../../setup/manual/development/worktrees/codex.md#update-from-main-and-complete-the-work).
 
 ## Review and finish
 
-Ask for the changed files, actual diff, test commands and results, and remaining
-limitations. Inspect them yourself before committing or publishing. Integrate
-through the repository's normal PR process. Do not mistake completion of an
-AI task for a merge into `main`.
-
-For a manually created folder, stop the client and use
-[Git cleanup](WORKTREES-TERMINAL.md#safe-cleanup). For a tool-managed folder,
-use that tool's lifecycle controls and preserve useful ignored files first.
+See the [current instructions](../../../setup/manual/development/worktrees/codex.md#review-and-finish).
