@@ -281,10 +281,15 @@ day-one-mac vscode-profile full-stack \
 day-one-mac vscode-profile operations \
   --with ms-vscode-remote.remote-ssh \
   --install-extensions
+day-one-mac vscode-profile ai --with natqe.reload
 ```
 
 The first example generates a bundle with Jest and Playwright; the second also
-installs Operations extensions and Remote SSH. Extension IDs are matched without
+installs Operations extensions and Remote SSH. The third generates an AI bundle
+with Reload, which is optional in all four recipes. None of these options marks
+an extension as shared across profiles; use the manual guide's
+[all-profiles sharing action](../../manual/editors/vscode.md#reload-optional-shared-convenience)
+when that is intended. Extension IDs are matched without
 case sensitivity. Settings specific to optional tools remain manual unless
 already present in the guide's profile recipe. `--code "/path/to/code"` selects
 another VS Code CLI executable. `--help` lists options. `--dry-run` always

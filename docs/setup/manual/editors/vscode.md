@@ -12,18 +12,25 @@ Complete [Homebrew](../homebrew.md), [language tools](../languages.md) and
 install `visual-studio-code` through Homebrew only when absent and Homebrew is
 its intended owner. Use the organisation's channel for managed software.
 
-Profiles organise settings and extensions. They do not isolate accounts, agent
-credentials, database permissions or CLI configuration. A copied profile is a
-snapshot; common preferences do not automatically inherit later edits.
+Have the selected project's dependencies, Git and Node.js available before
+testing Full Stack or AI. Select JetBrainsMono Nerd Font if installed, or keep
+the supplied fallback font. Warp is optional; omit its external-terminal setting
+when you do not use it. Account access and managed extension policies remain
+prerequisites for the AI tools you select.
 
-The exact JSON is generated from the repository's versioned configuration in
-[profile data](../../../shared/reference/vscode-profile-data.md). Marketplace
-links identify the proposed extensions; check publisher, availability and the
-installed editor's setting schema before installation. Vendor labels and agent
-features can change with versions, accounts and policy. Official
-[profile documentation](https://code.visualstudio.com/docs/configure/profiles)
+Profiles organise settings and extensions. They do not isolate accounts, agent
+credentials, database permissions or CLI configuration. **User Settings** means
+the active profile's personal settings; workspace settings and IT policy can
+override them. This procedure creates no project `.vscode` files.
+
+The exact JSON is generated from the versioned configuration in
+[profile data](../../../shared/reference/vscode-profile-data.md). Keep that page
+open beside this procedure. It owns the copyable values; the tables below explain
+where each group belongs. Marketplace links identify extensions; check the
+publisher and the installed editor's setting schema before applying preferences.
+The official [profile documentation](https://code.visualstudio.com/docs/configure/profiles)
 and [AI overview](https://code.visualstudio.com/docs/agents/overview) were consulted
-on 24 October 2026; that does not certify every third-party extension release.
+on 24 October 2026. Account, policy and version differences can affect availability.
 
 ## Open VS Code and enable the CLI
 
@@ -34,12 +41,18 @@ on 24 October 2026; that does not certify every third-party extension release.
 2. Run **Shell Command: Install 'code' command in PATH** from the Command Palette
    (`Cmd+Shift+P`).
 
-   Expected result: `code --version` works in a new terminal.
+   Expected result: `code --version` prints the editor version in a new terminal.
 
-3. Export existing profiles before changing them, using the backup section below.
+3. [Export each existing profile](#export-a-portable-profile---preferred) that
+   you intend to change.
 
-   Expected result: a private `.code-profile` file exists for each configuration
-   you intend to replace. Review exports for account details and private paths.
+   Expected result: a private `.code-profile` backup exists for each selected profile.
+
+4. Review Settings Sync in the Manage gear menu and pause it while replacing an
+   existing configuration, keeping the cloud copy.
+
+   Expected result: changes on this Mac will not immediately replace another
+   device's configuration. Re-enable Sync only after local verification.
 
 ## 1. Choose and create profiles
 
@@ -50,24 +63,31 @@ on 24 October 2026; that does not certify every third-party extension release.
 | AI | Prompt authoring, reviews, debugging, agents and skills | Dark Modern; purple | Optional local/dev/test tools |
 | Operations | Containers, pipelines, databases, remote work | Dark Modern; green | Production read-only investigation |
 
-Choose Default plus only the task profiles you need.
+Choose Default plus only the task profiles you need. Configure Default in
+sections 2 and 3 before creating the named profiles in section 4.
 
 ### Create the selected profiles
 
-1. [Export your current profiles](#export-a-portable-profile---preferred) before changing them.
-2. Configure Default with the shared extensions/settings below.
-3. Create Full Stack and/or Operations by copying Default, if selected.
-4. If AI is selected, use the Full Stack settings as its foundation, then apply AI overrides. Copy a configured Full Stack profile when available; you do not need to keep a separate Full Stack profile solely for this step.
-5. In AI, disable Full Stack-only extensions unless needed for the current task.
-6. Associate each repository with its chosen profile. Use Full Stack for
-   development if selected; choose AI or Operations deliberately for focused
-   work, preferably in a separate window/worktree.
+1. Open **Manage gear → Profiles** to display the Profiles editor.
+2. Select **Default**, using **Use this Profile for Current Window** if necessary.
+3. Keep this window on Default while applying the shared extensions and settings below.
 
-Copying profiles is a snapshot, not automatic inheritance. Apply common
-preferences to all profiles deliberately; keep accents and Copilot completion
-choices profile-specific. Profiles are not sandboxes and do not isolate agent
-credentials, CLI configuration, or database permissions.
-[Profiles](https://code.visualstudio.com/docs/configure/profiles).
+Expected result: the Profiles editor shows Default as active. Default normally
+has no profile name in the window title. Named-profile creation follows under
+[Apply profile settings](#4-apply-profile-settings).
+
+### Choose how resources are shared
+
+| Mechanism | What later changes do | Use in this setup |
+|---|---|---|
+| Copy from Default | Creates an independent snapshot of selected resources | Starting point for each named profile |
+| Apply Setting to all Profiles | Shares that setting across profiles | Optional for identical preferences such as font size; keep accents and language blocks profile-specific |
+| Apply Extension to all Profiles | Makes that extension available across profiles | Recommended for the six shared extensions and Reload when selected |
+| Use a whole resource from Default | Reuses Default's Settings, Keyboard Shortcuts or another selected resource | Keep Settings, Extensions and Keyboard Shortcuts owned by each named profile in this recipe |
+
+Copying does not create inheritance between profiles. The AI recipe's
+`extends` relationship belongs to the Day One Mac generator; the manual route
+combines the documented JSON blocks itself. See [VS Code profiles](https://code.visualstudio.com/docs/configure/profiles).
 
 ## 2. Install the final extension lists
 
@@ -91,171 +111,207 @@ to install. Skills and MCP servers are separate configuration, described later.
 
 ### Extension tables
 
-Each profile table lists its full shared set again. **Recommended** means part
-of that profile's baseline. **Optional** means install only for an actual task.
-Linked names point to Marketplace listings; these are not commands to install
-every optional item. Let parent extensions manage required companions.
+**R** means recommended for that profile. **O** means optional for an actual
+task. **No** means outside its recipe. Companion extensions may be installed by
+their parent extension; do not install them a second time just to match a count.
+
+| Extension | Identifier | Purpose | Default | Full Stack | AI | Operations |
+|---|---|---|---|---|---|---|
+| [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) | `esbenp.prettier-vscode` | Format supported languages | R | R | R | R |
+| [EditorConfig](https://marketplace.visualstudio.com/items?itemName=editorconfig.editorconfig) | `editorconfig.editorconfig` | Respect repository whitespace rules | R | R | R | R |
+| [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=pkief.material-icon-theme) | `pkief.material-icon-theme` | File and folder icons | R | R | R | R |
+| [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) | `yzhang.markdown-all-in-one` | Markdown editing conveniences | R | R | R | R |
+| [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker) | `streetsidesoftware.code-spell-checker` | Spelling diagnostics | R | R | R | R |
+| [markdownlint](https://marketplace.visualstudio.com/items?itemName=davidanson.vscode-markdownlint) | `davidanson.vscode-markdownlint` | Markdown structure checks | R | R | R | R |
+| [Angular Language Service](https://marketplace.visualstudio.com/items?itemName=angular.ng-template) | `angular.ng-template` | Angular template diagnostics and navigation | No | R | R | No |
+| [Angular HTML](https://marketplace.visualstudio.com/items?itemName=ghaschel.vscode-angular-html) | `ghaschel.vscode-angular-html` | Your chosen template highlighting | No | R | No | No |
+| [Nx Console](https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console) | `nrwl.angular-console` | Generators, targets, and workspace information | No | R | R | No |
+| [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) | `dbaeumer.vscode-eslint` | Repository lint diagnostics and fixes | No | R | R | No |
+| [Prisma](https://marketplace.visualstudio.com/items?itemName=prisma.prisma) | `prisma.prisma` | Prisma schema editing and formatting | No | R | R | No |
+| [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) | `eamodio.gitlens` | History, blame, and comparisons | No | R | R | R |
+| [Codex - OpenAI’s coding agent](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt) | `openai.chatgpt` | OpenAI coding-agent integration | No | R | R | O |
+| [Claude Code for VS Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) | `anthropic.claude-code` | Anthropic coding-agent integration | No | R | R | O |
+| [Good Prompts](https://marketplace.visualstudio.com/items?itemName=omarbanat.goodprompts) | `omarbanat.goodprompts` | Guided prompt generation and library | No | R | R | No |
+| [DotENV](https://marketplace.visualstudio.com/items?itemName=mikestead.dotenv) | `mikestead.dotenv` | Environment-file highlighting | No | R | R | R |
+| [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) | `redhat.vscode-yaml` | YAML schemas and diagnostics | No | R | R | R |
+| [Azure Pipelines](https://marketplace.visualstudio.com/items?itemName=ms-azure-devops.azure-pipelines) | `ms-azure-devops.azure-pipelines` | Pipeline YAML support | No | R | No | R |
+| [Container Tools](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-containers) | `ms-azuretools.vscode-containers` | Docker and Compose tooling | No | R | No | R |
+| [PostgreSQL](https://marketplace.visualstudio.com/items?itemName=ms-ossdata.vscode-pgsql) | `ms-ossdata.vscode-pgsql` | Direct PostgreSQL browsing and queries | No | R | O | R |
+| [vscode-pdf](https://marketplace.visualstudio.com/items?itemName=tomoki1207.pdf) | `tomoki1207.pdf` | PDF viewing | O | No | No | No |
+| [Excel Viewer](https://marketplace.visualstudio.com/items?itemName=grapecity.gc-excelviewer) | `grapecity.gc-excelviewer` | spreadsheet/CSV viewing | O | No | No | No |
+| [Reload](https://marketplace.visualstudio.com/items?itemName=natqe.reload) | `natqe.reload` | Status-bar button for the built-in Reload Window command | O | O | O | O |
+| [Jest](https://marketplace.visualstudio.com/items?itemName=orta.vscode-jest) | `orta.vscode-jest` | When the repository uses Jest | No | O | O | No |
+| [Playwright Test](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) | `ms-playwright.playwright` | When the repository uses Playwright | No | O | O | No |
+| [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) | `bradlc.vscode-tailwindcss` | When the repository uses Tailwind | No | O | No | No |
+| [Stylelint](https://marketplace.visualstudio.com/items?itemName=stylelint.vscode-stylelint) | `stylelint.vscode-stylelint` | When the repository configures Stylelint | No | O | No | No |
+| [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) | `ms-vscode-remote.remote-containers` | When you develop inside a container | No | O | No | O |
+| [GitHub Pull Requests](https://marketplace.visualstudio.com/items?itemName=github.vscode-pull-request-github) | `github.vscode-pull-request-github` | GitHub-hosted PRs; not Azure Repos PRs | No | O | No | No |
+| [Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) | `usernamehw.errorlens` | If inline diagnostics improve readability | No | O | No | No |
+| [Switch to DataGrip](https://marketplace.visualstudio.com/items?itemName=MaxPowerEngine.switch2datagrip) | `maxpowerengine.switch2datagrip` | SQL-file handoff; not database browsing | No | O | No | O |
+| [Chat Customizations Evaluations](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-chat-customizations-evaluations) | `ms-vscode.vscode-chat-customizations-evaluations` | prompt/skill analysis using Copilot | No | No | O | No |
+| [Foundry Toolkit for VS Code](https://marketplace.visualstudio.com/items?itemName=ms-windows-ai-studio.windows-ai-studio) | `ms-windows-ai-studio.windows-ai-studio` | model playground and AI application tooling | No | No | O | No |
+| [Remote - SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) | `ms-vscode-remote.remote-ssh` | When opening remote folders | No | No | No | O |
+| [Remote - SSH: Editing](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh-edit) | `ms-vscode-remote.remote-ssh-edit` | Keep when required by Remote SSH | No | No | No | O |
+| [Remote Explorer](https://marketplace.visualstudio.com/items?itemName=ms-vscode.remote-explorer) | `ms-vscode.remote-explorer` | Keep when required by remote tooling | No | No | No | O |
+| [shell-format](https://marketplace.visualstudio.com/items?itemName=foxundermoon.shell-format) | `foxundermoon.shell-format` | shell formatting; choose one formatter | No | No | No | O |
+
+Keep DataGrip as the primary database application and PostgreSQL for in-editor
+browsing. Use one icon theme and one formatter per language. GitLens supplements
+native Git; ESLint and configured Stylelint supply diagnostics and fixes.
 
 #### Default extensions
 
-| Extension | Identifier | Status and purpose |
-|---|---|---|
-| [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) | `esbenp.prettier-vscode` | Recommended: Format supported languages |
-| [EditorConfig](https://marketplace.visualstudio.com/items?itemName=editorconfig.editorconfig) | `editorconfig.editorconfig` | Recommended: Respect repository whitespace rules |
-| [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=pkief.material-icon-theme) | `pkief.material-icon-theme` | Recommended: File and folder icons |
-| [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) | `yzhang.markdown-all-in-one` | Recommended: Markdown editing conveniences |
-| [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker) | `streetsidesoftware.code-spell-checker` | Recommended: Spelling diagnostics |
-| [markdownlint](https://marketplace.visualstudio.com/items?itemName=davidanson.vscode-markdownlint) | `davidanson.vscode-markdownlint` | Recommended: Markdown structure checks |
-| [vscode-pdf](https://marketplace.visualstudio.com/items?itemName=tomoki1207.pdf) | `tomoki1207.pdf` | Optional: Optional PDF viewing |
-| [Excel Viewer](https://marketplace.visualstudio.com/items?itemName=grapecity.gc-excelviewer) | `grapecity.gc-excelviewer` | Optional: Optional spreadsheet/CSV viewing |
+Use the **Default** column in the matrix, then follow
+[Install and share the Default baseline](#install-and-share-the-default-baseline).
 
 #### Full Stack extensions
 
-| Extension | Identifier | Status and purpose |
-|---|---|---|
-| [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) | `esbenp.prettier-vscode` | Recommended: Format supported languages |
-| [EditorConfig](https://marketplace.visualstudio.com/items?itemName=editorconfig.editorconfig) | `editorconfig.editorconfig` | Recommended: Respect repository whitespace rules |
-| [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=pkief.material-icon-theme) | `pkief.material-icon-theme` | Recommended: File and folder icons |
-| [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) | `yzhang.markdown-all-in-one` | Recommended: Markdown editing conveniences |
-| [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker) | `streetsidesoftware.code-spell-checker` | Recommended: Spelling diagnostics |
-| [markdownlint](https://marketplace.visualstudio.com/items?itemName=davidanson.vscode-markdownlint) | `davidanson.vscode-markdownlint` | Recommended: Markdown structure checks |
-| [Angular Language Service](https://marketplace.visualstudio.com/items?itemName=angular.ng-template) | `angular.ng-template` | Recommended: Angular template diagnostics and navigation |
-| [Angular HTML](https://marketplace.visualstudio.com/items?itemName=ghaschel.vscode-angular-html) | `ghaschel.vscode-angular-html` | Recommended: Your chosen template highlighting |
-| [Nx Console](https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console) | `nrwl.angular-console` | Recommended: Generators, targets, and workspace information |
-| [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) | `dbaeumer.vscode-eslint` | Recommended: Repository lint diagnostics and fixes |
-| [Prisma](https://marketplace.visualstudio.com/items?itemName=prisma.prisma) | `prisma.prisma` | Recommended: Prisma schema editing and formatting |
-| [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) | `eamodio.gitlens` | Recommended: History, blame, and comparisons |
-| [Codex - OpenAI’s coding agent](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt) | `openai.chatgpt` | Recommended: OpenAI coding-agent integration |
-| [Claude Code for VS Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) | `anthropic.claude-code` | Recommended: Anthropic coding-agent integration |
-| [Good Prompts](https://marketplace.visualstudio.com/items?itemName=omarbanat.goodprompts) | `omarbanat.goodprompts` | Recommended: Guided prompt generation and library |
-| [DotENV](https://marketplace.visualstudio.com/items?itemName=mikestead.dotenv) | `mikestead.dotenv` | Recommended: Environment-file highlighting |
-| [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) | `redhat.vscode-yaml` | Recommended: YAML schemas and diagnostics |
-| [Azure Pipelines](https://marketplace.visualstudio.com/items?itemName=ms-azure-devops.azure-pipelines) | `ms-azure-devops.azure-pipelines` | Recommended: Pipeline YAML support |
-| [Container Tools](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-containers) | `ms-azuretools.vscode-containers` | Recommended: Docker and Compose tooling |
-| [PostgreSQL](https://marketplace.visualstudio.com/items?itemName=ms-ossdata.vscode-pgsql) | `ms-ossdata.vscode-pgsql` | Recommended: Direct PostgreSQL browsing and queries |
-| [Jest](https://marketplace.visualstudio.com/items?itemName=orta.vscode-jest) | `orta.vscode-jest` | Optional: When the repository uses Jest |
-| [Playwright Test](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) | `ms-playwright.playwright` | Optional: When the repository uses Playwright |
-| [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) | `bradlc.vscode-tailwindcss` | Optional: When the repository uses Tailwind |
-| [Stylelint](https://marketplace.visualstudio.com/items?itemName=stylelint.vscode-stylelint) | `stylelint.vscode-stylelint` | Optional: When the repository configures Stylelint |
-| [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) | `ms-vscode-remote.remote-containers` | Optional: When you develop inside a container |
-| [GitHub Pull Requests](https://marketplace.visualstudio.com/items?itemName=github.vscode-pull-request-github) | `github.vscode-pull-request-github` | Optional: GitHub-hosted PRs; not Azure Repos PRs |
-| [Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) | `usernamehw.errorlens` | Optional: If inline diagnostics improve readability |
-| [Switch to DataGrip](https://marketplace.visualstudio.com/items?itemName=MaxPowerEngine.switch2datagrip) | `MaxPowerEngine.switch2datagrip` | Optional: Optional SQL-file handoff; not database browsing |
+Use the **Full Stack** column when [creating the development profile](#4-apply-profile-settings).
 
 #### AI extensions
 
-| Extension | Identifier | Status and purpose |
-|---|---|---|
-| [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) | `esbenp.prettier-vscode` | Recommended: Format supported languages |
-| [EditorConfig](https://marketplace.visualstudio.com/items?itemName=editorconfig.editorconfig) | `editorconfig.editorconfig` | Recommended: Respect repository whitespace rules |
-| [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=pkief.material-icon-theme) | `pkief.material-icon-theme` | Recommended: File and folder icons |
-| [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) | `yzhang.markdown-all-in-one` | Recommended: Markdown editing conveniences |
-| [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker) | `streetsidesoftware.code-spell-checker` | Recommended: Spelling diagnostics |
-| [markdownlint](https://marketplace.visualstudio.com/items?itemName=davidanson.vscode-markdownlint) | `davidanson.vscode-markdownlint` | Recommended: Markdown structure checks |
-| [Codex - OpenAI’s coding agent](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt) | `openai.chatgpt` | Recommended: OpenAI coding-agent integration |
-| [Claude Code for VS Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) | `anthropic.claude-code` | Recommended: Anthropic coding-agent integration |
-| [Good Prompts](https://marketplace.visualstudio.com/items?itemName=omarbanat.goodprompts) | `omarbanat.goodprompts` | Recommended: Guided prompt generation and library |
-| [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) | `eamodio.gitlens` | Recommended: History, blame, and comparisons |
-| [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) | `dbaeumer.vscode-eslint` | Recommended: Repository lint diagnostics and fixes |
-| [Angular Language Service](https://marketplace.visualstudio.com/items?itemName=angular.ng-template) | `angular.ng-template` | Recommended: Angular template diagnostics and navigation |
-| [Nx Console](https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console) | `nrwl.angular-console` | Recommended: Generators, targets, and workspace information |
-| [Prisma](https://marketplace.visualstudio.com/items?itemName=prisma.prisma) | `prisma.prisma` | Recommended: Prisma schema editing and formatting |
-| [DotENV](https://marketplace.visualstudio.com/items?itemName=mikestead.dotenv) | `mikestead.dotenv` | Recommended: Environment-file highlighting |
-| [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) | `redhat.vscode-yaml` | Recommended: YAML schemas and diagnostics |
-| [Chat Customizations Evaluations](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-chat-customizations-evaluations) | `ms-vscode.vscode-chat-customizations-evaluations` | Optional: Optional prompt/skill analysis using Copilot |
-| [Foundry Toolkit for VS Code](https://marketplace.visualstudio.com/items?itemName=ms-windows-ai-studio.windows-ai-studio) | `ms-windows-ai-studio.windows-ai-studio` | Optional: Optional model playground and AI application tooling |
-| [Jest](https://marketplace.visualstudio.com/items?itemName=orta.vscode-jest) | `orta.vscode-jest` | Optional: When the repository uses Jest |
-| [Playwright Test](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) | `ms-playwright.playwright` | Optional: When the repository uses Playwright |
-| [PostgreSQL](https://marketplace.visualstudio.com/items?itemName=ms-ossdata.vscode-pgsql) | `ms-ossdata.vscode-pgsql` | Optional: Direct PostgreSQL browsing and queries |
+Use the **AI** column with the [AI settings recipe](#ai-overrides);
+copying settings does not require copying Full Stack's extension selection.
 
 #### Operations extensions
 
-| Extension | Identifier | Status and purpose |
-|---|---|---|
-| [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) | `esbenp.prettier-vscode` | Recommended: Format supported languages |
-| [EditorConfig](https://marketplace.visualstudio.com/items?itemName=editorconfig.editorconfig) | `editorconfig.editorconfig` | Recommended: Respect repository whitespace rules |
-| [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=pkief.material-icon-theme) | `pkief.material-icon-theme` | Recommended: File and folder icons |
-| [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) | `yzhang.markdown-all-in-one` | Recommended: Markdown editing conveniences |
-| [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker) | `streetsidesoftware.code-spell-checker` | Recommended: Spelling diagnostics |
-| [markdownlint](https://marketplace.visualstudio.com/items?itemName=davidanson.vscode-markdownlint) | `davidanson.vscode-markdownlint` | Recommended: Markdown structure checks |
-| [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) | `eamodio.gitlens` | Recommended: History, blame, and comparisons |
-| [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) | `redhat.vscode-yaml` | Recommended: YAML schemas and diagnostics |
-| [Azure Pipelines](https://marketplace.visualstudio.com/items?itemName=ms-azure-devops.azure-pipelines) | `ms-azure-devops.azure-pipelines` | Recommended: Pipeline YAML support |
-| [Container Tools](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-containers) | `ms-azuretools.vscode-containers` | Recommended: Docker and Compose tooling |
-| [DotENV](https://marketplace.visualstudio.com/items?itemName=mikestead.dotenv) | `mikestead.dotenv` | Recommended: Environment-file highlighting |
-| [PostgreSQL](https://marketplace.visualstudio.com/items?itemName=ms-ossdata.vscode-pgsql) | `ms-ossdata.vscode-pgsql` | Recommended: Direct PostgreSQL browsing and queries |
-| [Remote - SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) | `ms-vscode-remote.remote-ssh` | Optional: When opening remote folders |
-| [Remote - SSH: Editing](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh-edit) | `ms-vscode-remote.remote-ssh-edit` | Optional: Keep when required by Remote SSH |
-| [Remote Explorer](https://marketplace.visualstudio.com/items?itemName=ms-vscode.remote-explorer) | `ms-vscode.remote-explorer` | Optional: Keep when required by remote tooling |
-| [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) | `ms-vscode-remote.remote-containers` | Optional: When you develop inside a container |
-| [Codex - OpenAI’s coding agent](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt) | `openai.chatgpt` | Optional: OpenAI coding-agent integration |
-| [Claude Code for VS Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) | `anthropic.claude-code` | Optional: Anthropic coding-agent integration |
-| [shell-format](https://marketplace.visualstudio.com/items?itemName=foxundermoon.shell-format) | `foxundermoon.shell-format` | Optional: Optional shell formatting; choose one formatter |
-| [Switch to DataGrip](https://marketplace.visualstudio.com/items?itemName=MaxPowerEngine.switch2datagrip) | `MaxPowerEngine.switch2datagrip` | Optional: Optional SQL-file handoff; not database browsing |
+Use the **Operations** column with the [Operations settings recipe](#operations-overrides).
 
-Keep DataGrip as the primary database application and Microsoft's PostgreSQL
-extension for in-editor browsing. Skip a second general-purpose SQL extension
-initially. Keep one icon theme, one main formatter per language, and GitLens
-plus native Git before adding another graph interface. ESLint and configured
-Stylelint provide diagnostics, not competing formatting ownership.
+### Install and share the Default baseline
 
-Install through the active profile's Extensions view, or name it explicitly:
+1. Open **View → Extensions** (`Cmd+Shift+X`) while Default is active.
+2. Search each Default **R** entry by its identifier, verify the publisher and
+   select **Install** if it is absent.
+3. Open each installed entry's gear menu and select **Apply Extension to all Profiles**.
+4. Include Reload with the same sharing action if you want its status-bar button.
+
+Expected result: the Default baseline is enabled, and the selected shared
+extensions remain available after switching profiles. Leave task-specific
+extensions for section 4. Installing an extension into Default alone is not
+the same as selecting the all-profiles action.
+
+### Reload: optional shared convenience
+
+**Reload** (`natqe.reload`, publisher `natqe`) adds a button on the right of
+the status bar. It invokes VS Code's existing `workbench.action.reloadWindow`
+command and requires no extension-specific settings or keybinding.
+
+The manifest and source checked on 24 October 2026 identify version `0.0.7`,
+declare VS Code `^1.30.0` and activate at startup. That range includes VS Code
+1.143.1; it is not proof of compatibility with every extension combination.
+The manifest has no browser entry point, so it is not a standalone web extension.
+[Manifest](https://github.com/natqe/reload/blob/master/package.json),
+[implementation](https://github.com/natqe/reload/blob/master/src/extension.ts),
+[web-extension requirements](https://code.visualstudio.com/api/extension-guides/web-extensions).
+
+Use **Apply Extension to all Profiles** for consistent access across this local
+VS Code installation. Per-profile installation keeps the button out of profiles
+that do not need it. Neither choice automatically installs it on every remote
+host or container. An explicitly scoped CLI alternative is:
 
 ```bash
-code --profile "Full Stack" --install-extension anthropic.claude-code
-code --profile "Full Stack" --install-extension omarbanat.goodprompts
-code --profile "Full Stack" --install-extension ms-ossdata.vscode-pgsql
-code --profile "AI" --install-extension omarbanat.goodprompts
-code --profile "Operations" --install-extension ms-ossdata.vscode-pgsql
+code --profile "Full Stack" --install-extension natqe.reload
 ```
+
+Save work and finish active agent/debugging tasks before testing the button.
+The publisher's tracker includes reports of a disappearing button and remote
+placement preventing its use after an SSH disconnection. These are reported
+limitations, not reproduced conflicts with the other recommended extensions.
+[Issue tracker](https://github.com/natqe/reload/issues),
+[remote-session report](https://github.com/natqe/reload/issues/2).
+
+Expected result: clicking **Reload** reopens the current window. If the button
+is absent, run **Developer: Reload Window** from the Command Palette. The native
+command also works without this extension; no additional reload extension is needed.
 
 ## 3. Apply shared User Settings
 
-Switch profiles and run **Preferences: Open User Settings (JSON)**. Merge these
-properties into the existing root object. Do not paste several complete JSON
-objects into one file. In a clean profile, this block is the starting object.
-For an existing profile, preserve your other chosen settings.
+1. With Default active, run **Preferences: Open User Settings (JSON)**.
+2. Merge the [shared settings block](../../../shared/reference/vscode-profile-data.md#shared-settings)
+   into the existing root object, preserving unrelated preferences.
+3. Apply the [Default overrides](../../../shared/reference/vscode-profile-data.md#default-overrides)
+   to that same object and save the file.
+4. Inspect Settings for unknown keys and open a new integrated terminal.
 
-Then apply section 4's overrides in the order shown. If a property already
-exists, edit it rather than adding a duplicate key. Nested language blocks
-should preserve the shared options unless an override explicitly replaces them.
+Expected result: one valid JSON object supplies Dark Modern, a neutral title-bar
+accent, the selected font and the development Zsh terminal. Default's Copilot
+inline suggestions are off. Markdown and JSON use Prettier on explicit saves.
 
-Use the maintained [JSON configuration](../../../shared/reference/vscode-profile-data.md#shared-settings).
+Each subsequent profile receives this baseline by copying Default. A shared
+recipe is not automatically a live shared setting. To share an individual
+preference, open **Preferences: Open Settings (UI)**, find it, open its gear menu
+and select **Apply Setting to all Profiles**. Keep values that differ below
+in each profile's own User Settings.
 
-Explicit saves limit surprise edits. Formatting is enabled for Markdown and
-JSON here, then for stack languages in Full Stack. Markdown All in One's table
-formatter and automatic TOC updates are disabled so Prettier and deliberate
-TOC updates have clear ownership. Repository Prettier/EditorConfig rules still
-apply. Add spelling exceptions through Code Spell Checker's personal dictionary.
+### Settings ownership matrix
 
-The non-login Zsh profile depends on the shared PATH helper being sourced from
-`.zshrc`; follow the detailed Zsh recipe. Replace `/bin/zsh` in both terminal
-profiles if you deliberately chose a different executable. Select the Nerd
-Font in Warp too. `terminal.external.osxExec` opens Warp as a separate app.
+| Setting or configuration group | Default | Full Stack | AI | Operations | Where it belongs |
+|---|---|---|---|---|---|
+| Explicit saves, final newline, editor fonts, rulers and navigation preferences | Shared | Shared | Shared | Shared | User Settings; optional all-profiles sharing for identical values |
+| Dark Modern and Material Icon Theme | Shared | Shared | Shared | Shared | User Settings |
+| Zsh profiles, terminal font, shell integration and Warp executable | Shared | Shared | Shared | Shared | Machine-specific User Settings; verify paths after import |
+| Git fetch/sync preferences and Conventional Commit instructions | Shared | Shared | Shared | Shared | User Settings |
+| `chat.tools.global.autoApprove` and `chat.tools.terminal.enableAutoApprove` | Off | Off | Off | Off | Shared User Settings; applies to supported VS Code chat flows |
+| Markdown/JSON formatting and Markdown extension preferences | Shared | Shared | Shared plus prose suggestions off | Shared | Profile User Settings; preserve nested language values |
+| Title-bar and badge colors | Neutral | Blue | Purple | Green | Profile User Settings; do not share across profiles |
+| Copilot inline suggestions | Off | On except excluded languages | Off | Off | Profile User Settings; chat availability is separate |
+| TS/JS, HTML, CSS/SCSS and Prisma formatting; import actions | No | Enabled | Enabled | No | Full Stack overrides, also combined into AI |
+| GitLens inline annotations | No | Off | Off | Off | Profile User Settings where GitLens is selected |
+| `.env` associations, formatting and suggestion restrictions | No | Enabled | Enabled | Enabled | Profile User Settings; not an access-control boundary |
+| Pipeline-file language mode | Default detection | Azure Pipelines | YAML | Azure Pipelines | Profile User Settings, matching installed language providers |
+| SQL and Dockerfile format-on-save | Default behavior | Off | Off | Off | Profile User Settings |
+| Codex and Claude preferences, agent instructions and skill discovery | No | Enabled | Enabled with AI overrides | Manual if selected | Profile User Settings; accounts and CLI permissions remain separate |
+| Import-cleanup shortcuts | No custom entries | Three chords | Three chords | No custom entries | Profile Keyboard Shortcuts JSON |
+| Angular/NestJS folder associations and Angular HTML token palette | No | Manual | No | No | Full Stack User Settings, sections 7 and 8 |
+| Skills, MCP servers, credentials and database connections | Separate | Separate | Separate | Separate | Their linked client/tool configuration, not the profile settings recipe |
 
-All four recipes set
-`"terminal.integrated.suggest.upArrowNavigatesHistory": true`. Pair it with
-the [Zsh matching-history bindings](../shell/zsh.md#search-matching-commands-with-up-and-down):
-type `brew `, then Up/Down to cycle through previous commands with that prefix.
-The profile setting alone cannot change Zsh's history behaviour. Existing
-profiles need a manual User Settings merge, and existing shell files need the
-linked `.zshrc` merge. Warp retains its own input behaviour.
+The [configuration reference](../../../shared/reference/vscode-profile-data.md)
+owns the exact keys and values. For manual merges, replace an existing scalar
+value, merge nested object properties and replace arrays only when intended.
+Do not paste multiple root objects or duplicate keys. In particular, retain
+shared Markdown whitespace settings when applying the AI Markdown override.
 
-The approval settings preserve Day One Mac's baseline; they govern supported
-VS Code chat flows, not every vendor extension. Keep credentials out of User
-Settings and exported profiles. User settings are personal configuration, not
-secret storage. [AI settings reference](https://code.visualstudio.com/docs/agents/reference/ai-settings).
+Markdown All in One's table formatter and automatic table-of-contents updates
+are disabled to give Prettier and deliberate edits clear ownership. Repository
+Prettier and EditorConfig rules still apply. Use Code Spell Checker's personal
+dictionary for spelling exceptions.
 
-The shared commit-message instructions ask Copilot to use Conventional Commits
-with a specific subject and, for substantial changes, a body explaining what
-changed and why. Stage the intended changes, then select **Generate Commit
-Message** beside the message input in Source Control and review the result.
-This setting is experimental and applies to Copilot's commit-message generator;
-Codex and Claude require their own instructions. The versioned profile recipes include it. For an existing setup, merge the setting
-into User Settings and use **Apply Setting to all Profiles** if desired.
-[Commit-message instruction setting](https://code.visualstudio.com/docs/agents/reference/ai-settings).
+The non-login Zsh terminal requires the shared PATH helper in `.zshrc`. Follow
+the [Zsh recipe](../shell/zsh.md) and replace `/bin/zsh` in both terminal profiles
+only if you chose another executable. `terminal.external.osxExec` opens Warp
+as a separate application.
+
+The shared `terminal.integrated.suggest.upArrowNavigatesHistory` setting pairs
+with the [Zsh matching-history bindings](../shell/zsh.md#search-matching-commands-with-up-and-down).
+Type `brew ` and press Up/Down to check matching history. The VS Code setting
+alone does not configure Zsh; Warp retains its own input behavior.
+
+Stage intended changes before selecting **Generate Commit Message** in Source
+Control. The shared experimental instructions request a Conventional Commit
+subject and a useful body for substantial changes. Review the result. These
+instructions apply to Copilot's generator; Codex and Claude use their own
+instructions. Keep credentials out of settings and exports.
+[AI settings reference](https://code.visualstudio.com/docs/agents/reference/ai-settings).
 
 ## 4. Apply profile settings
+
+1. Open **Manage gear → Profiles → New Profile** after verifying Default.
+2. Enter the exact selected name: **Full Stack**, **AI** or **Operations**.
+3. Choose **Copy from → Default** and include copies of Settings, Extensions
+   and Keyboard Shortcuts, rather than reusing those whole resources from Default.
+4. Select **Create**, then **Use this Profile for Current Window**.
+5. Open Extensions and install the active profile's **R** entries from the
+   [extension matrix](#extension-tables), skipping shared entries already present.
+6. Add only the **O** entries needed for your tasks. Keep task-specific extensions
+   scoped to this profile instead of selecting the all-profiles action.
+7. Open **Preferences: Open User Settings (JSON)** and combine the blocks below
+   in order, following the nested-object merge rules in section 3.
+8. Repeat these steps for each additional profile you chose.
+
+Expected result: each named profile has the intended accent, extension column
+and settings. AI copies Default's extension baseline, then adds its own list;
+it does not require copying Full Stack's extra extensions or keeping a Full Stack
+profile. Use **Profiles: Switch Profile** to compare the results.
 
 | Profile | Exact settings recipe |
 |---|---|
@@ -293,8 +349,11 @@ Exclude real secrets from Git and use the application's own environment loader.
 
 ### AI overrides
 
-Apply after Full Stack. These replace the accent and Copilot inline preference,
-while retaining TypeScript/Angular/Prisma diagnostics and formatting.
+Apply after the Full Stack settings block, using the AI extension column.
+These replace the accent and Copilot inline preference while retaining
+TypeScript/Angular/Prisma diagnostics and formatting. Pipeline filenames use
+ordinary YAML because Azure Pipelines is not in AI's baseline. Full Stack and
+Operations retain the dedicated Azure Pipelines language mode.
 
 Use the maintained [JSON configuration](../../../shared/reference/vscode-profile-data.md#ai-overrides).
 
@@ -318,6 +377,17 @@ SQL stays manually formatted until you deliberately choose a formatter.
 Configure connection credentials through PostgreSQL's connection UI, not JSON.
 If enabling Codex or Claude in Operations, add their extension preferences
 from Full Stack selectively; a profile switch does not grant database access.
+
+### Associate a project with its profile
+
+1. Open the intended folder or workspace in VS Code.
+2. Run **Profiles: Switch Profile** and choose the intended profile.
+3. Reopen that folder and inspect the active profile in **Manage gear → Profiles**.
+
+Expected result: VS Code remembers the folder's profile association. Open
+separate windows or worktrees when you need different profiles concurrently.
+An association does not isolate accounts or grant database permissions.
+[Folder associations](https://code.visualstudio.com/docs/configure/profiles#folder--workspace-associations).
 
 ## 5. Configure import cleanup and keyboard shortcuts
 
@@ -383,8 +453,12 @@ keymaps can change defaults; inspect **Preferences: Open Keyboard Shortcuts**.
 
 ### Personal import shortcuts
 
-Open **Preferences: Open Keyboard Shortcuts (JSON)** in Full Stack. Add these
-entries to its existing array. They are suggested personal chords, not defaults:
+1. Switch to Full Stack or AI and open **Preferences: Open Keyboard Shortcuts**.
+2. Search each chord below and resolve any existing assignment you want to keep.
+3. Run **Preferences: Open Keyboard Shortcuts (JSON)** and merge the entries
+   into its existing array, then save.
+
+These are suggested personal chords, not defaults:
 
 ```json
 [
@@ -414,21 +488,31 @@ entries to its existing array. They are suggested personal chords, not defaults:
 ]
 ```
 
-Search each chord in the Keyboard Shortcuts editor for conflicts before saving.
+Expected result: on a disposable TS/JS edit, Sort Imports retains unused imports,
+Remove Unused Imports removes unused bindings, and Organize Imports does both.
+Inspect the diff before keeping a cleanup change.
+
 Do not copy these import bindings into Operations unless it also edits TS/JS.
 Use **Developer: Toggle Keyboard Shortcuts Troubleshooting** if a chord invokes
 another action. [Keyboard configuration](https://code.visualstudio.com/docs/configure/keybindings).
 
 ## 6. Edit environment files
 
-Install DotENV in Full Stack, Operations, and AI. Its verified language identifier
-is `dotenv`; the main guide’s profile settings cover `.env`, `.env.local`,
+DotENV belongs in Full Stack, Operations and AI. Its language identifier
+is `dotenv`; the profile settings cover `.env`, `.env.local`,
 `.env.example`, and `development.env`.
 [Language manifest](https://github.com/mikestead/vscode-dotenv/blob/master/package.json).
 
 The [canonical profile settings](#4-apply-profile-settings)
 already disable automatic formatting and suggestions for environment files.
 Review that baseline in the active profile rather than applying another copy.
+
+1. Open a non-secret `.env.example` file in one of those profiles.
+2. Check the language mode in the status bar and the active formatter settings.
+3. Save a disposable edit and inspect the result.
+
+Expected result: DotENV supplies highlighting; automatic formatting and inline
+suggestions are disabled. Saving does not load variables into an application.
 
 Keep whitespace and quoting under the application's parser rules. Do not
 associate dotenv with shellscript solely to get colors: Docker Compose, dotenv,
@@ -460,7 +544,10 @@ Angular folder icon for frontend folders and a red server icon for NestJS API
 folders; this avoids inventing an unsupported `nestjs` folder-icon identifier.
 [Folder inventory](https://github.com/material-extensions/vscode-material-icon-theme/blob/main/src/core/icons/folderIcons.ts).
 
-Add to Full Stack User Settings, replacing folder names with your actual names:
+1. Switch to Full Stack and run **Preferences: Open User Settings (JSON)**.
+2. Merge the following properties, substituting your folder names and preserving
+   any existing custom-clone entries.
+3. Save the settings and inspect those folders in the Explorer.
 
 ```json
 {
@@ -483,6 +570,9 @@ Add to Full Stack User Settings, replacing folder names with your actual names:
 }
 ```
 
+Expected result: the selected frontend folders use Angular icons; selected API
+folders use red server icons. Unrelated folder names keep their existing icons.
+
 Associations match folder names, not framework detection. Every folder named
 `api` in this profile gets that icon. Do not map generic `src` to Angular in a
 mixed frontend/backend repository. Merge custom clone arrays rather than
@@ -500,7 +590,7 @@ in their supported HTML language mode; do not invent an `angular-html` language
 association. Use it only in Full Stack to avoid changing unrelated profiles.
 
 1. Open an Angular component template.
-2. Select **Dark Modern** as the profile theme.
+2. Run **Preferences: Color Theme** and select **Dark Modern**.
 3. In Settings, search `@ext:ghaschel.vscode-angular-html` to inspect the options
    exposed by your installed version.
 4. For the publisher's screenshot palette, run **vscode-angular-html: Set
@@ -564,7 +654,7 @@ Test with a template supported by your project's Angular version:
 }
 ```
 
-Expect distinct colors for the custom tag, input, event, control-flow keyword,
+Expected result: distinct colors identify the custom tag, input, event, control-flow keyword,
 and interpolation delimiters. If highlighting regresses, disable only this
 extension and confirm Language Service diagnostics still work.
 
@@ -588,26 +678,31 @@ same server independently; a SQL-file handoff extension does not share sessions.
 
 ## 9. Verify and export
 
-1. Open a new terminal in Full Stack; confirm `node`, the repository package
-   manager, Git, and the selected Zsh environment.
-2. Open an Angular template and Prisma schema; confirm diagnostics and correct
-   formatter ownership. Check import actions on a small disposable edit.
-3. Verify Angular/NestJS folder icons and HTML token colours in Full Stack.
-4. Open Good Prompts in Full Stack and AI; select the intended agent and review
-   a generated prompt without making edits.
-5. Confirm Copilot, Codex, and Claude each use the intended account, mode, and
-   project. Verify Claude's canonical skill links rather than creating copies.
-6. Test selected MCP servers in the actual client/harness. Don't assume the
-   same server is available in another provider or remote environment.
-7. Test local/dev/test database connections, then separately verify the
-   production read-only identity. Do not use a write operation as a casual test.
-8. Export each profile to a private backup outside the repository. Inspect
-   exports for personal information; back up CLI agent/skill configuration
-   separately and regrant machine-specific permissions when moving Macs.
+Run the checks for the profiles and optional integrations you selected.
+
+| Check | Expected result |
+|---|---|
+| Switch through your profiles | Each name, accent and enabled extension set matches its matrix column |
+| Open a development terminal and run `node --version`, `git --version` and the project package manager's version command | Each tool resolves to the intended installation |
+| Open an Angular template and Prisma schema in Full Stack or AI | Diagnostics and formatter ownership match the selected extensions |
+| Save and use import shortcuts on a disposable TS/JS change | Sorting and removal follow the chosen policy; the diff contains only intended edits |
+| Inspect icons and HTML token colors in Full Stack | The selected folders and tokens use the configured appearance |
+| Open Good Prompts in Full Stack or AI | A generated prompt can be reviewed before sending it to an agent |
+| Inspect selected AI clients and their linked skills/MCP configuration | The intended account, project, permissions and tools are available in that client |
+| Test selected database connections with the database guide | Local/dev/test work; production uses the separately verified read-only identity |
+| Save work and test Reload where selected | The window reloads; the native Command Palette action remains available if the button is absent |
+
+1. Resolve failed checks using the owning guide or troubleshooting section.
+2. [Export each verified profile](#export-a-portable-profile---preferred) to a private backup.
+3. [Configure Settings Sync](#configure-settings-sync-on-a-new-machine) if selected.
+
+Expected result: each profile has a reviewed backup. CLI agent/skill configuration
+and database credentials have their own recovery process; moving Macs may require
+new account sign-ins and machine permissions.
 
 Exported profiles do not replace database credential management or runtime
 configuration backups. A successful editor setup does not establish that a
-migration is safe. No live configuration is changed by this guide.
+database migration is safe.
 
 ## Export and back up the configuration
 
@@ -617,11 +712,15 @@ migration is safe. No live configuration is changed by this guide.
 2. Select the profile you want to preserve.
 3. Open its actions menu and choose **Export…**.
 4. Review which parts will be exported.
-5. Choose **Local file** and save the `.code-profile` file under:
+5. Choose **Local file** and save each `.code-profile` with its profile name and
+   a date/time in a private backup directory such as:
 
    ```text
    /Volumes/<backup-volume>/Day-One-Mac-App-Exports/VS-Code/
    ```
+
+Expected result: each selected profile has a distinct export and older backups
+remain available. Inspect the export for private paths or account details.
 
 VS Code can also save a profile to a GitHub secret gist. Use a local file when
 the profile is private, work-managed, or not intended to leave the Mac. Some
@@ -636,36 +735,77 @@ machine-specific settings are deliberately excluded from profile exports.
 
 ### Record the extension inventory
 
-```bash
-EXPORT_DIR="/Volumes/<backup-volume>/Day-One-Mac-App-Exports/VS-Code"
-test -d "/Volumes/<backup-volume>" || { echo "Backup volume is not mounted"; exit 1; }
-mkdir -p "$EXPORT_DIR"
-code --list-extensions --show-versions | sort > "$EXPORT_DIR/extensions.txt"
-```
-
-This text file is an audit. A later reinstall normally installs the current
-release rather than forcing a pinned version:
+After creating the profiles, run this in Terminal with your mounted backup-volume
+name. Remove unselected profile names from the loop; add custom names only when
+those profiles exist. The command records one inventory per named profile.
 
 ```bash
-cut -d@ -f1 "/Volumes/<backup-volume>/Day-One-Mac-App-Exports/VS-Code/extensions.txt" |
-  while IFS= read -r extension; do
-    test -n "$extension" && code --install-extension "$extension"
+(
+  set -euo pipefail
+  umask 077
+  BACKUP_VOLUME="/Volumes/<backup-volume>"
+  test -d "$BACKUP_VOLUME" || { echo "Backup volume is not mounted"; exit 1; }
+  EXPORT_ROOT="$BACKUP_VOLUME/Day-One-Mac-App-Exports/VS-Code"
+  mkdir -p "$EXPORT_ROOT"
+  INVENTORY_DIR="$(mktemp -d "$EXPORT_ROOT/extensions-$(date '+%Y%m%d-%H%M%S').XXXXXX")"
+  for profile in "Default" "Full Stack" "AI" "Operations"; do
+    code --profile "$profile" --list-extensions --show-versions |
+      LC_ALL=C sort > "$INVENTORY_DIR/$profile.extensions.txt"
   done
+  printf 'Extension inventories: %s\n' "$INVENTORY_DIR"
+)
 ```
 
-Review the list first. Restoring every old extension can defeat the clean-start
-goal.
+Expected result: the printed new directory contains a separate versioned list
+for each selected profile. Open every list and check representative extensions.
+These lists do not preserve settings, extension enablement or all-profiles
+sharing; retain the `.code-profile` exports too.
+
+To restore extensions, review one inventory and set its exact path and matching
+profile name below. Create or select that profile first. The CLI can create a
+missing named profile, so check spelling before running the command.
+
+```bash
+(
+  set -euo pipefail
+  PROFILE="Full Stack"
+  INVENTORY_FILE="/path/to/reviewed-inventory/Full Stack.extensions.txt"
+  test -f "$INVENTORY_FILE" || { echo "Inventory file is missing"; exit 1; }
+  cut -d@ -f1 "$INVENTORY_FILE" |
+  while IFS= read -r extension; do
+    test -n "$extension" || continue
+    code --profile "$PROFILE" --install-extension "$extension"
+  done
+)
+```
+
+Expected result: the selected profile contains the reviewed extensions. Recheck
+its inventory and enabled state. This installs available current releases, not
+the recorded versions, and does not remove other extensions. Repeat only for
+profiles you intend to restore, then reapply any all-profiles sharing choices.
+[Profile-scoped CLI options](https://code.visualstudio.com/docs/configure/command-line#working-with-extensions).
 
 ### Back up the complete local user folder - recovery copy
 
-Quit VS Code first, then make a private recovery copy:
+Quit all VS Code windows with `Cmd+Q`, then make a private recovery copy in a
+new dated directory. Replace the backup-volume placeholder first:
 
 ```bash
-EXPORT_DIR="/Volumes/<backup-volume>/Day-One-Mac-App-Exports/VS-Code"
-test -d "/Volumes/<backup-volume>" || { echo "Backup volume is not mounted"; exit 1; }
-mkdir -p "$EXPORT_DIR"
-ditto "$HOME/Library/Application Support/Code/User" "$EXPORT_DIR/User"
+(
+  set -euo pipefail
+  umask 077
+  BACKUP_VOLUME="/Volumes/<backup-volume>"
+  test -d "$BACKUP_VOLUME" || { echo "Backup volume is not mounted"; exit 1; }
+  EXPORT_ROOT="$BACKUP_VOLUME/Day-One-Mac-App-Exports/VS-Code"
+  mkdir -p "$EXPORT_ROOT"
+  RECOVERY_DIR="$(mktemp -d "$EXPORT_ROOT/User-$(date '+%Y%m%d-%H%M%S').XXXXXX")"
+  ditto "$HOME/Library/Application Support/Code/User" "$RECOVERY_DIR/User"
+  printf 'User-folder recovery copy: %s\n' "$RECOVERY_DIR"
+)
 ```
+
+Expected result: the printed directory contains a `User` folder, and prior
+recovery copies remain separate. Treat its contents as private application data.
 
 This is a recovery archive, not the preferred cross-machine import method.
 Restore profiles through the Profiles editor and copy individual snippets or
@@ -690,6 +830,23 @@ removing the old profile. Do not delete the entire `Code/User` directory as a
 shortcut: it contains more than settings and may hold other profiles and
 extension state. Resetting local settings does not clear cloud Sync data or
 change a client's credential permissions.
+
+## Configure Settings Sync on a new machine
+
+1. Open **Manage gear → Turn on Settings Sync…** after local verification.
+2. Sign in with the intended Microsoft or GitHub account, following your organisation's policy.
+3. Run **Settings Sync: Configure…** and select **Profiles**, **Settings**,
+   **Keyboard Shortcuts** and **Extensions** for this setup. Select other categories
+   only when wanted; review **Prompts and Instructions** before synchronizing them.
+4. Use **Settings Sync: Show Synced Data** to inspect the stored configuration.
+5. Verify the selected profiles on another approved device before discarding backups.
+
+Expected result: selected profile data appears under the intended account.
+Machine-specific settings may be excluded; check terminal paths and fonts on
+each Mac. Remote SSH, container and WSL extension installations do not synchronize
+like local extensions. Sync does not replace private backups or client sign-in.
+[Settings Sync](https://code.visualstudio.com/docs/configure/settings-sync),
+[profile synchronization](https://code.visualstudio.com/docs/configure/profiles#synchronize-profiles-across-machines).
 
 ## Change or clear Settings Sync later
 
@@ -716,11 +873,13 @@ you intend to replace the shared remote state.
 
 | Symptom | What to do |
 |---|---|
-| `code: command not found` | Repeat Step 1 and reopen Terminal |
+| `code: command not found` | Follow [Open VS Code and enable the CLI](#open-vs-code-and-enable-the-cli), then reopen Terminal |
 | Old extensions reappear | Turn off Settings Sync, remove the unwanted extensions, verify locally, then reconfigure sync |
-| A formatter changes every project | Remove the global default and set it in that repository instead |
+| A formatter changes every project | Inspect the active profile's User Settings; scope the formatter by language and remove unintended all-profiles sharing. Keep existing repository formatting rules authoritative |
 | Starship symbols are squares | Select JetBrainsMono Nerd Font and reopen the terminal |
 | One profile looks different | Confirm the active profile from **Manage → Profiles** |
+| Reload is missing from the status bar | Check that the extension is enabled in the active profile and inspect local/remote placement; use **Developer: Reload Window** as the fallback |
+| Pipeline files have no language support in AI | Use AI's YAML associations and YAML extension; reserve the dedicated Azure Pipelines mode for a profile with its extension |
 | `chezmoi diff` appears stuck | Close the VS Code comparison tabs; `--wait` deliberately keeps the Terminal command active during review |
 | A work setting appears on a personal Mac | Sign out of the wrong sync account and review synced categories before reconnecting |
 
@@ -734,7 +893,7 @@ approach with their organisation-approved extensions and account policies.
 1. Export the current configuration using the [backup guide](#export-and-back-up-the-configuration).
 2. Create **Tech Content Creator** by copying a reviewed Default profile, or
    choose **Empty Profile** when cleaning up unknown state.
-3. Review the [Default extension list](#default-extensions). Markdown, spelling,
+3. Review the Default column in the [extension matrix](#extension-tables). Markdown, spelling,
    Prettier and icons cover the writing baseline. Add `usernamehw.errorlens`
    only if inline error messages help your demonstrations.
 4. Apply [shared User Settings](#3-apply-shared-user-settings) and
@@ -759,6 +918,8 @@ These are overrides, not a complete settings file. Keep project formatting
 rules in the repository's own configuration. Inspect exports for private
 paths, account details and unwanted extensions; profile copying is a snapshot,
 so later shared-baseline changes must be reviewed in this custom profile too.
+Keep presentation font size and rulers profile-specific. Reload is available
+here too when **Apply Extension to all Profiles** is selected.
 
 ---
 

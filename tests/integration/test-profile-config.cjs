@@ -6,9 +6,15 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '../..');
 const { recipe } = require('../../src/modules/vscode-profiles/build.cjs');
 const golden = require('../fixtures/vscode/recipes-v1.json');
-// Keep the original migration snapshot intact; allow only this deliberate addition.
+// Keep the migration snapshot intact and enumerate supported differences explicitly.
 const expected = structuredClone(golden);
-for (const profile of Object.values(expected)) profile.settings['terminal.integrated.suggest.upArrowNavigatesHistory'] = true;
+for (const profile of Object.values(expected)) {
+  profile.settings['terminal.integrated.suggest.upArrowNavigatesHistory'] = true;
+  profile.optional.push('natqe.reload');
+}
+for (const pattern of ['azure-pipelines.yml', 'azure-pipelines.yaml', '**/.azure-pipelines/**/*.yml', '**/.azure-pipelines/**/*.yaml']) {
+  expected.ai.settings['files.associations'][pattern] = 'yaml';
+}
 for (const slug of Object.keys(expected)) assert.deepEqual(recipe(slug), expected[slug]);
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'day-one-profile-config-'));
 try {

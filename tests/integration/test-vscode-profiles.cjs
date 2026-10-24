@@ -27,6 +27,11 @@ try {
     assert.equal(data.settings['chat.tools.global.autoApprove'], false);
     assert.equal(data.settings['chat.tools.terminal.enableAutoApprove'], false);
     assert.equal(data.settings['terminal.integrated.suggest.upArrowNavigatesHistory'], true);
+    const languageProviders = { 'azure-pipelines': 'ms-azure-devops.azure-pipelines', dotenv: 'mikestead.dotenv' };
+    for (const language of Object.values(data.settings['files.associations'] || {})) {
+      const provider = languageProviders[language];
+      if (provider) assert(data.extensions.includes(provider), `${data.name} associates files with ${language} without ${provider}`);
+    }
     run(slug, ['--output', output, '--dry-run', '--install-extensions', '--code', '/does/not/exist']);
     assert(!fs.existsSync(output));
     run(slug, ['--output', output]);

@@ -109,6 +109,7 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
 | `davidanson.vscode-markdownlint` | Recommended |
 | `tomoki1207.pdf` | Optional |
 | `grapecity.gc-excelviewer` | Optional |
+| `natqe.reload` | Optional |
 
 ### Default overrides
 
@@ -156,6 +157,7 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
 | `github.vscode-pull-request-github` | Optional |
 | `usernamehw.errorlens` | Optional |
 | `maxpowerengine.switch2datagrip` | Optional |
+| `natqe.reload` | Optional |
 
 ### Full Stack overrides
 
@@ -163,7 +165,6 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
 {
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
-  "editor.detectIndentation": true,
   "prettier.requireConfig": false,
   "prettier.singleQuote": true,
   "prettier.semi": true,
@@ -211,19 +212,6 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
   "[css]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
-  },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true,
-    "editor.wordWrap": "on"
   },
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma",
@@ -299,8 +287,6 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
   "chat.editing.autoAcceptDelay": 0,
   "chat.editing.confirmEditRequestRemoval": true,
   "chat.editing.confirmEditRequestRetry": true,
-  "chat.tools.global.autoApprove": false,
-  "chat.tools.terminal.enableAutoApprove": false,
   "claudeCode.preferredLocation": "sidebar",
   "claudeCode.initialPermissionMode": "default",
   "claudeCode.allowDangerouslySkipPermissions": false,
@@ -347,59 +333,32 @@ Apply Full Stack overrides before these overrides.
 | `orta.vscode-jest` | Optional |
 | `ms-playwright.playwright` | Optional |
 | `ms-ossdata.vscode-pgsql` | Optional |
+| `natqe.reload` | Optional |
 
 ### AI overrides
 
 ```json
 {
-  "workbench.colorTheme": "Dark Modern",
   "workbench.colorCustomizations": {
     "titleBar.activeBackground": "#452568",
-    "titleBar.activeForeground": "#FFFFFF",
     "activityBarBadge.background": "#9B6DDA"
   },
-  "chat.fontSize": 14,
-  "chat.editor.fontSize": 13,
-  "chat.editor.wordWrap": "on",
-  "chat.checkpoints.enabled": true,
-  "chat.checkpoints.showFileChanges": true,
-  "chat.editing.autoAcceptDelay": 0,
-  "chat.editing.confirmEditRequestRemoval": true,
-  "chat.editing.confirmEditRequestRetry": true,
-  "chat.tools.global.autoApprove": false,
-  "chat.tools.terminal.enableAutoApprove": false,
-  "chat.useAgentSkills": true,
-  "chat.useAgentsMdFile": true,
-  "chat.useClaudeMdFile": true,
-  "chat.useCustomizationsInParentRepositories": true,
-  "github.copilot.chat.cli.customAgents.enabled": true,
   "github.copilot.enable": {
     "*": false
   },
-  "chatgpt.openOnStartup": false,
-  "chatgpt.composerEnterBehavior": "cmdAlways",
-  "chatgpt.followUpQueueMode": "queue",
   "chatgpt.reviewDelivery": "detached",
-  "chatgpt.commentCodeLensEnabled": false,
-  "claudeCode.preferredLocation": "sidebar",
-  "claudeCode.initialPermissionMode": "default",
-  "claudeCode.allowDangerouslySkipPermissions": false,
-  "claudeCode.useTerminal": false,
-  "claudeCode.useCtrlEnterToSend": true,
-  "claudeCode.attachOpenFile": false,
-  "claudeCode.autosave": false,
-  "claudeCode.continueAfterReload": false,
-  "claudeCode.respectGitIgnore": true,
   "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true,
-    "editor.wordWrap": "on",
-    "files.trimTrailingWhitespace": false,
     "editor.quickSuggestions": {
       "other": "off",
       "comments": "off",
       "strings": "off"
     }
+  },
+  "files.associations": {
+    "azure-pipelines.yml": "yaml",
+    "azure-pipelines.yaml": "yaml",
+    "**/.azure-pipelines/**/*.yml": "yaml",
+    "**/.azure-pipelines/**/*.yaml": "yaml"
   }
 }
 ```
@@ -428,6 +387,7 @@ Apply Full Stack overrides before these overrides.
 | `anthropic.claude-code` | Optional |
 | `foxundermoon.shell-format` | Optional |
 | `maxpowerengine.switch2datagrip` | Optional |
+| `natqe.reload` | Optional |
 
 ### Operations overrides
 
