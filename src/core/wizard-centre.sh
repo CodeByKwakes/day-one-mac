@@ -162,7 +162,7 @@ centre_docs() {
 
 centre_other_actions() {
   while :; do
-    SINGLE_VALUES=(status modules shell runtime docs install macos cli raycast shortcuts folders prepare rollback remove back)
+    SINGLE_VALUES=(status modules shell runtime docs install macos cli raycast shortcuts folders prepare rollback remove assistant back)
     SINGLE_LABELS=(
       'Required phase status (recorded)'
       'Optional and advanced status · component breakdown'
@@ -178,11 +178,16 @@ centre_other_actions() {
       'Prepare an existing Mac · Stage 0'
       'Preview recorded rollback'
       'Removal wizard · review before removing'
+      'AI setup assistant · optional before Phase 1'
       'Back to setup centre'
     )
     select_one 'Other actions · inspect, configure or maintain' 0
     case "$SINGLE_RESULT" in
       back) return 0 ;;
+      assistant)
+        if [[ "$DRY_RUN" == 1 ]]; then centre_command ai-setup --plan
+        else centre_command ai-setup
+        fi ;;
       status) centre_command setup --status ;;
       modules) centre_command optional --status --details ;;
       shell) centre_command shell-status ;;

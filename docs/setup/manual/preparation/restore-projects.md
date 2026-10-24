@@ -13,8 +13,8 @@ If using the private report paths below, first create the directory with `mkdir 
 Before connecting a disk, decide which statement is true:
 
 ```text
-A. No restore — this machine starts without previous user data.
-B. Selective restore — a reviewed backup contains specific files to recover.
+A. No restore: this machine starts without previous user data.
+B. Selective restore: a reviewed backup contains specific files to recover.
 ```
 
 Do not browse an unknown disk and gradually copy whatever looks familiar. Write
@@ -40,7 +40,9 @@ df -h "$BACKUP_VOLUME"
 Resolve the exact backup root below that volume and quote it in every command:
 
 ```bash
-BACKUP_ROOT="$BACKUP_VOLUME/<reviewed-backup-directory>"
+printf 'Backup directory relative to that volume: '
+IFS= read -r backup_directory
+BACKUP_ROOT="$BACKUP_VOLUME/$backup_directory"
 [[ -d "$BACKUP_ROOT" ]] || {
   printf 'Backup root not found: %s\n' "$BACKUP_ROOT" >&2
   return 1 2>/dev/null || exit 1
@@ -88,7 +90,16 @@ ahead of remote               preserve commits/bundle, then re-clone
 For a remote-backed repository:
 
 ```bash
-ghq get <reviewed-remote-url>
+printf 'Reviewed repository URL: '
+IFS= read -r restore_remote
+printf 'New destination directory in your selected developer layout: '
+IFS= read -r restore_project
+if [[ -n "$restore_remote" && "$restore_remote" != -* && "$restore_project" == "$HOME/"* \
+      && ! -e "$restore_project" && ! -L "$restore_project" ]]; then
+  git clone -- "$restore_remote" "$restore_project"
+else
+  printf 'Supply a URL and a new destination; nothing cloned\n' >&2
+fi
 ```
 
 Do not copy its old `node_modules`, virtual environment, caches, or build
@@ -103,7 +114,7 @@ git -C "$BACKUP_ROOT/<repository>" diff > "$HOME/.local/state/development-setup/
 ```
 
 For `NO-REMOTE`, copy the whole directory to an isolated recovery location,
-inspect it, create a private remote, and only then move it into the normal ghq
+inspect it, create a private remote, and only then move it into the selected developer
 layout.
 
 ## 5. Restore project dependencies from declarations
@@ -111,7 +122,7 @@ layout.
 For Node projects:
 
 ```bash
-cd <re-cloned-project>
+cd "$restore_project"  # The successful clone destination from Step 4.
 fnm use --install-if-missing
 ```
 
@@ -128,7 +139,7 @@ missing or conflicting manager declaration first.
 For Python projects:
 
 ```bash
-cd <re-cloned-project>
+cd "$restore_project"  # The successful clone destination from Step 4.
 uv sync --locked
 ```
 
@@ -137,37 +148,67 @@ machines.
 
 ## 6. Restore database dumps, not runtime storage
 
-Start only the database selected in Optional 09, then restore a logical dump.
+Start only the selected local service from [container setup](../databases/containers.md).
+Use a separate database or disposable container for the first restore. Follow
+[PostgreSQL backup and restore](../databases/operations.md#3-back-up-and-rehearse-a-restore)
+for its matching tools, ownership checks and fresh target. Redis and MongoDB
+rehearsals are in [container recovery](../databases/containers.md#8-back-up-before-destructive-work).
 
-PostgreSQL example:
+Identify the dump format and server version before importing. Stop if the
+backup's schema, roles or format are unknown. A SQL dump can execute commands;
+review its source and restore into an isolated environment first. Do not import
+it directly into an existing application's database.
 
-```bash
-docker start dev-postgres
-docker exec -i dev-postgres psql -U postgres -d postgres \
-  < "$BACKUP_ROOT/databases/postgres.sql"
-```
-
-List tables or run an application smoke test after import. Do not replace the
-OrbStack or Docker VM data directory with a copy from another version or
-architecture. Named volume data is not portable backup by itself.
+Expected result: the restored target passes its data and application checks
+while the original remains unchanged. Keep both until a separate cutover is
+approved. Never replace Docker or OrbStack VM storage from another Mac.
 
 ## 7. Preview document restore
 
-Always run a dry transfer first:
+1. Create a separate private recovery directory in this terminal:
 
-```bash
-rsync -avhn "$BACKUP_ROOT/Documents/" "$HOME/Documents/"
-```
+   ```bash
+   umask 077
+   restore_dir="$(mktemp -d "$HOME/Restore-review.XXXXXX")"
+   mkdir "$restore_dir/Documents"
+   printf 'Recovery target: %s\n' "$restore_dir"
+   ```
 
-Review collisions, unexpected hidden files, and total size. Then run the same
-command without `n`:
+   Expected result: a new empty directory. Keep its printed path for recovery.
 
-```bash
-rsync -avh "$BACKUP_ROOT/Documents/" "$HOME/Documents/"
-```
+2. Preview the selected transfer:
 
-Repeat with explicit source/destination pairs for Pictures or other intended
-folders. Do not aim rsync at `$HOME`.
+   ```bash
+   rsync -avhn "$BACKUP_ROOT/Documents/" "$restore_dir/Documents/"
+   ```
+
+   Expected result: only the intended files and size. Review unexpected hidden
+   files and links before copying.
+
+3. Copy into that same separate destination:
+
+   ```bash
+   rsync -avh "$BACKUP_ROOT/Documents/" "$restore_dir/Documents/"
+   ```
+
+   Expected result: exit status 0. A failure leaves a partial restore; inspect it
+   before retrying. Existing `~/Documents` files remain unchanged.
+
+4. Compare and open sample files:
+
+   ```bash
+   diff -qr "$BACKUP_ROOT/Documents" "$restore_dir/Documents"
+   open "$restore_dir/Documents"
+   ```
+
+   Expected result: no unexplained content differences and readable files.
+   This comparison does not verify all macOS metadata. Use the application's
+   supported restore method when extended attributes or libraries matter.
+
+After verification, choose each final destination and preserve any colliding
+file before moving a restored copy through Finder. Keep the source backup.
+Repeat with explicit pairs for Pictures or other selected folders; never aim
+rsync at the complete home directory.
 
 ## 8. Restore application data through supported imports
 
@@ -179,7 +220,7 @@ Preferred restore routes:
 | VS Code | Choose Settings Sync restore or import a reviewed profile |
 | Raycast | Import a reviewed encrypted `.rayconfig` |
 | Browsers | Sign into the intended profile or import bookmarks only |
-| SSH | Use the 1Password agent; do not restore plaintext private keys by default |
+| SSH | Follow the selected [authentication owner](../security/README.md); use its recovery procedure rather than copying keys indiscriminately |
 | Git hosting | Authenticate provider CLIs again; do not copy token stores |
 
 Avoid copying application support directories when a supported export/import

@@ -114,9 +114,11 @@ correct.
 Pass the repository to the runner:
 
 ```bash
-day-one-mac setup \
-  --phase 05 \
-  --dotfiles-repo <private-repository-url>
+printf 'Private dotfiles repository URL: '
+IFS= read -r dotfiles_url
+if [[ -n "$dotfiles_url" ]]; then
+  day-one-mac setup --phase 05 --dotfiles-repo "$dotfiles_url"
+fi
 ```
 
 The runner initializes the source, shows `chezmoi diff`, and asks before

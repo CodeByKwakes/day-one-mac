@@ -1158,6 +1158,15 @@ run_wizard() {
   local review_action setup_rc
   day_one_require_apple_silicon || exit 2
   [[ -t 0 && -t 1 ]] || die 'The setup wizard requires an interactive terminal. Use --track, --stack, --name and --email for a non-interactive run.'
+  if [[ "$DRY_RUN" == 1 ]]; then
+    /bin/bash "$PROJECT_DIR/src/setup/ai-setup.sh" --plan
+  else
+    # Offer the independent checkpoint before collecting required setup choices.
+    if ! /bin/bash "$PROJECT_DIR/src/setup/ai-setup.sh" --checkpoint; then
+      info 'AI setup paused. Retry with day-one-mac ai-setup, or choose Continue without AI.'
+      return 0
+    fi
+  fi
   [[ "$DRY_RUN" == 1 ]] || day_one_serialize setup "$0" "${ORIGINAL_ARGS[@]}"
   load_saved_choices
   if has_saved_core_choices; then

@@ -101,6 +101,7 @@ fi
 case "${1:-}" in
   --version|version) printf 'day-one-mac %s\n' "$(sed -n '1p' "$PROJECT_ROOT/VERSION")" ;;
   root) printf '%s\n' "$PROJECT_ROOT" ;;
+  ai-setup) shift; exec /bin/bash "$PROJECT_ROOT/src/setup/ai-setup.sh" "$@" ;;
   runtime-status) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" status "$@" ;;
   update) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" update "$@" ;;
   rollback-runtime) shift; exec "$PROJECT_ROOT/scripts/runtime-manager.sh" rollback "$@" ;;
@@ -242,6 +243,7 @@ case "${1:-}" in
       '  shell-status      inspect zsh, PATH, completions and shell tools' \
       '  safety-report     create the Stage 0 read-only safety report' \
       '  prepare-existing  choose Stage 0 Route A or Route B' \
+      '  ai-setup          optional AI assistance before Phase 1; inspect with --plan' \
       '  applications      check required or optional app ownership' \
       '  install           install or revalidate required software' \
       '  ssh-pin           save 1Password public keys to ~/.ssh' \

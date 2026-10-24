@@ -52,7 +52,7 @@ function documentationRenderer(markdownIt, documents, currentPath) {
 // script-assisted core has a sequence; optional guides are not a checklist.
 function requiredSequence(documents) {
   const phases = Array.from(documents.keys()).filter(file => /^docs\/setup\/assisted\/0[1-8]-[^/]+\.md$/.test(file)).sort();
-  const sequence = ['docs/setup/assisted/README.md'];
+  const sequence = ['docs/setup/assisted/README.md', 'docs/setup/assisted/ai-setup-assistant.md'];
   for (const file of phases) {
     sequence.push(file);
     if (file.includes('/01-')) sequence.push('docs/setup/assisted/MACOS-SETTINGS.md');

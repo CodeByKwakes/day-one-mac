@@ -687,3 +687,9 @@ docs/setup/manual/git/multiple-identities.md
 docs/setup/manual/preparation/restore-projects.md
 docs/setup/manual/shell/dotfile-hardening.md
 docs/setup/manual/shell/package-workflows.md
+config/catalogs/setup-assistants.tsv
+src/setup/ai-setup.sh
+templates/ai-setup-assistant/SKILL.md
+docs/setup/manual/ai/setup-assistant.md
+docs/setup/assisted/ai-setup-assistant.md
+docs/shared/reference/setup-coverage.md

@@ -251,9 +251,13 @@ target diff, then apply only named targets. The commands below show the Git rout
 ```bash
 cd "$(chezmoi source-path)"
 git log --oneline -10
-git revert <reviewed-commit>
+printf 'Reviewed commit to revert: '
+IFS= read -r revert_commit
+[[ -n "$revert_commit" && "$revert_commit" != -* ]] && git revert "$revert_commit"
 chezmoi diff
-chezmoi apply <reviewed-target>
+printf 'Absolute target path to apply after reviewing the diff: '
+IFS= read -r reviewed_target
+[[ "$reviewed_target" == "$HOME/"* ]] && chezmoi apply "$reviewed_target"
 ```
 
 ## Verification and next steps

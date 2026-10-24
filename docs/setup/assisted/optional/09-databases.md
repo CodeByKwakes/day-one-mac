@@ -28,8 +28,8 @@ before planning any migration; see [recovery acceptance](../../../shared/verific
 
 Images resolve to recorded registry digests on first apply. Each service has
 2 GiB/two CPU limits, no automatic restart and launch-specification drift checks.
-Commands below that use `unless-stopped` describe manual examples; they are not
-accepted automatically as script-owned resources. Keep manual and assisted
+The [manual container examples](../../manual/databases/containers.md) use
+`unless-stopped` and are not automatically adopted as script-owned resources. Keep manual and assisted
 ownership separate. Credentials in this guide are development examples only.
 
 ## Outcome

@@ -4,6 +4,11 @@ This assisted operation installs only the selected payloads after Phase 8.
 Account login, billing, project trust and permissions remain manual. Review
 [client choices](../../manual/ai/clients.md) before selecting anything.
 
+For assistance with the base itself, use the optional
+[pre-Phase-1 checkpoint](../ai-setup-assistant.md). Reuse that client here;
+Module 10 is for later payload choices and retains its Phase 8 gate. Confirm
+`~/.local/bin` is visible in the new shell when reusing a native CLI.
+
 ## Before you start
 
 Check that Phase 8 is current and choose the intended application owner. Existing

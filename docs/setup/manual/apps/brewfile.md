@@ -135,10 +135,11 @@ sed -nE 's/^vscode "([^"]+)".*/\1/p' "$HOME/Brewfile" | LC_ALL=C sort
 When adding something discovered on this Mac, verify its canonical token first:
 
 ```bash
-brew search <name>
-brew info <formula>
-brew info --cask <cask>
-code --list-extensions | rg -i '<publisher-or-name>'
+# Read-only examples; use the selected package's exact token.
+brew search git
+brew info --formula git
+brew info --cask visual-studio-code
+code --list-extensions | rg -i 'prettier'
 ```
 
 Use the extension's full publisher ID in the Brewfile, even when the VS Code UI
@@ -182,21 +183,38 @@ Export each profile that matters before changing extensions. The separate
 optional VS Code profile guide describes granular cleanup of extensions,
 settings, keybindings, snippets, profiles, workspace state, and history.
 
-Inventory exact versions:
+Quit VS Code first. Inventory the default profile and copy all profile settings:
+
+Expected result: a new `Verified backup` path. A failed copy stops this block;
+keep any partial directory for inspection and do not remove extensions yet.
+For named profiles, export each profile through VS Code first, including its
+extension list, then quit it again. The default CLI inventory is not a list
+of every profile's extensions.
 
 ```bash
-mkdir -p "$HOME/.local/state/development-setup/vscode-backups"
-code --list-extensions --show-versions \
-  > "$HOME/.local/state/development-setup/vscode-backups/extensions.before-advanced-16.txt"
-cp -R "$HOME/Library/Application Support/Code/User" \
-  "$HOME/.local/state/development-setup/vscode-backups/User.before-advanced-16" \
-  2>/dev/null || true
+(
+  set -euo pipefail
+  umask 077
+  backup_root="$HOME/.local/state/development-setup/vscode-backups"
+  mkdir -p "$backup_root"
+  backup_dir="$(mktemp -d "$backup_root/backup.XXXXXX")"
+  code --list-extensions --show-versions > "$backup_dir/extensions.txt"
+  cp -R "$HOME/Library/Application Support/Code/User" "$backup_dir/User"
+  diff -qr "$HOME/Library/Application Support/Code/User" "$backup_dir/User"
+  printf 'Verified backup: %s\n' "$backup_dir"
+)
 ```
 
 Remove only a named, reviewed extension:
 
 ```bash
-code --uninstall-extension <publisher.extension>
+printf 'Exact extension identifier to remove: '
+IFS= read -r extension_id
+if [[ "$extension_id" == *.* && "$extension_id" != -* ]]; then
+  code --uninstall-extension "$extension_id"
+else
+  printf 'No valid extension identifier supplied; nothing removed\n' >&2
+fi
 ```
 
 Reinstall from the captured inventory by stripping the version suffix one line

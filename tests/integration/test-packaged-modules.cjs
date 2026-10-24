@@ -13,6 +13,17 @@ try {
   const beforeRetired = stateSnapshot(state);
   execute(cli, ['optional', '--module', '12', '--apply', '--manifest', '/missing.tsv', '--yes'], { env, cwd: root, expected: 2 });
   need(stateSnapshot(state) === beforeRetired, 'Retired module changed packaged state.');
+  const beforeAI = stateSnapshot(state);
+  run(['ai-setup', '--plan', '--mode', 'guide', '--client', 'existing']);
+  need(stateSnapshot(state) === beforeAI, 'Packaged AI preview wrote state.');
+  run(['ai-setup', '--apply', '--mode', 'guide', '--client', 'existing']);
+  run(['ai-setup', '--check'], 10);
+  const handoff = fs.readFileSync(path.join(state, 'ai-setup/current'), 'utf8').trim();
+  need(fs.existsSync(path.join(state, 'ai-setup', handoff, '.agents/skills/day-one-mac-assistant/SKILL.md')),
+    'Packaged assistant skill was not copied into the handoff.');
+  need(!fs.existsSync(path.join(state, 'completed')), 'Early checkpoint created phase evidence.');
+  run(['ai-setup', '--apply', '--mode', 'none']);
+  run(['ai-setup', '--check']);
   // Exercise the public profile route outside a checkout, using only bundled recipes.
   run(['vscode-profile', '--help']);
   for (const slug of ['default', 'full-stack', 'ai', 'operations']) {

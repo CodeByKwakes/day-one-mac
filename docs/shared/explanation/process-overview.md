@@ -4,6 +4,16 @@ Day One Mac has two independent setup journeys. Shared references define the
 choices and completion criteria; each route owns its executable procedure.
 Use [Start here](../../START-HERE.md) to choose the journey.
 
+## Optional assistance before the base
+
+The [AI choice](../../setup/manual/ai/setup-assistant.md) precedes Phase 1 for
+both routes. It can be skipped. Guidance uses an existing client; local
+execution needs a verified approved client. Neither mode changes the human
+checkpoints or grants blanket permission. The assisted checkpoint saves its
+choice separately and leaves required phase IDs unchanged. Module 10 adds
+clients later, after Phase 8. See the [coverage map](../reference/setup-coverage.md)
+for each phase and its manual capability.
+
 ## Scripted (Assisted) Setup
 
 The standalone runtime supplies `day-one-mac`. It needs no permanent Git

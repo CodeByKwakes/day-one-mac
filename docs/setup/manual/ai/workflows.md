@@ -166,8 +166,7 @@ A useful starter library:
 | Plan a cross-stack feature | Angular UI plus Nest API plus Prisma schema | Contracts, affected components, data changes, verification |
 | Review a schema change | A proposed Prisma migration | Compatibility, data risks, deployment sequencing, rollback limits |
 
-Reuse the verified debugging/review skills in section 10 before writing new
-ones. The table describes workflows to curate; it is not a list of newly
+Reuse the [curated debugging and review skills](instructions-agents-skills.md#2-choose-and-install-project-skills) before writing new ones. The table describes workflows to curate; it is not a list of newly
 verified Marketplace extensions or `npx` skill packages.
 [Native skill locations](https://code.visualstudio.com/docs/agent-customization/agent-skills).
 
@@ -182,7 +181,7 @@ prompt files are not automatically Codex commands.
 
 #### Keep MCP and context intentional
 
-Use the existing section 11 recipes; an AI profile needs no duplicate MCP
+Use the [MCP connection recipes](mcp.md); an AI profile needs no duplicate MCP
 configuration. Start with Angular read-only MCP and Nx for this stack, Context7
 when documentation is needed, and Azure DevOps when a task needs work-item or
 pipeline context. Add browser/database tools for a specific investigation.

@@ -78,3 +78,12 @@ manual setup. This guide does not erase or format a disk.
 | Backup has never been restored | Test a sample restore before setup or cleanup |
 
 Next: complete the [decision worksheet](decisions.md), then select your route.
+
+## Optional AI prerequisite
+
+If AI will help with the whole setup, prepare one client through the
+[early AI checkpoint](../setup/manual/ai/setup-assistant.md) before the base.
+Confirm device policy, account access and permitted tools. Browser guidance can
+start before a planned reset; install local clients after that boundary. AI,
+MCP and additional clients are not required for the normal manual or assisted
+route.

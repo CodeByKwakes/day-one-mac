@@ -20,6 +20,13 @@ Mac can continue. The safety report does not copy or recover data.
 
 Expected result: the selected starting boundary and independent backup are verified.
 
+## Optional AI preparation before Phase 1
+
+Use the [AI setup checkpoint](ai-setup-assistant.md) to choose no AI, guidance
+only or approved execution with one client. The wizard offers this choice on
+first entry into required setup. Client sign-in and tool checks remain manual.
+The AI choice is saved separately from required configuration choices.
+
 ## 3. Preview the setup
 
 ```bash
@@ -48,6 +55,7 @@ reports its result or an explicit next action.
 
 | Order | Guide | Expected outcome |
 |---|---|---|
+| Optional checkpoint | [AI setup assistant](ai-setup-assistant.md) | Intentional skip or verified selected client |
 | Phase 1 | [First boot and decisions](01-first-boot-and-decisions.md) | Approved starting boundary and saved selections |
 | Optional checkpoint | [macOS settings](MACOS-SETTINGS.md) | Selected personal preferences or an intentional skip |
 | Phase 2 | [Command-line foundation](02-command-line-foundation.md) | Native Apple tools and Homebrew |

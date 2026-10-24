@@ -11,6 +11,13 @@ Complete the [prerequisites](../../shared/prerequisites.md) and
 approved software and elevation process. For an existing populated account,
 follow the existing-Mac limit in the prerequisites before changing configuration.
 
+## Optional AI preparation
+
+Before the base, choose [AI guidance or approved execution](ai/setup-assistant.md)
+if wanted. Reuse or install one client and verify account/tool access. Choosing
+no AI continues directly below. Keep a browser-only session until any planned
+reset is complete.
+
 ## Follow the base setup
 
 Each row is a complete task. Finish its verification before continuing.

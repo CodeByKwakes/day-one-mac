@@ -8,6 +8,7 @@ Each table lists canonical guides; legacy paths remain compatibility links.
 
 | Guide | Topic |
 |---|---|
+| [Optional AI setup checkpoint](setup/assisted/ai-setup-assistant.md) | Before Phase 1 |
 | [Phase 1 - First boot and setup decisions](setup/assisted/01-first-boot-and-decisions.md) | Entry and base setup |
 | [Phase 2 - Command-line foundation](setup/assisted/02-command-line-foundation.md) | Entry and base setup |
 | [Phase 3 - Security, 1Password, and SSH](setup/assisted/03-security-and-ssh.md) | Entry and base setup |
@@ -62,6 +63,7 @@ Each table lists canonical guides; legacy paths remain compatibility links.
 
 | Guide | Topic |
 |---|---|
+| [Prepare AI assistance](setup/manual/ai/setup-assistant.md) | Optional pre-setup client and tool check |
 | [Manual Setup](setup/manual/README.md) | Entry and base setup |
 | [Install and configure selected AI clients](setup/manual/ai/clients.md) | ai |
 | [Project instructions, agents and skills](setup/manual/ai/instructions-agents-skills.md) | ai |
@@ -199,3 +201,5 @@ Continue with the [current guide](README.md).
 ## When the wizard stops
 
 Continue with the [current guide](README.md).
+
+[Setup coverage map](shared/reference/setup-coverage.md) links every phase, checkpoint and module to its manual owner.

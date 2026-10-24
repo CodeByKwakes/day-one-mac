@@ -145,8 +145,9 @@ and refuses Intel hardware or a terminal running under Rosetta. Homebrew must
 use its native `/opt/homebrew` prefix.
 
 Apple Account sign-in is optional for the base toolchain. It becomes useful for
-App Store applications and VS Code Settings Sync, but it should not block this
-phase.
+App Store applications, but it should not block this phase. VS Code Settings
+Sync uses a supported Microsoft or GitHub account; configure it in the
+[editor guide](../manual/editors/vscode.md).
 
 ## Step 1.3 — Confirm the clean-machine boundary 🔴
 

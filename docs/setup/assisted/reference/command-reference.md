@@ -52,6 +52,14 @@ day-one-mac --status
 If the runtime command is deliberately removed, reinstall it using the reviewed
 public installer or an offline release archive.
 
+## Optional AI setup checkpoint
+
+Run `day-one-mac ai-setup` to choose assistance before Phase 1 or revisit the
+choice. It supports read-only `--plan`/`--check` and explicit `--apply`; see the
+[complete option and recovery reference](../ai-setup-assistant.md#command-reference).
+AI is optional and has no required phase marker. Module 10 remains available
+later for additional clients after Phase 8.
+
 ## Complete portable command list
 
 Install this command before Phase 1; the standalone runtime remains its sole owner.
@@ -73,6 +81,7 @@ updates and rollback.
 | `day-one-mac docs [TOPIC] --browser` | `./runtime-manager.sh docs …` | Open a temporary offline HTML reader. Use `handbook` for manual tasks or `chezmoi-guide` for the learning path. No server or extra runtime is needed. |
 | `day-one-mac docs export --format html\|markdown --output NEW_DIRECTORY` | `./runtime-manager.sh docs export …` | Export bundled project guides and examples to a new directory. See [contents, printing and safety](../../../shared/reading-and-export.md). |
 | `day-one-mac shell-status` | `./shell-status.sh` | Inspect the saved zsh/prompt choices, startup files, clean-shell PATHs, completions and selected tools. Executes shell startup files; never changes the account shell. |
+| `day-one-mac ai-setup [options]` | Runtime checkpoint | Choose optional assistance before Phase 1; see [AI setup](../ai-setup-assistant.md). |
 | `day-one-mac setup [options]` | `./bootstrap-day-one-mac.sh [options]` | Start, resume, inspect, or reset the required eight-phase setup. |
 | `day-one-mac folders --plan\|--apply\|--check\|--resume` | `/bin/bash ./configure-folders.sh [options]` | Choose `--layout none\|repository\|purpose\|existing` and `--ghq no\|yes`; independently create/check folders without other phases. See [folder choices, prerequisites and recovery](../../manual/development/folders.md). |
 | `day-one-mac install [options]` | `./bootstrap-day-one-mac.sh --install-centre [options]` | Install or revalidate required applications and command-line tools after Phase 2. |

@@ -4,6 +4,10 @@
 
 This folder contains project-maintenance evidence rather than setup steps.
 
+- [24 October manual setup audit](2026-10-24-manual-setup-audit.md) records
+  findings, approved repairs, assistant design and acceptance limits.
+- [24 October setup coverage inventory](2026-10-24-setup-coverage-inventory.md)
+  records the 139 manual and assisted files scanned at the audit baseline.
 - [15 October documentation consistency audit](DOCUMENTATION-CONSISTENCY-AUDIT-2026-10-15.md)
   records baseline source/runtime differences, document contradictions and
   subsequent implementation status, with operational acceptance kept explicit.

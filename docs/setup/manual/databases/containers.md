@@ -202,27 +202,136 @@ the volume unless the volume is explicitly deleted.
 
 ## 8. Back up before destructive work
 
-PostgreSQL logical backup:
+For PostgreSQL, follow the canonical [backup and separate-target restore](operations.md#3-back-up-and-rehearse-a-restore).
+It checks the dump command, archive contents and restored data. Use the examples
+below only for the disposable Redis and MongoDB services created on this page.
+Pause application writes during each backup. Production recovery needs the
+service owner's consistency, retention and access policy.
+
+### Redis snapshot and isolated restore
+
+1. Create a private backup directory:
+
+   ```bash
+   umask 077
+   mkdir -p "$HOME/Backups/databases"
+   redis_backup="$(mktemp -d "$HOME/Backups/databases/redis.XXXXXX")"
+   redis_test="restore-redis-${redis_backup##*.}"
+   ```
+
+   Expected result: a new directory and unique test-container name.
+
+2. Export a snapshot, then copy it out only if export succeeds:
+
+   ```bash
+   docker exec dev-redis redis-cli --rdb "/tmp/$redis_test.rdb" &&
+     docker cp "dev-redis:/tmp/$redis_test.rdb" "$redis_backup/dump.rdb"
+   ```
+
+   Expected result: successful transfer and a non-empty RDB file. Check with
+   `test -s "$redis_backup/dump.rdb"`. Stop on error; a file's presence alone
+   is not verification. See the [Redis CLI backup command](https://redis.io/docs/latest/develop/tools/cli/#remote-backups-of-rdb-files)
+   and [RDB snapshots and recovery](https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/).
+
+3. Prepare a separate container using the source image, with no network:
+
+   ```bash
+   redis_image="$(docker inspect --format '{{.Image}}' dev-redis)"
+   docker create --name "$redis_test" --network none "$redis_image" \
+     redis-server --appendonly no --save ''
+   docker cp "$redis_backup/dump.rdb" "$redis_test:/data/dump.rdb"
+   docker start "$redis_test"
+   ```
+
+   Run each line only after the previous one succeeds. Expected result: an
+   isolated Redis instance reads the copied RDB. AOF is disabled for this
+   rehearsal so an existing append-only log cannot take precedence over it.
+
+4. After startup, compare database counts and selected non-sensitive values:
+
+   ```bash
+   docker exec dev-redis redis-cli INFO keyspace
+   docker exec "$redis_test" redis-cli INFO keyspace
+   docker exec "$redis_test" redis-cli ping
+   ```
+
+   Expected result: `PONG` and expected data. Expiring keys can change counts;
+   verify representative values and TTLs as well. Keep the original untouched.
+
+### MongoDB archive and isolated restore
+
+1. Create a new private backup directory:
+
+   ```bash
+   umask 077
+   mkdir -p "$HOME/Backups/databases"
+   mongo_backup="$(mktemp -d "$HOME/Backups/databases/mongo.XXXXXX")"
+   mongo_test="restore-mongo-${mongo_backup##*.}"
+   ```
+
+   Expected result: a unique path. The following credentials are solely for
+   this page's synthetic local example; never substitute production credentials
+   into command text.
+
+2. Export the local databases:
+
+   ```bash
+   if docker exec dev-mongo mongodump --username dev --password dev \
+     --authenticationDatabase admin --archive --gzip > "$mongo_backup/local.archive.gz"; then
+     printf 'Archive completed: %s\n' "$mongo_backup/local.archive.gz"
+   else
+     printf 'Backup failed; do not restore the partial archive\n' >&2
+   fi
+   ```
+
+   Expected result: successful completion and a non-empty archive. See the
+   [MongoDB archive options](https://www.mongodb.com/docs/database-tools/mongodump/). Keep writers
+   paused; this standalone example does not provide a cross-collection snapshot
+   of a live changing application.
+
+3. Start a separate instance from the same image, without a network:
+
+   ```bash
+   mongo_image="$(docker inspect --format '{{.Image}}' dev-mongo)"
+   docker run -d --name "$mongo_test" --network none "$mongo_image"
+   ```
+
+   Expected result: a new isolated instance. Wait until
+   `docker exec "$mongo_test" mongosh --quiet --eval 'db.runCommand({ping:1})'`
+   reports `ok: 1`. This test instance has no network and uses no authentication.
+
+4. Restore into that fresh instance:
+
+   ```bash
+   docker exec -i "$mongo_test" mongorestore --archive --gzip --stopOnError \
+     < "$mongo_backup/local.archive.gz"
+   ```
+
+   Expected result: zero failed documents and exit status 0. Compare collection
+   counts, indexes and representative records with the paused source using
+   `mongosh`. Validate application behaviour before calling the backup usable.
+   See [MongoDB restore requirements](https://www.mongodb.com/docs/database-tools/mongorestore/).
+
+### Retention and test cleanup
+
+Copy verified backups to an encrypted external volume or approved remote store.
+`~/Backups` is still on the Mac's own drive. A named volume alone cannot recover
+from loss of the Mac.
+
+Inspect `docker ps -a` and the exact test name before removal. After confirming
+its data is disposable, run only the selected command:
 
 ```bash
-mkdir -p "$HOME/Backups/databases"
-docker exec dev-postgres pg_dumpall -U postgres \
-  > "$HOME/Backups/databases/postgres-$(date +%Y%m%d-%H%M%S).sql"
+# These variables must still identify this session's separate restore test.
+docker rm -v -f "$redis_test"
+# Or:
+docker rm -v -f "$mongo_test"
 ```
 
-Test that the output is non-empty:
-
-```bash
-ls -lh "$HOME/Backups/databases"/*.sql
-```
-
-`~/Backups` is still on the Mac's main drive. It protects against an accidental
-container or volume deletion, but not against loss or failure of the Mac. Copy
-the verified dump to an encrypted external volume or approved remote backup
-before any destructive database work.
-
-Redis and MongoDB need project-appropriate backup procedures. A named Docker
-volume is persistence, not an independent backup.
+Expected result: that test container and its anonymous volumes are removed.
+The source container and host backup remain. If a restore fails, preserve the
+test container and logs until the cause is understood; do not modify the source
+volume to make the rehearsal pass.
 
 ## 9. Remove safely
 

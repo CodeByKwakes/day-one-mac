@@ -4,6 +4,8 @@ exec </dev/null
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../scripts" && pwd)"
 TEST_ROOT="$(mktemp -d /tmp/day-one-software-test.XXXXXX)"
 trap 'rm -rf "$TEST_ROOT"' EXIT
+export HOME="$TEST_ROOT/home"
+mkdir -p "$HOME"
 MOCK_BIN="$TEST_ROOT/bin"
 MOCK_DATA="$TEST_ROOT/data"
 TEST_STATE="$TEST_ROOT/state"
@@ -166,4 +168,20 @@ rmdir "$TEST_STATE.operation.lock"
 find "$TEST_STATE/module-runs" -name result -exec cat {} + > "$TEST_ROOT/results"
 grep -Fxq incomplete "$TEST_ROOT/results" || fail 'failed runs lost'
 grep -Fxq verified "$TEST_ROOT/results" || fail 'verified payload results missing'
+# Native bootstrap clients remain external even if the login PATH omits them.
+(
+  export HOME="$TEST_ROOT/native-home"
+  mkdir -p "$HOME/.local/bin"
+  cp "$MOCK_BIN/claude" "$HOME/.local/bin/codex"
+  chmod +x "$HOME/.local/bin/codex"
+  mv "$MOCK_BIN/codex" "$TEST_ROOT/installed-codex"
+  cp "$MOCK_DATA/casks" "$TEST_ROOT/casks-before-native"
+  sed '/^codex$/d' "$TEST_ROOT/casks-before-native" > "$MOCK_DATA/casks"
+  before_calls="$(grep -c 'install --cask codex' "$MOCK_DATA/calls")"
+  run optional --module 10 --apply --clients codex --app-install-policy homebrew --yes > "$TEST_ROOT/native-apply"
+  [[ "$before_calls" == "$(grep -c 'install --cask codex' "$MOCK_DATA/calls")" ]] || fail 'native client acquired a second installer owner'
+  [[ ! -e "$MOCK_BIN/codex" ]] || fail 'native client was replaced by Homebrew'
+  mv "$TEST_ROOT/installed-codex" "$MOCK_BIN/codex"
+  mv "$TEST_ROOT/casks-before-native" "$MOCK_DATA/casks"
+)
 printf 'PASS: AI and software plans, ownership, recovery, checks and guided boundaries\n'

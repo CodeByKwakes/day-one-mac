@@ -181,8 +181,36 @@ day_one_app_prompt_external_action() {
   esac
 }
 
+# Resolve a CLI without launching it. Native bootstrap paths must be recognised
+# by every installer even before a new login shell has loaded ~/.local/bin.
+# Return 2 for a damaged known path; callers must preserve it for review.
+day_one_app_resolve_cli() {
+  local app_id="$1" command_name="$2" expected_path="$3" native_path='' candidate
+  DAY_ONE_CLI_PATH='' DAY_ONE_CLI_CONFLICT='' DAY_ONE_CLI_NATIVE_FALLBACK=0
+  case "$app_id" in codex|claude-code) native_path="$HOME/.local/bin/$command_name" ;; esac
+  if [[ -n "$native_path" && ( -e "$native_path" || -L "$native_path" ) \
+        && ( ! -f "$native_path" || ! -x "$native_path" ) ]]; then
+    DAY_ONE_CLI_CONFLICT="$native_path"
+    return 2
+  fi
+  candidate="$(command -v "$command_name" 2>/dev/null || true)"
+  if [[ "$candidate" == /* && -f "$candidate" && -x "$candidate" ]]; then
+    DAY_ONE_CLI_PATH="$candidate"
+    return 0
+  fi
+  if [[ "$expected_path" != - && -f "$expected_path" && -x "$expected_path" ]]; then
+    DAY_ONE_CLI_PATH="$expected_path"
+    return 0
+  fi
+  if [[ -n "$native_path" && -f "$native_path" && -x "$native_path" ]]; then
+    DAY_ONE_CLI_PATH="$native_path" DAY_ONE_CLI_NATIVE_FALLBACK=1
+    return 0
+  fi
+  return 1
+}
+
 day_one_app_detect() {
-  local wanted="$1" cask_present=0 payload_present=0 actual_bundle="" alternate_path="" used_legacy_path=0
+  local wanted="$1" cask_present=0 payload_present=0 actual_bundle="" alternate_path="" used_legacy_path=0 native_fallback=0
   day_one_app_load "$wanted" || return 2
 
   DAY_ONE_APP_STATUS=missing
@@ -232,13 +260,16 @@ day_one_app_detect() {
       ;;
     cli)
       if [[ "${DAY_ONE_MAC_APPLICATION_COMMAND_LOOKUP:-enabled}" != disabled ]]; then
-        DAY_ONE_APP_COMMAND_PATH="$(command -v "$DAY_ONE_APP_COMMAND" 2>/dev/null || true)"
-        if [[ ! -x "$DAY_ONE_APP_COMMAND_PATH" && "$DAY_ONE_APP_EXPECTED_PATH" != - && -x "$DAY_ONE_APP_EXPECTED_PATH" ]]; then
-          DAY_ONE_APP_COMMAND_PATH="$DAY_ONE_APP_EXPECTED_PATH"
-        fi
-        if [[ -x "$DAY_ONE_APP_COMMAND_PATH" ]]; then
-          DAY_ONE_APP_FOUND_PATH="$DAY_ONE_APP_COMMAND_PATH"
+        if day_one_app_resolve_cli "$DAY_ONE_APP_ID" "$DAY_ONE_APP_COMMAND" "$DAY_ONE_APP_EXPECTED_PATH"; then
+          DAY_ONE_APP_COMMAND_PATH="$DAY_ONE_CLI_PATH"
+          DAY_ONE_APP_FOUND_PATH="$DAY_ONE_CLI_PATH"
+          native_fallback="$DAY_ONE_CLI_NATIVE_FALLBACK"
           payload_present=1
+        elif [[ -n "$DAY_ONE_CLI_CONFLICT" ]]; then
+          DAY_ONE_APP_STATUS=review DAY_ONE_APP_SOURCE=review
+          DAY_ONE_APP_FOUND_PATH="$DAY_ONE_CLI_CONFLICT"
+          DAY_ONE_APP_REASON="Existing client path needs review: $DAY_ONE_CLI_CONFLICT. Preserve it and use its original installer's recovery procedure."
+          return 0
         fi
       fi
       ;;
@@ -259,6 +290,9 @@ day_one_app_detect() {
     DAY_ONE_APP_STATUS=review
     DAY_ONE_APP_SOURCE=review
     DAY_ONE_APP_REASON="Homebrew records cask '$DAY_ONE_APP_CASK', but its current application is missing while an earlier external application exists at $DAY_ONE_APP_FOUND_PATH."
+  elif [[ "$cask_present" == 1 && "$native_fallback" == 1 ]]; then
+    DAY_ONE_APP_STATUS=review DAY_ONE_APP_SOURCE=review
+    DAY_ONE_APP_REASON="Homebrew records the cask, but only the native user path was found: $DAY_ONE_APP_FOUND_PATH. Review both installation owners."
   elif [[ "$cask_present" == 1 && "$payload_present" == 1 ]]; then
     DAY_ONE_APP_STATUS=ready
     DAY_ONE_APP_SOURCE=homebrew

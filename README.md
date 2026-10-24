@@ -5,6 +5,10 @@ factory-reset Apple-silicon Mac. The setup has eight required phases; databases,
 AI tools, MCP servers, editor profiles, and advanced automation wait until the
 base is working.
 
+Optional AI assistance can start before Phase 1. Choose no AI, guidance, or
+approved execution through the [early checkpoint](docs/setup/assisted/ai-setup-assistant.md).
+See the [phase coverage map](docs/shared/reference/setup-coverage.md) for manual equivalents.
+
 ## Start here
 
 - [Scripted (Assisted) Setup](docs/setup/assisted/README.md): install the standalone

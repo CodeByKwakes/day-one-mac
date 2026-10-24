@@ -56,7 +56,7 @@ def exercise(env, keys, expected, status=0, args=("--dry-run",), command=None,
                 os.write(master, keys)
                 sent = True
         else:
-            raise AssertionError("CLI selector timed out")
+            raise AssertionError("CLI selector timed out: " + output.decode())
         _, result = os.waitpid(pid, 0)
         finished = True
         text = output.decode()
@@ -370,10 +370,21 @@ printf 'ROOT:%s\\n' "$FOLDER_GHQ_ROOT"
     exercise(env, b"q", "Setup centre", args=(), command=ROOT / "scripts/day-one-mac",
              check_category=False)
     assert not (home / "state").exists() and not (home / "state.operation.lock").exists()
-    exercise(env, b"\rq\nq", "What state is this Mac in?", args=(),
+    exercise(env, b"\rq\n\nq", "Optional AI setup assistant (before Phase 1)", args=(),
              command=ROOT / "scripts/day-one-mac", check_category=False)
     assert not (home / "state").exists(), "cancelling setup saved choices"
     assert not (home / "state.operation.lock").exists(), "setup cancellation leaked its lock"
+
+    ai_state = home / "ai-checkpoint-state"
+    ai_env = dict(env, DAY_ONE_MAC_STATE_ROOT=str(ai_state), DAY_ONE_MAC_STATE_DIR=str(ai_state))
+    exercise(ai_env, b"2\n3\nn\n", "Private handoff:", status=20,
+             args=("ai-setup",), command=ROOT / "scripts/day-one-mac",
+             ready=b"Choice [1]:", check_category=False)
+    assert "mode\tguide" in (ai_state / "ai-setup/selection.tsv").read_text()
+    assert not (ai_state / "completed").exists()
+    exercise(ai_env, b"1\n", "Saved assistance choice: none", args=("ai-setup",),
+             command=ROOT / "scripts/day-one-mac", ready=b"Choice [1]:", check_category=False)
+    assert "mode\tnone" in (ai_state / "ai-setup/selection.tsv").read_text()
 
     listing = subprocess.run(["/bin/bash", str(SCRIPT), "--list"], env=env,
                              check=True, capture_output=True, text=True).stdout

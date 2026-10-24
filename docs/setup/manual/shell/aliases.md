@@ -2,19 +2,26 @@
 
 # Add, edit, save, and remove Zsh aliases
 
-This page focuses on alias syntax. For the complete process that carries an
-edit from the chezmoi source to the active file and then into the private
-dotfiles repository, follow [Manage dotfiles with chezmoi](chezmoi.md).
+An **alias** gives a short name to a longer Terminal command. Keep aliases in
+`~/.config/zsh/aliases.zsh` and load that file once from `.zshrc`, as shown in
+the [Zsh setup](zsh.md). Choose the editing route that owns your files:
 
-An **alias** gives a short name to a longer Terminal command. Day One Mac keeps
-aliases in one chezmoi-managed file:
+- User-owned: back up the file, edit it directly, run `/bin/zsh -n` on it and
+  open a new terminal. Skip all `chezmoi` commands below.
+- Chezmoi-owned: edit the source, preview and apply the named target. Follow
+  [chezmoi workflows](chezmoi.md) for source backup and private Git choices.
 
-```text
-~/.config/zsh/aliases.zsh
+For user-owned files, create the directory and open the file with your editor:
+
+```bash
+mkdir -p "$HOME/.config/zsh"
+nano "$HOME/.config/zsh/aliases.zsh"
 ```
 
-Do not scatter aliases through `.zprofile`, `.zshrc`, Warp settings, and random
-snippets. `.zshrc` already loads this file for every interactive shell.
+Expected result: the editor opens the actual file. In nano, use Ctrl+O then
+Enter to save and Ctrl+X to exit. Before editing an existing file, keep a
+separate dated backup. In the numbered example below, use this editor action
+instead of `chezmoi edit`, and validate the actual file instead of its source.
 
 ## Before adding an alias
 
@@ -38,7 +45,8 @@ password, private key, or `.env` value in an alias.
 
 ## Add a new alias
 
-Example: add `cprojects` to open the ghq repository root.
+Example: add `cprojects` to open `~/Developer`. Create that directory first
+with `mkdir -p "$HOME/Developer"`, or substitute your chosen existing root.
 
 ### 1. Open the chezmoi source version
 
@@ -46,8 +54,8 @@ Example: add `cprojects` to open the ghq repository root.
 chezmoi edit "$HOME/.config/zsh/aliases.zsh"
 ```
 
-The configured editor opens the source copy. the base shell task normally configures VS
-Code with `--wait`, so leave this Terminal window open.
+For chezmoi-owned files, the configured editor opens the source copy. If it
+uses VS Code with `--wait`, leave this Terminal window open.
 
 ### 2. Add the alias in the correct group
 
@@ -55,11 +63,12 @@ Add:
 
 ```zsh
 # Repository navigation
-alias cprojects='cd "$(ghq root)"'
+alias cprojects='cd "$HOME/Developer"'
 ```
 
-Command substitution remains inside the single-quoted alias definition, so
-`ghq root` is evaluated when the alias is used, not when the shell starts.
+The single quotes keep `$HOME` inside the alias definition until it runs.
+If you selected ghq, `alias cprojects='cd "$(ghq root)"'` is an alternative;
+verify `ghq root` first.
 
 ### 3. Save and close the editor
 
@@ -74,7 +83,7 @@ For another editor, use its normal save-and-close action.
 ### 4. Check syntax before applying
 
 ```bash
-/opt/homebrew/bin/zsh -n "$(chezmoi source-path "$HOME/.config/zsh/aliases.zsh")"
+/bin/zsh -n "$(chezmoi source-path "$HOME/.config/zsh/aliases.zsh")"
 ```
 
 No output means the syntax parsed successfully. An error gives the line number;
@@ -88,16 +97,16 @@ chezmoi apply "$HOME/.config/zsh/aliases.zsh"
 ```
 
 Read the diff before applying. Only the alias you intended should change.
-With the the base shell task VS Code integration, `cmdiff` opens the graphical comparison,
+If you configured the optional VS Code integration, `cmdiff` opens the graphical comparison,
 `cmdifftext` prints a unified diff in Terminal, and `cmmerge TARGET` opens the
 three-way merge editor when both copies contain changes worth keeping.
 
 ### 6. Load and test it
 
-Start a clean Homebrew-zsh login shell:
+Start a new macOS Zsh login shell (or your selected Homebrew Zsh):
 
 ```bash
-exec /opt/homebrew/bin/zsh -l
+exec /bin/zsh -l
 ```
 
 Confirm the definition:
@@ -135,16 +144,16 @@ alias gl='git log --oneline --graph --decorate -30'
 Then repeat the syntax, diff, apply, and reload steps:
 
 ```bash
-/opt/homebrew/bin/zsh -n "$(chezmoi source-path "$HOME/.config/zsh/aliases.zsh")"
+/bin/zsh -n "$(chezmoi source-path "$HOME/.config/zsh/aliases.zsh")"
 chezmoi diff
 chezmoi apply "$HOME/.config/zsh/aliases.zsh"
-exec /opt/homebrew/bin/zsh -l
+exec /bin/zsh -l
 ```
 
 ## Remove an alias
 
-Delete its complete `alias …` line through `chezmoi edit`, then review and
-apply. Until a new shell opens, remove the old in-memory definition with:
+Delete its complete `alias …` line through the selected owner, then check
+syntax and save/apply the named file. Until a new shell opens, remove the old in-memory definition with:
 
 ```bash
 unalias cprojects
@@ -153,7 +162,7 @@ unalias cprojects
 Opening a new shell after applying is simpler and confirms the saved state:
 
 ```bash
-exec /opt/homebrew/bin/zsh -l
+exec /bin/zsh -l
 type cprojects
 ```
 
@@ -194,8 +203,8 @@ commands in full after reviewing their targets.
 | Symptom | Resolution |
 |---|---|
 | `chezmoi edit` opens the wrong editor | Review `[edit]` in `~/.config/chezmoi/chezmoi.toml` |
-| Alias works now but disappears later | Make sure it was edited in the chezmoi source, applied, and committed when using private Git |
-| `command not found` after applying | Run `exec /opt/homebrew/bin/zsh -l`, then check `echo "$ZSH_VERSION"` and `type -a <command>` |
+| Alias works now but disappears later | Check the selected owner saved the file and `.zshrc` loads it; apply the source if using chezmoi |
+| `command not found` after applying | Run `exec /bin/zsh -l`, then check `echo "$ZSH_VERSION"` and `type -a <command>` |
 | Alias name behaves unexpectedly | Run `type -a NAME` and choose a name that does not mask another command |
 | Quoting error | Use `zsh -n` on the chezmoi source path before applying |
 
@@ -231,7 +240,7 @@ and press **Right Arrow** to accept its grey suggestion, or press **Ctrl+Space**
 for VS Code's terminal suggestion dropdown. Warp supplies its own input editor
 and completions; guard Zsh completion and line-editor plugins so they do not
 load there. Follow the [shared VS Code/Warp Zsh setup](zsh.md#1-use-zsh-consistently-in-vs-code-and-warp)
-for the exact guard and profile settings. Fresh the base shell task files do not yet add
+for the exact guard and profile settings. The base shell task files do not yet add
 that Warp guard; merge it before using these optional plugins with Warp.
 
 ### Other optional shell integrations
@@ -324,7 +333,7 @@ Review and apply:
 ```bash
 chezmoi diff
 chezmoi apply
-exec /opt/homebrew/bin/zsh -l
+exec /bin/zsh -l
 ```
 
 Confirm `AUTO_CD` if you added it:

@@ -7,6 +7,7 @@ anything.
 | Decision | Choices | Record |
 |---|---|---|
 | Setup route | Scripted (Assisted) / Manual | One route |
+| Early AI assistance | None / guidance only / approved execution | One client, account and tool check before Phase 1; [AI checkpoint](../setup/manual/ai/setup-assistant.md) |
 | Device ownership | Personal / managed | Owner and approval process |
 | Software preset | Core / recommended productivity | Core omits VS Code, Warp, Raycast and the Nerd Font |
 | Hosting | GitHub / Azure DevOps / both / self-managed | Providers and authorised repository URLs |

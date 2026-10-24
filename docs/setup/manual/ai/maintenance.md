@@ -66,19 +66,29 @@ When a selected client requires its own skill directory and supports normal
 filesystem links, link to the canonical target rather than copying content.
 For Claude Code, a relative layout can be:
 
-```bash
-mkdir -p "$HOME/.claude/skills"
-ln -s ../../.agents/skills/review "$HOME/.claude/skills/review"
-```
-
-Before creating any link:
+Run this block only after creating and reviewing the canonical `review` skill:
 
 ```bash
-[[ ! -e "$HOME/.claude/skills/review" ]] || {
-  printf 'Target already exists; inspect it before replacement\n' >&2
-  return 1 2>/dev/null || exit 1
-}
+(
+  set -euo pipefail
+  skill_source="$HOME/.agents/skills/review/SKILL.md"
+  skill_link="$HOME/.claude/skills/review"
+  test -f "$skill_source"
+  mkdir -p "$HOME/.claude/skills"
+  if [[ -L "$skill_link" && "$(readlink "$skill_link")" == ../../.agents/skills/review ]]; then
+    printf 'Correct link already exists\n'
+  elif [[ -e "$skill_link" || -L "$skill_link" ]]; then
+    printf 'Existing file or link preserved: %s\n' "$skill_link" >&2
+    exit 1
+  else
+    ln -s ../../.agents/skills/review "$skill_link"
+  fi
+  test -f "$skill_link/SKILL.md"
+)
 ```
+
+Expected result: the canonical skill is readable through the link. A different
+file or dangling link stops the procedure without replacement.
 
 Verify the resolved target:
 
@@ -143,7 +153,7 @@ names are acceptable in the private dotfiles repository.
 
 ## 7. Add one server through one client first
 
-Follow Optional 11 for client commands. For each new server:
+Follow [MCP connections](mcp.md) for client commands. For each new server:
 
 1. Record purpose, transport, scope, credential method, clients, and owner.
 2. Add it to one selected client.
@@ -180,7 +190,7 @@ Order of preference:
 
 Environment files are not loaded automatically by every client. Follow the
 client-specific credential and launch instructions in
-[Optional 11](mcp.md),
+[MCP connections](mcp.md),
 including the separate PATH and environment requirements for GUI apps.
 
 Never place a literal token in:

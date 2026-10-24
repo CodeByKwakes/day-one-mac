@@ -212,7 +212,7 @@ keeping editor preferences personal. See [AI operations](../../assisted/advanced
 Install a small task-relevant set, not a whole catalogue. Run the commands from
 the application root. `npx skills add` is the command; there is no `npx add
 skills` equivalent. Use `--agent codex github-copilot`, omit `--global` and
-`--copy`, and select **Symlink** if prompted. Claude links are added by section 9.
+`--copy`, and select **Symlink** if prompted. Use the [project skill symlinks](#link-project-skills-and-the-claude-adapter-manually) for Claude.
 [Skills CLI](https://github.com/vercel-labs/skills).
 
 Sources and names were checked in the source repositories and Skills CLI.

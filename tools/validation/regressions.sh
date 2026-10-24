@@ -32,6 +32,10 @@ run_fixture "required phase actions preserve read-only and resume boundaries" \
   "required phase action regressions failed" \
   "$SCRIPT_DIR/../tests/integration/test-required-actions.sh" || true
 
+run_fixture "early AI setup preserves inspection, installation and phase boundaries" \
+  "AI setup checkpoint regressions failed" \
+  "$SCRIPT_DIR/../tests/integration/test-ai-setup.sh" || true
+
 run_fixture "HTTPS helpers and Git access gates preserve authentication boundaries" \
   "hosting authentication regression fixture failed" \
   "$SCRIPT_DIR/../tests/integration/test-hosting-auth.sh" || true

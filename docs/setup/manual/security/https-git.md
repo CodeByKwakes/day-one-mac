@@ -4,7 +4,9 @@ Use HTTPS when you do not want an SSH authentication key. Git Credential Manager
 (GCM) or an approved existing helper stores credentials; never embed a token in
 a clone URL, shell command or `.gitconfig`.
 
-Complete [Git identity and provider CLI setup](../git/setup.md) first. Inspect
+Complete the installation, identity and provider sign-in steps in
+[Git setup](../git/setup.md), then return here before its repository read test.
+The HTTPS helper supplies that test's credentials. Inspect
 `git config --show-origin --get-all credential.helper` privately before changing
 an existing helper. Preserve work/personal host scopes.
 

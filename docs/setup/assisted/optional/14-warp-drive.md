@@ -35,7 +35,7 @@ day-one-mac optional --module 14 --check
 ```
 
 Apply requires Phase 8 and confirmation. It prints the versioned output path;
-inside it, import the **Day One Mac** directory using Step 14.3. Inspect
+inside it, import the **Day One Mac** directory using [the import procedure](#3-import-the-directory-into-warp-drive). Inspect
 `manual-steps.txt` first. Check verifies exported file integrity and alignment
 with the currently bundled source. A valid export is not evidence that Warp
 contains the collection, so dashboard status remains partial.
@@ -110,7 +110,7 @@ dependencies. Neither substitutes for Phase 8 machine verification.
 3. Choose the **plus** menu or right-click the destination, then choose
    **Import**.
 4. Choose files, then select the **Day One Mac** directory inside the versioned
-   artifact printed by Step 14.1: not a child folder or a different runtime's
+   artifact printed by [the export operation](#prepare-a-versioned-export-first): not a child folder or a different runtime's
    source bundle. Review `manual-steps.txt` and the destination account first.
 5. Confirm the file selection only when ready to upload: this may immediately
    import the folder without a separate preview. Preserve the directory hierarchy.
@@ -208,7 +208,7 @@ Whenever they change:
 day-one-mac validate
 ```
 
-Prepare a new versioned export with Step 14.1 before importing changed files.
+Prepare a new versioned export with [the export operation](#prepare-a-versioned-export-first) before importing changed files.
 Then either update the corresponding Warp objects or remove the old
 `Day One Mac` collection and import the directory again. Avoid importing a
 second copy into the same location because duplicate names make search results

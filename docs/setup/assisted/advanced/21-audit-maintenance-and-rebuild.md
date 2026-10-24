@@ -59,7 +59,7 @@ day-one-mac advanced --status
 ```
 
 The required eight phases must remain current. An advanced marker becoming
-`review` means its guide changed after completion; read the updated module and
+`review` means its guide changed after completion; read the module and
 repeat only its affected checks.
 
 ## 2. Generate the extended audit
@@ -90,236 +90,71 @@ module is recorded complete.
 
 ## 3. Review Homebrew updates in layers
 
-```bash
-brew update
-brew outdated --greedy
-brew bundle check --file="$HOME/Brewfile" --no-upgrade
-```
-
-Before upgrading:
-
-1. Review major runtime, database, container, and editor changes.
-2. Commit or preserve dirty repositories.
-3. Confirm an application is not in the middle of a critical task.
-4. Upgrade a risky formula/cask individually before broad upgrades.
-
-After approved upgrades:
-
-```bash
-brew cleanup --dry-run
-brew autoremove --dry-run
-brew doctor
-```
-
-Run non-preview cleanup only after reading its candidates. `brew doctor`
-warnings are context-dependent; do not recursively change ownership or delete
-paths simply to produce an empty report.
+Complete the [manual package maintenance steps](../../manual/maintenance.md#1-inspect-homebrew-metadata). Review candidates and recovery before upgrading; return here after the selected project checks pass.
 
 ### Optional GUI cleanup with Purge
 
-Purge is an optional, third-party maintenance application. It complements the
-Day One Mac cleanup previews; it does not replace the backup-gated Stage 0
-cleanup or the ownership-aware rollback commands.
-
-Inspect ownership first, then install it only when wanted:
+If Purge is selected, preview its installation owner:
 
 ```bash
 day-one-mac applications --id purge
 day-one-mac applications --id purge --install-missing
 ```
 
-The Homebrew route uses the fully qualified third-party cask
-`jithin-sabu/tap/purge`. Review that tap and the displayed cask before granting
-Purge Full Disk Access. After installation:
-
-1. Leave scheduled cleaning disabled.
-2. Review every selected path and keep all removals recoverable in Trash.
-3. Do not enable its privileged uninstall helper unless a root-owned
-   application must be removed and its complete footprint has been reviewed.
-4. When Homebrew owns Purge, disable automatic update checks in Purge and use
-   `brew upgrade --cask jithin-sabu/tap/purge` as the update route rather than
-   allowing two update owners to drift.
-5. Choose Purge or another general-purpose app cleaner, not both.
-6. Confirm the Mac works normally before emptying Trash.
-
-Purge is never invoked by a Day One Mac script, Raycast command, scheduled
-task, audit, or maintenance alias. Full Disk Access and every cleanup approval
-remain manual security decisions.
+Then follow the [manual application checks](../../manual/maintenance.md#8-verify-selected-services-and-applications). Permissions and cleanup decisions remain manual; no Day One Mac command runs Purge for you.
 
 ## 4. Maintain Node, npm, and pnpm ownership
 
-The base ownership model is:
-
-```text
-fnm       installed by Homebrew, owns Node versions
-Node      installed under fnm
-npm       supplied by the active Node release
-pnpm      installed/upgraded by Homebrew
-projects  own exact runtime/manager constraints and lockfiles
-```
-
-Review current versions:
-
-```bash
-fnm current
-fnm list
-node --version
-npm --version
-pnpm --version
-```
-
-Install a new LTS through fnm, test active projects, then change the default:
-
-```bash
-fnm install --lts --use
-fnm default "$(fnm current)"
-```
-
-Do not globally force the newest npm or pnpm merely because a registry offers
-it. Repositories with a `packageManager` field and lockfile must be tested
-against their declared version policy.
-
-Audit projects using the commands in Advanced 17. Resolve multiple lockfiles
-repository by repository.
+Follow [project runtime maintenance](../../manual/maintenance.md#5-check-project-runtimes). Retain the selected package-manager owner and test each project against its declarations before changing runtime defaults.
 
 ## 5. Maintain Python through uv
 
-```bash
-uv self version
-uv python list
-```
-
-Homebrew owns the `uv` executable when installed by the base. Projects own
-their interpreter constraint and lockfile:
-
-```bash
-cd <python-project>
-uv sync --locked
-uv run python --version
-uv run pytest
-```
-
-Do not install a second uv through pip or its standalone installer on the same
-Mac without intentionally changing ownership.
+Use the Python branch of [runtime maintenance](../../manual/maintenance.md#5-check-project-runtimes). Sync the declared environment and run the project's own test instructions before returning.
 
 ## 6. Review chezmoi and Brewfile drift
 
-```bash
-chezmoi doctor
-chezmoi status
-chezmoi --use-builtin-diff diff --no-pager
-chezmoi verify
-brew bundle check --file="$HOME/Brewfile" --no-upgrade
-```
-
-When changing a target, edit source first:
-
-```bash
-chezmoi edit <target>
-chezmoi diff
-chezmoi apply <target>
-```
-
-Commit only reviewed, secret-free source changes:
-
-```bash
-cd "$(chezmoi source-path)"
-git status --short
-git diff
-git add <reviewed-files>
-git diff --cached
-git commit -m "chore: maintain development environment"
-git push
-```
+Complete [configuration drift review](../../manual/maintenance.md#6-review-configuration-drift) through the selected owner. Back up a local-only source or commit reviewed files when private Git is selected.
 
 ## 7. Review every repository before system work
 
-Generate the Advanced 17 repository audit and investigate:
-
-- `DIRTY` repositories;
-- `NO-REMOTE` repositories;
-- local branches ahead of their upstream;
-- remote URLs that no longer match the intended provider/account;
-- worktrees with uncommitted changes.
-
-Useful read-only commands:
-
-```bash
-git -C <repository> status --short --branch
-git -C <repository> remote --verbose
-git -C <repository> branch --verbose --verbose
-git -C <repository> worktree list
-```
-
-Never bulk-reset or delete branches as a maintenance step.
+Use [repository review](../../manual/maintenance.md#7-review-repositories-before-system-work). Preserve uncommitted work, unpushed commits and repositories without remotes before system changes.
 
 ## 8. Verify optional services
 
 ### Containers and databases
 
-```bash
-docker version
-docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
-docker volume ls
-```
-
-Run a harmless ping/query for each selected service. Create a logical backup
-before image upgrades or schema changes. Do not run global prune commands from
-a maintenance alias.
+Follow [service maintenance](../../manual/maintenance.md#8-verify-selected-services-and-applications), including an isolated restore check before database changes.
 
 ### AI and MCP
 
-For installed clients, verify version and account independently, then list MCP
-servers with the client's supported command. Confirm the intended account and
-workspace before a billable or state-changing tool call. Keep auto-approval
-disabled.
+Complete [AI maintenance](../../manual/ai/maintenance.md) for only the selected clients and servers.
 
 ### VS Code and GUI applications
 
-Check Settings Sync account, active profile, declared extensions, login items,
-and privacy permissions. Do not treat cloud sync as a complete settings backup.
+Use the [application checks](../../manual/maintenance.md#8-verify-selected-services-and-applications), then return to this module. Settings Sync alone is not a complete backup.
 
 ## 9. Use a maintenance cadence
 
-| Frequency | Review |
-|---|---|
-| Weekly | repository status, security updates, active container health |
-| Monthly | full advanced audit, Homebrew drift/outdated list, chezmoi diff, application inventory |
-| Quarterly | unused applications/extensions, privacy permissions, login items, SSH keys, recovery contacts |
-| Before major macOS upgrade | verified independent backup, clean/remote-backed repos, database dumps, fresh audit report |
-| After major upgrade | Xcode tools, Homebrew doctor, shell startup, container runtime, editor, provider authentication |
-
-Automate reminders if useful, but keep upgrades interactive. A scheduled task
-should report available changes, not install or delete them unattended.
+Adopt the [maintenance cadence](../../manual/maintenance.md#9-record-a-maintenance-cadence) or your organisation's required schedule.
 
 ## 10. Rehearse the rebuild
 
-Write down the inputs a different clean Mac needs:
+Prepare the private inventory and independent backups described in
+[manual rebuild preparation](../../manual/maintenance.md#10-rehearse-a-manual-rebuild).
+On a separate approved Mac, use the [public assisted installer](../README.md)
+and `day-one-mac` wizard with the recorded choices. Complete the human
+checkpoints and Phase 8 there. Install only selected optional modules afterward.
 
-```text
-1. The public Day One Mac release installer, or an offline release archive and checksum
-2. Selected track and stack
-3. Git name/email and provider accounts
-4. 1Password account and Emergency Kit/recovery process
-5. Private dotfiles repository URL
-6. Project repository URLs
-7. Optional module choices
-8. Separately verified document/database backup when applicable
-```
-
-Rehearsal sequence:
+On the current Mac, a preview can inspect the saved selection:
 
 ```bash
-day-one-mac setup --dry-run --track <1|2|3|4> --stack <node|python|both>
-day-one-mac setup --track <1|2|3|4> --stack <node|python|both> \
-  --dotfiles-repo <private-url>
-day-one-mac validate
-day-one-mac advanced-audit
+day-one-mac setup --plan
+day-one-mac setup --status --json
 ```
 
-Then install only the selected optional/advanced modules. The goal is not a
-literal ten-minute stopwatch; it is a short, deterministic operator sequence
-with no undisclosed source files or remembered commands.
+Expected result: a proposed sequence and current evidence. This preview does
+not prove installation or recovery on another Mac. Do not run setup on the
+working Mac as a substitute for a separate rebuild rehearsal.
 
 ## 11. Test rollback without executing it
 

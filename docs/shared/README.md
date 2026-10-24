@@ -22,3 +22,5 @@ or [Manual Setup](../setup/manual/README.md).
 | [Process overview](explanation/process-overview.md) | How the routes and human checkpoints fit together |
 | [Architecture and state](explanation/architecture-and-state.md) | Runtime boundaries and evidence contracts |
 | [Chezmoi boundaries](explanation/chezmoi-boundaries.md) | Source, target, templates, trust and ownership |
+
+[Setup coverage](reference/setup-coverage.md) maps required phases, checkpoints and optional modules to their manual guides and verification boundaries.

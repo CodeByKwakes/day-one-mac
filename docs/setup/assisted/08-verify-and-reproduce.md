@@ -330,7 +330,9 @@ gh repo create <dotfiles-repository> --private --source=. --remote=origin --push
 Create an empty private Azure Repository, copy its SSH URL, then run:
 
 ```bash
-git remote add origin <azure-ssh-url>
+printf 'Private Azure repository SSH URL: '
+IFS= read -r remote_url
+[[ -n "$remote_url" ]] && git remote add origin "$remote_url"
 git push -u origin main
 ```
 
@@ -369,23 +371,16 @@ and archive old repository metadata yourself before removing it.
 
 ## Step 8.6 — Reproduction procedure
 
-The shortest safe private-Git rebuild on another clean Mac is:
+On another clean Apple-silicon Mac, install the public release using the
+[assisted entry guide](README.md), then run `day-one-mac`. Choose the same
+track, stack and configuration owner, and supply the private dotfiles URL when
+prompted. The runner previews the source before applying it.
 
-```bash
-# Install Command Line Tools and Homebrew first.
-brew install chezmoi
-chezmoi init <private-dotfiles-remote>
-chezmoi diff
-chezmoi apply
-brew bundle install --file="$(chezmoi source-path)/Brewfile"
-```
-
-Then rerun this project's track-aware authentication and verification phases.
-Do not apply a source before reviewing its diff on the new machine.
-
-For local-only mode, restore the backed-up chezmoi source to
-`~/.local/share/chezmoi`, run `chezmoi diff`, and apply only after
-review. Without that backup there is no automatic rebuild source.
+For local-only configuration, make the encrypted source backup available first.
+Use the [manual restore task](../manual/preparation/restore-projects.md) to
+recover selected data into separate destinations, then return to the wizard.
+Never bulk restore completion markers from the old Mac. Phase 8 must verify
+this machine's actual configuration.
 
 ## Step 8.7 — Understand cleanup before declaring completion
 

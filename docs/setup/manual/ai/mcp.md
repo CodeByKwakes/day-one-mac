@@ -158,7 +158,6 @@ Global: use the CLI or merge the corresponding tables into personal config:
 
 ```bash
 codex mcp add context7 -- npx -y @upstash/context7-mcp
-codex mcp add playwright -- npx -y @playwright/mcp@latest
 codex mcp list
 ```
 
@@ -171,7 +170,6 @@ servers, use `codex mcp add NAME --url URL`; when supported, complete OAuth with
 
 ```bash
 claude mcp add --scope user context7 -- npx -y @upstash/context7-mcp
-claude mcp add --scope user playwright -- npx -y @playwright/mcp@latest
 claude mcp list
 ```
 
@@ -186,6 +184,30 @@ claude mcp add --scope user --transport http github \
 Use `--scope project` instead of `--scope user` when it should belong to that
 repository. Review auth/tool status in `/mcp`; availability depends on the server
 and account, not simply the command succeeding.
+
+### Playwright scope
+
+Keep browser automation in the selected project. For Codex, add this table to
+that project's `.codex/config.toml` after reviewing the package:
+
+```toml
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@latest", "--isolated"]
+```
+
+For Claude Code, run from the selected project:
+
+```bash
+claude mcp add --scope project playwright -- npx -y @playwright/mcp@latest --isolated
+```
+
+Expected result: the project's MCP configuration lists Playwright. Review it
+before trusting the workspace. `--isolated` uses a separate browser session;
+project placement is not a filesystem or network permission boundary. A user
+scope definition is an optional convenience for frequent testing, but exposes
+the tool to more tasks. Keep per-tool approval and use a disposable browser
+session. See [Playwright MCP options](https://github.com/microsoft/playwright-mcp).
 
 ### Azure DevOps: remote for Copilot, local when needed
 
@@ -320,7 +342,7 @@ Start with one server and add another only when a real workflow needs it.
 | Apify | Web extraction and hosted Actors | Actors may cost money or change remote state | User, disabled when unused |
 | Tavily | Web search, extraction, maps and crawls | Consumes account quota | User, disabled when unused |
 | Filesystem | Reading or editing local files | Broad paths expose personal data | One explicitly selected repository |
-| Playwright | Browser-driven UI tests | Can interact with signed-in websites | Workspace only |
+| Playwright | Browser-driven UI tests | Can interact with signed-in websites | Project by default; isolated browser session |
 
 Workspace scope controls where a definition is loaded; it does not restrict
 the server's filesystem permissions. Configure the server's own allowed paths

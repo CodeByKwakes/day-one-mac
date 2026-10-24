@@ -18,6 +18,15 @@ and verify a separate backup before proceeding.
 A managed Mac needs your organisation's approved software, identity and elevation
 process. Mobile device management (MDM) settings remain owned by IT.
 
+## Optional AI choice before setup
+
+Choose no AI, guidance only, or approved local execution before Phase 1.
+Reuse one approved client, or prepare it through the
+[manual AI checkpoint](setup/manual/ai/setup-assistant.md) or
+[assisted AI checkpoint](setup/assisted/ai-setup-assistant.md) for your route.
+If a reset is still planned, use browser guidance until the starting boundary
+is ready. Additional clients and MCP can wait until the base works.
+
 ## Choose one setup route
 
 The assisted route installs the standalone `day-one-mac` command. It does not

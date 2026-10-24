@@ -123,6 +123,7 @@ required_docs=(
 )
 
 required_scripts=(
+  ../src/setup/ai-setup.sh
   ../src/setup/setup.sh
   ../tests/integration/test-release-installer.sh
   ../tests/integration/test-audit-regressions.sh

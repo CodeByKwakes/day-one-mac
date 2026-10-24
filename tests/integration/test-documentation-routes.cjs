@@ -18,6 +18,10 @@ const anchors = text => {
     });
 };
 const nav = documentationNavigation(documents);
+assert.ok(nav.coreSequence.indexOf('docs/setup/assisted/ai-setup-assistant.md') >= 0
+  && nav.coreSequence.indexOf('docs/setup/assisted/ai-setup-assistant.md') < nav.coreSequence.indexOf('docs/setup/assisted/01-first-boot-and-decisions.md'),
+  'Browser sequence offers the optional AI checkpoint before Phase 1');
+
 for (const label of ['Scripted (Assisted) Setup', 'Manual Setup', 'Shared library']) {
   assert.ok(nav.groups.some(g => g.label === label), `Missing navigation section: ${label}`);
 }
@@ -128,5 +132,71 @@ if (process.platform === 'darwin') {
     fs.unlinkSync(path.join(temporary, 'Brewfile'));
     assert.equal(run('/usr/bin').status, 0, 'No existing Brewfile needs no copy');
   } finally { fs.rmSync(temporary, { recursive: true, force: true }); }
+}
+// Execute the editor backup and personal skill link using disposable homes.
+{
+  const os = require('node:os');
+  const { spawnSync } = require('node:child_process');
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'day-one-doc-safe.'));
+  const run = (content, extraPath = '/usr/bin') => spawnSync('/bin/bash', [], {
+    input: content, encoding: 'utf8', env: { HOME: temporary, PATH: `${extraPath}:/usr/bin:/bin` }
+  });
+  const fences = text => markdownIt().parse(text, {}).filter(t => t.type === 'fence' && t.info === 'bash');
+  try {
+    const bin = path.join(temporary, 'bin'); fs.mkdirSync(bin);
+    fs.writeFileSync(path.join(bin, 'code'), '#!/bin/sh\necho publisher.extension@1.0.0\n', { mode: 0o700 });
+    fs.writeFileSync(path.join(bin, 'cp'), '#!/bin/sh\nexit 1\n', { mode: 0o700 });
+    const user = path.join(temporary, 'Library/Application Support/Code/User');
+    fs.mkdirSync(user, { recursive: true }); fs.writeFileSync(path.join(user, 'settings.json'), '{}\n');
+    const backup = fences(documents.get('docs/setup/manual/apps/brewfile.md').split('## 8. Handle VS Code removal recoverably')[1]).find(t => t.content.includes('code --list-extensions --show-versions'));
+    assert.ok(backup);
+    assert.notEqual(run(backup.content, bin).status, 0, 'Failed VS Code backup must stop the documented procedure');
+    fs.unlinkSync(path.join(bin, 'cp'));
+    assert.equal(run(backup.content, bin).status, 0, 'A valid VS Code backup succeeds');
+    assert.equal(run(backup.content, bin).status, 0, 'Repeated VS Code backups preserve earlier copies');
+    const copies = fs.readdirSync(path.join(temporary, '.local/state/development-setup/vscode-backups'))
+      .map(n => path.join(temporary, '.local/state/development-setup/vscode-backups', n, 'User/settings.json'))
+      .filter(n => fs.existsSync(n));
+    assert.equal(copies.length, 2);
+    const link = fences(documents.get('docs/setup/manual/ai/maintenance.md')).find(t => t.content.includes('ln -s'));
+    const source = path.join(temporary, '.agents/skills/review'); fs.mkdirSync(source, { recursive: true });
+    fs.writeFileSync(path.join(source, 'SKILL.md'), '# Review\n');
+    assert.equal(run(link.content).status, 0, 'New compatibility link succeeds');
+    assert.equal(run(link.content).status, 0, 'Correct existing link is reusable');
+    const target = path.join(temporary, '.claude/skills/review'); fs.unlinkSync(target);
+    fs.symlinkSync('missing-skill', target);
+    assert.notEqual(run(link.content).status, 0, 'A dangling link must be reported, not replaced');
+    assert.equal(fs.readlinkSync(target), 'missing-skill');
+  } finally { fs.rmSync(temporary, { recursive: true, force: true }); }
+}
+// Keep the coverage reference tied to actual phase/module inventory and check
+// copyable syntax without running installers, account clients or databases.
+{
+  const { spawnSync } = require('node:child_process');
+  const coverage = documents.get('docs/shared/reference/setup-coverage.md');
+  assert.ok(coverage);
+  const moduleIds = fs.readFileSync(path.join(root, 'config/catalogs/modules.tsv'), 'utf8')
+    .split('\n').filter(line => line && !line.startsWith('#')).map(line => line.split('\t')[0]);
+  for (const id of ['01', '02', '03', '04', '05', '06', '07', '08', ...moduleIds]) {
+    assert.ok(coverage.includes(`| ${id} |`), `Missing phase/module manual mapping: ${id}`);
+  }
+  let examples = 0;
+  for (const [file, text] of documents) {
+    if (!/^docs\/setup\/(manual|assisted)\//.test(file)) continue;
+    for (const token of markdownIt().parse(text, {}).filter(t => t.type === 'fence')) {
+      const language = token.info.trim();
+      const shell = { bash: '/bin/bash', sh: '/bin/sh', zsh: '/bin/zsh' }[language];
+      if (shell) {
+        assert.ok(token.content.trim(), `Empty shell example: ${file}:${token.map[0] + 1}`);
+        if (!fs.existsSync(shell)) continue;
+        const checked = spawnSync(shell, ['-n'], { input: token.content, encoding: 'utf8' });
+        assert.equal(checked.status, 0, `Invalid shell syntax: ${file}:${token.map[0] + 1} ${checked.stderr}`);
+        examples++;
+      } else if (language === 'json') {
+        assert.doesNotThrow(() => JSON.parse(token.content), `Invalid JSON: ${file}:${token.map[0] + 1}`);
+      }
+    }
+  }
+  console.log(`Validated ${examples} shell examples without executing their commands.`);
 }
 console.log('Documentation routes, preserved fragments, manual boundaries, Zsh startup/syntax and Brewfile backups passed.');

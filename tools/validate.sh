@@ -148,9 +148,9 @@ if awk -F '\t' '
   END {exit !found}
 ' "$PROJECT_DIR/config/catalogs/applications.tsv" \
    && grep -Fq 'Leave scheduled cleaning disabled.' \
-      "$PROJECT_DIR/docs/setup/assisted/advanced/21-audit-maintenance-and-rebuild.md" \
+      "$PROJECT_DIR/docs/setup/manual/maintenance.md" \
    && grep -Fq 'Purge is never invoked by a Day One Mac script' \
-      "$PROJECT_DIR/docs/setup/assisted/advanced/21-audit-maintenance-and-rebuild.md"; then
+      "$PROJECT_DIR/docs/setup/manual/maintenance.md"; then
   pass "Purge remains optional, fully qualified, and manual at every destructive boundary"
 else
   fail "Purge catalogue identity or manual-only safety guidance has drifted"

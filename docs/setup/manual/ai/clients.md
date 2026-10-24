@@ -7,6 +7,10 @@ sending project content.
 
 ## Before you start
 
+For assistance before the toolchain is installed, begin with the
+[optional AI setup checkpoint](setup-assistant.md). It needs only one client
+and does not depend on Homebrew or Node. Return here for additional clients.
+
 Read [AI workspace boundaries](../development/ai-workspaces.md). Confirm the
 selected Node/shell prerequisites where applicable. Reuse approved existing
 installations, including company-managed ones. The following Homebrew casks are
@@ -108,19 +112,19 @@ The GitHub Copilot app is a standalone desktop application. It is different
 from built-in VS Code Copilot and the terminal-only Copilot CLI, even though it
 uses Copilot CLI technology internally.
 
-Day One Mac preserves a valid Company Portal or manually installed copy. When
-the app is missing, the ownership-aware installer offers Homebrew's official
-`github-copilot-app` cask or another approved installer:
+Day One Mac preserves a valid Company Portal or manually installed copy. Reuse an
+approved existing copy. If the application is absent and Homebrew is your
+selected owner, install it:
 
 ```bash
+brew install --cask github-copilot-app
+brew list --cask --versions github-copilot-app
 ```
 
-Homebrew installs the current application as `/Applications/GitHub Copilot.app`.
-An older official download may exist as `/Applications/Copilot.app`; the
-ownership check recognises and preserves that earlier external installation
-rather than creating a duplicate. To move an external copy to Homebrew
-ownership, uninstall it with its existing owner first, then rerun the command
-above.
+Expected result: Homebrew lists the installed cask and the app opens from
+`/Applications/GitHub Copilot.app`. An older official copy can be named
+`Copilot.app`; inspect Applications and your organisation's software catalogue
+before installing. Do not create a second installation to change its owner.
 
 After installation:
 
@@ -132,8 +136,8 @@ After installation:
    learning the permission model.
 5. Choose **Interactive** or **Plan** for the first session. Review the diff and
    every requested command before allowing changes.
-6. Run the ownership check again and confirm it reports either the
-   Homebrew-managed current app or a deliberately preserved external copy.
+6. Confirm the selected account and open a harmless local task. Record whether
+   Homebrew, Company Portal or the vendor installer owns this copy.
 
 The app can use a Copilot plan or an explicitly configured own model provider.
 Provider credentials belong in the system credential store through the app's
@@ -170,9 +174,8 @@ the terminal executable and should perform its upgrades/removal.
 
 ## 5. Raycast AI option
 
-Raycast itself is already installed by the required Installation Centre. Selecting Raycast AI
-does not install a second application; it records that its optional AI features
-should be configured.
+Install or reuse Raycast through the [Raycast guide](../apps/raycast.md) first.
+Its AI features use the same application and have separate account requirements.
 
 1. Open **Raycast Settings → AI**.
 2. Confirm the signed-in account and paid plan are the ones intended for this
@@ -230,7 +233,8 @@ Settings and remove or disable only the provider credential concerned.
 
 For the GitHub Copilot app, open **Settings**, confirm the intended GitHub
 account and model provider, then inspect one harmless session in a disposable
-repository. If the provenance report says Homebrew owns it, remove it with:
+repository. If `brew list --cask --versions github-copilot-app` confirms Homebrew ownership,
+remove it with:
 
 ```bash
 brew uninstall --cask github-copilot-app
@@ -239,13 +243,14 @@ brew uninstall --cask github-copilot-app
 An external copy remains the responsibility of Company Portal or its vendor
 installer and is not part of the Homebrew rollback manifest.
 
-To remove clients that the provenance report confirms are Homebrew-owned:
+For each selected CLI, confirm its cask appears in `brew list --cask`. Run only
+the corresponding removal command:
 
 ```bash
 brew uninstall --cask codex
 brew uninstall --cask copilot-cli
 ```
 
-The broad clean-state script inventories these casks and archives known client
-configuration. An externally installed client remains owned by Company Portal
-or its vendor installer; review that owner's removal instructions instead.
+For native or company-managed clients, follow the existing owner's removal
+instructions. Preserve reviewed configuration separately; a package uninstall
+is not a backup of client settings.
