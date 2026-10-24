@@ -57,7 +57,7 @@ extension settings in the main guide belong to **AI User Settings**. Claude's ru
 permissions, hooks, skills, and MCP configuration remain in its own supported
 personal/project files and are not isolated by the VS Code profile.
 
-Use [section 9's shared instructions and project symlinks](instructions-agents-skills.md#1-share-project-instructions-skills-and-agents)
+Use [the shared project instructions and symlink guide](instructions-agents-skills.md#1-share-project-instructions-skills-and-agents)
 so Claude reads the same canonical skills and shared role policies without
 maintaining duplicate content. Use its client-specific agent wrapper and MCP
 configuration; do not copy Codex TOML or assume Copilot chat settings control
@@ -152,7 +152,7 @@ supply missing facts reliably.
 
 For Copilot and Codex, keep portable reusable workflows as **personal skills**
 in `~/.agents/skills/<skill-name>/SKILL.md`. Project-specific workflows can use
-`.agents/skills` with the local excludes/symlinks in section 9. A personal skill
+`.agents/skills` with the [local excludes and symlinks](instructions-agents-skills.md#keep-local-project-ai-files-out-of-git). A personal skill
 is available across repositories and may be selected automatically from its
 description; keep the description narrowly scoped.
 

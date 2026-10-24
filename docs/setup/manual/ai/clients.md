@@ -26,7 +26,10 @@ apps and remote features have their own account/availability requirements.
 Versioned settings examples are recommendations; follow the installed client's
 schema if a field is unavailable.
 
-### Configure Claude Code
+Complete only the client sections you selected, in any order. Finish with the
+shared configuration and verification sections.
+
+## Configure Claude Code
 
 Check the selected command after installation:
 

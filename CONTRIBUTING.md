@@ -40,10 +40,11 @@ pnpm run test:integration
 pnpm run acceptance:package
 ```
 
-The static gate checks syntax, navigation, ownership catalogues and generated
-reference drift. Integration tests use isolated temporary homes. The combined
-`tools/validate.sh --all` remains the CI gate; native acceptance requires real
-Mac and managed-device evidence separately.
+Static checks validate shell syntax, local documentation links, configuration
+catalogues and whether generated references match their source. Integration
+tests use isolated temporary homes. The combined `tools/validate.sh --all` is the
+CI gate: it must pass before a change proceeds through that workflow.
+Native acceptance requires separate real-Mac and managed-device evidence.
 
 Also inspect:
 

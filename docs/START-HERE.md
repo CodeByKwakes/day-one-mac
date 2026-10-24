@@ -45,60 +45,61 @@ application permissions or recoverability. Use the guide's verification step.
 
 ## Previously published section links
 
-These entries preserve bookmarks from the previous structure. Each points to the current task; follow the main guide above for the normal sequence.
+Existing bookmarks remain available below. Use the route and task links above
+for the normal setup sequence.
 
-## What this project does
+### What this project does
 
-Continue with the [current guide](shared/explanation/process-overview.md).
+Continue with [How setup fits together](shared/explanation/process-overview.md).
 
-## Personal or managed Mac
+### Personal or managed Mac
 
-Continue with the [current guide](shared/prerequisites.md).
+Continue with [Check prerequisites](shared/prerequisites.md).
 
-### Script-assisted route — recommended
+#### Script-assisted route — recommended
 
-Continue with the [current guide](setup/assisted/README.md).
+Continue with [Scripted (Assisted) Setup](setup/assisted/README.md).
 
-### Manual route — no Day One Mac scripts
+#### Manual route — no Day One Mac scripts
 
-Continue with the [current guide](setup/manual/README.md).
+Continue with [Manual Setup](setup/manual/README.md).
 
-## Terminal basics used in this guide
+### Terminal basics used in this guide
 
-Continue with the [current guide](shared/terminal-basics.md).
+Continue with [Terminal basics](shared/terminal-basics.md).
 
-## Terminal colours and symbols
+### Terminal colours and symbols
 
-Continue with the [current guide](shared/terminal-basics.md).
+Continue with [Terminal basics](shared/terminal-basics.md).
 
-## Install the standalone command for the script-assisted route
+### Install the standalone command for the script-assisted route
 
-Continue with the [current guide](setup/assisted/runtime.md).
+Continue with [Install and manage the standalone runtime](setup/assisted/runtime.md).
 
-## Run the recommended route
+### Run the recommended route
 
-Continue with the [current guide](setup/assisted/README.md).
+Continue with [Scripted (Assisted) Setup](setup/assisted/README.md).
 
-## Understand preview and apply
+### Understand preview and apply
 
-Continue with the [current guide](setup/assisted/README.md).
+Continue with [Scripted (Assisted) Setup](setup/assisted/README.md).
 
-## One change that needs your password
+### One change that needs your password
 
-Continue with the [current guide](setup/assisted/runtime.md).
+Continue with [Install and manage the standalone runtime](setup/assisted/runtime.md).
 
-## Stop, resume, and get help
+### Stop, resume, and get help
 
-Continue with the [current guide](shared/troubleshooting.md).
+Continue with [Find the right troubleshooting procedure](shared/troubleshooting.md).
 
-## How to read each phase
+### How to read each phase
 
-Continue with the [current guide](setup/assisted/README.md).
+Continue with [Scripted (Assisted) Setup](setup/assisted/README.md).
 
-## Set up the required applications
+### Set up the required applications
 
-Continue with the [current guide](setup/assisted/INSTALLATION-CENTRE.md).
+Continue with [Required Installation Centre](setup/assisted/INSTALLATION-CENTRE.md).
 
-## After Phase 8
+### After Phase 8
 
-Continue with the [current guide](setup/assisted/optional/README.md).
+Continue with [Optional Day One Mac modules](setup/assisted/optional/README.md).

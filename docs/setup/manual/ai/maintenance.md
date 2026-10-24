@@ -1,6 +1,10 @@
 # Maintain AI skills and MCP access
 
-Use this optional manual task after the relevant base setup. It requires no Day One Mac command or phase records. Reuse existing configuration owners and back up files before changing them.
+Use this task to maintain skills and MCP connections for clients you already use.
+Complete the [selected client setup](clients.md) first and keep a backup of its
+configuration. Edit files through their configuration owner, the person or tool
+responsible for maintaining them. Chezmoi commands apply only to chezmoi-owned
+files; Git commands apply only to a versioned source.
 
 If using the private report paths below, first create the directory with `mkdir -p "$HOME/.local/state/development-setup"` and restrict it with `chmod 700 "$HOME/.local/state/development-setup"`. Expected: reports remain local and outside the repository.
 
@@ -31,12 +35,15 @@ The canonical target is:
 ~/.agents/skills/<skill-name>/SKILL.md
 ```
 
-Manage reviewed, non-secret personal skills through chezmoi:
+Keep one reviewed copy of each skill in this directory. If chezmoi owns the
+skill files, add only the reviewed, non-secret skill path:
 
 ```bash
-mkdir -p "$HOME/.agents/skills"
-chezmoi add "$HOME/.agents/skills"
+chezmoi add "$HOME/.agents/skills/<reviewed-skill-name>"
 ```
+
+Replace the placeholder with an existing reviewed skill. If you maintain the
+files directly, use your selected editing and backup method instead.
 
 Each skill should have:
 
@@ -236,22 +243,31 @@ When a server is no longer needed:
 3. Remove the client definitions using client-supported commands/UI.
 4. Revoke OAuth/token access at the provider.
 5. Remove the catalogue row.
-6. Review the chezmoi diff and commit the removal.
+6. Review and back up the configuration change through its owner. Commit it only if the source is versioned.
 
 When a skill is retired, remove compatibility links first, then the canonical
 source. Do not leave broken symlinks that make client discovery unreliable.
 
 ## Rollback
 
-Restore the previous private dotfiles commit, apply only reviewed skill/config
-targets, and reauthenticate if needed. Credentials are intentionally outside
+Restore the reviewed skill or configuration file from its backup. For a
+versioned chezmoi source, restore the source entry and apply only its named
+target. Reauthenticate if needed. Credentials are intentionally outside
 the rollback; revoke and recreate them through their provider rather than
 recovering token files from Git.
 
 ## Verification and next steps
 
-Verify the selected task's effective settings using the checks above, then record the choices and a recovery location privately. A configuration file alone does not prove account access, a successful signature or a restorable backup. Return to the calling assisted module only if you arrived from that route.
+Confirm that each selected client discovers the intended skills and lists only
+the MCP servers you approved. Use the client checks in Step 11 to verify the
+account and server list. Record remaining manual checks in your private inventory.
+If you arrived from an assisted module, return after these checks pass.
 
 ## Troubleshooting
 
-If a check fails, retain the previous working files and inspect the reported owner, path and account before retrying. Restore only the reviewed change from its backup; do not reset unrelated configuration or delete a repository to satisfy a check.
+| Symptom | Next action |
+|---|---|
+| A skill is missing | Check its `SKILL.md` path and any symlink target, then reload the project in the selected client |
+| A server appears in the wrong scope | Inspect that client's personal and project definitions using Step 8 |
+| Access still works after removing a definition | Revoke the provider's OAuth or token grant as described in Step 12 |
+| An edit breaks discovery | Restore the reviewed file or link from its backup and repeat the client check |

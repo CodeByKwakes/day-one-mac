@@ -1,6 +1,10 @@
 # Restore selected projects and application data
 
-Use this optional manual task after the relevant base setup. It requires no Day One Mac command or phase records. Reuse existing configuration owners and back up files before changing them.
+Use this task after choosing the destination layout and preparing a readable
+backup. Review the [backup prerequisites](../../../shared/prerequisites.md) and
+write a list of files to restore before copying anything. Git access is required
+for repository clones; database and application imports require their selected
+clients.
 
 If using the private report paths below, first create the directory with `mkdir -p "$HOME/.local/state/development-setup"` and restrict it with `chmod 700 "$HOME/.local/state/development-setup"`. Expected: reports remain local and outside the repository.
 
@@ -229,8 +233,17 @@ after confirming they contain no new local changes.
 
 ## Verification and next steps
 
-Verify the selected task's effective settings using the checks above, then record the choices and a recovery location privately. A configuration file alone does not prove account access, a successful signature or a restorable backup. Return to the calling assisted module only if you arrived from that route.
+Open a sample of the restored files and compare them with the reviewed restore
+list. Check each restored repository's status, run the selected database restore
+checks and confirm that application imports open correctly. Record failures and
+skipped items in the private restore report before returning to any calling
+assisted module.
 
 ## Troubleshooting
 
-If a check fails, retain the previous working files and inspect the reported owner, path and account before retrying. Restore only the reviewed change from its backup; do not reset unrelated configuration or delete a repository to satisfy a check.
+| Symptom | Next action |
+|---|---|
+| A checksum fails | Stop before restoring that file and investigate the backup source; preserve the backup and existing destination |
+| The backup volume disappears | Reconnect it and repeat the volume and backup-root checks in Step 2 |
+| A destination already exists | Preserve both copies and compare them before choosing a destination |
+| An application cannot import its export | Retain the export and use that application's supported import and recovery procedure |

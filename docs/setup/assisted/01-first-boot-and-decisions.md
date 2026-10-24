@@ -6,11 +6,13 @@
 
 ## Outcome
 
-At the end of this phase, the permanent daily account and approved elevation
-path are ready, macOS is at the approved update level, the old computer's data is safely out of scope, and the runner has
-the decisions it needs: hosting track, development stack, Git identity, primary
-IDE behavior, and dotfiles protection. The next checkpoint is the optional macOS Settings Wizard,
-which can be completed before Phase 2 or intentionally skipped and run later.
+Prepare the account you will use each day and confirm how administrator access
+is approved. Bring macOS to the approved update level. Confirm that existing
+data has been handled through the chosen preparation route.
+
+Record your hosting providers, language tools, Git identity, editor behaviour
+and configuration backup choices. The optional macOS Settings Wizard can run
+before Phase 2 or later.
 No development packages are installed yet.
 
 ## How to use this phase

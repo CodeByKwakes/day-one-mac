@@ -2,8 +2,11 @@
 
 # SSH registration, signing and recovery
 
-**Document type:** shared how-to and troubleshooting reference. Complete either
-the [1Password](1password.md) or [Keychain](keychain-ssh.md) tutorial first.
+Complete the setup for your [selected authentication method](README.md) first.
+For SSH authentication, use the public key from the 1Password, Keychain or
+external-agent setup. HTTPS authentication skips SSH key registration.
+SSH commit signing requires a signing-capable key independently of the Git
+transport; complete the signing steps only when signing is selected.
 
 ## Understand the four separate checks
 
@@ -20,8 +23,9 @@ your own key's fingerprint identifies your credential. They are different.
 
 ## Register public keys and test authentication
 
-1. Open the public `.pub` file from the chosen tutorial, or the public-key field
-   in 1Password. Check its fingerprint against the key you intended to use.
+1. Open the public `.pub` file from the chosen tutorial, the public-key field
+   in 1Password, or the approved external agent's public-key view.
+   Check its fingerprint against the key you intended to use.
 2. For GitHub, open account **Settings → SSH and GPG keys → New SSH key** and
    register it as an **Authentication key**. Complete any organisation SSO
    authorisation required by policy.

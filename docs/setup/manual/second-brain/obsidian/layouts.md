@@ -2,8 +2,8 @@
 
 # Separate physical Obsidian vaults - three-domain example
 
-Use this design when the three knowledge domains need separate sync accounts,
-AI permissions, employer policies, or backup rules. It creates:
+Use this design when the three knowledge domains need separate Obsidian settings,
+sync configuration or backup rules. The example uses these folders:
 
 ```text
 ~/Vaults/
@@ -12,7 +12,9 @@ AI permissions, employer policies, or backup rules. It creates:
 └── Tech Content/
 ```
 
-This is a real separation boundary, not merely three folders in one vault.
+Each vault has separate Obsidian settings and sync configuration. Separate
+folders alone do not restrict filesystem access or an AI client's permissions.
+Confirm any required access restrictions with the system or policy owner.
 
 ## Decide between one and three vaults
 
@@ -21,13 +23,13 @@ This is a real separation boundary, not merely three folders in one vault.
 | Obsidian search across everything | Native | Search one vault at a time |
 | Links and backlinks across domains | Native | External Obsidian links or written references only |
 | One live Bases dashboard | Native | One dashboard per vault; aggregate report is external |
-| Different sync accounts or employer rules | Weak boundary | Stronger, explicit boundary |
-| Different AI access per domain | Easy to mis-scope | Each AI session targets one vault |
+| Separate sync configuration | Shared vault configuration | Configuration selected for each vault |
+| Different AI access per domain | Configure client permissions explicitly | Configure client permissions and select the intended vault |
 | Simple maintenance | Best | More settings, backups, and templates to maintain |
 
-Choose three vaults because isolation is required, not merely because the
-topics are different. If no policy boundary exists, the single-vault design
-is simpler and remains the default.
+Choose three vaults when maintaining separate settings, sync and backups is
+useful. The single-vault design remains the default for domains that share those
+choices. Enforce employer access rules through approved permissions and services.
 
 ## 1. Choose each vault's policy 🔴
 

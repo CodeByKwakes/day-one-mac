@@ -282,11 +282,12 @@ colours and operational sequence are this project's recommended working pattern,
 to be adapted to the actual service and organizational policy. The walkthrough
 is not evidence that a real remote environment has been provisioned or tested.
 
-For local container behaviour, [Module 09](../../assisted/optional/09-databases.md) and
-its current implementation remain authoritative. For editor extension/profile
-assignments, use [VS Code profiles](../../assisted/optional/vscode-profiles.md). Recheck vendor UI labels
-against the installed versions when they differ from this guide.
+For local containers, follow the [manual container setup](containers.md).
+For editor extensions and profiles, use the [manual VS Code guide](../editors/vscode.md).
+If you chose assisted database provisioning, [Module 09](../../assisted/optional/09-databases.md)
+owns that procedure. Recheck vendor UI labels against the installed versions
+when they differ from this guide.
 
 ---
 
-[Application guides](../apps/README.md) · [Local databases](../../assisted/optional/09-databases.md) · [VS Code profiles](../../assisted/optional/vscode-profiles.md) · [Security handbook](../security/README.md)
+[Application guides](../apps/README.md) · [Local databases](containers.md) · [VS Code profiles](../editors/vscode.md) · [Security handbook](../security/README.md)

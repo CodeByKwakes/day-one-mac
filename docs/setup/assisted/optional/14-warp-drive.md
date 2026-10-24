@@ -11,7 +11,8 @@ workflows in seven folders** and one searchable command-catalogue Notebook. The
 commands follow the eight-phase setup, resolve the active standalone runtime,
 and expose cleanup only as a preview.
 
-Warp is a required Phase 4 application. Phase 4 accepts a valid copy supplied
+The recommended-productivity preset includes Warp. Core users install it only
+when choosing this optional workflow. Phase 4 accepts a valid copy supplied
 by Homebrew, a company portal, or a trusted manual installer; it installs the
 Homebrew cask only when Warp is missing and you select Homebrew. Importing this
 Warp Drive collection remains optional: the Day One Mac setup, chezmoi,
@@ -19,6 +20,8 @@ Starship, pnpm, ghq, and all
 verification gates work without the imported workflow objects.
 
 ## 1. Verify the required Warp application
+
+This check applies only when you choose the Warp Drive workflow.
 
 ### Prepare a versioned export first
 

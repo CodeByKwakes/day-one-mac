@@ -4,11 +4,9 @@
 
 A worktree gives an existing Git repository several checked-out folders.
 Use one for each feature, fix, review, or test run that needs separate files.
-This is optional; complete the required Day One Mac phases first.
-
-Open this overview in the installed docs browser:
-
-Open the relevant complete task below.
+This optional task requires Git and an existing repository. Complete the setup
+for your selected editor or AI client before following its worktree workflow.
+Choose a workflow below.
 
 ## Choose a route
 

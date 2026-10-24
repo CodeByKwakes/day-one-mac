@@ -171,51 +171,47 @@ repository history.
 
 ## Step 5.2 — Configure the login shell
 
-The runner prepares missing files for the saved selection and preserves
-existing configuration. Use `day-one-mac shell-status` to inspect the result.
-For an existing file needing a merge, complete the linked manual task through
-the selected file owner, then return and rerun Phase 5.
-Expected result: one PATH/completion/prompt initialisation and a working new
-session; unselected Homebrew Zsh, Starship or aliases are not required.
+The runner prepares missing files for the saved choices and preserves existing
+configuration. Use `day-one-mac shell-status` to inspect the result. Complete a
+linked manual task only when an existing file needs a merge, then return and
+rerun Phase 5.
+
+For the login shell, follow [shell selection](../manual/shell/zsh.md#choose-one-shell-executable)
+and [startup-file placement](../manual/shell/zsh.md#put-initialization-in-the-right-files).
+Expected result: a new login session uses the selected executable, with no
+duplicate PATH entries. Homebrew Zsh is required only when selected.
 
 ## Step 5.3 — Configure interactive zsh
 
-The runner prepares missing files for the saved selection and preserves
-existing configuration. Use `day-one-mac shell-status` to inspect the result.
-For an existing file needing a merge, complete the linked manual task through
-the selected file owner, then return and rerun Phase 5.
-Expected result: one PATH/completion/prompt initialisation and a working new
-session; unselected Homebrew Zsh, Starship or aliases are not required.
+For existing interactive settings, follow the [startup-file task](../manual/shell/zsh.md#create-or-merge-the-startup-files).
+Check each file's syntax before opening a new terminal.
+Expected result: the session starts without errors, with each selected
+completion or prompt integration loaded once.
 
 ### Why both startup files load the shared PATH setup
 
-Complete the relevant action in the [manual task](../manual/shell/zsh.md), then return
-to this phase. Preserve existing credentials and configuration; verify the
-result before rerunning the gate.
+The [startup-file placement reference](../manual/shell/zsh.md#put-initialization-in-the-right-files)
+explains why both login and interactive shells need the PATH helper.
 
 ### Existing `.zshenv` files
 
-Complete the relevant action in the [manual task](../manual/shell/zsh.md), then return
-to this phase. Preserve existing credentials and configuration; verify the
-result before rerunning the gate.
+Review any existing `.zshenv` with its configuration owner before changing
+startup paths. Follow the [startup-file guidance](../manual/shell/zsh.md#put-initialization-in-the-right-files)
+and preserve settings needed by noninteractive commands.
 
 ## Step 5.3a — Safe aliases
 
-The runner prepares missing files for the saved selection and preserves
-existing configuration. Use `day-one-mac shell-status` to inspect the result.
-For an existing file needing a merge, complete the linked manual task through
-the selected file owner, then return and rerun Phase 5.
-Expected result: one PATH/completion/prompt initialisation and a working new
-session; unselected Homebrew Zsh, Starship or aliases are not required.
+If aliases are selected, use the [alias editing procedure](../manual/shell/aliases.md#add-a-new-alias)
+through the selected configuration owner. Review each alias's command before
+using it. Expected result: the selected aliases work in a new session.
+Skip this step when aliases are not selected.
 
 ## Step 5.4 — Configure Starship
 
-The runner prepares missing files for the saved selection and preserves
-existing configuration. Use `day-one-mac shell-status` to inspect the result.
-For an existing file needing a merge, complete the linked manual task through
-the selected file owner, then return and rerun Phase 5.
-Expected result: one PATH/completion/prompt initialisation and a working new
-session; unselected Homebrew Zsh, Starship or aliases are not required.
+If Starship is selected, use the prompt block in the [startup-file task](../manual/shell/zsh.md#create-or-merge-the-startup-files)
+when merging an existing configuration. Expected result: one Starship prompt
+renders in a new terminal without startup errors. Skip this step when retaining
+the existing prompt.
 
 ## Step 5.5 — Store machine-local data
 

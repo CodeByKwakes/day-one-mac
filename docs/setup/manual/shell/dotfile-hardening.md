@@ -1,6 +1,11 @@
 # Extend a reviewed dotfile setup
 
-Use this optional manual task after the relevant base setup. It requires no Day One Mac command or phase records. Reuse existing configuration owners and back up files before changing them.
+This task extends an existing chezmoi source. Complete [chezmoi setup](chezmoi.md)
+and review its current diff before adding files. The source contains the master
+configuration; a target is the active file generated from it.
+Git commands below apply only to a source already under version control.
+For a local-only source, keep a verified encrypted backup before editing and
+skip the Git commit and revert steps.
 
 If using the private report paths below, first create the directory with `mkdir -p "$HOME/.local/state/development-setup"` and restrict it with `chmod 700 "$HOME/.local/state/development-setup"`. Expected: reports remain local and outside the repository.
 
@@ -239,8 +244,9 @@ git status --short
 
 ## Rollback
 
-Revert source changes through Git, preview the resulting target diff, then
-apply only named targets. Do not restore a whole old home-directory snapshot.
+For a versioned source, revert the reviewed change through Git. For a local-only
+source, restore the affected source entry from its encrypted backup. Preview the
+target diff, then apply only named targets. The commands below show the Git route.
 
 ```bash
 cd "$(chezmoi source-path)"
@@ -252,8 +258,16 @@ chezmoi apply <reviewed-target>
 
 ## Verification and next steps
 
-Verify the selected task's effective settings using the checks above, then record the choices and a recovery location privately. A configuration file alone does not prove account access, a successful signature or a restorable backup. Return to the calling assisted module only if you arrived from that route.
+Run `chezmoi doctor`, `chezmoi verify` and `chezmoi diff` after applying the
+selected targets. Review any differences and open a new shell to check changed
+shell settings. For a Git-backed source, inspect its status for unintended files.
+If you arrived from an assisted module, return after the selected checks pass.
 
 ## Troubleshooting
 
-If a check fails, retain the previous working files and inspect the reported owner, path and account before retrying. Restore only the reviewed change from its backup; do not reset unrelated configuration or delete a repository to satisfy a check.
+| Symptom | Next action |
+|---|---|
+| The diff includes an unexpected target | Inspect `chezmoi managed` and the source entry before applying anything |
+| Verification reports a difference | Compare the source and active file, then decide which contains the intended setting |
+| A source has no Git history | Use the encrypted local backup; skip Git commit and revert commands |
+| An applied target breaks a tool | Restore only that source entry from Git or backup, review the target diff and apply the named target |

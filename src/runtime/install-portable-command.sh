@@ -26,7 +26,7 @@ Usage: ./install-portable-command.sh [options]
 
 Install Day One Mac without making the command depend on this checkout.
 
-  --source PATH       Day One Mac source root; defaults to this script's parent
+  --source PATH       Day One Mac source root; defaults to the bundled source/runtime root
   --version VERSION   runtime version label; normally detected automatically
   --standalone        copy a self-contained runtime (default)
   --linked            development mode: run directly from the source checkout

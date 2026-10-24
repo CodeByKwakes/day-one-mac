@@ -81,6 +81,52 @@ if (process.platform === 'darwin') {
       env: { PATH: '/usr/bin:/bin', HOME: temporary, TERM_PROGRAM: 'WarpTerminal' } });
     assert.equal(result.status, 0, `Warp startup example failed: ${result.stderr}`);
     assert.equal(result.stderr, '', 'Warp startup example has no missing completion commands');
+    const syntaxCheck = markdownIt().parse(zshGuide, {}).find(token => token.type === 'fence'
+      && token.content.includes('/bin/zsh -n'));
+    assert.ok(syntaxCheck, 'Zsh guide provides a syntax check');
+    fs.mkdirSync(path.join(temporary, '.config/zsh'), { recursive: true });
+    const startupFiles = ['.zprofile', '.zshrc', '.config/zsh/path.zsh'];
+    for (const invalidFile of [null, ...startupFiles]) {
+      for (const file of startupFiles) fs.writeFileSync(path.join(temporary, file), file === invalidFile ? 'if then\n' : ':\n');
+      const checked = spawnSync('/bin/zsh', ['-f'], { input: syntaxCheck.content, encoding: 'utf8',
+        env: { PATH: '/usr/bin:/bin', HOME: temporary } });
+      if (invalidFile) assert.notEqual(checked.status, 0, `Syntax errors in ${invalidFile} must fail the documented check`);
+      else assert.equal(checked.status, 0, 'Valid startup files pass the documented syntax check');
+    }
   } finally { fs.rmSync(temporary, { recursive: true, force: true }); }
 }
-console.log('Documentation route ownership, old fragments, manual boundaries and Warp startup passed.');
+// Run only the backup example with disposable files. Simulate a failed copy
+// so the guide cannot promise a backup after suppressing a filesystem error.
+{
+  const os = require('node:os');
+  const { spawnSync } = require('node:child_process');
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'day-one-doc-backup.'));
+  const brewGuide = documents.get('docs/setup/manual/apps/brewfile.md');
+  const backupSection = brewGuide.split('## 2. Back up the desired-state file')[1].split('\n## ')[0];
+  const backup = markdownIt().parse(backupSection, {}).find(token => token.type === 'fence' && token.info === 'bash');
+  assert.ok(backup, 'Brewfile guide includes a backup example');
+  const run = extraPath => spawnSync('/bin/bash', [], { input: backup.content, encoding: 'utf8',
+    env: { HOME: temporary, PATH: `${extraPath}:/usr/bin:/bin` } });
+  try {
+    fs.writeFileSync(path.join(temporary, 'Brewfile'), 'brew "git"\n');
+    const fakeBin = path.join(temporary, 'bin');
+    fs.mkdirSync(fakeBin);
+    fs.writeFileSync(path.join(fakeBin, 'cp'), '#!/bin/sh\nexit 1\n', { mode: 0o700 });
+    fs.writeFileSync(path.join(fakeBin, 'chezmoi'), '#!/bin/sh\nexit 0\n', { mode: 0o700 });
+    assert.notEqual(run(fakeBin).status, 0, 'A failed copy must fail the backup example');
+    const first = run('/usr/bin');
+    assert.equal(first.status, 0, first.stderr);
+    const backupRoot = path.join(temporary, '.local/state/development-setup/manual-backups');
+    const copies = () => fs.readdirSync(backupRoot).map(name => path.join(backupRoot, name, 'Brewfile'))
+      .filter(file => fs.existsSync(file));
+    const originalCopy = copies().find(file => fs.readFileSync(file, 'utf8') === 'brew "git"\n');
+    assert.ok(originalCopy, 'Backup preserves the original contents');
+    fs.writeFileSync(path.join(temporary, 'Brewfile'), 'brew "jq"\n');
+    assert.equal(run('/usr/bin').status, 0, 'A second backup succeeds');
+    assert.equal(fs.readFileSync(originalCopy, 'utf8'), 'brew "git"\n', 'A second backup keeps the first copy');
+    assert.equal(copies().length, 2, 'Each successful backup has a separate destination');
+    fs.unlinkSync(path.join(temporary, 'Brewfile'));
+    assert.equal(run('/usr/bin').status, 0, 'No existing Brewfile needs no copy');
+  } finally { fs.rmSync(temporary, { recursive: true, force: true }); }
+}
+console.log('Documentation routes, preserved fragments, manual boundaries, Zsh startup/syntax and Brewfile backups passed.');

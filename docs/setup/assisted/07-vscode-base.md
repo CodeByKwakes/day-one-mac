@@ -2,7 +2,7 @@
 
 # Phase 7 — VS Code base
 
-**Time:** 20-35 minutes · **Required:** everyone
+**Time:** 20-35 minutes · **Required:** recommended-productivity preset; core skips editor setup
 
 The lists below describe the default **recommended-productivity** preset.
 The **core** preset skips Raycast, Warp, the Nerd Font, and VS Code; Phase 7
@@ -238,11 +238,15 @@ In VS Code:
 
 ## Phase 7 completion checklist 🚦
 
+Apply this checklist when VS Code is selected. The core preset skips this
+editor setup; continue to Phase 8 without installing an editor to satisfy it.
+
 - [ ] `code --version` succeeds from a new terminal.
 - [ ] `day-one-mac applications --id visual-studio-code` reports the application ready and shows its owner.
 - [ ] The base settings JSON parses without warnings.
 - [ ] Both tool-auto-approval settings are false.
-- [ ] The integrated terminal opens zsh and renders Starship.
+- [ ] The integrated terminal opens the selected Zsh.
+- [ ] If Starship is selected, its prompt renders correctly.
 - [ ] No literal token or machine-specific secret exists in settings.
 - [ ] Extensions are limited to current project needs.
 - [ ] No VS Code profile or Settings Sync account is required to pass.

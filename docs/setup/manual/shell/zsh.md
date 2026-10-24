@@ -151,14 +151,18 @@ fi
    prompt. VS Code arrows search the typed prefix. Warp retains its native input
    behaviour. Syntax highlighting remains the final shell integration.
 
-5. Check syntax before opening a new terminal.
+5. Check each startup file before opening a new terminal. The `&&` operators
+   stop the sequence if a check fails.
 
 ```bash
-/bin/zsh -n "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.config/zsh/path.zsh"
+/bin/zsh -n "$HOME/.zprofile" &&
+/bin/zsh -n "$HOME/.zshrc" &&
+/bin/zsh -n "$HOME/.config/zsh/path.zsh"
 ```
 
-   Expected result: exit status zero with no syntax error. This does not execute
-   the configuration; the new-session checks below test its behaviour.
+   Expected result: all three checks complete with no syntax error and the
+   sequence returns zero. Fix any reported error before continuing. These checks
+   do not execute the configuration; the new-session checks below test its behaviour.
 
 If a new terminal fails, open `/bin/zsh -f` and restore the last reviewed change.
 Do not close the known working terminal until the new session passes.

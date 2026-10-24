@@ -1,6 +1,9 @@
 # Maintain a selective Brewfile
 
-Use this optional manual task after the relevant base setup. It requires no Day One Mac command or phase records. Reuse existing configuration owners and back up files before changing them.
+Use this task when Homebrew is installed and you want to maintain a selective
+Brewfile. Complete [Homebrew setup](../homebrew.md) first. Keep each application's
+existing installation owner and back up the Brewfile before editing it.
+Chezmoi commands apply only when chezmoi owns that file.
 
 If using the private report paths below, first create the directory with `mkdir -p "$HOME/.local/state/development-setup"` and restrict it with `chmod 700 "$HOME/.local/state/development-setup"`. Expected: reports remain local and outside the repository.
 
@@ -19,18 +22,38 @@ still has a separate installation owner; review that owner before changing it.
 
 ## 2. Back up the desired-state file
 
-Skip the copy when no Brewfile exists yet. Run chezmoi commands below only when you selected chezmoi ownership; otherwise edit and back up the file directly. Expected: an existing declaration is preserved before you change it.
+Run this backup before editing an existing Brewfile. Each run uses a new private
+directory, so it preserves earlier copies. If a command fails, stop and fix the
+reported error before editing the Brewfile.
 
 ```bash
-mkdir -p "$HOME/.local/state/development-setup/manual-backups"
-cp "$HOME/Brewfile" \
-  "$HOME/.local/state/development-setup/manual-backups/Brewfile.before-advanced-16" \
-  2>/dev/null || true
+(
+  set -eu
+  umask 077
+  if [ -e "$HOME/Brewfile" ] || [ -L "$HOME/Brewfile" ]; then
+    mkdir -p "$HOME/.local/state/development-setup/manual-backups"
+    brewfile_backup=$(mktemp -d "$HOME/.local/state/development-setup/manual-backups/Brewfile.XXXXXX")
+    cp "$HOME/Brewfile" "$brewfile_backup/Brewfile"
+    cmp "$HOME/Brewfile" "$brewfile_backup/Brewfile"
+    printf 'Verified backup: %s\n' "$brewfile_backup/Brewfile"
+  else
+    printf 'No existing Brewfile to back up.\n'
+  fi
+)
+```
+
+Expected result: the command prints a verified backup path, or confirms that no
+Brewfile exists. Keep the printed path for recovery.
+
+If chezmoi owns the Brewfile, inspect its source and pending changes:
+
+```bash
 chezmoi source-path "$HOME/Brewfile"
 chezmoi diff
 ```
 
-If the Brewfile is not managed, add it only after reviewing its contents:
+If you selected chezmoi ownership and the Brewfile is not managed, add it only
+after reviewing its contents:
 
 ```bash
 chezmoi add "$HOME/Brewfile"
@@ -182,6 +205,10 @@ into an installer.
 
 ## 9. Record the final state with chezmoi
 
+Complete this section only when chezmoi owns the Brewfile. If you maintain it
+directly, save the reviewed file, repeat the backup step and continue to
+Verification and next steps.
+
 ```bash
 chezmoi add "$HOME/Brewfile"
 chezmoi diff
@@ -189,7 +216,8 @@ chezmoi apply "$HOME/Brewfile"
 brew bundle check --file="$HOME/Brewfile" --no-upgrade
 ```
 
-Then commit the source privately:
+For a local-only chezmoi source, update its encrypted backup. If private Git is
+the selected protection method, review and commit the source:
 
 ```bash
 cd "$(chezmoi source-path)"
@@ -206,8 +234,16 @@ automatically reinstall application data removed with a cask.
 
 ## Verification and next steps
 
-Verify the selected task's effective settings using the checks above, then record the choices and a recovery location privately. A configuration file alone does not prove account access, a successful signature or a restorable backup. Return to the calling assisted module only if you arrived from that route.
+Run `brew bundle check --file="$HOME/Brewfile" --no-upgrade` against the reviewed
+file. Expected result: the check succeeds for the selected declarations.
+Keep the verified backup path with your private inventory. If you arrived from
+an assisted module, return after reviewing the final inventory.
 
 ## Troubleshooting
 
-If a check fails, retain the previous working files and inspect the reported owner, path and account before retrying. Restore only the reviewed change from its backup; do not reset unrelated configuration or delete a repository to satisfy a check.
+| Symptom | Next action |
+|---|---|
+| The backup command fails | Stop before editing; check the reported source path, destination and permissions |
+| The bundle check reports a missing item | Review that declaration and its installation owner before installing it or changing the file |
+| An installed app is absent from Homebrew | Check its existing installation owner; it may be managed outside Homebrew |
+| The edited Brewfile is wrong | Follow Rollback using the verified backup; application data needs its own recovery copy |

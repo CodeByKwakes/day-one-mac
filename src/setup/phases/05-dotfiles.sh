@@ -326,11 +326,8 @@ phase_05() {
      && [[ -n "$(chezmoi managed 2>/dev/null || true)" ]]; then
     existing_managed_source=1
   fi
-  # `chezmoi source-path` with no target only resolves and prints the configured
-  # source directory: it exits 0 even when that directory does not exist. Using
-  # its status as an existence test meant that on any Mac where chezmoi is
-  # installed — which Phase 4 guarantees — `chezmoi init` was never run for a
-  # brand-new source. Test the directory itself.
+  # `chezmoi source-path` can succeed when the source directory does not exist.
+  # Check the directory before deciding whether initialization is needed.
   chezmoi_source_dir="$(chezmoi source-path 2>/dev/null || true)"
   if [[ -z "$chezmoi_source_dir" || ! -d "$chezmoi_source_dir" ]]; then
     if [[ -n "$DOTFILES_REPO" ]]; then run chezmoi init "$DOTFILES_REPO"

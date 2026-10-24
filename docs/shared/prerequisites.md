@@ -8,16 +8,16 @@ accounts selected in the [decision worksheet](decisions.md).
 | Requirement | How to check | Expected result |
 |---|---|---|
 | Native Apple silicon | `uname -m` | `arm64`; use a terminal without Rosetta |
-| Supported macOS | `sw_vers -productVersion` | Major version 15-27 accepted by the repository's platform guard |
+| macOS accepted by the runtime | `sw_vers -productVersion` | Major version 15-27; acceptance and testing evidence are distinguished below |
 | Storage | System Settings, General, Storage | At least 30 GB free for the base; budget separately for Xcode, containers, models and projects |
 | Account | Confirm with the owner or IT | Personal administrator, or managed standard daily account with approved elevation |
 | Backup | Restore a sample file from another location | Readable, independent copy of the data you need |
 | Network | Open the approved software and hosting services | Trusted connection; managed proxy, VPN and certificate requirements supplied by IT |
 | Power | Connect the power adapter | Stable power during updates and downloads |
 
-The platform guard is `src/core/platform.sh`. Its accepted range is a code
-contract, not evidence that every OS/build and managed-device combination has
-completed a hardware pilot. CI configuration includes macOS 15 and 26. Follow
+The platform guard, `src/core/platform.sh`, defines which versions the runtime
+accepts. CI configuration includes macOS 15 and 26. Hardware and managed-device
+validation require separate evidence for the actual device and OS build. Follow
 [verification](verification.md) for the distinction between local checks and
 physical-device acceptance. Intel, Rosetta execution, Windows and Linux are not
 supported setup targets.

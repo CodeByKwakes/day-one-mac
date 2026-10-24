@@ -345,5 +345,5 @@ test -r "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 ```
 
 `lazydocker` needs a running Docker-compatible engine. Installing the formula
-does not install Docker Desktop or OrbStack; use Optional 9 if local containers
-are needed.
+does not install Docker Desktop or OrbStack. Complete the
+[manual container setup](../databases/containers.md) if local containers are needed.

@@ -544,7 +544,7 @@ database or organization's access controls have passed acceptance testing.
 - [PostgreSQL 17 documentation](https://www.postgresql.org/docs/17/) and
   [JDBC TLS configuration](https://jdbc.postgresql.org/documentation/ssl/).
 - [Microsoft PostgreSQL extension](https://learn.microsoft.com/en-us/azure/postgresql/developer/vs-code-extension/vs-code-overview).
-- [Local database module](../../assisted/optional/09-databases.md),
-  [shared PostgreSQL procedures and DataGrip guide](datagrip.md),
-  [VS Code profiles](../../assisted/optional/vscode-profiles.md) and
+- [Manual container setup](containers.md),
+  [shared PostgreSQL procedures](postgresql.md), [DataGrip guide](datagrip.md),
+  [manual VS Code profiles](../editors/vscode.md) and
   [software catalogue](../../../shared/reference/software-catalogue.md).

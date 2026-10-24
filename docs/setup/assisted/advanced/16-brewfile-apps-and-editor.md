@@ -93,11 +93,11 @@ Follow the linked task for the selected actions, verify them, then return here. 
 - [ ] The application inventory has been reviewed.
 - [ ] Formulae remain protected from bulk toggle removal.
 - [ ] Cask and extension choices come from the current file and use canonical IDs.
-- [ ] Required 1Password, Raycast, VS Code, and Warp are either deliberately declared as Homebrew casks or recorded as valid external installations; chezmoi, ghq, Git, and selected stack/provider formulae remain declared.
+- [ ] Selected applications have a recorded installation owner. Homebrew-owned applications and selected command-line tools remain declared; externally managed applications retain their existing owner.
 - [ ] No fixed count is treated as a correctness gate.
 - [ ] Every removal has an export/archive and Markdown record.
 - [ ] `brew bundle check --no-upgrade` passes.
-- [ ] The Brewfile is managed by chezmoi and committed privately.
+- [ ] The Brewfile is backed up through the selected configuration owner. Chezmoi users use the selected encrypted local backup or reviewed private Git workflow.
 
 ```bash
 day-one-mac advanced --complete 16

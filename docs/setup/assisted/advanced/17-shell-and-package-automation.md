@@ -88,7 +88,7 @@ Follow the linked task for the selected actions, verify them, then return here. 
 - [ ] Frozen installs use `npm ci` or `pnpm install --frozen-lockfile`.
 - [ ] Project versions come from repository declarations, not guide constants.
 - [ ] The package-manager and repository audits were reviewed.
-- [ ] `.zshrc` and `~/.config/zsh/aliases.zsh` are managed by chezmoi and the final diff is understood.
+- [ ] `.zshrc` and `~/.config/zsh/aliases.zsh` are maintained through the selected configuration owner, and their changes have been reviewed.
 
 ```bash
 day-one-mac advanced --complete 17

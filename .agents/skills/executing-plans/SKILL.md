@@ -105,6 +105,23 @@ digraph process {
 }
 ```
 
+## Companion-package availability
+
+Check whether the referenced sibling skills and helper scripts exist before
+using them. Some repositories install this skill without the companion
+`subagent-driven-development` or `requesting-code-review` packages.
+
+When those packages are absent, use the approved task list and the repository's
+validation commands directly. Keep a task ledger in the repository's established
+maintainer location or a task-specific temporary directory. Record the baseline,
+approved scope, decisions and check results there. Skip unavailable workspace,
+brief and completion helpers; update the same evidence manually.
+
+For final review, use `git diff <recorded-baseline>` for tracked changes and
+`git status --short` to identify untracked files that also need inspection.
+Supply those changes, the approved scope and the verification results to the
+reviewer. Do not install a new workflow package just to complete the review.
+
 ## Setup
 
 Ensure the work happens in an isolated workspace: use
@@ -233,14 +250,17 @@ mark the todo complete and take the next task.
 
 ## Final Review
 
-Run `../subagent-driven-development/scripts/review-package PLAN_FILE MERGE_BASE HEAD`
+If the companion helper exists, run
+`../subagent-driven-development/scripts/review-package PLAN_FILE MERGE_BASE HEAD`
 (MERGE_BASE = the commit the branch started from, e.g.
 `git merge-base main HEAD`) and review from the file it prints.
+Otherwise use the diff and evidence described under Companion-package availability.
+Include uncommitted and untracked task changes in either case.
 
 **With a subagent tool:** dispatch the reviewer on the most capable
 available model — the whole-branch review is a judgment task — using
-superpowers:requesting-code-review's
-[code-reviewer.md](../requesting-code-review/code-reviewer.md), with the
+the available review instructions from `requesting-code-review`, or the
+review checklist below when that package is absent, with the
 package path, the plan and spec paths, the plan's Review Focus section
 verbatim if it has one (the input classes and failure modes the plan's
 tests do not exercise — the reviewer checks each deliberately), and a
@@ -250,12 +270,20 @@ explicitly; an omitted model inherits the session's, which may not be the
 most capable. This is the one fresh context the whole run buys. Do not
 skip it, and do not replace it with your own read of the diff.
 
-**Without a subagent tool:** read code-reviewer.md and perform that review
-yourself against the package, as a separate pass after the last task's
+**Without a subagent tool:** use the available reviewer instructions or the
+checklist below to review the complete changes, as a separate pass after the last task's
 ledger line. Write `Final review: self-review (no subagent tool)` to the
 ledger, and say so in your final message: a self-review by the author is
 weaker than a fresh reviewer, and your human partner decides whether that
 is enough before merge.
+
+Review checklist when no companion reviewer instructions are installed:
+
+- Compare every change with the approved scope and repository contracts.
+- Check commands, prerequisites, failure handling and recovery against their implementations.
+- Inspect references, compatibility paths and any preserved public interfaces.
+- Distinguish checks actually run from assumptions or acceptance work still needed.
+- Report actionable findings with file locations, impact and missing evidence.
 
 Sort the findings before you act on any of them. The reviewer's severity
 labels are advice; the gate is yours. Its "Declined to judge" list is

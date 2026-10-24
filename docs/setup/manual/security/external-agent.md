@@ -8,14 +8,30 @@ installation, unlock and recovery instructions from its owner.
 
 Follow that product's approved local procedure.
 
-Expected result: its socket is available in this session or through an explicit
-provider `IdentityAgent` setting. Never source an unknown script to obtain it.
+Expected result: the agent's socket, a local connection path, is available
+through `SSH_AUTH_SOCK` or a provider-specific SSH `IdentityAgent` setting.
+Use the path supplied by the agent's approved configuration.
 
 ## 2. Inspect offered public identities
+
+Choose the check that matches the agent configuration.
+
+If `SSH_AUTH_SOCK` already selects the approved agent, run:
 
 ```bash
 /usr/bin/ssh-add -l
 ```
+
+If SSH selects the agent only through `IdentityAgent`, replace the placeholder
+with that agent's absolute socket path, then run:
+
+```bash
+SSH_AUTH_SOCK='/absolute/path/to/approved-agent.sock' /usr/bin/ssh-add -l
+```
+
+This assignment selects the socket for this command only. `ssh-add` does not
+read SSH's `IdentityAgent` setting, so an empty default agent says nothing about
+the identities offered by the configured external agent.
 
 Expected result: the intended SHA-256 fingerprint is listed. No identities is
 different from an unavailable agent. Confirm the fingerprint with the owner;
@@ -38,8 +54,9 @@ identity. Repeat after a new session or lock/unlock as required by the agent.
 
 ## Troubleshooting and recovery
 
-If `ssh-add` cannot connect, inspect `SSH_AUTH_SOCK` and the configured agent
-path locally. If the wrong key is offered, use provider-specific configuration
+If `ssh-add` cannot connect, confirm that the selected socket exists and the
+agent is unlocked. Compare the command's socket with the approved agent path.
+If the wrong key is offered, use provider-specific configuration
 with the agent owner's instructions. Restore the previous reviewed host block
 if an edit prevents access. Lost keys and revoked sessions require the owning
 service's recovery process; changing a socket path cannot recover a private key.

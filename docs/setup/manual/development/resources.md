@@ -1,8 +1,9 @@
 # Developer Resources
 
-Keep supporting project material and reusable resources here. Keep active Git
-repositories in `~/Developer/Projects`; experiments belong in `Sandbox` and
-inactive work in `Archive`.
+Use this guide to organize supporting project material and reusable resources.
+The examples use the purpose-oriented layout: active repositories in
+`~/Developer/Projects`, experiments in `Sandbox` and inactive work in `Archive`.
+Keep your selected layout if it differs.
 
 ## Folder guide
 
@@ -18,8 +19,8 @@ inactive work in `Archive`.
 | `Warp/` | Custom terminal themes, workflows, launch configurations and exports |
 | `Raycast/` | Script commands, quicklink definitions, snippets and exports |
 
-These are starting points, not mandatory categories. Leave unused folders empty
-and add subfolders when you need them. Day One Mac preserves existing contents.
+Create only the categories you need and add subfolders as needed. Preserve any
+existing contents when adapting this example to your layout.
 
 ## Material for a particular project
 
@@ -126,8 +127,5 @@ This folder is local storage, not a backup or an access-control system. Use
 approved storage for sensitive exports and include material you want to keep in
 your backups. Do not put passwords, tokens or private keys in templates or data.
 
-The purpose-oriented Day One Mac setup creates missing folders and this README.
-An existing README is left unchanged. Rerunning folder setup repairs missing
-folders without deleting their contents or moving repositories. Changing layout
-does not remove this structure. Rollback uses the setup journal; review its plan
-before applying it, especially once folders contain your own material.
+Record folders you create manually with your backup plan. Before removing or
+reorganizing a folder, check its contents and preserve material you still need.

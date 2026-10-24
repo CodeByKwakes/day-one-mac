@@ -1,6 +1,9 @@
 # Maintain shell and package-manager workflows
 
-Use this optional manual task after the relevant base setup. It requires no Day One Mac command or phase records. Reuse existing configuration owners and back up files before changing them.
+Use this task with a working [Zsh setup](zsh.md). The package-manager sections
+also require the selected [Node toolchain](../languages.md) and a disposable
+project for checks. Back up shell files through their current owner.
+Run ghq, chezmoi and plugin-specific commands only when those tools are selected.
 
 If using the private report paths below, first create the directory with `mkdir -p "$HOME/.local/state/development-setup"` and restrict it with `chmod 700 "$HOME/.local/state/development-setup"`. Expected: reports remain local and outside the repository.
 
@@ -220,10 +223,23 @@ migration. A local commit without a remote is not a backup.
 
 ## 9. Apply and remeasure
 
+If chezmoi owns the aliases, review and apply that target:
+
 ```bash
 chezmoi diff
 chezmoi apply "$HOME/.config/zsh/aliases.zsh"
-exec /opt/homebrew/bin/zsh -l
+```
+
+If you own the file directly, save the reviewed edit. Check its syntax:
+
+```bash
+zsh -n "$HOME/.config/zsh/aliases.zsh"
+```
+
+Expected result: no syntax error. Open a new terminal with the selected Zsh,
+then repeat the startup measurement:
+
+```bash
 for run in 1 2 3 4 5; do /usr/bin/time zsh -lic exit; done
 ```
 
@@ -231,14 +247,24 @@ Remove or lazy-load any optional plugin that materially slows every shell.
 
 ## Rollback
 
-Revert the `aliases.zsh` source commit and apply that single target. Uninstall an
-optional formula only after `brew uses --installed <formula>` shows its reverse
+Restore `aliases.zsh` through its selected owner. For a versioned chezmoi
+source, revert the reviewed source commit and apply that single target.
+Uninstall an optional formula only after `brew uses --installed <formula>` shows its reverse
 dependencies and the Brewfile declaration has been reviewed.
 
 ## Verification and next steps
 
-Verify the selected task's effective settings using the checks above, then record the choices and a recovery location privately. A configuration file alone does not prove account access, a successful signature or a restorable backup. Return to the calling assisted module only if you arrived from that route.
+Open a new terminal and confirm that the selected commands are available.
+In each test project, check that `pm_for_dir` matches its package-manager
+declaration and lockfile. Investigate conflicting declarations before installing
+dependencies. Unselected tools are not failed checks. Record startup timing and
+return to any calling assisted module after reviewing the results.
 
 ## Troubleshooting
 
-If a check fails, retain the previous working files and inspect the reported owner, path and account before retrying. Restore only the reviewed change from its backup; do not reset unrelated configuration or delete a repository to satisfy a check.
+| Symptom | Next action |
+|---|---|
+| `pm_for_dir` chooses an unexpected manager | Inspect `packageManager` and the lockfiles; resolve conflicting repository declarations before installing |
+| A command is missing in a new terminal | Check the selected tool's installation and the PATH helper in the Zsh guide |
+| A plugin increases startup time | Compare the timings from Steps 1 and 9, then remove or defer the selected plugin |
+| An alias behaves incorrectly | Restore that alias file through its owner, check syntax and open a new terminal |

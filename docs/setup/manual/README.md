@@ -47,48 +47,49 @@ manual route has no automated ownership manifest or broad rollback command.
 
 ## Previously published section links
 
-These entries preserve bookmarks from the previous structure. Each points to the current task; follow the main guide above for the normal sequence.
+Existing bookmarks remain available below. Use the route and task links above
+for the normal setup sequence.
 
-## Manual Setup Handbook
+### Manual Setup Handbook
 
-Continue with the [current guide](README.md).
+Continue with [Manual Setup](README.md).
 
-## Choose your route
+### Choose your route
 
-Continue with the [current guide](../../START-HERE.md).
+Continue with [Start here](../../START-HERE.md).
 
-## What the CLI does and what you do
+### What the CLI does and what you do
 
-Continue with the [current guide](../../shared/explanation/process-overview.md).
+Continue with [How setup fits together](../../shared/explanation/process-overview.md).
 
-## 1. macOS preferences and permissions
+### 1. macOS preferences and permissions
 
-Continue with the [current guide](macos.md).
+Continue with [Prepare macOS](macos.md).
 
-## 2. AI accounts, providers and MCP trust
+### 2. AI accounts, providers and MCP trust
 
-Continue with the [current guide](ai/clients.md).
+Continue with [Install and configure selected AI clients](ai/clients.md).
 
-## 3. Editor profiles, extensions, Warp and app settings
+### 3. Editor profiles, extensions, Warp and app settings
 
-Continue with the [current guide](editors/vscode.md).
+Continue with [Configure VS Code for development](editors/vscode.md).
 
-## 4. Chezmoi, ownership and shell activation
+### 4. Chezmoi, ownership and shell activation
 
-Continue with the [current guide](shell/README.md).
+Continue with [Configure the shell and choose a file owner](shell/README.md).
 
-## 5. Git identities, signing, Azure and worktrees
+### 5. Git identities, signing, Azure and worktrees
 
-Continue with the [current guide](git/setup.md).
+Continue with [Configure Git and provider access](git/setup.md).
 
-## 6. Database and gateway decisions
+### 6. Database and gateway decisions
 
-Continue with the [current guide](databases/README.md).
+Continue with [Database setup and operations](databases/README.md).
 
-## 7. Restore, maintenance and baseline acceptance
+### 7. Restore, maintenance and baseline acceptance
 
-Continue with the [current guide](backup-and-restore.md).
+Continue with [Verify and back up the finished setup](backup-and-restore.md).
 
-## Reading and keeping these guides
+### Reading and keeping these guides
 
-Continue with the [current guide](../../shared/reading-and-export.md).
+Continue with [Read and export documentation offline](../../shared/reading-and-export.md).

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Sourced phase implementation; shared runner context is supplied by setup.sh.
 
-# Default-file evidence only: application policy/profile precedence is a manual gate.
+# Checks only the Default profile's settings file.
+# Verify policy and other profile overrides in VS Code.
 verify_editor_settings() {
   command -v python3 >/dev/null 2>&1 || { warn 'Python 3 is needed to inspect JSONC; install it through the approved toolchain.'; return 1; }
   python3 -I -B "$SCRIPT_DIR/../src/core/editor-settings.py" "$HOME/Library/Application Support/Code/User/settings.json"

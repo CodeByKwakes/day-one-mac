@@ -1,6 +1,9 @@
 # Configure multiple Git identities and hosting defaults
 
-Use this optional manual task after the relevant base setup. It requires no Day One Mac command or phase records. Reuse existing configuration owners and back up files before changing them.
+Use this task after [Git setup](setup.md) and authentication for your selected
+hosting providers. Have the intended author name, email and repository paths
+available. Back up Git configuration through its current owner before adding
+identity rules. Complete only the provider and worktree sections you need.
 
 If using the private report paths below, first create the directory with `mkdir -p "$HOME/.local/state/development-setup"` and restrict it with `chmod 700 "$HOME/.local/state/development-setup"`. Expected: reports remain local and outside the repository.
 
@@ -360,14 +363,27 @@ downloads while each worktree keeps its own `node_modules` links.
 
 - Remove worktrees with `git worktree remove` after committing or preserving
   their changes.
-- Revert identity includes through chezmoi and test both repository paths.
+- Restore the reviewed identity include through its configuration owner and test both repository paths.
 - Remove Azure defaults with the current `az devops configure` command only
   after reviewing its help; signing out does not remove Git remotes.
 
 ## Verification and next steps
 
-Verify the selected task's effective settings using the checks above, then record the choices and a recovery location privately. A configuration file alone does not prove account access, a successful signature or a restorable backup. Return to the calling assisted module only if you arrived from that route.
+In each relevant repository, check the effective author email and its origin:
+
+```bash
+git config --show-origin --get user.email
+```
+
+Expected result: the email and configuration file match the intended identity.
+Complete the provider access and worktree checks above for the routes selected.
+If you arrived from an assisted module, return with those results.
 
 ## Troubleshooting
 
-If a check fails, retain the previous working files and inspect the reported owner, path and account before retrying. Restore only the reviewed change from its backup; do not reset unrelated configuration or delete a repository to satisfy a check.
+| Symptom | Next action |
+|---|---|
+| Git uses the wrong author | Inspect the effective email and origin, then compare the repository path with its conditional include |
+| Authentication fails despite the correct author | Repeat the selected provider's repository-read check; author metadata does not authenticate Git |
+| A worktree lacks local settings | Follow Step 8 for selected ignored files; do not copy all hidden files |
+| An identity edit breaks another repository | Restore the reviewed include through its configuration owner and test both repository paths |

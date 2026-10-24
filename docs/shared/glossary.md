@@ -10,7 +10,7 @@ describes an action or a file the user may need to review.
 | **Apply** | Make the reviewed configuration changes active. With chezmoi, `chezmoi apply` copies the generated settings to their normal locations. |
 | **AI gateway** | A service between an AI client and one or more model providers. OmniRoute is an optional local gateway; it routes model requests but does not control the client's file or Terminal permissions. |
 | **Authentication** | Proving to a service that you are the account owner, usually through a browser, device code, or SSH key. |
-| **Authentication mode** | How this Mac proves its identity to GitHub or Azure DevOps: `1password` (the 1Password SSH agent, the default), `keychain` (a passphrase-protected key file held by the macOS Keychain), `external` (an agent you already run), or `https` (no SSH key at all). Shown by `day-one-mac --status`. |
+| **Authentication mode** | How this Mac authenticates to GitHub or Azure DevOps: `1password` (the default SSH agent), `keychain` (a private-key file on disk whose passphrase is stored in macOS Keychain), `external` (an existing agent), or `https` (HTTPS credentials). Shown by `day-one-mac --status`. |
 | **AUTO_CD** | An optional zsh setting that changes directory when you type a bare path, so `~` goes home instead of failing. Offered in Module 13; off by default on macOS. |
 | **Brewfile** | A text list of software that Homebrew can reinstall. It is desired state, not a backup of application data. |
 | **Cask** | Homebrew's package type for a macOS application or font, such as VS Code or Raycast. |
@@ -32,6 +32,7 @@ describes an action or a file the user may need to review.
 | **fnm** | Fast Node Manager: installs multiple Node.js versions under your account and switches between them per project, so no single Node release is baked into the system. |
 | **Formula** | Homebrew's package type for a command-line tool or library. |
 | **Gate** | A check that must pass before a phase can be marked complete. |
+| **Configuration owner** | The person or tool responsible for editing a file, such as you, chezmoi or an approved management system. Use that owner's workflow to avoid conflicting edits. |
 | **Gatekeeper** | The macOS feature that checks an application is from an identified developer and has not been tampered with before letting it run. Phase 8 verifies it is still enabled. |
 | **ghq** | A command-line tool that stores cloned Git repositories in a predictable provider/owner/repository folder structure. |
 | **Homebrew prefix** | Homebrew's installation root. Day One Mac requires the native Apple-silicon prefix `/opt/homebrew`. |
@@ -79,7 +80,8 @@ describes an action or a file the user may need to review.
 | **TCC / privacy database** | macOS's record of which apps may access protected resources such as files, camera, microphone, or automation. TCC stands for Transparency, Consent, and Control. |
 | **TOML** | A structured text format commonly used for configuration, including chezmoi machine data. |
 | **TSV** | Tab-separated values: a plain-text table whose columns are separated by tab characters. |
-| **Vault** | An Obsidian knowledge-base folder containing notes, attachments, and Obsidian settings. |
+| **Obsidian vault** | A folder containing notes, attachments and Obsidian settings. A separate vault does not itself restrict filesystem or AI-client access. |
+| **1Password vault** | A collection of items in 1Password, such as passwords and SSH keys, with access controlled through 1Password. |
 | **Volume** | Persistent Docker data stored separately from the container, or a mounted macOS storage device depending on context. |
 | **MDM** | Mobile device management: the organisation's system for enrollment, device policy and managed configuration. |
 | **SSO** | Single sign-on: an organisation-managed login used across approved services. |

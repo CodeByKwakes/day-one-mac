@@ -75,8 +75,9 @@ Each bundle contains:
 | `README.txt` | Import and manual completion instructions |
 
 The generator merges nested settings, retaining shared Markdown options and
-Full Stack's language settings in AI. It bundles the settings in sections 3-4
-and the detailed guide's import keybindings. Folder-name icon associations,
+Full Stack's language settings in AI. It bundles the [shared User Settings](../../manual/editors/vscode.md#3-apply-shared-user-settings),
+[profile settings](../../manual/editors/vscode.md#4-apply-profile-settings) and
+[import keybindings](../../manual/editors/vscode.md#personal-import-shortcuts). Folder-name icon associations,
 the optional Angular token palette, shell configuration, skills/agent files,
 MCP servers, and database connections still require the linked manual recipes.
 Credentials and account sign-in are not included.

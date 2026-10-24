@@ -762,4 +762,4 @@ so later shared-baseline changes must be reviewed in this custom profile too.
 
 ---
 
-[Application guides](../apps/README.md) · [Detailed stack recipes](vscode.md) · [Warp](../terminals/warp.md) · [Vorssaint](../apps/vorssaint.md)
+[Application guides](../apps/README.md) · [Warp](../terminals/warp.md) · [Vorssaint](../apps/vorssaint.md)

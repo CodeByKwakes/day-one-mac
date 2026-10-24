@@ -117,7 +117,7 @@ Follow the linked task for the selected actions, verify them, then return here. 
 - [ ] Real repository paths match the selected layout; ghq roots are checked only if ghq was selected.
 - [ ] Each real repository resolves the correct email and configuration origin.
 - [ ] Only selected-track CLIs and SSH hosts are required.
-- [ ] 1Password provides SSH private identities; `~/.ssh` contains config/public data only.
+- [ ] Git authenticates through the selected method. If 1Password owns the keys, private keys remain in its vault; Keychain and external-agent users follow their selected key-storage rules.
 - [ ] A disposable signed commit verifies correctly when signing is enabled.
 - [ ] Azure defaults are explicit and private where applicable.
 - [ ] Every worktree is listed by Git and has a clean/understood status.

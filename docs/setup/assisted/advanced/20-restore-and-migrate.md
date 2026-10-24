@@ -112,7 +112,7 @@ Follow the linked task for the selected actions, verify them, then return here. 
 - [ ] Restore/no-restore was chosen explicitly.
 - [ ] The volume and backup root were validated under `/Volumes`.
 - [ ] Checksums passed or their absence is documented.
-- [ ] Remote-backed repositories were re-cloned through ghq.
+- [ ] Selected remote-backed repositories were re-cloned with Git or the selected ghq workflow.
 - [ ] Dirty, ahead, and `NO-REMOTE` repositories were handled individually.
 - [ ] Dependencies came from lockfiles; no package/cache directories were copied.
 - [ ] Databases came from logical dumps, not container VM storage.
