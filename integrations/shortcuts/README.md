@@ -14,7 +14,8 @@ These assets require no Day One Mac runtime or permanent checkout.
 | `open-in-warp.applescript` | App entry source | Open a Warp tab using the encoded folder URI |
 | `open-vscode-profile.applescript` | App entry source | Choose a verified existing stable VS Code profile |
 | `open-development-workspace.applescript` | App entry source | Open the same folder in VS Code and Warp |
-| `catalog.json` | Build metadata | Recipe IDs, source order, dependencies and bundle identifiers |
+| `catalog.json` | Build metadata | Recipe IDs, source order, dependencies, bundle identifiers and optional icons |
+| `icons/` | SVG sources and multi-resolution ICNS assets | Teal terminal/folder for Warp; orange branch/download for Git Clone; blue code/folder for VS Code |
 | Open in Warp | [Native-action recipe](../../docs/setup/manual/apps/macos-shortcuts.md#create-open-in-warp) | Recreate selected-folder input and Open File in Warp; no signed export is supplied |
 
 ## Portability and verification
@@ -60,3 +61,19 @@ byte for byte. Never edit a signed export in place or write to Shortcuts' databa
 Git Clone and Warp do not currently have new signed `.shortcut` exports. Users
 can build them through the documented actions and export their verified copies.
 Do not present a launcher app or an unsigned source file as an importable backup.
+
+## App icons
+
+The three icons are original Day One Mac artwork, covered by the repository
+licence. They identify developer actions; they are not vendor logos. Edit the
+SVG sources, regenerate the matching ICNS assets, and review them at toolbar
+and large preview sizes. ICNS files contain 16, 32, 128, 256 and 512 point
+representations at 1× and 2× resolution.
+
+The builder reads the optional `icon` field from the catalogue, embeds that
+asset before signing, and records its SHA-256 hash in the build manifest.
+Recipes without an icon keep the compiler's default icon.
+
+For an existing launcher, use the manual guide's custom-icon procedure.
+Do not replace resources inside a signed ShortcutDroplet: that invalidates
+its signature. Changing a Finder custom icon does not change shortcut actions.

@@ -8,11 +8,11 @@ const root=path.resolve(__dirname,'../..');
 const need=(condition,message)=>{if(!condition)throw new Error(message);};
 const hash=value=>crypto.createHash('sha256').update(value).digest('hex');
 const exists=file=>{try{fs.lstatSync(file);return true;}catch(error){if(error.code==='ENOENT')return false;throw error;}};
-function regular(file) {
+function regular(file,encoding='utf8') {
   for(let current=file;current!==path.dirname(current);current=path.dirname(current))
     need(!fs.lstatSync(current).isSymbolicLink(),'Symlink source refused: '+file);
   need(fs.statSync(file).isFile(),'Expected a regular source: '+file);
-  return fs.readFileSync(file,'utf8');
+  return fs.readFileSync(file,encoding);
 }
 function catalogue(sourceRoot) {
   const base=path.join(sourceRoot.replace(/^\/tmp(?=\/|$)/,'/private/tmp').replace(/^\/var(?=\/|$)/,'/private/var'),'integrations/shortcuts');
@@ -29,6 +29,11 @@ function catalogue(sourceRoot) {
       return regular(path.join(base,name));
     }).join('\n');
     need(!/\/Users\/|shortcutIdentifier/.test(recipe.sourceText),'Personal paths or installed shortcut IDs are not portable');
+    if(recipe.icon!==undefined) {
+      need(typeof recipe.icon==='string' && /^icons\/[a-z][a-z0-9-]+\.icns$/.test(recipe.icon),'Invalid icon filename');
+      recipe.iconData=regular(path.join(base,recipe.icon),null);
+      need(recipe.iconData.length>=8 && recipe.iconData.toString('ascii',0,4)==='icns' && recipe.iconData.readUInt32BE(4)===recipe.iconData.length,'Invalid ICNS asset');
+    }
   }
   return value;
 }
@@ -73,9 +78,13 @@ function build(review) {
       const info=JSON.parse(command('/usr/bin/plutil',['-convert','json','-o','-',plist]));
       for(const [key,value] of Object.entries({CFBundleIdentifier:recipe.bundleId,NSAppleEventsUsageDescription:'Read the selected Finder folder for this developer shortcut.'}))
         command('/usr/libexec/PlistBuddy',['-c',`${Object.hasOwn(info,key)?'Set':'Add'} :${key} ${Object.hasOwn(info,key)?'':'string '}${value}`,plist]);
+      if(recipe.iconData) {
+        fs.writeFileSync(path.join(app,'Contents/Resources/DayOneIcon.icns'),recipe.iconData,{flag:'wx',mode:0o644});
+        command('/usr/libexec/PlistBuddy',['-c',`${Object.hasOwn(info,'CFBundleIconFile')?'Set':'Add'} :CFBundleIconFile ${Object.hasOwn(info,'CFBundleIconFile')?'':'string '}DayOneIcon.icns`,plist]);
+      }
       command('/usr/bin/codesign',['--force','--sign','-',app]);
       command('/usr/bin/codesign',['--verify','--strict',app]);
-      record.apps.push({id:recipe.id,app:recipe.name+'.app',bundleId:recipe.bundleId,source:recipe.id+'.applescript',sourceSha256:hash(recipe.sourceText)});
+      record.apps.push({id:recipe.id,app:recipe.name+'.app',bundleId:recipe.bundleId,source:recipe.id+'.applescript',sourceSha256:hash(recipe.sourceText),...(recipe.iconData?{icon:recipe.icon,iconSha256:hash(recipe.iconData)}:{})});
     }
     fs.writeFileSync(path.join(output,'build-manifest.json'),JSON.stringify(record,null,2)+'\n',{flag:'wx',mode:0o600});
   } catch(error) {
@@ -100,7 +109,7 @@ function main(args) {
   }
   const review=plan(root,selected,output);
   console.log(`Output: ${review.output}`);
-  for(const recipe of review.recipes) console.log(`${recipe.name}.app: ${recipe.requires.join('; ')}; source SHA-256 ${hash(recipe.sourceText)}`);
+  for(const recipe of review.recipes) console.log(`${recipe.name}.app: ${recipe.requires.join('; ')}; source SHA-256 ${hash(recipe.sourceText)}${recipe.iconData?`; icon ${recipe.icon}; SHA-256 ${hash(recipe.iconData)}`:''}`);
   if(!execute) {console.log('Preview only. No files created. Review the source before adding --build.');return;}
   const result=build(review);console.log(`Built ${result.apps.length} local review apps. Nothing installed or launched.`);
 }
