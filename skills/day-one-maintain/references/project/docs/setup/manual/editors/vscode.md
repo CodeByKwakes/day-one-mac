@@ -150,6 +150,7 @@ their parent extension; do not install them a second time just to match a count.
 | [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) | `yzhang.markdown-all-in-one` | Markdown editing conveniences | R | R | R | R |
 | [markdownlint](https://marketplace.visualstudio.com/items?itemName=davidanson.vscode-markdownlint) | `davidanson.vscode-markdownlint` | Markdown structure checks | R | R | R | R |
 | [Angular Language Service](https://marketplace.visualstudio.com/items?itemName=angular.ng-template) | `angular.ng-template` | Angular template diagnostics and navigation | No | R | R | No |
+| [Rename Angular Component](https://marketplace.visualstudio.com/items?itemName=tomwhite007.rename-angular-component) | `tomwhite007.rename-angular-component` | Rename related Angular files, classes, selectors and references | No | R | R | No |
 | [Angular HTML](https://marketplace.visualstudio.com/items?itemName=ghaschel.vscode-angular-html) | `ghaschel.vscode-angular-html` | Your chosen template highlighting | No | R | No | No |
 | [Nx Console](https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console) | `nrwl.angular-console` | Generators, targets, and workspace information | No | R | R | No |
 | [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) | `dbaeumer.vscode-eslint` | Repository lint diagnostics and fixes | No | R | R | No |
@@ -293,6 +294,56 @@ rename undo settings. These reports are limitations to check on your machine.
 [Released manifest](https://github.com/sleistner/vscode-fileutils/blob/v3.10.3/package.json),
 [hidden-directory report](https://github.com/sleistner/vscode-fileutils/issues/684),
 [undo report](https://github.com/sleistner/vscode-fileutils/issues/686).
+
+### Rename Angular Component: Full Stack and AI
+
+Use **Rename Angular Component** (`tomwhite007.rename-angular-component`) for
+related Angular files, classes and selectors in local macOS workspaces. Keep
+Angular Language Service and native **Rename Symbol** (`F2`) for individual
+symbols. Use only one Angular renamer in a profile.
+
+1. Install the extension in the existing development profiles:
+
+   ```bash
+   code --profile "Full Stack" --install-extension tomwhite007.rename-angular-component
+   code --profile "AI" --install-extension tomwhite007.rename-angular-component
+   ```
+
+   Expected result: the extension appears in Full Stack and AI. Leave
+   **Apply Extension to all Profiles** off.
+
+2. Merge the `renameAngularComponent.*` entries from the
+   [Full Stack settings](../../../shared/reference/vscode-profile-data.md#full-stack-overrides)
+   into each profile's User Settings. AI inherits them in its recipe.
+
+   Expected result: update popups and debug logging are off. The renamer does
+   not force direct local paths over aliases or include dotted suffixes in
+   generated folder names and selectors. Review alias changes after each rename.
+
+3. Check `renameAngularComponent.projectUsesStandaloneComponentsOnly` in
+   Settings before renaming in each project.
+
+   Expected result: `true` for entirely standalone applications, or `false`
+   for NgModule or mixed applications. The extension defaults to `true`;
+   the profile recipe leaves this project-dependent choice unset. With `false`,
+   selector replacement searches all templates and can affect duplicate selectors.
+   If using User Settings, revisit this choice when switching projects.
+
+4. On a disposable component in a development branch, right-click its `.ts`
+   file and select **Rename Angular file**, then enter the new base name.
+
+   Expected result: related files, class names, selectors and references match
+   the new name. Both `button.component.ts` and suffixless `button.ts` naming
+   are supported. Inspect the Git diff, including barrel exports, aliases and
+   lazy imports, then run the affected project's build and tests.
+
+The published 4.3.0 manifest was checked on 25 October 2026 and requires VS Code
+1.99 or later. The publisher lists WSL and Dev Containers as unsupported;
+perform renames in a local workspace. Running an application's services in Docker
+does not require opening the editor inside a Dev Container.
+[Published manifest](https://tomwhite007.gallery.vsassets.io/_apis/public/gallery/publisher/tomwhite007/extension/rename-angular-component/4.3.0/assetbyname/Microsoft.VisualStudio.Code.Manifest),
+[publisher documentation](https://marketplace.visualstudio.com/items?itemName=tomwhite007.rename-angular-component),
+[Dev Container limitation](https://github.com/tomwhite007/rename-angular-component/issues/52).
 
 ### Auto Barrel: Full Stack and AI
 
@@ -454,6 +505,7 @@ in each profile's own User Settings.
 | `explorer.compactFolders` | Off | Off | Off | Off | Shared User Settings; show each nested folder on its own row |
 | `explorer.openEditors.visible` | 9 | 9 | 9 | 9 | Shared User Settings; initial maximum rows before scrolling |
 | Open Editors view visibility | On | On | On | On | Profile UI layout; enable through Explorer's Views menu |
+| Angular rename preferences | No | Shared | Shared | No | Profile User Settings; check standalone versus NgModule mode for each project |
 | Dark Modern and Material Icon Theme | Shared | Shared | Shared | Shared | User Settings |
 | Zsh profiles, terminal font, shell integration and Warp executable | Shared | Shared | Shared | Shared | Machine-specific User Settings; verify paths after import |
 | Git fetch/sync preferences and Conventional Commit instructions | Shared | Shared | Shared | Shared | User Settings |
@@ -918,6 +970,7 @@ Run the checks for the profiles and optional integrations you selected.
 | Open an Angular template and Prisma schema in Full Stack or AI | Diagnostics and formatter ownership match the selected extensions |
 | Open a configured Tailwind project in Full Stack or AI | CSS uses Tailwind CSS mode, SCSS keeps its mode, class completion works and Prettier formats CSS on save |
 | Generate a barrel in a disposable TypeScript directory in Full Stack or AI | Exports match the selected files, respect exclusions and pass the project's type check |
+| Rename a disposable Angular component in Full Stack or AI | Related files and references match the new name; reviewed changes pass the project's build and tests |
 | Search Extensions for `streetsidesoftware.code-spell-checker` in all four profiles | Code Spell Checker is not installed in these profiles |
 | Save and use import shortcuts on a disposable TS/JS change | Sorting and removal follow the chosen policy; the diff contains only intended edits |
 | Inspect icons and HTML token colors in Full Stack | The selected folders and tokens use the configured appearance |

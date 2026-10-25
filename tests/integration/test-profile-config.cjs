@@ -28,6 +28,7 @@ expected.ai.optional.push('sleistner.vscode-fileutils');
 for (const slug of ['full-stack', 'ai']) {
   expected[slug].extensions.push('bradlc.vscode-tailwindcss');
   expected[slug].extensions.push('imgildev.vscode-auto-barrel');
+  expected[slug].extensions.push('tomwhite007.rename-angular-component');
   expected[slug].settings['files.associations']['*.css'] = 'tailwindcss';
   expected[slug].settings['[html]']['editor.quickSuggestions'] = { strings: 'on' };
   Object.assign(expected[slug].settings, {
@@ -36,6 +37,10 @@ for (const slug of ['full-stack', 'ai']) {
     'tailwindCSS.validate': true,
     'tailwindCSS.lint.invalidApply': 'error',
     'scss.lint.unknownAtRules': 'ignore',
+    'renameAngularComponent.showWhatsNewPopup': false,
+    'renameAngularComponent.debugLog': false,
+    'renameAngularComponent.useLocalDirectPaths': false,
+    'renameAngularComponent.followAngular20FolderAndSelectorNamingConvention': false,
     'autoBarrel.files.disableRecursiveBarrelling': false,
     'autoBarrel.files.maxSearchRecursionDepth': 3,
     'autoBarrel.files.supportsHiddenFiles': false,

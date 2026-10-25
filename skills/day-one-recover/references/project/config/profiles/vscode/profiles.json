@@ -215,6 +215,10 @@
         "tailwindCSS.validate": true,
         "tailwindCSS.lint.invalidApply": "error",
         "scss.lint.unknownAtRules": "ignore",
+        "renameAngularComponent.showWhatsNewPopup": false,
+        "renameAngularComponent.debugLog": false,
+        "renameAngularComponent.useLocalDirectPaths": false,
+        "renameAngularComponent.followAngular20FolderAndSelectorNamingConvention": false,
         "autoBarrel.files.disableRecursiveBarrelling": false,
         "autoBarrel.files.maxSearchRecursionDepth": 3,
         "autoBarrel.files.supportsHiddenFiles": false,
@@ -350,7 +354,8 @@
         "ms-ossdata.vscode-pgsql",
         "sleistner.vscode-fileutils",
         "bradlc.vscode-tailwindcss",
-        "imgildev.vscode-auto-barrel"
+        "imgildev.vscode-auto-barrel",
+        "tomwhite007.rename-angular-component"
       ],
       "optional": [
         "orta.vscode-jest",
@@ -407,7 +412,8 @@
         "mikestead.dotenv",
         "redhat.vscode-yaml",
         "bradlc.vscode-tailwindcss",
-        "imgildev.vscode-auto-barrel"
+        "imgildev.vscode-auto-barrel",
+        "tomwhite007.rename-angular-component"
       ],
       "optional": [
         "ms-vscode.vscode-chat-customizations-evaluations",

@@ -156,6 +156,7 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
 | `sleistner.vscode-fileutils` | Recommended |
 | `bradlc.vscode-tailwindcss` | Recommended |
 | `imgildev.vscode-auto-barrel` | Recommended |
+| `tomwhite007.rename-angular-component` | Recommended |
 | `orta.vscode-jest` | Optional |
 | `ms-playwright.playwright` | Optional |
 | `stylelint.vscode-stylelint` | Optional |
@@ -232,6 +233,10 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
   "tailwindCSS.validate": true,
   "tailwindCSS.lint.invalidApply": "error",
   "scss.lint.unknownAtRules": "ignore",
+  "renameAngularComponent.showWhatsNewPopup": false,
+  "renameAngularComponent.debugLog": false,
+  "renameAngularComponent.useLocalDirectPaths": false,
+  "renameAngularComponent.followAngular20FolderAndSelectorNamingConvention": false,
   "autoBarrel.files.disableRecursiveBarrelling": false,
   "autoBarrel.files.maxSearchRecursionDepth": 3,
   "autoBarrel.files.supportsHiddenFiles": false,
@@ -369,6 +374,7 @@ Apply Full Stack overrides before these overrides.
 | `redhat.vscode-yaml` | Recommended |
 | `bradlc.vscode-tailwindcss` | Recommended |
 | `imgildev.vscode-auto-barrel` | Recommended |
+| `tomwhite007.rename-angular-component` | Recommended |
 | `ms-vscode.vscode-chat-customizations-evaluations` | Optional |
 | `ms-windows-ai-studio.windows-ai-studio` | Optional |
 | `orta.vscode-jest` | Optional |

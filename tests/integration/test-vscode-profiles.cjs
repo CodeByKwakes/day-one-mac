@@ -17,7 +17,7 @@ const run = (slug, args = [], status = 0) => {
   return result;
 };
 try {
-  for (const [slug, count] of Object.entries({ default: 5, 'full-stack': 22, ai: 17, operations: 11 })) {
+  for (const [slug, count] of Object.entries({ default: 5, 'full-stack': 23, ai: 18, operations: 11 })) {
     const output = path.join(temporary, `${slug} with spaces`);
     const data = recipe(slug);
     assert.equal(data.extensions.length, count);
