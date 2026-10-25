@@ -6,6 +6,11 @@ installation owners and verify each capability before relying on it.
 
 ## Choose your route
 
+Open the [developer handbook](https://codebykwakes.github.io/day-one-mac/) in a
+browser, or read the guides below on GitHub. If the website has not been published
+yet, these repository links work independently. The handbook includes search,
+printing and a complete offline download; readers need no installation.
+
 - [AI-assisted setup](docs/setup/ai/README.md): prepare one client, choose direct
   provider access or OmniRoute, then review and execute a bounded setup plan.
 - [Manual setup](docs/setup/manual/README.md): follow the same tool recipes
@@ -108,8 +113,9 @@ uses Script Editor. Built apps contain their code and require no permanent check
 
 Skills include reviewed [helpers](docs/shared/reference/tools.md) for VS Code
 profiles, shortcut apps and read-only version checks. They need no global Day One Mac command.
-Manual setup remains independent of helpers. Contributors can build a
-[static offline reader](docs/shared/reading-and-export.md) for sharing.
+Manual setup remains independent of helpers. See [reading options](docs/shared/reading-and-export.md)
+for website bookmarks, offline downloads and contributor builds. The installed
+AI skill includes its own guides and does not need the website to operate.
 
 If the old manager is installed, use the
 [legacy removal guide](docs/shared/migration/remove-legacy-manager.md). Preserve

@@ -18,6 +18,7 @@
     "editor.formatOnSave": false,
     "editor.formatOnPaste": false,
     "editor.detectIndentation": true,
+    "explorer.compactFolders": false,
     "workbench.editor.labelFormat": "medium",
     "workbench.editor.enablePreview": false,
     "git.autofetch": true,

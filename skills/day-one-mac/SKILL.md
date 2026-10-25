@@ -18,6 +18,7 @@ skill, the Day One Mac runtime or a permanent source checkout.
 | Configure or troubleshoot an optional gateway | [OmniRoute](references/workflows/day-one-omniroute.md) |
 | Change the Day One Mac repository | [Contribute](references/workflows/day-one-contribute.md) |
 | Create, inspect or maintain developer shortcuts and apps | [Shortcuts](references/workflows/day-one-shortcuts.md) |
+| Read, find or open documentation | [Reading options](references/project/docs/shared/reading-and-export.md) |
 
 For a combined request, inspect first, propose the requested changes, and then
 use the relevant workflows in dependency order. A check is read-only unless the
@@ -28,6 +29,11 @@ The workflows are instructions for this session. Do not install other skills,
 start subagents or change client permissions merely to route a request. Native
 client approval controls still apply. Optional role templates are separate
 from the skills and require explicit project configuration.
+
+For reading requests, use the relevant bundled guide or the published handbook.
+The website and offline download are reading surfaces, not setup executors.
+Do not require a source checkout or run a contributor build merely to read a
+guide. Installed guides stay at the skill's installed revision until updated.
 
 Use the manual recipes bundled with the selected workflow. Load only the
 relevant guide. Reviewed bundled helpers are optional; inspect their previews

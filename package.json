@@ -25,7 +25,8 @@
     "skills:check": "node tools/build-skills.cjs --check",
     "test:skills": "node tests/integration/test-skills-package.cjs",
     "test:skills-cli": "node tests/integration/test-skills-cli.cjs",
-    "docs:export": "node tools/export-docs.cjs"
+    "docs:export": "node tools/export-docs.cjs",
+    "docs:build": "node tools/build-docs-site.cjs"
   },
   "lint-staged": {
     "*.{md,mdx}": "markdownlint-cli2",

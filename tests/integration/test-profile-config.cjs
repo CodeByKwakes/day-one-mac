@@ -9,6 +9,7 @@ const golden = require('../fixtures/vscode/recipes-v1.json');
 // Keep the migration snapshot intact and enumerate supported differences explicitly.
 const expected = structuredClone(golden);
 for (const profile of Object.values(expected)) {
+  profile.settings['explorer.compactFolders'] = false;
   profile.settings['terminal.integrated.suggest.upArrowNavigatesHistory'] = true;
   profile.optional.push('natqe.reload');
 }

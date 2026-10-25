@@ -263,6 +263,8 @@ command also works without this extension; no additional reload extension is nee
 Expected result: one valid JSON object supplies Dark Modern, a neutral title-bar
 accent, the selected font and the development Zsh terminal. Default's Copilot
 inline suggestions are off. Markdown and JSON use Prettier on explicit saves.
+Explorer displays nested folders on separate rows, including folders with only
+one child folder, because `explorer.compactFolders` is `false`.
 
 Each subsequent profile receives this baseline by copying Default. A shared
 recipe is not automatically a live shared setting. To share an individual
@@ -275,6 +277,7 @@ in each profile's own User Settings.
 | Setting or configuration group | Default | Full Stack | AI | Operations | Where it belongs |
 |---|---|---|---|---|---|
 | Explicit saves, final newline, editor fonts, rulers and navigation preferences | Shared | Shared | Shared | Shared | User Settings; optional all-profiles sharing for identical values |
+| `explorer.compactFolders` | Off | Off | Off | Off | Shared User Settings; show each nested folder on its own row |
 | Dark Modern and Material Icon Theme | Shared | Shared | Shared | Shared | User Settings |
 | Zsh profiles, terminal font, shell integration and Warp executable | Shared | Shared | Shared | Shared | Machine-specific User Settings; verify paths after import |
 | Git fetch/sync preferences and Conventional Commit instructions | Shared | Shared | Shared | Shared | User Settings |

@@ -67,7 +67,7 @@ class Node {
   }
 }
 
-async function run() {
+async function run(download = false) {
   const document = {
     createElement(tag) { return new Node(tag, this); },
     querySelectorAll(selector) { return this.body.querySelectorAll(selector); },
@@ -77,6 +77,7 @@ async function run() {
   document.body = new Node('body', document);
   document.body.innerHTML = fs.readFileSync(path.join(root, 'tools/docs/docs-browser.html'), 'utf8');
   const version = document.createElement('div'); version.setAttribute('id', 'bundle-version'); version.textContent = 'test'; document.body.append(version);
+  if (download) version.setAttribute('data-download', 'day-one-mac-offline.zip');
   const pages = {
     'docs/START-HERE.md': '[All documentation](README.md)\n\n# Start\n\n## Choose a route\n\nRead the guide.\n\n### Manual\n\n```sh\necho "safe"\n```',
     'docs/README.md': '# All documentation',
@@ -111,9 +112,11 @@ async function run() {
   assert.equal(active()[0].href, '#docs/START-HERE.md');
   assert.equal(document.activeElement, undefined, 'Initial rendering does not steal focus');
   const visibleBlocks = () => get('article').children.filter(node => node.tagName !== '#TEXT');
-  assert.equal(visibleBlocks()[0].className, 'source-path');
-  assert.equal(visibleBlocks()[1].tagName, 'H1', 'Title appears before legacy guide navigation');
-  assert.equal(visibleBlocks()[2].querySelector('a').href, '#docs/README.md', 'Original navigation survives title normalization');
+  assert.equal(get('offline-download').href, download ? './day-one-mac-offline.zip' : '#docs/shared/reading-and-export.md');
+  assert.equal(get('offline-download').textContent, download ? 'Download offline' : 'Reading options');
+  assert.match(get('page-source').textContent, /docs\/START-HERE.md/, 'Source metadata follows the article');
+  assert.equal(visibleBlocks()[0].tagName, 'H1', 'Title appears before legacy guide navigation');
+  assert.equal(visibleBlocks()[1].querySelector('a').href, '#docs/README.md', 'Original navigation survives title normalization');
   assert.equal(get('article').querySelectorAll('h1').length, 1, 'Title is moved, never duplicated');
   assert.deepEqual(get('breadcrumbs').querySelectorAll('li').map(node => node.textContent), ['Handbook', 'Start here', 'Start']);
   assert.equal(get('breadcrumbs').querySelectorAll('li').at(-1).getAttribute('aria-current'), 'page');
@@ -139,7 +142,7 @@ async function run() {
   assert.equal(get('article').querySelectorAll('button').length, 2, 'Anchor navigation does not duplicate code controls');
   navigate('#docs/START-HERE.md#missing'); assert.match(get('reader-status').textContent, /not in this guide/);
   navigate('#docs/setup/ai/README.md');
-  assert.equal(visibleBlocks()[1].tagName, 'H1', 'Title-first source guides use the same browser order');
+  assert.equal(visibleBlocks()[0].tagName, 'H1', 'Title-first source guides use the same browser order');
   assert.equal(document.activeElement, get('article').querySelector('h1'), 'Guide navigation focuses its heading, not the reading pane');
   assert.equal(get('page-sequence').querySelector('a').href, '#docs/setup/ai/bootstrap.md');
   assert.equal(get('page-toc').hidden, true);
@@ -156,6 +159,11 @@ async function run() {
 
   const narrow = media.get('(max-width: 760px)'); narrow.matches = true; narrow.change();
   assert.equal(get('sidebar').hidden, true);
+  document.activeElement = get('content');
+  let prevented = false;
+  events.keydown({ key: '/', preventDefault() { prevented = true; } });
+  assert(prevented); assert.equal(document.activeElement, search); assert.equal(get('sidebar').hidden, false);
+  get('sidebar').fire('keydown', { key: 'Escape' });
   get('menu-toggle').fire('click'); assert.equal(get('sidebar').hidden, false); assert.equal(get('menu-toggle').getAttribute('aria-expanded'), 'true');
   get('sidebar').fire('keydown', { key: 'Escape' }); assert.equal(get('sidebar').hidden, true); assert.equal(document.activeElement, get('menu-toggle'));
   get('menu-toggle').fire('click'); navigate('#docs/setup/ai/operation.md'); assert.equal(get('sidebar').hidden, true);
@@ -167,4 +175,4 @@ async function run() {
   navigate('#content'); assert.equal(document.activeElement, get('content'));
   console.log('PASS: offline reader navigation, anchors, search feedback, menu, copy fallback, wrapping and print events (DOM fixture)');
 }
-run().catch(error => { console.error(error); process.exitCode = 1; });
+run(true).then(() => run(false)).catch(error => { console.error(error); process.exitCode = 1; });

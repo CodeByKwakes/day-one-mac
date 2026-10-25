@@ -1,0 +1,68 @@
+name: Publish documentation
+
+on:
+  workflow_run:
+    workflows: [Validate]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: documentation-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      contains(fromJSON('["push", "workflow_dispatch"]'), github.event.workflow_run.event)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+      - name: Build the website and matching offline download
+        env:
+          DOCS_REVISION: ${{ github.event.workflow_run.head_sha }}
+        run: node tools/build-docs-site.cjs --output "$RUNNER_TEMP/day-one-site" --revision "$DOCS_REVISION"
+      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          path: ${{ runner.temp }}/day-one-site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check that the validated revision is still main
+        id: current
+        env:
+          DOCS_REVISION: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          current="$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | awk '{print $1}')"
+          if [ "$current" = "$DOCS_REVISION" ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "A newer main revision exists; this snapshot will not be published."
+          fi
+      - name: Deploy documentation
+        id: deployment
+        if: steps.current.outputs.publish == 'true'
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

@@ -1,4 +1,4 @@
-/* Offline reader. No requests, storage, analytics, or command execution. */
+/* Static handbook. No background requests, storage, analytics or command execution. */
 'use strict';
 
 function documentationRenderer(markdownIt, documents, currentPath) {
@@ -107,7 +107,7 @@ function documentationNavigation(documents) {
       ['Clients', matching('docs/setup/ai/clients/')],
       ['Other AI tasks', matching('docs/setup/ai/')],
     ]),
-    group('Manual Setup', [
+    group('Manual setup', [
       ['Base setup', ['docs/setup/manual/README.md', 'docs/setup/manual/macos.md', 'docs/setup/manual/homebrew.md',
         'docs/setup/manual/languages.md', 'docs/setup/manual/backup-and-restore.md', 'docs/setup/manual/maintenance.md']],
       ['Preparation and security', [...matching('docs/setup/manual/preparation/'), ...matching('docs/setup/manual/security/')]],
@@ -147,8 +147,16 @@ if (typeof document !== 'undefined') {
   const pageToc = document.getElementById('page-toc');
   const tocLinks = document.getElementById('toc-links');
   const readerStatus = document.getElementById('reader-status');
-  const bundleVersion = document.getElementById('bundle-version').textContent;
-  document.getElementById('version').textContent = `Bundled version ${bundleVersion}`;
+  const bundle = document.getElementById('bundle-version');
+  const bundleVersion = bundle.textContent;
+  const revision = bundle.getAttribute('data-revision');
+  const download = document.getElementById('offline-download');
+  if (bundle.getAttribute('data-download') === 'day-one-mac-offline.zip') {
+    download.href = './day-one-mac-offline.zip';
+    download.textContent = 'Download offline';
+    download.setAttribute('download', 'day-one-mac-offline.zip');
+  }
+  document.getElementById('version').textContent = revision ? `Revision ${revision.slice(0, 7)} · ${bundleVersion}` : bundleVersion;
   document.getElementById('print').addEventListener('click', () => window.print());
   const { groups, titles, coreSequence } = documentationNavigation(documents);
   const narrow = window.matchMedia('(max-width: 760px)');
@@ -156,6 +164,12 @@ if (typeof document !== 'undefined') {
   const trails = new Map();
   const navigationLinks = [];
   let currentPath = '';
+  let tableHints = [];
+
+  function updateTableHints() {
+    for (const { table, hint } of tableHints) hint.hidden = !(table.scrollWidth > table.clientWidth);
+  }
+  window.addEventListener('resize', updateTableHints);
 
   function element(tag, text, className) {
     const node = document.createElement(tag);
@@ -213,6 +227,18 @@ if (typeof document !== 'undefined') {
     menuToggle.setAttribute('aria-expanded', String(expanded));
     menuToggle.textContent = expanded ? 'Close guides' : 'Browse guides';
   });
+  window.addEventListener('keydown', event => {
+    if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey
+        || /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName)
+        || document.activeElement?.isContentEditable) return;
+    event.preventDefault();
+    if (narrow.matches) {
+      sidebar.hidden = false;
+      menuToggle.setAttribute('aria-expanded', 'true');
+      menuToggle.textContent = 'Close guides';
+    }
+    document.getElementById('search').focus();
+  });
   sidebar.addEventListener('keydown', event => {
     if (event.key === 'Escape' && narrow.matches) { closeMenu(); menuToggle.focus(); }
   });
@@ -228,6 +254,11 @@ if (typeof document !== 'undefined') {
   adaptLayout();
 
   function updateNavigation(path) {
+    for (const link of document.querySelectorAll('.setup-links a')) {
+      const prefix = link.getAttribute('href').replace(/README\.md$/, '').slice(1);
+      if (path.startsWith(prefix)) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    }
     for (const item of navigationLinks) {
       if (item.path === path) {
         item.link.setAttribute('aria-current', 'page');
@@ -274,6 +305,10 @@ if (typeof document !== 'undefined') {
       if (!code) continue;
       const wrapper = element('div', undefined, 'code-example');
       const tools = element('div', undefined, 'code-tools');
+      const language = code.className.match(/\blanguage-([a-z0-9_-]+)/i)?.[1];
+      if (language) tools.append(element('span', language, 'code-language'));
+      pre.setAttribute('tabindex', '0');
+      pre.setAttribute('aria-label', 'Code example');
       const wrap = element('button', 'Wrap lines'); wrap.type = 'button'; wrap.setAttribute('aria-pressed', 'false');
       wrap.addEventListener('click', () => {
         const enabled = pre.classList.toggle('wrap');
@@ -318,8 +353,10 @@ if (typeof document !== 'undefined') {
 
   function showError(message) {
     currentPath = '';
+    tableHints = [];
     article.replaceChildren(element('h1', 'Guide unavailable'), element('p', message), guideLink('docs/README.md', 'Browse all documentation'));
     pageToc.hidden = true;
+    document.getElementById('page-source').textContent = '';
     document.getElementById('page-sequence').hidden = true;
     updateNavigation(''); document.title = 'Guide unavailable — Day One Mac'; focusGuide();
   }
@@ -339,12 +376,23 @@ if (typeof document !== 'undefined') {
       // In the browser, place the title first and retain all other content in order.
       const title = Array.from(article.children).find(node => node.tagName === 'H1');
       if (title) article.prepend(title);
-      article.prepend(element('p', `Day One Mac ${bundleVersion} · ${path}`, 'source-path'));
+      document.getElementById('page-source').textContent = `Source: ${path}`;
+      tableHints = [];
+      for (const table of article.querySelectorAll('table')) {
+        const hint = element('p', 'Scroll horizontally to see every column.', 'table-hint');
+        hint.setAttribute('id', `table-hint-${tableHints.length}`);
+        table.before(hint);
+        table.setAttribute('tabindex', '0');
+        table.setAttribute('aria-label', 'Reference table; scroll horizontally if needed');
+        table.setAttribute('aria-describedby', hint.id);
+        tableHints.push({ table, hint });
+      }
       buildContents(path); addCodeTools(); buildSequence(path);
+      updateTableHints();
       currentPath = path;
     }
     updateNavigation(path);
-    document.title = `${titles.get(path)} — Day One Mac ${bundleVersion}`;
+    document.title = `${titles.get(path)} — Day One Mac`;
     const heading = anchor && Array.from(article.querySelectorAll('[id]')).find(node => node.id === anchor);
     for (const link of tocLinks.querySelectorAll('a')) {
       if (link.getAttribute('href') === `#${path}#${encodeURIComponent(anchor)}`) link.setAttribute('aria-current', 'location');

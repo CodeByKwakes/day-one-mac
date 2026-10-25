@@ -110,7 +110,7 @@ try {
   const { coreSequence } = navigation;
   assert.deepEqual(resolveDocumentationRoute('docs/10-app-guides/DATAGRIP.md', 'create-a-local-example-database-and-roles', embedded).path, 'docs/setup/manual/databases/datagrip.md');
   assert.equal(resolveDocumentationRoute('docs/10-app-guides/DATAGRIP.md', '4-create-a-local-example-database-and-roles', embedded).path, 'docs/setup/manual/databases/postgresql.md');
-  assert.deepEqual(navigation.groups.map(group => group.label), ['Start here', 'AI-assisted setup', 'Manual Setup', 'Shared library']);
+  assert.deepEqual(navigation.groups.map(group => group.label), ['Start here', 'AI-assisted setup', 'Manual setup', 'Shared library']);
   const worktrees = navigation.groups.flatMap(group => group.sections).find(section => section.label === 'Git worktrees');
   assert.equal(worktrees.entries.length, 8);
   assert.ok(worktrees.entries.some(entry => entry.path.endsWith('/copilot.md')));
@@ -119,7 +119,7 @@ try {
   assert.equal(new Set(listed).size, listed.length, 'Each guide has one canonical navigation location');
   assert.deepEqual([...listed].sort(), [...embedded.keys()].filter(path => !embedded.get(path).includes('<!-- day-one-mac:compatibility-guide -->')).sort(), 'All canonical guides remain discoverable');
   assert.deepEqual(navigation.groups[1].sections[0].entries.map(entry => entry.path), coreSequence);
-  const git = navigation.groups.find(group => group.label === 'Manual Setup')
+  const git = navigation.groups.find(group => group.label === 'Manual setup')
     .sections.find(section => section.label === 'Git and providers');
   assert.ok(git.entries.some(entry => entry.path === npmGuide), 'Private registry setup is discoverable with Git and hosting');
   assert.ok(!coreSequence.includes(npmGuide), 'Private-registry setup is optional');

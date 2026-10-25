@@ -19,4 +19,4 @@ for (const file of walk('integrations').filter(f => /\.(yaml|sh)$/.test(f))) {
   const text = fs.readFileSync(path.join(root, file), 'utf8');
   assert(!/day-one-mac\s+(?:runtime|workspace|tool|modules|root|docs|rollback|uninstall|assistant)/.test(text), `Retired integration: ${file}`);
 }
-console.log('PASS: runtime and publishing removed; retained helpers and integrations are independent');
+console.log('PASS: runtime and runtime release publishing removed; retained helpers and integrations are independent');

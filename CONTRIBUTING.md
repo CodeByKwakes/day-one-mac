@@ -81,8 +81,25 @@ Do not restore runtime wrappers to keep old commands alive. Existing users have
 one [legacy manager removal guide](docs/shared/migration/remove-legacy-manager.md).
 Historical plans, audits, CHANGELOG entries, tags and releases remain records.
 
-The [offline reader](docs/shared/reading-and-export.md) is a static contributor
-export. Its files work without the checkout or a running service.
+The [handbook website and offline download](docs/shared/reading-and-export.md)
+share the reviewed document inventory. Contributor builds need Node.js 22.20+
+and `zip`; reading needs only a browser. `Publish documentation` deploys the
+successful `Validate` run's main-branch revision, provided it is still current.
+Enable GitHub Pages with **Settings → Pages → Source → GitHub Actions** once.
+To publish the current main revision again, use **Actions → Validate → Run
+workflow → main**. This validates first, then triggers documentation publishing.
+Pull requests cannot deploy. No runtime installer or application release is built.
+
+For a local website and offline ZIP, use a new output directory:
+
+```bash
+pnpm run docs:build --output "$HOME/Downloads/day-one-website-review"
+```
+
+The output contains `index.html`, `day-one-mac-offline.zip`, public source files
+and `snapshot.json`. A local build records its content fingerprint without
+inventing a Git revision; CI supplies the validated commit SHA. Follow the
+reading guide for local opening, publishing checks and rollback.
 
 <a id="before-changing-code"></a>
 <a id="source-ownership"></a>
