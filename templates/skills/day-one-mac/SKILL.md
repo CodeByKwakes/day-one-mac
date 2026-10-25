@@ -1,6 +1,6 @@
 ---
 name: day-one-mac
-description: Set up, check, maintain or recover an Apple-silicon Mac development environment, including optional OmniRoute. Use as the single Day One Mac entry point; it includes all six workflows without installing specialist skills.
+description: Set up, check, maintain or recover an Apple-silicon Mac development environment, including optional OmniRoute and developer shortcuts. Use as the single Day One Mac entry point; specialist workflows are bundled without separate skill installations.
 ---
 
 # Day One Mac
@@ -17,6 +17,7 @@ skill, the Day One Mac runtime or a permanent source checkout.
 | Back up, restore or remove a selected component | [Recover](../day-one-recover/SKILL.md) |
 | Configure or troubleshoot an optional gateway | [OmniRoute](../day-one-omniroute/SKILL.md) |
 | Change the Day One Mac repository | [Contribute](../day-one-contribute/SKILL.md) |
+| Create, inspect or maintain developer shortcuts and apps | [Shortcuts](../day-one-shortcuts/SKILL.md) |
 
 For a combined request, inspect first, propose the requested changes, and then
 use the relevant workflows in dependency order. A check is read-only unless the

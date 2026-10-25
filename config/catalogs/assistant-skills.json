@@ -11,7 +11,8 @@
         "day-one-maintain",
         "day-one-recover",
         "day-one-omniroute",
-        "day-one-contribute"
+        "day-one-contribute",
+        "day-one-shortcuts"
       ],
       "roles": true
     },
@@ -33,12 +34,16 @@
     },
     {
       "name": "day-one-contribute"
+    },
+    {
+      "name": "day-one-shortcuts"
     }
   ],
   "assets": [
     "config/profiles/vscode",
     "templates/phase-05-shell-files",
     "extensions/second-brain/obsidian/assets/vault/99 Templates",
-    "helpers"
+    "helpers",
+    "integrations/shortcuts"
   ]
 }

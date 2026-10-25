@@ -18,8 +18,8 @@ The [documentation index](docs/README.md) lists the topic guides.
 ## Install the AI skill
 
 Use the single `day-one-mac` skill for setup, checking, maintenance, recovery,
-OmniRoute and repository contribution. It includes all six workflows and their
-references. The six specialist skills can also be installed independently.
+OmniRoute, developer shortcuts and repository contribution. It includes these
+workflows and their references. Specialist skills can also be installed independently.
 
 You need Node.js 22.20.0 or newer, npm and an approved AI client. Create and enter
 a dedicated setup folder before installing; project scope is the default.
@@ -85,8 +85,29 @@ and examples for setup. Client sign-in and execution permissions remain separate
 
 ## Helpers, offline reading and migration
 
+For only developer shortcuts, select `day-one-shortcuts` using either source:
+
+```bash
+npx skills@1.7.4 add CodeByKwakes/day-one-mac \
+  --skill day-one-shortcuts --agent codex github-copilot claude-code
+npx skills@1.7.4 add "$DAY_ONE_SOURCE/skills" \
+  --skill day-one-shortcuts --agent codex github-copilot claude-code
+```
+
+Run one command in your setup workspace. The GitHub source must contain the
+published package; the local source works before publication. Add `--global`
+only for a user-level skill installation. The main skill already includes this
+workflow, so a second installation is unnecessary.
+
+Ask the skill to inspect existing shortcuts or preview the five
+[developer apps](docs/setup/manual/apps/macos-shortcuts.md#build-standalone-apps-manually):
+Git Clone, VS Code, Warp, a VS Code profile chooser and a shared development
+workspace. Skill installation does not install apps. The optional
+[builder](docs/shared/tools/shortcut-apps.md) creates review copies; manual setup
+uses Script Editor. Built apps contain their code and require no permanent checkout.
+
 Skills include reviewed [helpers](docs/shared/reference/tools.md) for VS Code
-profiles and read-only version checks. They need no global Day One Mac command.
+profiles, shortcut apps and read-only version checks. They need no global Day One Mac command.
 Manual setup remains independent of helpers. Contributors can build a
 [static offline reader](docs/shared/reading-and-export.md) for sharing.
 

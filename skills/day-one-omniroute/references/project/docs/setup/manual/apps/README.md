@@ -15,7 +15,7 @@ its selected authentication route. Additional applications are optional.
 | Vorssaint | [Window management](vorssaint.md) | Layouts and shortcut conflicts |
 | Database clients | [Database tasks](../databases/README.md) | Intended server and database-enforced role |
 | Raycast AI | [Provider setup](raycast-ai-providers.md) | Intended account and a harmless request |
-| Finder action | [macOS Shortcuts](macos-shortcuts.md) | Open a disposable folder in VS Code |
+| Developer shortcuts and apps | [macOS Shortcuts](macos-shortcuts.md) | Folder input, selected profile, Warp directory and clone destination |
 | Shortcut planning | [Keyboard shortcuts](keyboard-shortcuts.md) | No conflict with the selected application |
 
 ## Check the selected font

@@ -76,7 +76,7 @@ try {
     assert(fs.lstatSync(link).isSymbolicLink());
     assert.equal(fs.realpathSync(link), fs.realpathSync(folder));
   }
-  console.log(`PASS: ${installs} actual Skills CLI installations; seven skills, three clients, two scopes, reinstall, source removal and bounded uninstall`);
+  console.log(`PASS: ${installs} actual Skills CLI installations; ${catalogue.skills.length} skills, three clients, two scopes, reinstall, source removal and bounded uninstall`);
   console.log('PASS: combined-client project/global installs share the main skill through Claude symlinks');
   const gitSource = path.join(temp, 'git-source'), gitProject = path.join(temp, 'git-project'), gitHome = path.join(temp, 'git-home');
   fs.mkdirSync(gitSource); fs.mkdirSync(gitProject); fs.mkdirSync(gitHome);

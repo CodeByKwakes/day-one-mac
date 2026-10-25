@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "recipes": [
+    {"id":"git-clone","name":"Git Clone","bundleId":"com.codebykwakes.day-one-shortcuts.git-clone","sources":["git-clone.applescript"],"requires":["Git and existing authentication"],"input":"dialogs"},
+    {"id":"open-in-vscode","name":"Open in VS Code","bundleId":"com.codebykwakes.day-one-shortcuts.open-in-vscode","sources":["folder-common.applescript","open-in-vscode.applescript"],"requires":["Visual Studio Code stable"],"input":"one folder"},
+    {"id":"open-in-warp","name":"Open in Warp","bundleId":"com.codebykwakes.day-one-shortcuts.open-in-warp","sources":["folder-common.applescript","open-in-warp.applescript"],"requires":["Warp stable"],"input":"one folder"},
+    {"id":"open-vscode-profile","name":"Open with VS Code Profile","bundleId":"com.codebykwakes.day-one-shortcuts.open-vscode-profile","sources":["folder-common.applescript","open-vscode-profile.applescript"],"requires":["Visual Studio Code stable and readable existing profile metadata"],"input":"one folder and existing profile"},
+    {"id":"open-development-workspace","name":"Open Development Workspace","bundleId":"com.codebykwakes.day-one-shortcuts.open-development-workspace","sources":["folder-common.applescript","open-development-workspace.applescript"],"requires":["Visual Studio Code stable","Warp stable"],"input":"one folder"}
+  ]
+}

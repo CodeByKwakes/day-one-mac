@@ -7,7 +7,7 @@ const os = require('node:os');
 const crypto = require('node:crypto');
 const { spawnSync } = require('node:child_process');
 const root = path.resolve(__dirname, '../..');
-const names = ['day-one-mac', 'day-one-setup', 'day-one-check', 'day-one-maintain', 'day-one-recover', 'day-one-omniroute', 'day-one-contribute'];
+const names = ['day-one-mac', 'day-one-setup', 'day-one-check', 'day-one-maintain', 'day-one-recover', 'day-one-omniroute', 'day-one-contribute', 'day-one-shortcuts'];
 const files = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
   const file = path.join(dir, entry.name);
   assert(!entry.isSymbolicLink(), `Unexpected packaged symlink: ${file}`);
@@ -60,6 +60,13 @@ if (require.main === module) {
     const forbidden = spawnSync(process.execPath, [helper, 'default', '--output', path.join(folder,'private-output')], { cwd: temp, encoding: 'utf8' });
     assert.equal(forbidden.status,1);
     assert(!fs.existsSync(path.join(folder,'private-output')));
+    const shortcuts = require(path.join(folder, 'references/project/helpers/shortcuts/build.cjs'));
+    assert.equal(shortcuts.catalogue(path.join(folder,'references/project')).recipes.length,5);
+    const shortcutOutput=path.join(temp,`Shortcut review ${name}`);
+    const shortcutPlan=shortcuts.plan(path.join(folder,'references/project'),'all',shortcutOutput);
+    assert.equal(shortcutPlan.recipes.length,5);
+    assert(!fs.existsSync(shortcutOutput));
+    assert.throws(()=>shortcuts.plan(path.join(folder,'references/project'),'all',path.join(folder,'app-output')),/outside/);
     assert(!('sourceVersion' in JSON.parse(fs.readFileSync(path.join(folder, 'bundle.json'), 'utf8'))));
     const entry = fs.readFileSync(path.join(folder, 'SKILL.md'), 'utf8');
     assert(entry.startsWith(`---\nname: ${name}\n`));
@@ -73,7 +80,7 @@ if (require.main === module) {
   }
   const check = spawnSync(process.execPath, [path.join(root, 'tools/build-skills.cjs'), '--check'], { encoding: 'utf8' });
   assert.equal(check.status, 0, check.stdout + check.stderr);
-  console.log('PASS: seven independent packages, bundled workflows, contained references and generated-file consistency');
+  console.log(`PASS: ${names.length} independent packages, bundled workflows, contained references and generated-file consistency`);
  } finally { fs.rmSync(temp, { recursive: true, force: true }); }
 }
 

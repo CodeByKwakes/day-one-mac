@@ -1,7 +1,7 @@
 # Install Day One Mac skills
 
 Install `day-one-mac` for setup, checks, maintenance, recovery, OmniRoute and
-repository contribution through one entry point. Its six workflows and required
+developer shortcuts and repository contribution through one entry point. Its workflows and required
 references are bundled. Specialist skills are optional independent installations.
 Neither installation requires the Day One Mac runtime or a permanent checkout.
 
@@ -157,10 +157,19 @@ still does not install applications or change provider credentials.
 | `day-one-recover` | Back up, restore or remove selected owned components | Yes |
 | `day-one-omniroute` | Bootstrap and maintain a selected gateway | Yes |
 | `day-one-contribute` | Change a separately selected source repository | Yes |
+| `day-one-shortcuts` | Inspect, build and maintain selected developer shortcuts and standalone apps | Yes |
 
 Install a specialist by replacing `--skill day-one-mac` with its exact name.
 Multiple names can follow `--skill`. Avoid `--all`: this repository also contains
 contributor skills that are separate from these distributable packages.
+
+For shortcuts, use the same GitHub/local installation steps with
+`--skill day-one-shortcuts`. Project/global scope and Claude links work the same
+way. Ask: "Use day-one-shortcuts to preview Git Clone and Open in Warp apps in a
+new review directory. Preserve my installed shortcuts." Follow the
+[builder reference](../../../shared/tools/shortcut-apps.md) after approving the
+preview. Updating or removing a skill does not update or remove generated apps;
+their lifecycle belongs to the [manual shortcut guide](../apps/macos-shortcuts.md).
 
 ## Optional agent roles
 

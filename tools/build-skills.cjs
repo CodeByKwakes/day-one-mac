@@ -21,7 +21,7 @@ const portableNotes = '\n## Installed package\n\n'
   + 'help and preview output before approving changes. Manual recipes need no helpers.\n';
 function regular(name) {
   if (!name || path.isAbsolute(name) || name.split('/').some(part => !part || part === '.' || part === '..')) throw new Error(`Unsafe source: ${name}`);
-  if (!/^(docs\/|config\/|helpers\/|templates\/|extensions\/second-brain\/obsidian\/assets\/|README\.md$|CONTRIBUTING\.md$|AGENTS\.md$|LICENSE$)/.test(name)) throw new Error(`Unapproved source: ${name}`);
+  if (!/^(docs\/|config\/|helpers\/|templates\/|integrations\/shortcuts\/|extensions\/second-brain\/obsidian\/assets\/|README\.md$|CONTRIBUTING\.md$|AGENTS\.md$|LICENSE$)/.test(name)) throw new Error(`Unapproved source: ${name}`);
   if (!sources.has(name)) throw new Error(`Source is not in the reviewed skill-source inventory: ${name}`);
   for (let current = name; current !== '.'; current = path.dirname(current)) {
     if (fs.lstatSync(path.join(root, current)).isSymbolicLink()) throw new Error(`Symlink source: ${current}`);

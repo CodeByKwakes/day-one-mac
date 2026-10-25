@@ -394,6 +394,7 @@ docs/shared/tools/raycast.md
 docs/shared/tools/rollback.md
 docs/shared/tools/runtime.md
 docs/shared/tools/second-brain.md
+docs/shared/tools/shortcut-apps.md
 docs/shared/tools/shortcuts.md
 docs/shared/tools/vscode-profiles.md
 docs/shared/troubleshooting.md
@@ -481,12 +482,21 @@ extensions/second-brain/obsidian/assets/vault/99 Templates/Weekly Review.md
 extensions/second-brain/obsidian/assets/vault/AGENTS.md
 extensions/second-brain/obsidian/assets/vault/CLAUDE.md
 helpers/check.cjs
+helpers/shortcuts/build-apps.sh
+helpers/shortcuts/build.cjs
 helpers/vscode/build.cjs
 helpers/vscode/replace.cjs
 helpers/vscode/review-io.cjs
 integrations/shortcuts/Open in VS Code.shortcut
 integrations/shortcuts/README.md
+integrations/shortcuts/catalog.json
+integrations/shortcuts/folder-common.applescript
+integrations/shortcuts/git-clone.applescript
+integrations/shortcuts/open-development-workspace.applescript
+integrations/shortcuts/open-in-vscode.applescript
 integrations/shortcuts/open-in-vscode.plist
+integrations/shortcuts/open-in-warp.applescript
+integrations/shortcuts/open-vscode-profile.applescript
 integrations/warp/Day One Mac/00 Day One Mac Command Catalogue.md
 integrations/warp/Day One Mac/03 Repositories and Hosting/01-ghq-root.yaml
 integrations/warp/Day One Mac/03 Repositories and Hosting/02-ghq-list.yaml
@@ -548,3 +558,4 @@ templates/skills/day-one-maintain/SKILL.md
 templates/skills/day-one-omniroute/SKILL.md
 templates/skills/day-one-recover/SKILL.md
 templates/skills/day-one-setup/SKILL.md
+templates/skills/day-one-shortcuts/SKILL.md
