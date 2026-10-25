@@ -231,10 +231,12 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
   "tailwindCSS.validate": true,
   "tailwindCSS.lint.invalidApply": "error",
   "scss.lint.unknownAtRules": "ignore",
-  "autoBarrel.files.disableRecursiveBarrelling": true,
+  "autoBarrel.files.disableRecursiveBarrelling": false,
+  "autoBarrel.files.maxSearchRecursionDepth": 3,
   "autoBarrel.files.supportsHiddenFiles": false,
   "autoBarrel.files.preserveGitignoreSettings": true,
   "autoBarrel.files.detectExportsInFiles": true,
+  "autoBarrel.files.useNamedExports": true,
   "autoBarrel.formatting.useSingleQuotes": true,
   "autoBarrel.formatting.sortExports": "alphabetical",
   "[prisma]": {

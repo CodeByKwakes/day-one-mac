@@ -314,10 +314,11 @@ for selected library entry points in Full Stack and AI.
    [Full Stack settings](../../../shared/reference/vscode-profile-data.md#full-stack-overrides)
    into each profile's User Settings. AI inherits these entries in its recipe.
 
-   Expected result: generation excludes subdirectories and hidden files,
-   respects `.gitignore`, detects exports and sorts them alphabetically using
-   single quotes. Keep the extension's default test-file exclusions; merge
-   additional patterns with those defaults if needed.
+   Expected result: generation searches the selected directory and up to three
+   levels of subdirectories. It excludes hidden files, respects `.gitignore`,
+   detects named exports and sorts them alphabetically using single quotes. Keep the
+   extension's default test-file exclusions; merge additional patterns with
+   those defaults if needed.
 
 3. In a disposable directory containing exported TypeScript modules,
    right-click the directory and select **Auto Barrel → Create a barrel file**.
@@ -328,10 +329,26 @@ for selected library entry points in Full Stack and AI.
    right-click its `index.ts` file and select **Auto Barrel → Update the barrel
    file**. Review the change before replacing curated exports.
 
+With both `autoBarrel.files.detectExportsInFiles` and
+`autoBarrel.files.useNamedExports` enabled, the generator uses names exported
+by the source file. For example, a file exporting `class Button` produces
+`export { Button } from './button/button';`. Names preserve their original
+casing, and paths are relative to the generated barrel. Type-only declarations
+use `export type`; default exports use `export { default as name }`.
+
 The folder menu also labels its broader update command **Update the barrel
 file**; select the file when you intend to update only one barrel. Use one barrel extension
 to prevent competing generators. For NestJS, avoid barrels for module and
 provider classes, especially imports within the barrel's own directory.
+
+If **No files found matching the specified patterns** appears, check whether
+the selected directory contains only an existing `index.ts` and subdirectories.
+The extension excludes existing barrel files by default. Nested source files
+require `autoBarrel.files.disableRecursiveBarrelling: false`; increase
+`autoBarrel.files.maxSearchRecursionDepth` only when the intended files are
+deeper than three levels. Check workspace overrides, included extensions and
+exclusion patterns if the warning remains. Keep barrel-file exclusions to
+avoid exporting the generated file from itself.
 
 The installed extension's settings and menu labels were checked against
 version 1.23.1 on 25 October 2026. See
