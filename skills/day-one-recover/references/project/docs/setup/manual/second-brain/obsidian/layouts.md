@@ -71,6 +71,11 @@ Follow [the vault creation task](README.md) once for each approved physical
 boundary. Use a distinct folder and account/sync decision for each vault. Add
 only the selected domain folders; do not nest one vault inside another.
 
+For the layouts below, use the corresponding folder tree in Step 3 instead of
+the single-vault domain folders. In the minimum-note and dashboard instructions,
+substitute `01 Dashboard` for `01 Dashboards`. Create the domain's index note at
+the vault root. Preserve existing folder names when adopting a configured vault.
+
 Expected result: Obsidian opens each intended root independently and a test note
 is saved in the correct physical vault. Existing notes remain untouched.
 
@@ -142,7 +147,14 @@ Repeat these steps for each folder:
 4. Enable automatic link updates.
 5. Enable Bases, Backlinks, File recovery, Properties, Search, and Templates.
 6. Set the template folder to `99 Templates`.
-7. Open the vault's dashboard and verify its Base embed.
+7. Create the vault's dashboard with links to its index and inbox notes. If you
+   choose Bases, create `01 Dashboard/Knowledge.base` through the Command Palette
+   and add an Inbox view filtered to `status: inbox`; then embed it in the dashboard.
+
+Expected: every link and selected embed resolves. The optional three-vault
+starter assets provide matching examples; do not use a single-vault Base whose
+filter names a folder absent from this vault. Shared instructions come from the
+[same policy](note-contract.md#shared-ai-instructions) for either layout.
 
 Obsidian settings are normally vault-local under `.obsidian`. Configure and
 back up each vault independently. Do not copy an employer-controlled

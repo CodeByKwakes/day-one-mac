@@ -6,7 +6,10 @@ created: "{{date}}"
 sensitivity: personal
 ai_allowed: false
 topics: []
+repo_id:
 repo:
+source_revision:
+reviewed:
 deadline:
 ---
 

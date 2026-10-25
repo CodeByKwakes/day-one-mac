@@ -40,6 +40,10 @@ try {
         const base = path.join(temp, `${agent}-${global}-${spec.name}`);
         const home = path.join(base, 'home'), project = path.join(base, 'workspace é');
         fs.mkdirSync(home, { recursive: true }); fs.mkdirSync(project);
+        const privateNotes = path.join(project, 'private-knowledge');
+        fs.mkdirSync(privateNotes);
+        fs.writeFileSync(path.join(privateNotes, 'repositories.json'), '{"schema":1,"repositories":[]}\n');
+        fs.writeFileSync(path.join(privateNotes, 'Keep.md'), '# User note\n');
         fs.mkdirSync(path.join(project, '.claude'));
         const env = environment(home);
         // CLI 1.7.4 copies directly when only one destination is selected.
@@ -60,6 +64,8 @@ try {
         run(['remove', spec.name, '--agent', agent, '--yes', ...(global ? ['--global'] : [])], project, env);
         assert(!fs.existsSync(folder), `Removal left ${folder}`);
         assert.equal(fs.readFileSync(path.join(canonicalBase, 'unrelated/keep.txt'), 'utf8'), 'keep');
+        assert.equal(fs.readFileSync(path.join(privateNotes, 'repositories.json'), 'utf8'), '{"schema":1,"repositories":[]}\n');
+        assert.equal(fs.readFileSync(path.join(privateNotes, 'Keep.md'), 'utf8'), '# User note\n');
         installs++;
       }
     }

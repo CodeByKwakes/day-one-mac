@@ -157,6 +157,7 @@ still does not install applications or change provider credentials.
 | `day-one-recover` | Back up, restore or remove selected owned components | Yes |
 | `day-one-omniroute` | Bootstrap and maintain a selected gateway | Yes |
 | `day-one-contribute` | Change a separately selected source repository | Yes |
+| `day-one-second-brain` | Set up knowledge systems, link selected code repositories and inspect connections | Yes |
 | `day-one-shortcuts` | Inspect, build and maintain selected developer shortcuts and standalone apps | Yes |
 
 Install a specialist by replacing `--skill day-one-mac` with its exact name.
@@ -231,6 +232,67 @@ canonical files under `.agents/skills` and link only the selected Claude skill:
 Expected result: the link points to the single canonical copy. Preserve existing
 files, directories and dangling links. Never symlink one client's agent format
 into another client's agent directory.
+
+## Second Brain specialist
+
+Install `day-one-second-brain` when you only want knowledge-system setup and
+selected repository connections. The `day-one-mac` umbrella already includes it.
+Use the private setup directory described above, not the skill's source directory.
+
+For a published revision containing the package:
+
+```bash
+npx skills@1.7.4 add CodeByKwakes/day-one-mac \
+  --skill day-one-second-brain --agent codex github-copilot claude-code
+```
+
+For a local checkout, record `DAY_ONE_SOURCE` using the earlier local-source
+steps, then run this from the chosen installation workspace:
+
+```bash
+npx skills@1.7.4 add "$DAY_ONE_SOURCE/skills" \
+  --skill day-one-second-brain --agent codex github-copilot claude-code
+```
+
+Add `--global` only for deliberate user-wide availability. A skill installed in a
+setup folder is available there; it does not automatically appear in a separate
+vault workspace. Choose a workspace or user scope that fits how you start sessions.
+For a Claude-only install, verify `.claude/skills` rather than `.agents/skills`.
+
+Verify the project installation:
+
+```bash
+npx skills@1.7.4 list
+node .agents/skills/day-one-second-brain/references/project/helpers/second-brain/inspect.cjs --help
+```
+
+Expected: the skill is listed and the helper prints usage without inspecting
+notes. Start with a plan request:
+
+```text
+Use day-one-second-brain to inspect my selected knowledge system and propose
+setup changes. Preserve existing notes and settings. Do not modify anything yet.
+```
+
+Choose actual vaults and repositories privately during that session. Follow
+[manual setup](../second-brain/README.md), [connections](../second-brain/repositories.md)
+and the [checker reference](../../../shared/tools/second-brain-connections.md).
+Installing a skill does not register a repository or grant a client access to it.
+
+To update just this specialist from its reviewed source, repeat its matching
+`add` command with the same clients and scope. Inspect the proposed replacement;
+keep your private connections and notes outside the installed package.
+Remove only the selected project skill with:
+
+```bash
+npx skills@1.7.4 remove day-one-second-brain --agent codex github-copilot claude-code
+```
+
+Use `--global` for a global removal. This removes the installed skill for the
+selected clients; it does not delete vaults, project notes, connection records or
+backups. End sessions with old context and review separately configured access
+when disconnecting a repository. Umbrella users update or remove `day-one-mac`
+instead; no specialist installation is required for that bundled workflow.
 
 ## Update and remove
 

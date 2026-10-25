@@ -11,6 +11,7 @@ config/catalogs/document-aliases.json
 config/catalogs/optional-formulae.tsv
 config/catalogs/raycast-extensions.tsv
 config/profiles/vscode/profiles.json
+config/second-brain/repositories.example.json
 docs/00-preflight/00-existing-mac-decision.md
 docs/00-preflight/01-private-inventory.md
 docs/00-preflight/02-backup-readiness.md
@@ -326,13 +327,17 @@ docs/setup/manual/second-brain/notion/README.md
 docs/setup/manual/second-brain/notion/checklist.md
 docs/setup/manual/second-brain/obsidian/README.md
 docs/setup/manual/second-brain/obsidian/alternatives.md
+docs/setup/manual/second-brain/obsidian/backup.md
 docs/setup/manual/second-brain/obsidian/checklist.md
 docs/setup/manual/second-brain/obsidian/claude.md
 docs/setup/manual/second-brain/obsidian/codex.md
+docs/setup/manual/second-brain/obsidian/copilot.md
 docs/setup/manual/second-brain/obsidian/dashboard.md
 docs/setup/manual/second-brain/obsidian/layouts.md
+docs/setup/manual/second-brain/obsidian/note-contract.md
 docs/setup/manual/second-brain/obsidian/operations.md
 docs/setup/manual/second-brain/obsidian/raycast.md
+docs/setup/manual/second-brain/repositories.md
 docs/setup/manual/security.md
 docs/setup/manual/security/1password.md
 docs/setup/manual/security/README.md
@@ -393,6 +398,7 @@ docs/shared/tools/preparation/02-backup-readiness.md
 docs/shared/tools/raycast.md
 docs/shared/tools/rollback.md
 docs/shared/tools/runtime.md
+docs/shared/tools/second-brain-connections.md
 docs/shared/tools/second-brain.md
 docs/shared/tools/shortcut-apps.md
 docs/shared/tools/shortcuts.md
@@ -426,23 +432,7 @@ extensions/second-brain/obsidian/GUIDE-3-OBSIDIAN-CODEX.md
 extensions/second-brain/obsidian/OPERATING-SYSTEM.md
 extensions/second-brain/obsidian/README.md
 extensions/second-brain/obsidian/THREE-VAULT-ARCHITECTURE.md
-extensions/second-brain/obsidian/assets/claude/second-brain-claude.sh
-extensions/second-brain/obsidian/assets/codex/second-brain-codex.sh
-extensions/second-brain/obsidian/assets/manager/claude/second-brain-claude.sh
-extensions/second-brain/obsidian/assets/manager/codex/second-brain-codex.sh
-extensions/second-brain/obsidian/assets/manager/raycast/capture-knowledge-vault.sh
-extensions/second-brain/obsidian/assets/manager/raycast/open-knowledge-vault.sh
-extensions/second-brain/obsidian/assets/manager/raycast/search-knowledge-vault.sh
-extensions/second-brain/obsidian/assets/manager/report/second-brain-report.sh
-extensions/second-brain/obsidian/assets/raycast/capture-second-brain.sh
-extensions/second-brain/obsidian/assets/raycast/open-second-brain-dashboard.sh
-extensions/second-brain/obsidian/assets/raycast/search-second-brain.sh
-extensions/second-brain/obsidian/assets/raycast/second-brain.env.example
-extensions/second-brain/obsidian/assets/three-vaults/claude/second-brain-claude-three.sh
-extensions/second-brain/obsidian/assets/three-vaults/codex/second-brain-codex-three.sh
 extensions/second-brain/obsidian/assets/three-vaults/common/.gitignore
-extensions/second-brain/obsidian/assets/three-vaults/common/AGENTS.md
-extensions/second-brain/obsidian/assets/three-vaults/common/CLAUDE.md
 extensions/second-brain/obsidian/assets/three-vaults/common/Inbox.md
 extensions/second-brain/obsidian/assets/three-vaults/common/Knowledge System.md
 extensions/second-brain/obsidian/assets/three-vaults/common/Quick capture.md
@@ -450,9 +440,6 @@ extensions/second-brain/obsidian/assets/three-vaults/common/Weekly Review.md
 extensions/second-brain/obsidian/assets/three-vaults/development/01 Dashboard/Development Dashboard.md
 extensions/second-brain/obsidian/assets/three-vaults/development/01 Dashboard/Knowledge.base
 extensions/second-brain/obsidian/assets/three-vaults/development/Software Development.md
-extensions/second-brain/obsidian/assets/three-vaults/raycast/capture-knowledge-vault.sh
-extensions/second-brain/obsidian/assets/three-vaults/raycast/open-knowledge-vault.sh
-extensions/second-brain/obsidian/assets/three-vaults/raycast/search-knowledge-vault.sh
 extensions/second-brain/obsidian/assets/three-vaults/software-content/01 Dashboard/Knowledge.base
 extensions/second-brain/obsidian/assets/three-vaults/software-content/01 Dashboard/Software Content Dashboard.md
 extensions/second-brain/obsidian/assets/three-vaults/software-content/Software Content.md
@@ -482,6 +469,7 @@ extensions/second-brain/obsidian/assets/vault/99 Templates/Weekly Review.md
 extensions/second-brain/obsidian/assets/vault/AGENTS.md
 extensions/second-brain/obsidian/assets/vault/CLAUDE.md
 helpers/check.cjs
+helpers/second-brain/inspect.cjs
 helpers/shortcuts/build-apps.sh
 helpers/shortcuts/build.cjs
 helpers/vscode/build.cjs
@@ -555,5 +543,6 @@ templates/skills/day-one-mac/SKILL.md
 templates/skills/day-one-maintain/SKILL.md
 templates/skills/day-one-omniroute/SKILL.md
 templates/skills/day-one-recover/SKILL.md
+templates/skills/day-one-second-brain/SKILL.md
 templates/skills/day-one-setup/SKILL.md
 templates/skills/day-one-shortcuts/SKILL.md

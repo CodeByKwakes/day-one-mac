@@ -29,6 +29,7 @@ function regular(name) {
   if (!fs.statSync(path.join(root, name)).isFile()) throw new Error(`Not a file: ${name}`);
 }
 function walk(directory) {
+  if (!directory || path.isAbsolute(directory) || directory.split('/').some(part => !part || part === '.' || part === '..')) throw new Error(`Unsafe asset directory: ${directory}`);
   const absolute = path.join(root, directory);
   if (fs.lstatSync(absolute).isSymbolicLink()) throw new Error(`Symlink directory: ${directory}`);
   return fs.readdirSync(absolute, { withFileTypes: true }).sort((a,b) => a.name.localeCompare(b.name, 'en')).flatMap(entry => {
@@ -36,6 +37,18 @@ function walk(directory) {
     if (entry.isSymbolicLink()) throw new Error(`Symlink source: ${name}`);
     return entry.isDirectory() ? walk(name) : [name];
   });
+}
+function assetsFor(spec, visiting = new Set()) {
+  if (visiting.has(spec.name)) throw new Error(`Cyclic workflow: ${spec.name}`);
+  const next = new Set(visiting).add(spec.name);
+  if (spec.assets !== undefined && (!Array.isArray(spec.assets) || spec.assets.some(asset => typeof asset !== 'string'))) throw new Error('Invalid skill assets.');
+  const assets = new Set(spec.assets || []);
+  for (const name of spec.workflows || []) {
+    const workflow = metadata.skills.find(item => item.name === name);
+    if (!workflow) throw new Error(`Unknown workflow: ${name}`);
+    for (const asset of assetsFor(workflow, next)) assets.add(asset);
+  }
+  return assets;
 }
 function links(text) {
   const found = new Set();
@@ -76,7 +89,7 @@ function buildPackage(spec) {
   schedule(entry);
   schedule('LICENSE', 'LICENSE');
   for (const name of spec.workflows || []) schedule(`templates/skills/${name}/SKILL.md`);
-  for (const asset of metadata.assets) for (const source of walk(asset)) schedule(source);
+  for (const asset of new Set([...metadata.assets, ...assetsFor(spec)])) for (const source of walk(asset)) schedule(source);
   if (spec.roles) {
     for (const source of walk('templates/agents')) schedule(source, source.replace('templates/', 'assets/'));
   }

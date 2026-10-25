@@ -2,7 +2,7 @@
 
 # Guide 2 - Obsidian + Claude Code
 
-**Guide release:** 2.3.0.0 · **Time:** 75-110 minutes
+**Time:** 75-110 minutes
 
 ## Outcome
 
@@ -37,59 +37,20 @@ information that account is permitted to process.
 
 ## 2. Install Obsidian and Claude Code
 
-Check Obsidian and choose Homebrew or another approved installer only when it
-is missing:
+<a id="optional-homebrew-installation"></a>
+<a id="anthropic-native-channel"></a>
 
-```bash
-brew install --cask obsidian
-```
+Use [AI client setup](../../ai/clients.md) to select one Claude Code installation
+owner and sign in with the approved account. Install Obsidian through its existing
+owner, or Homebrew when the app is absent and Homebrew is your chosen owner.
 
-Choose exactly one Claude Code installation channel.
-
-### Optional Homebrew installation
-
-```bash
-brew install --cask claude-code
-```
-
-If the ownership report says `Homebrew-managed`, upgrade it with:
-
-```bash
-brew upgrade --cask claude-code # only when the provenance report says Homebrew-managed
-```
-
-If the command is externally managed, leave upgrades to the company portal or
-vendor installer shown in that report.
-
-### Anthropic native channel
-
-Anthropic currently recommends its native installer, which auto-updates:
-
-```bash
-curl -fsSL https://claude.ai/install.sh | bash -s stable
-```
-
-Do not install both channels. Do not use `sudo npm install -g`. Verify either
-choice:
-
-```bash
-claude --version
-claude doctor
-```
-
-Start Claude once, follow the supported browser login, and select the intended
-Claude subscription, Console account, or organisation-managed provider:
-
-```bash
-claude
-```
-
-The free Claude.ai plan does not include Claude Code. Account availability and
-billing may change, so confirm them in the current Anthropic documentation.
+Expected result: Obsidian opens, `claude --version` and `claude doctor` succeed,
+and the account can process the selected material. Account and billing availability
+follow the current [Claude setup documentation](https://code.claude.com/docs/en/setup).
 
 ## 3. Prepare the existing vault
 
-Complete the [manual vault task](README.md) first. Create `CLAUDE.md` at the vault root using the rules in Step 6 below. If you already maintain shared `AGENTS.md`, use the [shared instruction and symlink task](../../ai/instructions-agents-skills.md) instead of copying rules.
+Complete the [manual vault task](README.md) first. Review the shared rules and create the client link as described in [note conventions](note-contract.md#shared-ai-instructions). If you already maintain shared `AGENTS.md`, use the [vault instruction and symlink task](note-contract.md#shared-ai-instructions) instead of copying rules.
 
 Expected result: the vault contains test notes and reviewed instructions without duplicate competing policies.
 
@@ -101,31 +62,12 @@ Expected result: capture, search and navigation work without Claude.
 
 ## 5. Learn the shared property contract
 
-Templates use these fields:
-
-```yaml
-domain: development
-type: learning
-status: active
-created: 2026-09-12
-sensitivity: personal
-ai_allowed: true
-topics:
-  - example
-```
-
-Allowed domains are `development`, `software-content`, `tech-content`, and
-`shared`. Use `ai_allowed: true` only after checking the contents and relevant
-policy. Claude's project instructions tell it to stop on false or ambiguous
-notes, but those instructions are not a technical access control.
-
-Templates keep Claude's output predictable. They also let Obsidian Bases
-filter and group notes without relying on folder names alone.
+Use the [shared note conventions](note-contract.md#note-properties). Preserve
+existing properties and review permission metadata before processing a note body.
 
 ## 6. Review the vault-level `CLAUDE.md`
 
-Open `~/Vaults/Second Brain/CLAUDE.md` and read it before the first session. It
-sets these rules:
+Open the shared policy through `CLAUDE.md` before the first session. Review these outcomes:
 
 - Preserve YAML properties and existing meaning.
 - Never edit `.obsidian`, templates, Base files, or attachments unless asked.
@@ -255,23 +197,9 @@ Open the [dashboard](dashboard.md) and compare the proposed counts with its Inbo
 
 ## 13. Back up and optionally add Git history
 
-Obsidian File Recovery is useful, but not a complete backup. Cover the vault
-with Time Machine or another versioned backup. Obsidian Sync is a sync service,
-not the independent backup.
-
-Optional local Git history:
-
-```bash
-cd "$HOME/Vaults/Second Brain"
-git init
-git add .
-git status
-git commit -m "Initialize second brain"
-```
-
-Review `.gitignore` first. Keep any remote private and policy-approved. Do not
-combine work-confidential notes with a personal remote. Git history is useful
-for reviewing AI changes, but Git is not mandatory for Claude Code.
+Follow [backup and recovery](backup.md), including its optional local Git history
+section. Verify a restored sample before relying on the vault. Repository connections
+do not enable a Git remote or synchronization.
 
 ## 14. Start capturing now
 
@@ -284,6 +212,13 @@ for reviewing AI changes, but Git is not mandatory for Claude Code.
 7. Process only the approved notes.
 
 Then follow the cadence in [Operating System](operations.md).
+
+## Selected repository context
+
+Follow [repository connections](../repositories.md) to select the checkout and
+permitted files. Inspect the repository first without edits; then review a draft
+before writing it into the vault. Do not treat a project link as approval to read
+its entire repository. Do not run its build, tests or setup scripts for a note summary.
 
 ## Completion checklist
 

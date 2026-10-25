@@ -43,5 +43,5 @@ topics:
 ## Weekly review
 
 - Create a note from `99 Templates/Weekly Review.md`.
-- Run `second-brain-report --write` when you want a deterministic snapshot.
+- Compare the selected Base views with a sample of source notes and record useful actions.
 - Update statuses in canonical notes; do not maintain duplicate task lists here.

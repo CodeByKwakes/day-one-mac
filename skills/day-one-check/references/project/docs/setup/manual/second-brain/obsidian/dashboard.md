@@ -15,6 +15,9 @@ is not the source of truth.
 
 ## Suggested dashboard structure
 
+This is the optional three-domain example. Start with All Knowledge, then create
+only the domain Bases you need using Step 1. Do not embed a file before creating it.
+
 ```text
 Second Brain HQ
 ├── Capture and search links
@@ -78,8 +81,9 @@ weekly-review note.
 
 Expected result: the dashboard reflects the selected vault's actual notes.
 A directory count is not evidence that content is correct or safely published.
-The optional assisted report belongs to the
-[manager workflow](../README.md).
+For selected repository connections, use the optional
+[read-only connection check](../../../../shared/tools/second-brain-connections.md).
+It checks paths and source selection; it does not measure note quality.
 
 ## 4. Add optional Dataview roll-ups
 
@@ -177,13 +181,12 @@ Base files remain the reliable dashboard.
 | Personal vault + separate work vault | Best practical policy compromise | The central personal dashboard can link to the work vault only through external launch links, not live cross-vault analytics |
 
 If policy requires separation, accept the dashboard limitation. Convenience is
-not a reason to weaken a confidentiality boundary. The assisted manager
-generates one dashboard per vault and a read-only aggregate report; it does not
-claim to create a live cross-vault Base.
+not a reason to weaken a confidentiality boundary. Create each selected dashboard in its own vault. Record an approved summary
+manually if you need to compare vaults; a Base does not aggregate other vaults.
 
 ## Dashboard completion gate 🚦
 
-- [ ] All four core Base files render.
+- [ ] Every Base you chose to create renders; plain navigation remains usable without Bases.
 - [ ] Each domain has at least one correctly classified note.
 - [ ] Recent and pipeline views use a useful sort/group order.
 - [ ] Each selected view matches its sample source notes.

@@ -2,8 +2,7 @@
 
 # Guide 1 - Obsidian + Raycast
 
-**Guide release:** 2.3.0.0 · **Raycast baseline:** 2.3.0.0, compatible with
-later 2.3.x releases · **Time:** 60-90 minutes
+**Time:** 60-90 minutes
 
 ## Outcome
 
@@ -74,21 +73,8 @@ you choose the advanced analytics in [the dashboard guide](dashboard.md).
 
 ## 5. Standardise properties and note conventions
 
-Every reusable note uses a small property vocabulary:
-
-| Property | Allowed values or rule |
-|---|---|
-| `domain` | `development`, `software-content`, `tech-content`, or `shared` |
-| `type` | `capture`, `project`, `learning`, `content`, `source`, `person`, `review`, or `index` |
-| `status` | `inbox`, `active`, `incubating`, `drafting`, `review`, `scheduled`, `published`, `done`, `archived` |
-| `created` | ISO date, `YYYY-MM-DD` |
-| `sensitivity` | `public`, `personal`, or `work-confidential` |
-| `ai_allowed` | `true` only after you have checked policy and note contents |
-| `topics` | A YAML list; use stable topic names, not every word that occurs |
-
-Keep the vocabulary small. Folders answer “which domain?”, properties answer
-“what state is it in?”, and links answer “what is it connected to?” Do not
-encode the same fact in five nested tags.
+Use the [shared note conventions](note-contract.md#note-properties). Create only
+the templates you need, reviewing optional examples before copying them.
 
 To use a template:
 
@@ -110,20 +96,11 @@ Naming rules:
 
 ## 6. Verify the core dashboard
 
-Open `01 Dashboards/Second Brain HQ.md`. It embeds four `.base` files:
+Open `01 Dashboards/Second Brain HQ.md` and follow each navigation link. If you
+chose Bases, create and verify the selected views using [dashboard setup](dashboard.md).
 
-- Development
-- Software Content
-- Tech Content
-- All Knowledge
-
-If you see source text rather than a view, confirm the Bases core plugin is
-enabled. Each Base filters by folder, so the three dashboards remain separate
-without creating separate vaults.
-
-Create one test note from each domain template. Open each Base, select its
-first view, and use the toolbar to sort by **File modified time → Newest**.
-Obsidian retains view configuration in the `.base` file.
+Expected result: one capture is reachable and appears in its selected view. A
+minimal vault does not need all four example Base files.
 
 ## 7. Install the Obsidian extension in Raycast
 
@@ -178,15 +155,19 @@ Run these tests in order:
    `00 Inbox`.
 3. Put the phrase `retrieval-check-2300` in the body.
 4. Run **Search Note**, search for that phrase, and open the result.
-5. Run **Obsidian: Create Note** with `Test quick capture`.
-6. Confirm the line appears in `00 Inbox/Quick capture.md`.
-7. Run **Open Knowledge Dashboard** and choose the configured vault when asked.
+5. If you want append capture, open **Quick Capture** preferences. Select the
+   intended vault and set **To Do Note Path** to `00 Inbox/Quick capture.md`.
+6. Run **Quick Capture**, select **To Do**, and save `Test quick capture`.
+   Confirm it appends to that existing file. Skip this optional test when the
+   installed extension has no Quick Capture command.
+7. Run your **Open Knowledge Dashboard** Quicklink and confirm it opens the
+   dashboard used to create that link.
 8. Delete the test note only after all results pass.
 
 If title search works but body search does not, re-open the Search Note command
-preferences and enable content search. If a Script Command opens the wrong
-vault, correct `SECOND_BRAIN_VAULT_NAME` in the config file. Vault names in an
-Obsidian URI are names, not filesystem paths.
+preferences and enable content search. If a Quicklink opens the wrong
+vault, copy the URI again from the intended dashboard and edit that Quicklink.
+Vault names in an Obsidian URI are names, not filesystem paths.
 
 ## 11. Capture real knowledge now
 
@@ -202,14 +183,7 @@ Do not finish with an empty system:
 
 ## 12. Back up before relying on it
 
-Choose one sync path and one independent backup. Obsidian Sync is the simplest
-first-party multi-device option, but synchronization is not a backup. Time
-Machine or another versioned backup should also cover the vault.
-
-If you use Git, keep the remote private, exclude volatile workspace state, and
-do not push employer material to a personal service without written approval.
-Do not run two independent sync engines over the same vault until you have
-understood and tested their conflict behaviour.
+Follow [backup and recovery](backup.md) and verify a restored sample.
 
 ## Completion checklist
 
@@ -224,6 +198,8 @@ understood and tested their conflict behaviour.
 - [ ] Work-policy and AI-policy boundaries are recorded.
 - [ ] An independent backup covers the vault.
 - [ ] Real notes exist in every selected domain.
+
+Command behavior checked against the [extension publisher's listing](https://www.raycast.com/marcjulian/obsidian) on 2026-10-25. Verify the installed version's preferences before enabling capture.
 
 Official references: [Obsidian installation](https://obsidian.md/help/install),
 [Obsidian Templates](https://obsidian.md/help/plugins/templates),

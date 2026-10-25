@@ -1,6 +1,8 @@
 # Set up a Second Brain
 
-Choose a knowledge system for notes, sources and project support. This manual
+Choose a knowledge system for notes, sources and project support.
+For AI-assisted setup, install the [Second Brain specialist](../ai/day-one-skills.md#second-brain-specialist)
+or use its workflow in `day-one-mac`. This manual
 route uses the selected application directly. Keep knowledge content separate
 from code repositories unless the material is intentionally project documentation.
 
@@ -39,6 +41,6 @@ with its operating workflow only after the sample restore succeeds.
 
 ## Link a repository without syncing its contents
 
-1. Create a project note with the repository's public URL or a private, policy-approved reference. Expected: the note identifies the project without copying source or credentials.
-2. Add the local checkout path as plain text for your own use. Expected: the vault remains separate from `~/Developer`; do not symlink source directories into a synced vault.
-3. Open the repository in your editor and record a short approved summary in the note. Expected: Git owns code history and the vault owns notes, with no duplicate repository.
+Follow [selected repository connections](repositories.md) to create the project
+reference, choose permitted files, review AI drafts and disconnect later. Code
+stays in its existing checkout; private local paths stay in your connection file.

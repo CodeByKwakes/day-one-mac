@@ -7,7 +7,7 @@ const os = require('node:os');
 const crypto = require('node:crypto');
 const { spawnSync } = require('node:child_process');
 const root = path.resolve(__dirname, '../..');
-const names = ['day-one-mac', 'day-one-setup', 'day-one-check', 'day-one-maintain', 'day-one-recover', 'day-one-omniroute', 'day-one-contribute', 'day-one-shortcuts'];
+const names = ['day-one-mac', 'day-one-setup', 'day-one-check', 'day-one-maintain', 'day-one-recover', 'day-one-omniroute', 'day-one-contribute', 'day-one-shortcuts', 'day-one-second-brain'];
 const files = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
   const file = path.join(dir, entry.name);
   assert(!entry.isSymbolicLink(), `Unexpected packaged symlink: ${file}`);
@@ -38,7 +38,7 @@ function validatePackage(folder) {
 if (require.main === module) {
  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'day-one-skills-'));
  try {
-  const { regular, reference, writeAtomic } = require('../../tools/build-skills.cjs');
+  const { regular, reference, writeAtomic, buildPackage } = require('../../tools/build-skills.cjs');
   const inventory = path.join(temp, 'skill inventory.txt');
   fs.writeFileSync(inventory, 'old complete inventory\n');
   const reader = fs.openSync(inventory, 'r');
@@ -48,6 +48,8 @@ if (require.main === module) {
   assert.equal(fs.readFileSync(inventory, 'utf8'), 'new complete inventory\n');
   for (const name of ['../README.md', '/etc/passwd', '.git/config', '.agents/skills/private/SKILL.md', 'config/unreviewed-secret.txt']) assert.throws(() => regular(name));
   assert.throws(() => reference('docs/START-HERE.md', '../../../../etc/passwd'));
+  assert.throws(() => buildPackage({name:'day-one-check', assets:['../private']}));
+  assert.throws(() => buildPackage({name:'day-one-check', workflows:['missing-workflow']}));
   for (const name of names) {
     const folder = path.join(temp, `Independent é ${name}`);
     fs.cpSync(path.join(root, 'skills', name), folder, { recursive: true });
@@ -70,6 +72,18 @@ if (require.main === module) {
     assert(!('sourceVersion' in JSON.parse(fs.readFileSync(path.join(folder, 'bundle.json'), 'utf8'))));
     const entry = fs.readFileSync(path.join(folder, 'SKILL.md'), 'utf8');
     assert(entry.startsWith(`---\nname: ${name}\n`));
+    const starter=path.join(folder,'references/project/extensions/second-brain/obsidian/assets/vault/01 Dashboards/Development.base');
+    assert.equal(fs.existsSync(starter),['day-one-mac','day-one-second-brain'].includes(name),'Starter asset scope');
+    if(name==='day-one-second-brain' || name==='day-one-mac') {
+      assert(fs.existsSync(path.join(folder,'references/project/config/second-brain/repositories.example.json')));
+      const inspect=spawnSync(process.execPath,[path.join(folder,'references/project/helpers/second-brain/inspect.cjs'),'--help'],{cwd:temp,encoding:'utf8'});
+      assert.equal(inspect.status,0,inspect.stderr);
+      const misplaced=path.join(folder,'private-connections.json');
+      fs.writeFileSync(misplaced,'{"schema":1,"repositories":[]}');
+      const refused=spawnSync(process.execPath,[path.join(folder,'references/project/helpers/second-brain/inspect.cjs'),'--connections',misplaced],{cwd:temp,encoding:'utf8'});
+      assert.equal(refused.status,1,'Private outputs must stay outside the entire installed skill');
+      fs.unlinkSync(misplaced);
+    }
     if (name === 'day-one-mac') {
       for (const specialist of names.slice(1)) {
         assert(fs.existsSync(path.join(folder, 'references/workflows', `${specialist}.md`)));

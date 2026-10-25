@@ -12,7 +12,8 @@
         "day-one-recover",
         "day-one-omniroute",
         "day-one-contribute",
-        "day-one-shortcuts"
+        "day-one-shortcuts",
+        "day-one-second-brain"
       ],
       "roles": true
     },
@@ -37,6 +38,14 @@
     },
     {
       "name": "day-one-shortcuts"
+    },
+    {
+      "name": "day-one-second-brain",
+      "assets": [
+        "config/second-brain",
+        "extensions/second-brain/obsidian/assets/vault",
+        "extensions/second-brain/obsidian/assets/three-vaults"
+      ]
     }
   ],
   "assets": [

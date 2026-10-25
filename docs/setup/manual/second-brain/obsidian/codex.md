@@ -2,7 +2,7 @@
 
 # Guide 3 - Obsidian + Codex
 
-**Guide release:** 2.3.0.0 · **Time:** 70-100 minutes
+**Time:** 70-100 minutes
 
 ## Outcome
 
@@ -67,7 +67,7 @@ secret. Never copy it into Obsidian, Git, a backup report, or a prompt.
 
 ## 4. Prepare the existing vault
 
-Complete the [manual vault task](README.md) first. Create `AGENTS.md` at the vault root using the rules in Step 7 below. Do not overwrite an existing instruction file: merge the relevant rules and review the diff.
+Complete the [manual vault task](README.md) first. Create or merge `AGENTS.md` using [shared instructions](note-contract.md#shared-ai-instructions). Do not overwrite an existing instruction file: merge the relevant rules and review the diff.
 
 Expected result: the vault contains a test note, the selected domain folders and an instruction file you have read.
 
@@ -79,23 +79,8 @@ Expected result: capture, search and navigation work without the AI client.
 
 ## 6. Understand the note contract
 
-Use the same properties in each selected template:
-
-```yaml
-domain: development
-type: learning
-status: active
-created: 2026-09-12
-sensitivity: personal
-ai_allowed: true
-topics:
-  - example
-```
-
-Use one of `development`, `software-content`, `tech-content`, or `shared` for
-`domain`. A missing or false `ai_allowed` value means Codex must not process
-that note. This is a review cue; physical vault separation is the correct
-control when policy requires isolation.
+Use the [shared note conventions](note-contract.md#note-properties). Preserve
+existing properties and review permission metadata before processing a note body.
 
 ## 7. Review vault-level `AGENTS.md`
 
@@ -140,9 +125,8 @@ codex --cd "$HOME/Vaults/Second Brain" \
   "Read AGENTS.md and the selected domain index notes. Make no edits. Summarise the vault boundaries, then list files read and files changed. Files changed must be none."
 ```
 
-Confirm that the summary is correct and no file changed. If Codex cites
-information from outside the selected vault, stop and inspect the session's
-working directory and permissions.
+Confirm that the summary is correct and no file changed. Working-directory selection does not itself restrict all reads. If Codex cites
+information outside the approved scope, stop and inspect the actual permissions.
 
 ## 10. Process the inbox in two passes
 
@@ -212,8 +196,15 @@ Open the [dashboard](dashboard.md) and compare the proposed counts with its Inbo
 
 ## 13. Back up and validate
 
-Use Time Machine or another versioned backup. Obsidian Sync is useful sync but
-is not the independent backup. Restore one harmless note from the backup into a separate temporary folder and compare its contents with the original. Expected: the restored note opens and its text matches.
+Follow [backup and recovery](backup.md). Verify that a restored harmless sample
+opens separately and matches its selected backup version.
+
+## Selected repository context
+
+Follow [repository connections](../repositories.md) to select the checkout and
+permitted files. Inspect the repository first without edits; then review a draft
+before writing it into the vault. Do not treat a project link as approval to read
+its entire repository. Do not run its build, tests or setup scripts for a note summary.
 
 ## Completion gate 🚦
 
@@ -230,7 +221,7 @@ is not the independent backup. Restore one harmless note from the backup into a 
 Official references: [Codex CLI](https://learn.chatgpt.com/docs/codex/cli),
 [authentication](https://learn.chatgpt.com/docs/auth),
 [`AGENTS.md` configuration](https://learn.chatgpt.com/docs/agent-configuration/agents-md),
-and [security and permissions](https://learn.chatgpt.com/docs/security).
+and [security and permissions](https://learn.chatgpt.com/docs/agent-approvals-security).
 
 ---
 

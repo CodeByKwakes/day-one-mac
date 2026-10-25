@@ -67,6 +67,10 @@ shared references and reviewed skill helpers support individual tasks.
 | [Maintain the environment](setup/manual/maintenance.md) | `setup/manual` |
 | [Prepare a verified encrypted backup destination](setup/manual/preparation/encrypted-backup.md) | `setup/manual/preparation` |
 | [Restore selected projects and application data](setup/manual/preparation/restore-projects.md) | `setup/manual/preparation` |
+| [Connect selected repositories to project notes](setup/manual/second-brain/repositories.md) | `setup/manual/second-brain` |
+| [Obsidian note and instruction conventions](setup/manual/second-brain/obsidian/note-contract.md) | `setup/manual/second-brain/obsidian` |
+| [Back up and restore an Obsidian vault](setup/manual/second-brain/obsidian/backup.md) | `setup/manual/second-brain/obsidian` |
+| [Use GitHub Copilot with an Obsidian vault](setup/manual/second-brain/obsidian/copilot.md) | `setup/manual/second-brain/obsidian` |
 | [Set up a Second Brain](setup/manual/second-brain/README.md) | `setup/manual/second-brain` |
 | [1 - Prerequisites and boundaries](setup/manual/second-brain/notion/01-prerequisites.md) | `setup/manual/second-brain/notion` |
 | [2 - Workspace and domains](setup/manual/second-brain/notion/02-workspace-and-domains.md) | `setup/manual/second-brain/notion` |
@@ -127,6 +131,7 @@ shared references and reviewed skill helpers support individual tasks.
 | [Choose Route A or Route B](shared/tools/preparation/00-existing-mac-decision.md) | `shared/tools/preparation` |
 | [Step 1 - Create and review the safety report](setup/manual/backup-and-restore.md) | `shared/tools/preparation` |
 | [Steps 2-3 - Prepare, copy, and prove the backup can be restored](setup/manual/backup-and-restore.md) | `shared/tools/preparation` |
+| [Inspect Second Brain repository connections](shared/tools/second-brain-connections.md) | `shared/tools` |
 | [Generate, replace and restore VS Code profiles](shared/tools/vscode-profiles.md) | `shared/tools` |
 | [Find the right troubleshooting procedure](shared/troubleshooting.md) | `shared` |
 | [Upgrade notes for earlier installations](shared/upgrade-notes.md) | `shared` |

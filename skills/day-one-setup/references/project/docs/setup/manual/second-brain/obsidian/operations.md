@@ -53,13 +53,13 @@ unprocessed section should be empty.
 
 ## Monthly - 45 minutes
 
-- Review the last four health reports for direction, not vanity metrics.
+- Review recent weekly-review notes and current dashboard evidence.
 - Find duplicated notes and choose one canonical version.
 - Review notes with no links and decide: connect, keep standalone, or archive.
 - Review topic spelling and merge accidental variants.
 - Test restore from backup with one non-sensitive note.
 - Review Obsidian community plugins and remove any no longer used.
-- Review Raycast Script Command access and the permissions of each selected AI client.
+- Review the chosen Raycast integrations and each selected AI client's permissions.
 - Re-read `CLAUDE.md` and/or `AGENTS.md`; remove stale or contradictory rules.
 - Confirm work-policy and sync decisions are still valid.
 

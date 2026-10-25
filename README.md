@@ -23,7 +23,7 @@ The [documentation index](docs/README.md) lists the topic guides.
 ## Install the AI skill
 
 Use the single `day-one-mac` skill for setup, checking, maintenance, recovery,
-OmniRoute, developer shortcuts and repository contribution. It includes these
+Second Brain knowledge workflows, OmniRoute, developer shortcuts and repository contribution. It includes these
 workflows and their references. Specialist skills can also be installed independently.
 
 You need Node.js 22.20.0 or newer, npm and an approved AI client. Create and enter
@@ -69,6 +69,35 @@ npx skills@1.7.4 add "$DAY_ONE_SOURCE/skills" \
 Replace the source placeholder with the actual checkout or extracted archive.
 The prepared skill packages are included; end users do not need to build them.
 Choose the shared/symlink installation method for one canonical installed copy.
+
+### Second Brain setup and repository notes
+
+Use the umbrella skill above or install the `day-one-second-brain` specialist.
+It supports existing or new Obsidian vaults, guided Notion setup and selected code
+repositories linked to project notes. It does not synchronize vaults through Git.
+
+For a published revision containing this skill:
+
+```bash
+npx skills@1.7.4 add CodeByKwakes/day-one-mac \
+  --skill day-one-second-brain --agent codex github-copilot claude-code
+```
+
+For local installation, record `DAY_ONE_SOURCE` from the reviewed checkout as
+shown above, enter the private setup folder, then run:
+
+```bash
+npx skills@1.7.4 add "$DAY_ONE_SOURCE/skills" \
+  --skill day-one-second-brain --agent codex github-copilot claude-code
+```
+
+Start with: "Use day-one-second-brain to inspect my selected knowledge system
+and propose setup changes. Do not modify anything yet." Choose actual repository
+paths only in that private session. Follow [manual Second Brain setup](docs/setup/manual/second-brain/README.md),
+[repository connections](docs/setup/manual/second-brain/repositories.md) and the
+[skill lifecycle guide](docs/setup/manual/ai/day-one-skills.md#second-brain-specialist)
+for verification, scope, updates and removal. Updating `day-one-mac` includes the
+same workflow, so you do not need both installations.
 
 ### Verify and use it
 
