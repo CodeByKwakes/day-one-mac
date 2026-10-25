@@ -22,6 +22,76 @@ For experiments, choose models from the actual client's model picker according
 to the task and approved access. A profile does not change subscription limits
 or provide credentials. Use a separate worktree for independent code changes.
 
+#### Continue a Codex chat between VS Code and desktop
+
+OpenAI documents shared chats and editor context when its desktop app and Codex
+extension open the same project. The workflow below targets local work on one
+Mac. This capability was checked against the [official IDE sync documentation](https://learn.chatgpt.com/docs/developer-settings#ide-extension-sync)
+on 25 October 2026; verify it in your installed clients before relying on it.
+Copilot and Claude maintain separate conversations.
+
+Use the Codex extension (`openai.chatgpt`) in Full Stack or AI, plus the desktop
+app. Keep both clients current and use the same account and workspace. The
+[profile settings](../editors/vscode.md#ai-overrides) configure Cmd+Enter,
+queued follow-ups and inline reviews. Those preferences do not enable chat
+sharing; the extension has no separate sync switch.
+
+1. Open the intended local project in VS Code.
+
+   Expected result: the window uses Full Stack or AI and shows the intended
+   checkout. Save relevant editor files before asking Codex to read them.
+
+2. Run **Codex: Open Codex Sidebar** from the Command Palette.
+
+   Expected result: the Codex panel opens. Complete sign-in if requested.
+
+3. Start a harmless check in that panel: `Reply with continuity-check only.
+   Do not use tools or change files.`
+
+   Expected result: the reply appears in a new Codex conversation.
+
+4. Select the same project in the desktop app.
+
+   Expected result: its chat list includes the conversation from VS Code.
+
+5. Open that existing conversation in the desktop app.
+
+   Expected result: the original prompt and reply are visible. Opening a new
+   conversation does not continue the existing one.
+
+6. Send `Reply with desktop-check only. Do not use tools or change files.`
+   in that conversation.
+
+   Expected result: the follow-up appears in the same conversation in VS Code.
+   Use one application at a time to submit further work.
+
+Enable **IDE context** in the desktop composer when you want open editor files
+available to Codex. This is optional context sharing. To undo that choice,
+turn it off in the composer. No repository change is needed for this check.
+
+For worktrees, open the actual worktree folder containing the task's files in
+VS Code. The desktop chat's **Open** button can open its worktree in your IDE.
+**Hand off** moves a chat between Local and Worktree and can change Git state;
+switching applications alone does not require it.
+[OpenAI worktree documentation](https://learn.chatgpt.com/docs/environments/git-worktrees).
+
+If the conversation is missing, confirm the account, workspace and project
+selection before creating another chat. Keep personal defaults in
+`~/.codex/config.toml`; the app's Codex agents, CLI and extension share this
+configuration. In the extension, use its gear menu, **Codex Settings → Open
+config.toml**, to inspect it. [Configuration basics](https://learn.chatgpt.com/docs/config-file/config-basic),
+[shared agent configuration](https://learn.chatgpt.com/docs/developer-settings#agent-configuration).
+
+Leave `chatgpt.cliExecutable` unset; the installed extension identifies it as a
+development-only override. Avoid separate `CODEX_HOME` overrides for this
+workflow: the default `~/.codex` holds configuration and session state. Preserve
+existing state if investigating a custom location; do not delete or merge
+session stores as a troubleshooting shortcut.
+[Codex environment variables](https://learn.chatgpt.com/docs/config-file/environment-variables#core-locations).
+
+Remote SSH, Dev Containers and another Mac introduce a different execution
+environment. This local check does not establish continuity for those routes.
+
 #### Claude Code in the AI profile
 
 Install the verified **Claude Code for VS Code** extension (`anthropic.claude-code`)

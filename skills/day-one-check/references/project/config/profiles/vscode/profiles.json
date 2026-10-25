@@ -379,7 +379,6 @@
         "github.copilot.enable": {
           "*": false
         },
-        "chatgpt.reviewDelivery": "detached",
         "[markdown]": {
           "editor.quickSuggestions": {
             "other": "off",

@@ -526,6 +526,7 @@ in each profile's own User Settings.
 | Pipeline-file language mode | Default detection | Azure Pipelines | YAML | Azure Pipelines | Profile User Settings, matching installed language providers |
 | SQL and Dockerfile format-on-save | Default behavior | Off | Off | Off | Profile User Settings |
 | Codex and Claude preferences, agent instructions and skill discovery | No | Enabled | Enabled with AI overrides | Manual if selected | Profile User Settings; accounts and CLI permissions remain separate |
+| Codex Cmd+Enter, queued follow-ups and inline reviews | No | Enabled | Inherited | Manual if selected | Profile User Settings; chat sharing has no separate sync setting |
 | Import-cleanup shortcuts | No custom entries | Three chords | Three chords | No custom entries | Profile Keyboard Shortcuts JSON |
 | Angular/NestJS folder associations and Angular HTML token palette | No | Manual | No | No | Full Stack User Settings, sections 7 and 8 |
 | Skills, MCP servers, credentials and database connections | Separate | Separate | Separate | Separate | Their linked client/tool configuration, not the profile settings recipe |
@@ -643,12 +644,17 @@ Chat fonts and wrapped code improve readability. Checkpoints and change
 summaries assist review; Git remains the record of repository changes. A zero
 auto-accept delay disables timed acceptance in supported chat flows.
 
-Codex uses Cmd+Enter, queues follow-ups, and opens reviews separately in AI.
+Codex uses Cmd+Enter, queues follow-ups, and keeps reviews in the current chat
+when supported in both Full Stack and AI. Its sidebar does not take focus on
+startup, and TODO CodeLens actions are off. These are interface preferences;
+follow [continuing a Codex chat between VS Code and desktop](../ai/workflows.md#continue-a-codex-chat-between-vs-code-and-desktop)
+to use the same conversation in both applications.
+
 Claude uses Cmd+Enter, Manual starting permissions, explicit file attachment,
 and intentional resumption after reload. Save relevant files before a task:
 Claude automatic saving is off. Runtime permissions and model/account choices
 remain in each client's own configuration.
-[Codex settings](https://learn.chatgpt.com/docs/ide/settings),
+[Codex settings](https://learn.chatgpt.com/docs/developer-settings),
 [Claude settings](https://code.claude.com/docs/en/vs-code).
 
 ### Operations overrides
@@ -976,6 +982,7 @@ Run the checks for the profiles and optional integrations you selected.
 | Inspect icons and HTML token colors in Full Stack | The selected folders and tokens use the configured appearance |
 | Open Good Prompts in Full Stack or AI | A generated prompt can be reviewed before sending it to an agent |
 | Inspect selected AI clients and their linked skills/MCP configuration | The intended account, project, permissions and tools are available in that client |
+| Follow the [Codex continuity check](../ai/workflows.md#continue-a-codex-chat-between-vs-code-and-desktop) when using the desktop app | The existing conversation and a harmless follow-up are visible in both applications |
 | Test selected database connections with the database guide | Local/dev/test work; production uses the separately verified read-only identity |
 | Save work and test Reload where selected | The window reloads; the native Command Palette action remains available if the button is absent |
 

@@ -25,6 +25,7 @@ for (const pattern of ['azure-pipelines.yml', 'azure-pipelines.yaml', '**/.azure
 expected['full-stack'].extensions.push('sleistner.vscode-fileutils');
 expected['full-stack'].optional = expected['full-stack'].optional.filter(id => id !== 'bradlc.vscode-tailwindcss');
 expected.ai.optional.push('sleistner.vscode-fileutils');
+expected.ai.settings['chatgpt.reviewDelivery'] = 'inline';
 for (const slug of ['full-stack', 'ai']) {
   expected[slug].extensions.push('bradlc.vscode-tailwindcss');
   expected[slug].extensions.push('imgildev.vscode-auto-barrel');

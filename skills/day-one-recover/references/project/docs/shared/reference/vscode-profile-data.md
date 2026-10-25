@@ -394,7 +394,6 @@ Apply Full Stack overrides before these overrides.
   "github.copilot.enable": {
     "*": false
   },
-  "chatgpt.reviewDelivery": "detached",
   "[markdown]": {
     "editor.quickSuggestions": {
       "other": "off",
