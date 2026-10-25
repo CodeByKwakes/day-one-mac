@@ -1,0 +1,54 @@
+filters:
+  and:
+    - or:
+        - 'file.inFolder("10 Software Development")'
+        - 'file.inFolder("20 Software Content")'
+        - 'file.inFolder("30 Tech Content")'
+    - 'file.ext == "md"'
+properties:
+  file.name:
+    displayName: Note
+  domain:
+    displayName: Domain
+  type:
+    displayName: Type
+  status:
+    displayName: Status
+  file.mtime:
+    displayName: Updated
+views:
+  - type: table
+    name: Recent
+    limit: 20
+    order:
+      - file.name
+      - domain
+      - type
+      - status
+      - file.mtime
+  - type: table
+    name: By domain
+    groupBy:
+      property: domain
+      direction: ASC
+    order:
+      - file.name
+      - domain
+      - type
+      - status
+  - type: table
+    name: Needs review
+    filters:
+      or:
+        - 'status == "inbox"'
+        - 'status == "review"'
+        - '!domain'
+        - '!type'
+        - '!status'
+        - '!created'
+    order:
+      - file.name
+      - domain
+      - type
+      - status
+      - file.mtime

@@ -1,6 +1,7 @@
 name: Validate
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches: [main]
@@ -9,8 +10,13 @@ permissions:
   contents: read
 
 jobs:
-  validate:
-    runs-on: macos-26
+  platform:
+    name: Platform (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-26]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Install validation tools
@@ -28,14 +34,23 @@ jobs:
         run: actionlint
       - name: Lint shell and Markdown files
         run: pnpm run lint
-      - name: Check shell syntax
+      - name: Validate sources and independent packages
         run: |
-          while IFS= read -r -d '' script; do
-            bash -n "$script"
-          done < <(find scripts -type f -name '*.sh' -print0)
-          bash -n install-day-one-mac
-          bash -n scripts/day-one-mac
-      - name: Run complete validation
-        run: scripts/validate.sh
-      - name: Rehearse executable modules from the release archive
-        run: scripts/tests/test-packaged-modules.sh
+          pnpm run validate:static
+          pnpm run test:integration
+      - name: Verify pinned Skills CLI installation and lifecycle
+        run: |
+          SKILLS_TEST_DIR="$(mktemp -d)"
+          npm install --prefix "$SKILLS_TEST_DIR" --ignore-scripts --no-audit --no-fund skills@1.7.4
+          pnpm run test:skills-cli "$SKILLS_TEST_DIR/node_modules/skills/bin/cli.mjs"
+
+  validate:
+    name: validate
+    needs: platform
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every platform check to succeed
+        env:
+          PLATFORM_RESULT: ${{ needs.platform.result }}
+        run: test "$PLATFORM_RESULT" = success

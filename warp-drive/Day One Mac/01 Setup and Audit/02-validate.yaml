@@ -1,5 +1,0 @@
-name: "Setup · Validate Day One Mac project"
-command: "day-one-mac validate"
-tags: ["day-one-mac", "setup", "validate", "read-only"]
-description: "Verify installed runtime integrity, or run the full project validator in linked source mode. Run setup --phase 08 separately for machine verification."
-shells: ["zsh"]

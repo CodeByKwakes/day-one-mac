@@ -1,0 +1,40 @@
+filters:
+  and:
+    - 'file.inFolder("20 Software Content")'
+    - 'file.ext == "md"'
+properties:
+  file.name:
+    displayName: Content
+  status:
+    displayName: Status
+  channel:
+    displayName: Channel
+  publish_date:
+    displayName: Publish date
+  file.mtime:
+    displayName: Updated
+views:
+  - type: table
+    name: Pipeline
+    filters:
+      and:
+        - 'status != "published"'
+        - 'status != "archived"'
+    groupBy:
+      property: status
+      direction: ASC
+    order:
+      - file.name
+      - status
+      - channel
+      - publish_date
+      - file.mtime
+  - type: table
+    name: Published
+    filters:
+      and:
+        - 'status == "published"'
+    order:
+      - file.name
+      - channel
+      - publish_date

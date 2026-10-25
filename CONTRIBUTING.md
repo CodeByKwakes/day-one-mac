@@ -1,73 +1,110 @@
 # Contributing
 
-Thank you for improving Day One Mac.
+Day One Mac maintains manual recipes, AI skills and narrowly scoped helpers.
+Read [Start here](docs/START-HERE.md) and [adding a capability](docs/shared/reference/adding-capabilities.md)
+before changing behaviour. Work in a branch; keep real inventories, credentials
+and private machine paths outside the public repository.
 
-## Before changing code
+## Prepare contributor tools
 
-1. Read [Start Here](docs/START-HERE.md) and the affected phase or module.
-2. Keep required Phases 1–8 separate from optional Modules 9–14 and advanced
-   Modules 15–22.
-3. Never add real credentials, private keys, personal inventories, company
-   names, private repository names, vault names or absolute personal paths.
-4. Keep scripts compatible with the Bash 3.2 included with macOS.
-5. Make mutations idempotent, preview-first where destructive, and precisely
-   recorded for rollback.
-6. Use the `day-one-mac` portable command in user-facing instructions. Show
-   direct scripts only in contributor, low-level troubleshooting, or recovery
-   sections, and state why the direct form is needed.
-7. Treat the public release installer and versioned standalone runtime as the
-   normal distribution path. A source checkout is optional development state.
+1. Install Node.js 22.20 or newer, the pnpm version in `package.json`, ShellCheck
+   and actionlint using your approved tool owner.
 
-## Validate a change
+   Expected result: `node --version`, `pnpm --version`, `shellcheck --version`
+   and `actionlint --version` succeed.
+
+2. From the repository root, install locked dependencies:
+
+   ```bash
+   pnpm install --frozen-lockfile
+   ```
+
+   Expected result: contributor dependencies and local Git hooks are ready.
+   The private package is tooling only; users do not install it as an application.
+
+## Change and verify
+
+1. Edit the owning manual guide, configuration, skill template or helper. Update
+   the reviewed source inventories for newly bundled files. Never edit generated
+   `skills/` contents directly.
+
+2. Regenerate references and skill packages:
+
+   ```bash
+   pnpm run docs:sync
+   pnpm run skills:build
+   ```
+
+   Expected result: committed outputs match their sources. The builder refuses
+   unexpected generated files; review obsolete entries before removing them.
+
+3. Run the full gate:
+
+   ```bash
+   tools/validate.sh --all
+   actionlint
+   ```
+
+   Expected result: lint, static and integration checks pass. Fixtures use
+   temporary locations and mock external commands; they do not prove live
+   account, provider, hardware or managed-device acceptance.
+
+4. For skill packaging or installer changes, test the pinned Skills CLI. Install
+   it in a temporary contributor directory, not as a global application:
+
+   ```bash
+   SKILLS_TEST_DIR="$(mktemp -d "${TMPDIR:-/tmp}/day-one-skills-test.XXXXXX")"
+   npm install --prefix "$SKILLS_TEST_DIR" --ignore-scripts --no-audit --no-fund skills@1.7.4
+   pnpm run test:skills-cli "$SKILLS_TEST_DIR/node_modules/skills/bin/cli.mjs"
+   ```
+
+   Expected result: isolated local/Git installs, scoped updates, removal and
+   source-independent packages pass for the supported clients. No live AI account
+   is needed. Retain logs outside the repository, then remove only the temporary
+   directory you created when finished.
+
+5. Review the diff and commit using Conventional Commits, for example
+   `docs: clarify profile recovery` or `fix(skills): preserve shared references`.
+
+   Expected result: the commit explains the concrete change and verification.
+   Git hooks check formatting and messages; CI checks all supported runners.
+
+## Publishing and compatibility
+
+There is no runtime release pipeline, installer archive or release token
+requirement. Reviewed commits and optional tags identify skill snapshots.
+A GitHub install can only use a revision available on the remote. Pushing,
+merging and publishing require their normal approval.
+
+Preserve old documentation URLs using migration notices and the alias catalogue.
+Do not restore runtime wrappers to keep old commands alive. Existing users have
+one [legacy manager removal guide](docs/shared/migration/remove-legacy-manager.md).
+Historical plans, audits, CHANGELOG entries, tags and releases remain records.
+
+The [handbook website and offline download](docs/shared/reading-and-export.md)
+share the reviewed document inventory. Contributor builds need Node.js 22.20+
+and `zip`; reading needs only a browser. `Publish documentation` deploys the
+successful `Validate` run's main-branch revision, provided it is still current.
+Enable GitHub Pages with **Settings → Pages → Source → GitHub Actions** once.
+To publish the current main revision again, use **Actions → Validate → Run
+workflow → main**. This validates first, then triggers documentation publishing.
+Pull requests cannot deploy. No runtime installer or application release is built.
+
+For a local website and offline ZIP, use a new output directory:
 
 ```bash
-pnpm install --frozen-lockfile
-pnpm run lint
-bash -n scripts/*.sh scripts/lib/*.sh scripts/tests/*.sh install-day-one-mac
-scripts/validate.sh
+pnpm run docs:build --output "$HOME/Downloads/day-one-website-review"
 ```
 
-Also inspect:
+The output contains `index.html`, `day-one-mac-offline.zip`, public source files
+and `snapshot.json`. A local build records its content fingerprint without
+inventing a Git revision; CI supplies the validated commit SHA. Follow the
+reading guide for local opening, publishing checks and rollback.
 
-```bash
-git diff --check
-git status --short
-```
-
-Run `pnpm install --frozen-lockfile` once after cloning to install the
-contributor tools and activate the shared Husky hooks. See the
-[contributor-tooling setup guide](docs/CONTRIBUTOR-TOOLING.md)
-for prerequisites, hook behaviour, troubleshooting, and safe bypasses.
-
-## Release workflow
-
-Use Conventional Commit subjects so Release Please can select the next
-semantic version:
-
-- `fix:` proposes a patch release;
-- `feat:` proposes a minor release;
-- `feat!:` or another explicit breaking-change marker proposes a major release.
-
-Do not update `VERSION`, create a release tag, or publish a GitHub Release by
-hand during normal development. After validation succeeds on `main`, Release
-Please updates one release pull request containing `VERSION`, the private
-contributor-tooling version in `package.json`, `CHANGELOG.md`, and the release
-manifest. Review and merge that pull request when the changes are ready to
-publish. The release workflow then creates the tag and GitHub Release and
-attaches the verified runtime archive, checksum, and installer.
-
-Repository maintainers must keep the narrowly scoped `RELEASE_PLEASE_TOKEN`
-Actions secret available so the generated release pull request receives the
-normal validation workflow.
-
-## Public examples
-
-Use placeholders such as:
-
-```text
-/Users/your-name
-github.com/example-user/example-repository
-op://<vault>/<item>/<field>
-```
-
-Never use a realistic token, even when it has been revoked.
+<a id="before-changing-code"></a>
+<a id="source-ownership"></a>
+<a id="validate-a-change"></a>
+<a id="release-workflow"></a>
+<a id="public-examples"></a>
+<a id="setup-guide-template"></a>
+<a id="ai-assisted-and-manual-architecture"></a>

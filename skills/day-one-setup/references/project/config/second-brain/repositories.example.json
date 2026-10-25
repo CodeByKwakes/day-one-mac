@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "vault": "<absolute path to your chosen vault>",
+  "repositories": [
+    {
+      "id": "sample-api",
+      "checkout": "<absolute path to the selected checkout>",
+      "projectNote": "10 Software Development/Projects/Sample API.md",
+      "readPaths": [],
+      "aiAccess": "link-only"
+    }
+  ]
+}

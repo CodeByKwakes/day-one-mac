@@ -1,39 +1,5 @@
-[← Day One Mac home](../README.md) · **Reference library** · [Required setup](../01-required/README.md)
+<!-- day-one-mac:compatibility-guide -->
 
 # Day One Mac reference library
 
-For task-oriented reading, use the [Manual Setup Handbook](../manual/README.md)
-or [chezmoi learning path](../manual/chezmoi.md). For an offline browser view,
-exports or printing, see [documentation commands](DOCUMENTATION-COMMANDS.md).
-
-These documents explain decisions and operating conventions. They are not extra
-phases that must all be completed before running the setup.
-
-| Question | Reference |
-|---|---|
-| Which command or script should I run? | [Complete command reference](COMMAND-REFERENCE.md) |
-| How do required-phase plan, apply, check and resume differ? | [Required-phase action contract](COMMAND-REFERENCE.md#required-phase-action-contract) |
-| How do I see one status view for Optional and Advanced modules? | [Optional and advanced status dashboard](OPTIONAL-STATUS.md) |
-| How do I plan, apply, check or resume an executable module? | [Module execution reference](MODULE-EXECUTION.md) |
-| How do I install or download `day-one-mac` before Phase 1? | [Portable command](PORTABLE-COMMAND.md) |
-| How do I update a Mac created before the standalone runtime? | [Upgrade notes](UPGRADE-NOTES.md) |
-| How do I add, edit, save, or remove a Zsh alias? | [Zsh aliases](ZSH-ALIASES.md) |
-| What should the current Phase 5 shell files look like? | [Phase 5 shell-file reference](phase-05-shell-files/README.md) |
-| How do I set up chezmoi, manually or with the installer? | [Chezmoi setup tutorial](CHEZMOI-SETUP-TUTORIAL.md) |
-| How do I edit, add, remove, receive, or recover a managed file? | [Daily chezmoi workflows](MANAGING-DOTFILES-WITH-CHEZMOI.md) |
-| Which chezmoi command or path do I need? | [Chezmoi command reference](CHEZMOI-COMMAND-REFERENCE.md) |
-| What should chezmoi manage, and why? | [Chezmoi concepts and safety boundaries](CHEZMOI-CONCEPTS-AND-BOUNDARIES.md) |
-| Where will files and tools live? | [Expected filesystem layout](EXPECTED-LAYOUT.md) |
-| Does Homebrew, Company Portal, the App Store, or another installer own this app? | [Application ownership](APPLICATION-OWNERSHIP.md) |
-| What does each app/formula do, and when is it selected? | [Software catalogue](SOFTWARE-CATALOGUE.md) |
-| How do I clone a private GitHub repository on a new Mac? | [Private GitHub repository access](GITHUB-PRIVATE-REPOSITORY.md) |
-| Where should Codex, Claude, VS Code, and standalone tasks work? | [AI workspaces](AI-WORKSPACES.md) |
-| What does an unfamiliar term mean? | [Plain-English glossary](GLOSSARY.md) |
-| I need the complete manual and script-assisted setup in one page | [Complete setup routes](MANUAL-SETUP-GUIDE.md) |
-
-For the setup order, use the [process overview](../PROCESS-OVERVIEW.md) or the
-[required setup index](../01-required/README.md).
-
----
-
-[← Day One Mac home](../README.md) · [Command reference](COMMAND-REFERENCE.md)
+Continue with the [current guide](../shared/README.md). This compatibility page preserves existing links.

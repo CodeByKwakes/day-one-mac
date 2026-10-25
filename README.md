@@ -1,76 +1,175 @@
 # Day One Mac
 
-Day One Mac builds a secure, reproducible development environment on a new or
-factory-reset Apple-silicon Mac. The setup has eight required phases; databases,
-AI tools, MCP servers, editor profiles, and advanced automation wait until the
-base is working.
+Set up and maintain a development environment on an Apple-silicon Mac through
+AI-assisted or manual instructions. Choose the tools you need, preserve their
+installation owners and verify each capability before relying on it.
 
-## Start here
+## Choose your route
 
-- **New or factory-reset Mac, using the guided scripts:** [open the beginner-safe start page](docs/START-HERE.md).
-- **New or factory-reset Mac, without Day One Mac scripts:** [follow the complete manual route](docs/20-reference/MANUAL-SETUP-GUIDE.md#manual-setup-flow).
-- **Existing Mac with files or settings:** [start with the read-only safety process](docs/00-preflight/README.md).
-- **Need the complete map first:** [read the process overview](docs/PROCESS-OVERVIEW.md).
-- **Need one specific command:** [open the command reference](docs/20-reference/COMMAND-REFERENCE.md).
-- **Need to learn or maintain chezmoi:** [open the complete chezmoi setup tutorial](docs/20-reference/CHEZMOI-SETUP-TUTORIAL.md).
-- **Need to browse everything:** [open the documentation index](docs/README.md).
-- **Need manual application steps or chezmoi workflows:** [open the manual handbook](docs/manual/README.md).
+Open the [developer handbook](https://codebykwakes.github.io/day-one-mac/) in a
+browser, or read the guides below on GitHub. If the website has not been published
+yet, these repository links work independently. The handbook includes search,
+printing and a complete offline download; readers need no installation.
 
-## Install without keeping a repository
+- [AI-assisted setup](docs/setup/ai/README.md): prepare one client, choose direct
+  provider access or OmniRoute, then review and execute a bounded setup plan.
+- [Manual setup](docs/setup/manual/README.md): follow the same tool recipes
+  yourself, without installing or calling Day One Mac scripts.
 
-Download the small installer, inspect it, and install the checksum-verified
-standalone runtime:
+Begin with [Start here](docs/START-HERE.md). Shared prerequisites, decisions,
+verification and troubleshooting live in the [shared library](docs/shared/README.md).
+The [documentation index](docs/README.md) lists the topic guides.
 
-```bash
-INSTALLER="$HOME/Downloads/install-day-one-mac"
-curl --proto '=https' --tlsv1.2 -fsSL \
-  https://github.com/CodeByKwakes/day-one-mac/releases/latest/download/install-day-one-mac \
-  -o "$INSTALLER"
-chmod 700 "$INSTALLER"
-less "$INSTALLER"
-"$INSTALLER"
-export PATH="$HOME/.local/bin:$PATH"
-day-one-mac --wizard
-```
+## Install the AI skill
 
-The installer includes the complete documentation set. List or open installed
-guides at any time:
+Use the single `day-one-mac` skill for setup, checking, maintenance, recovery,
+Second Brain knowledge workflows, OmniRoute, developer shortcuts and repository contribution. It includes these
+workflows and their references. Specialist skills can also be installed independently.
+
+You need Node.js 22.20.0 or newer, npm and an approved AI client. Create and enter
+a dedicated setup folder before installing; project scope is the default.
 
 ```bash
-day-one-mac docs --list
-day-one-mac docs start --open
-day-one-mac docs chezmoi --open
-day-one-mac docs handbook --browser
-day-one-mac docs chezmoi-guide --browser
+SETUP_WORKSPACE="$HOME/Developer/Setup/day-one-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$(dirname "$SETUP_WORKSPACE")"
+mkdir -m 700 "$SETUP_WORKSPACE"
+cd "$SETUP_WORKSPACE"
 ```
 
-The runtime container is `~/.local/share/day-one-mac`; its `current` link points
-to the active versioned release. No Git checkout is required afterward. The
-wizard saves completed phases and tells you which
-guide to open when a manual action is required. It also asks whether VS Code
-should become Git's primary editor, diff viewer, and merge tool; choosing
-another primary IDE leaves those Git settings unchanged. Read the
-[portable installation guide](docs/20-reference/PORTABLE-COMMAND.md) for
-updates, rollback, migration from an older Phase 8 installation, and
-source-checkout development.
+### From GitHub
+
+The selected published revision must contain `skills/`. The default-branch
+command becomes available after these packages are published there. List first:
+
+```bash
+npx skills@1.7.4 add CodeByKwakes/day-one-mac --list
+npx skills@1.7.4 add CodeByKwakes/day-one-mac \
+  --skill day-one-mac --agent codex github-copilot claude-code
+```
+
+Remove client names you do not use and review the installer prompts. A full
+GitHub tree URL can select a published branch, tag or commit. Local commits
+are not available from GitHub until pushed.
+
+For a Claude-only selection, the CLI copies to `.claude/skills`; use that path
+in the verification example instead of `.agents/skills`.
+
+### From a local checkout
+
+Record the source path while in the reviewed checkout, then enter the setup
+folder created above:
+
+```bash
+DAY_ONE_SOURCE="/absolute/path/to/day-one-mac"
+cd "$SETUP_WORKSPACE"
+npx skills@1.7.4 add "$DAY_ONE_SOURCE/skills" \
+  --skill day-one-mac --agent codex github-copilot claude-code
+```
+
+Replace the source placeholder with the actual checkout or extracted archive.
+The prepared skill packages are included; end users do not need to build them.
+Choose the shared/symlink installation method for one canonical installed copy.
+
+### Second Brain setup and repository notes
+
+Use the umbrella skill above or install the `day-one-second-brain` specialist.
+It supports existing or new Obsidian vaults, guided Notion setup and selected code
+repositories linked to project notes. It does not synchronize vaults through Git.
+
+For a published revision containing this skill:
+
+```bash
+npx skills@1.7.4 add CodeByKwakes/day-one-mac \
+  --skill day-one-second-brain --agent codex github-copilot claude-code
+```
+
+For local installation, record `DAY_ONE_SOURCE` from the reviewed checkout as
+shown above, enter the private setup folder, then run:
+
+```bash
+npx skills@1.7.4 add "$DAY_ONE_SOURCE/skills" \
+  --skill day-one-second-brain --agent codex github-copilot claude-code
+```
+
+Start with: "Use day-one-second-brain to inspect my selected knowledge system
+and propose setup changes. Do not modify anything yet." Choose actual repository
+paths only in that private session. Follow [manual Second Brain setup](docs/setup/manual/second-brain/README.md),
+[repository connections](docs/setup/manual/second-brain/repositories.md) and the
+[skill lifecycle guide](docs/setup/manual/ai/day-one-skills.md#second-brain-specialist)
+for verification, scope, updates and removal. Updating `day-one-mac` includes the
+same workflow, so you do not need both installations.
+
+### Verify and use it
+
+```bash
+npx skills@1.7.4 list
+test -f .agents/skills/day-one-mac/SKILL.md
+```
+
+Open the setup folder in your client and ask:
+
+```text
+Use day-one-mac to check my development environment. Report what works,
+what needs attention and the proposed next steps. Do not make changes.
+```
+
+See [skill installation and lifecycle](docs/setup/manual/ai/day-one-skills.md)
+for global scope, specialist selection, optional agent roles, updates, removal
+and examples for setup. Client sign-in and execution permissions remain separate.
+
+## Helpers, offline reading and migration
+
+For only developer shortcuts, select `day-one-shortcuts` using either source:
+
+```bash
+npx skills@1.7.4 add CodeByKwakes/day-one-mac \
+  --skill day-one-shortcuts --agent codex github-copilot claude-code
+npx skills@1.7.4 add "$DAY_ONE_SOURCE/skills" \
+  --skill day-one-shortcuts --agent codex github-copilot claude-code
+```
+
+Run one command in your setup workspace. The GitHub source must contain the
+published package; the local source works before publication. Add `--global`
+only for a user-level skill installation. The main skill already includes this
+workflow, so a second installation is unnecessary.
+
+Ask the skill to inspect existing shortcuts or preview the five
+[developer apps](docs/setup/manual/apps/macos-shortcuts.md#build-standalone-apps-manually):
+Git Clone, VS Code, Warp, a VS Code profile chooser and a shared development
+workspace. Skill installation does not install apps. The optional
+[builder](docs/shared/tools/shortcut-apps.md) creates review copies; manual setup
+uses Script Editor. Built apps contain their code and require no permanent checkout.
+
+Skills include reviewed [helpers](docs/shared/reference/tools.md) for VS Code
+profiles, shortcut apps and read-only version checks. They need no global Day One Mac command.
+Manual setup remains independent of helpers. See [reading options](docs/shared/reading-and-export.md)
+for website bookmarks, offline downloads and contributor builds. The installed
+AI skill includes its own guides and does not need the website to operate.
+
+If the old manager is installed, use the
+[legacy removal guide](docs/shared/migration/remove-legacy-manager.md). Preserve
+working developer tools, settings and recovery backups.
 
 ## Repository layout
 
-```text
-day-one-mac/
-├── install-day-one-mac  Reviewed standalone installer
-├── README.md            This short entry point
-├── docs/                Setup guides, navigation, and reference material
-├── scripts/             Setup, verification, runtime and recovery commands
-├── config/              Application and optional-tool catalogues
-├── second-brain/        Independent knowledge-system builders
-└── warp-drive/          Importable Warp workflows
-```
+| Location | Responsibility |
+|---|---|
+| `docs/setup/ai/` | Client preparation and assistant operation |
+| `docs/setup/manual/` | Canonical tool setup and lifecycle recipes |
+| `docs/shared/` | Prerequisites, references, reviewed tools and migration |
+| `skills/` | Generated, self-contained skill packages for installation |
+| `templates/skills/`, `templates/agents/` | Maintained skill instructions and client roles |
+| `config/` | Reviewed source inventories, tool catalogues and VS Code profile data |
+| `helpers/` | Bounded helpers also bundled into portable skills |
+| `integrations/`, `extensions/` | Optional application assets and Second Brain |
+| `tools/`, `tests/`, `maintainers/` | Contributor tooling, regression tests and project history |
 
-Start with the [chezmoi learning path](docs/manual/chezmoi.md) for first setup,
-everyday edits, ownership, templates, secrets and recovery. For offline HTML,
-Markdown exports and browser printing, use the
-[documentation commands](docs/20-reference/DOCUMENTATION-COMMANDS.md).
-It links the Phase 5 baseline, script-assisted and fully manual routes, daily
-maintenance, command reference, ownership boundaries, private Git, and
-local-only backups.
+See [Contributing](CONTRIBUTING.md) to add a capability. Run `pnpm run skills:build`
+after changing skill sources or their linked guides; `pnpm run skills:check`
+verifies generated packages. Contributor skills under `.agents/skills/` are
+separate from the distributable setup skills.
+
+<a id="start-here"></a>
+<a id="install-without-keeping-a-repository"></a>
+
+<a id="optional-tools-and-assistant-workspace"></a>
