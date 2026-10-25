@@ -17,7 +17,7 @@ const run = (slug, args = [], status = 0) => {
   return result;
 };
 try {
-  for (const [slug, count] of Object.entries({ default: 6, 'full-stack': 21, ai: 16, operations: 12 })) {
+  for (const [slug, count] of Object.entries({ default: 5, 'full-stack': 22, ai: 17, operations: 11 })) {
     const output = path.join(temporary, `${slug} with spaces`);
     const data = recipe(slug);
     assert.equal(data.extensions.length, count);
@@ -27,7 +27,7 @@ try {
     assert.equal(data.settings['chat.tools.global.autoApprove'], false);
     assert.equal(data.settings['chat.tools.terminal.enableAutoApprove'], false);
     assert.equal(data.settings['terminal.integrated.suggest.upArrowNavigatesHistory'], true);
-    const languageProviders = { 'azure-pipelines': 'ms-azure-devops.azure-pipelines', dotenv: 'mikestead.dotenv' };
+    const languageProviders = { 'azure-pipelines': 'ms-azure-devops.azure-pipelines', dotenv: 'mikestead.dotenv', tailwindcss: 'bradlc.vscode-tailwindcss' };
     for (const language of Object.values(data.settings['files.associations'] || {})) {
       const provider = languageProviders[language];
       if (provider) assert(data.extensions.includes(provider), `${data.name} associates files with ${language} without ${provider}`);
@@ -81,7 +81,7 @@ else if (args.includes('--install-extension') && args.at(-1) === 'tomoki1207.pdf
   const installOutput = path.join(temporary, 'install');
   run('default', ['--code', mock, '--install-extensions', '--output', installOutput]);
   let calls = fs.readFileSync(path.join(temporary, 'calls.jsonl'), 'utf8').trim().split('\n').map(JSON.parse);
-  assert.equal(calls.length, 6); // One list + five missing extensions.
+  assert.equal(calls.length, 5); // One list + four missing extensions.
   assert(calls.every(args => args[0] === '--profile' && args[1] === 'Default'));
   assert(!calls.some(args => args.includes('--force') || args.includes('--uninstall-extension')));
   assert(!calls.some(args => args.includes('esbenp.prettier-vscode')));
@@ -90,7 +90,7 @@ else if (args.includes('--install-extension') && args.at(-1) === 'tomoki1207.pdf
     '--with', 'Tomoki1207.PDF'], 1);
   assert.match(failed.stderr, /VS Code failed \(9\)/);
   assert(fs.existsSync(path.join(failOutput, 'settings.json')));
-  assert.equal(recipe('default', ['tomoki1207.pdf']).extensions.length, 7);
+  assert.equal(recipe('default', ['tomoki1207.pdf']).extensions.length, 6);
   console.log('VS Code profile scripts passed: bundles, deep merges, optional selection, safe output, and mock CLI.');
 } finally {
   fs.rmSync(temporary, { recursive: true, force: true });

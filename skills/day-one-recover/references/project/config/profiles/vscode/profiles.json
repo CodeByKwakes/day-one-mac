@@ -57,6 +57,7 @@
     "terminal.external.osxExec": "Warp.app",
     "chat.tools.global.autoApprove": false,
     "chat.tools.terminal.enableAutoApprove": false,
+    "chat.mcp.gallery.enabled": true,
     "github.copilot.chat.commitMessageGeneration.instructions": [
       {
         "text": "Use Conventional Commits: <type>(<optional scope>): <description>. Choose feat, fix, docs, refactor, perf, test, build, ci, chore, or revert based on the actual change. Follow repository conventions when available."
@@ -138,7 +139,6 @@
         "editorconfig.editorconfig",
         "pkief.material-icon-theme",
         "yzhang.markdown-all-in-one",
-        "streetsidesoftware.code-spell-checker",
         "davidanson.vscode-markdownlint"
       ],
       "optional": [
@@ -191,7 +191,10 @@
         },
         "[html]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode",
-          "editor.formatOnSave": true
+          "editor.formatOnSave": true,
+          "editor.quickSuggestions": {
+            "strings": "on"
+          }
         },
         "[scss]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -201,6 +204,22 @@
           "editor.defaultFormatter": "esbenp.prettier-vscode",
           "editor.formatOnSave": true
         },
+        "[tailwindcss]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "prettier.documentSelectors": [
+          "**/*.css"
+        ],
+        "tailwindCSS.validate": true,
+        "tailwindCSS.lint.invalidApply": "error",
+        "scss.lint.unknownAtRules": "ignore",
+        "autoBarrel.files.disableRecursiveBarrelling": true,
+        "autoBarrel.files.supportsHiddenFiles": false,
+        "autoBarrel.files.preserveGitignoreSettings": true,
+        "autoBarrel.files.detectExportsInFiles": true,
+        "autoBarrel.formatting.useSingleQuotes": true,
+        "autoBarrel.formatting.sortExports": "alphabetical",
         "[prisma]": {
           "editor.defaultFormatter": "Prisma.prisma",
           "editor.formatOnSave": true
@@ -218,6 +237,7 @@
           "**/.angular/**": true
         },
         "files.associations": {
+          "*.css": "tailwindcss",
           "azure-pipelines.yml": "azure-pipelines",
           "azure-pipelines.yaml": "azure-pipelines",
           "**/.azure-pipelines/**/*.yml": "azure-pipelines",
@@ -310,7 +330,6 @@
         "editorconfig.editorconfig",
         "pkief.material-icon-theme",
         "yzhang.markdown-all-in-one",
-        "streetsidesoftware.code-spell-checker",
         "davidanson.vscode-markdownlint",
         "angular.ng-template",
         "ghaschel.vscode-angular-html",
@@ -326,12 +345,13 @@
         "ms-azure-devops.azure-pipelines",
         "ms-azuretools.vscode-containers",
         "ms-ossdata.vscode-pgsql",
-        "sleistner.vscode-fileutils"
+        "sleistner.vscode-fileutils",
+        "bradlc.vscode-tailwindcss",
+        "imgildev.vscode-auto-barrel"
       ],
       "optional": [
         "orta.vscode-jest",
         "ms-playwright.playwright",
-        "bradlc.vscode-tailwindcss",
         "stylelint.vscode-stylelint",
         "ms-vscode-remote.remote-containers",
         "github.vscode-pull-request-github",
@@ -372,7 +392,6 @@
         "editorconfig.editorconfig",
         "pkief.material-icon-theme",
         "yzhang.markdown-all-in-one",
-        "streetsidesoftware.code-spell-checker",
         "davidanson.vscode-markdownlint",
         "openai.chatgpt",
         "anthropic.claude-code",
@@ -383,7 +402,9 @@
         "nrwl.angular-console",
         "prisma.prisma",
         "mikestead.dotenv",
-        "redhat.vscode-yaml"
+        "redhat.vscode-yaml",
+        "bradlc.vscode-tailwindcss",
+        "imgildev.vscode-auto-barrel"
       ],
       "optional": [
         "ms-vscode.vscode-chat-customizations-evaluations",
@@ -449,7 +470,6 @@
         "editorconfig.editorconfig",
         "pkief.material-icon-theme",
         "yzhang.markdown-all-in-one",
-        "streetsidesoftware.code-spell-checker",
         "davidanson.vscode-markdownlint",
         "eamodio.gitlens",
         "redhat.vscode-yaml",

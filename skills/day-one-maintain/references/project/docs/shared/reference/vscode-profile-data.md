@@ -64,6 +64,7 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
   "terminal.external.osxExec": "Warp.app",
   "chat.tools.global.autoApprove": false,
   "chat.tools.terminal.enableAutoApprove": false,
+  "chat.mcp.gallery.enabled": true,
   "github.copilot.chat.commitMessageGeneration.instructions": [
     {
       "text": "Use Conventional Commits: <type>(<optional scope>): <description>. Choose feat, fix, docs, refactor, perf, test, build, ci, chore, or revert based on the actual change. Follow repository conventions when available."
@@ -109,7 +110,6 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
 | `editorconfig.editorconfig` | Recommended |
 | `pkief.material-icon-theme` | Recommended |
 | `yzhang.markdown-all-in-one` | Recommended |
-| `streetsidesoftware.code-spell-checker` | Recommended |
 | `davidanson.vscode-markdownlint` | Recommended |
 | `tomoki1207.pdf` | Optional |
 | `grapecity.gc-excelviewer` | Optional |
@@ -137,7 +137,6 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
 | `editorconfig.editorconfig` | Recommended |
 | `pkief.material-icon-theme` | Recommended |
 | `yzhang.markdown-all-in-one` | Recommended |
-| `streetsidesoftware.code-spell-checker` | Recommended |
 | `davidanson.vscode-markdownlint` | Recommended |
 | `angular.ng-template` | Recommended |
 | `ghaschel.vscode-angular-html` | Recommended |
@@ -154,9 +153,10 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
 | `ms-azuretools.vscode-containers` | Recommended |
 | `ms-ossdata.vscode-pgsql` | Recommended |
 | `sleistner.vscode-fileutils` | Recommended |
+| `bradlc.vscode-tailwindcss` | Recommended |
+| `imgildev.vscode-auto-barrel` | Recommended |
 | `orta.vscode-jest` | Optional |
 | `ms-playwright.playwright` | Optional |
-| `bradlc.vscode-tailwindcss` | Optional |
 | `stylelint.vscode-stylelint` | Optional |
 | `ms-vscode-remote.remote-containers` | Optional |
 | `github.vscode-pull-request-github` | Optional |
@@ -208,7 +208,10 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
   },
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.quickSuggestions": {
+      "strings": "on"
+    }
   },
   "[scss]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -218,6 +221,22 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
   },
+  "[tailwindcss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "prettier.documentSelectors": [
+    "**/*.css"
+  ],
+  "tailwindCSS.validate": true,
+  "tailwindCSS.lint.invalidApply": "error",
+  "scss.lint.unknownAtRules": "ignore",
+  "autoBarrel.files.disableRecursiveBarrelling": true,
+  "autoBarrel.files.supportsHiddenFiles": false,
+  "autoBarrel.files.preserveGitignoreSettings": true,
+  "autoBarrel.files.detectExportsInFiles": true,
+  "autoBarrel.formatting.useSingleQuotes": true,
+  "autoBarrel.formatting.sortExports": "alphabetical",
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma",
     "editor.formatOnSave": true
@@ -235,6 +254,7 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
     "**/.angular/**": true
   },
   "files.associations": {
+    "*.css": "tailwindcss",
     "azure-pipelines.yml": "azure-pipelines",
     "azure-pipelines.yaml": "azure-pipelines",
     "**/.azure-pipelines/**/*.yml": "azure-pipelines",
@@ -333,7 +353,6 @@ Apply Full Stack overrides before these overrides.
 | `editorconfig.editorconfig` | Recommended |
 | `pkief.material-icon-theme` | Recommended |
 | `yzhang.markdown-all-in-one` | Recommended |
-| `streetsidesoftware.code-spell-checker` | Recommended |
 | `davidanson.vscode-markdownlint` | Recommended |
 | `openai.chatgpt` | Recommended |
 | `anthropic.claude-code` | Recommended |
@@ -345,6 +364,8 @@ Apply Full Stack overrides before these overrides.
 | `prisma.prisma` | Recommended |
 | `mikestead.dotenv` | Recommended |
 | `redhat.vscode-yaml` | Recommended |
+| `bradlc.vscode-tailwindcss` | Recommended |
+| `imgildev.vscode-auto-barrel` | Recommended |
 | `ms-vscode.vscode-chat-customizations-evaluations` | Optional |
 | `ms-windows-ai-studio.windows-ai-studio` | Optional |
 | `orta.vscode-jest` | Optional |
@@ -389,7 +410,6 @@ Apply Full Stack overrides before these overrides.
 | `editorconfig.editorconfig` | Recommended |
 | `pkief.material-icon-theme` | Recommended |
 | `yzhang.markdown-all-in-one` | Recommended |
-| `streetsidesoftware.code-spell-checker` | Recommended |
 | `davidanson.vscode-markdownlint` | Recommended |
 | `eamodio.gitlens` | Recommended |
 | `redhat.vscode-yaml` | Recommended |

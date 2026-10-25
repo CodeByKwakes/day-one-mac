@@ -148,7 +148,6 @@ their parent extension; do not install them a second time just to match a count.
 | [EditorConfig](https://marketplace.visualstudio.com/items?itemName=editorconfig.editorconfig) | `editorconfig.editorconfig` | Respect repository whitespace rules | R | R | R | R |
 | [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=pkief.material-icon-theme) | `pkief.material-icon-theme` | File and folder icons | R | R | R | R |
 | [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) | `yzhang.markdown-all-in-one` | Markdown editing conveniences | R | R | R | R |
-| [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker) | `streetsidesoftware.code-spell-checker` | Spelling diagnostics | R | R | R | R |
 | [markdownlint](https://marketplace.visualstudio.com/items?itemName=davidanson.vscode-markdownlint) | `davidanson.vscode-markdownlint` | Markdown structure checks | R | R | R | R |
 | [Angular Language Service](https://marketplace.visualstudio.com/items?itemName=angular.ng-template) | `angular.ng-template` | Angular template diagnostics and navigation | No | R | R | No |
 | [Angular HTML](https://marketplace.visualstudio.com/items?itemName=ghaschel.vscode-angular-html) | `ghaschel.vscode-angular-html` | Your chosen template highlighting | No | R | No | No |
@@ -157,6 +156,7 @@ their parent extension; do not install them a second time just to match a count.
 | [Prisma](https://marketplace.visualstudio.com/items?itemName=prisma.prisma) | `prisma.prisma` | Prisma schema editing and formatting | No | R | R | No |
 | [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) | `eamodio.gitlens` | History, blame, and comparisons | No | R | R | R |
 | [File Utils](https://marketplace.visualstudio.com/items?itemName=sleistner.vscode-fileutils) | `sleistner.vscode-fileutils` | Duplicate files, enter destination paths and copy file names | No | R | O | No |
+| [Auto Barrel for VSCode](https://marketplace.visualstudio.com/items?itemName=imgildev.vscode-auto-barrel) | `imgildev.vscode-auto-barrel` | Generate and update TypeScript barrel exports in selected directories | No | R | R | No |
 | [Codex - OpenAI’s coding agent](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt) | `openai.chatgpt` | OpenAI coding-agent integration | No | R | R | O |
 | [Claude Code for VS Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) | `anthropic.claude-code` | Anthropic coding-agent integration | No | R | R | O |
 | [Good Prompts](https://marketplace.visualstudio.com/items?itemName=omarbanat.goodprompts) | `omarbanat.goodprompts` | Guided prompt generation and library | No | R | R | No |
@@ -170,7 +170,7 @@ their parent extension; do not install them a second time just to match a count.
 | [Reload](https://marketplace.visualstudio.com/items?itemName=natqe.reload) | `natqe.reload` | Status-bar button for the built-in Reload Window command | O | O | O | O |
 | [Jest](https://marketplace.visualstudio.com/items?itemName=orta.vscode-jest) | `orta.vscode-jest` | When the repository uses Jest | No | O | O | No |
 | [Playwright Test](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) | `ms-playwright.playwright` | When the repository uses Playwright | No | O | O | No |
-| [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) | `bradlc.vscode-tailwindcss` | When the repository uses Tailwind | No | O | No | No |
+| [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) | `bradlc.vscode-tailwindcss` | Tailwind classes, directives and `@apply` diagnostics | No | R | R | No |
 | [Stylelint](https://marketplace.visualstudio.com/items?itemName=stylelint.vscode-stylelint) | `stylelint.vscode-stylelint` | When the repository configures Stylelint | No | O | No | No |
 | [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) | `ms-vscode-remote.remote-containers` | When you develop inside a container | No | O | No | O |
 | [GitHub Pull Requests](https://marketplace.visualstudio.com/items?itemName=github.vscode-pull-request-github) | `github.vscode-pull-request-github` | GitHub-hosted PRs; not Azure Repos PRs | No | O | No | No |
@@ -204,6 +204,12 @@ copying settings does not require copying Full Stack's extension selection.
 #### Operations extensions
 
 Use the **Operations** column with the [Operations settings recipe](#operations-overrides).
+
+Code Spell Checker is not part of these profiles. For an existing installation,
+switch to each profile, search Extensions for `streetsidesoftware.code-spell-checker`
+and select **Uninstall** where present. Check all four profiles afterward;
+removing an identifier from a generated recipe does not uninstall it locally.
+Keep personal dictionaries if you may use them elsewhere.
 
 ### Install and share the Default baseline
 
@@ -288,6 +294,112 @@ rename undo settings. These reports are limitations to check on your machine.
 [hidden-directory report](https://github.com/sleistner/vscode-fileutils/issues/684),
 [undo report](https://github.com/sleistner/vscode-fileutils/issues/686).
 
+### Auto Barrel: Full Stack and AI
+
+A barrel is an `index.ts` file that re-exports modules from a directory. Use
+**Auto Barrel for VSCode** (`imgildev.vscode-auto-barrel`, publisher Manuel Gil)
+for selected library entry points in Full Stack and AI.
+
+1. Install the extension in the existing profiles:
+
+   ```bash
+   code --profile "Full Stack" --install-extension imgildev.vscode-auto-barrel
+   code --profile "AI" --install-extension imgildev.vscode-auto-barrel
+   ```
+
+   Expected result: Auto Barrel appears in both profiles. Leave **Apply
+   Extension to all Profiles** off; Default and Operations do not need it.
+
+2. Merge the `autoBarrel.*` entries from the
+   [Full Stack settings](../../../shared/reference/vscode-profile-data.md#full-stack-overrides)
+   into each profile's User Settings. AI inherits these entries in its recipe.
+
+   Expected result: generation excludes subdirectories and hidden files,
+   respects `.gitignore`, detects exports and sorts them alphabetically using
+   single quotes. Keep the extension's default test-file exclusions; merge
+   additional patterns with those defaults if needed.
+
+3. In a disposable directory containing exported TypeScript modules,
+   right-click the directory and select **Auto Barrel → Create a barrel file**.
+
+   Expected result: an `index.ts` file contains exports for the selected
+   directory. Inspect the diff, run the project's type check, and remove the
+   disposable files after verification. To update one generated entry point,
+   right-click its `index.ts` file and select **Auto Barrel → Update the barrel
+   file**. Review the change before replacing curated exports.
+
+The folder menu also labels its broader update command **Update the barrel
+file**; select the file when you intend to update only one barrel. Use one barrel extension
+to prevent competing generators. For NestJS, avoid barrels for module and
+provider classes, especially imports within the barrel's own directory.
+
+The installed extension's settings and menu labels were checked against
+version 1.23.1 on 25 October 2026. See
+[Auto Barrel documentation](https://github.com/ManuelGil/vscode-auto-barrel)
+and [NestJS circular-dependency guidance](https://docs.nestjs.com/fundamentals/circular-dependency).
+
+### Tailwind CSS: Full Stack and AI
+
+Install **Tailwind CSS IntelliSense** (`bradlc.vscode-tailwindcss`) in both
+development profiles. Its settings belong in each profile's User Settings.
+Default and Operations do not need the extension or Tailwind settings.
+
+1. Install the extension in the existing profiles:
+
+   ```bash
+   code --profile "Full Stack" --install-extension bradlc.vscode-tailwindcss
+   code --profile "AI" --install-extension bradlc.vscode-tailwindcss
+   ```
+
+   Expected result: Extensions shows Tailwind CSS IntelliSense in both profiles.
+   Leave **Apply Extension to all Profiles** off for this extension.
+
+2. Merge the Tailwind entries from the
+   [Full Stack settings](../../../shared/reference/vscode-profile-data.md#full-stack-overrides)
+   into each profile. The AI recipe inherits those settings.
+
+   Expected result: `.css` files use **Tailwind CSS** language mode; `.scss`
+   files remain **SCSS**. The `*.css` association applies to every CSS file
+   opened in these profiles, including projects without Tailwind.
+
+   The `[tailwindcss]` formatter override and `prettier.documentSelectors`
+   entry for `**/*.css` keep Prettier available in the new language mode.
+   HTML string suggestions support class completion in Angular templates.
+   Existing `.env` suggestion restrictions remain unchanged.
+
+3. Open a trusted project that already has Tailwind installed and configured.
+
+   Expected result: the extension detects a CSS entrypoint importing Tailwind
+   for v4, or a `tailwind.config.*` file for v3. The extension does not install
+   Tailwind or configure the application's build.
+
+4. In a disposable edit to a stylesheet processed by Tailwind, type `@apply `
+   inside a rule and request suggestions with `Ctrl+Space`.
+
+   Expected result: Tailwind utilities appear. Save a valid rule and verify
+   that Prettier formats it. Hover a utility to inspect its CSS, then discard
+   the disposable edit. If completion is absent, inspect **Tailwind CSS: Show
+   Output** in the Command Palette after the language server activates.
+
+Tailwind validation stays enabled, with invalid `@apply` usage reported as an
+error. For existing SCSS pipelines, `scss.lint.unknownAtRules: "ignore"`
+suppresses VS Code's unknown-at-rule warnings while keeping other SCSS checks.
+This also hides misspelled at-rules. Remove that setting to restore those
+warnings; Stylelint diagnostics and build errors are controlled separately.
+
+Tailwind v4 is not designed for Sass/SCSS preprocessors. Use plain CSS for its
+Tailwind styles, and use `@reference` when separately processed stylesheets
+need access to the main stylesheet's theme and utilities. Editor settings
+cannot repair an incompatible build pipeline. Check the project's Tailwind
+version before changing its stylesheets.
+
+The publisher guidance checked on 25 October 2026 describes these activation
+requirements and language-mode settings. See the
+[extension documentation](https://github.com/tailwindlabs/tailwindcss-intellisense),
+[Prettier document selectors](https://github.com/prettier/prettier-vscode#prettierdocumentselectors),
+[Tailwind compatibility](https://tailwindcss.com/docs/compatibility#sass-less-and-stylus)
+and [reference directive](https://tailwindcss.com/docs/functions-and-directives#reference-directive).
+
 ## 3. Apply shared User Settings
 
 1. With Default active, run **Preferences: Open User Settings (JSON)**.
@@ -321,6 +433,7 @@ in each profile's own User Settings.
 | `git.enableSmartCommit` and `git.suggestSmartCommit` | Off | Off | Off | Off | Shared User Settings; stage selected changes before committing |
 | Automatic Git worktree detection | On, limit 30 | On, limit 30 | On, limit 30 | On, limit 30 | Shared User Settings; discover existing worktrees |
 | `chat.tools.global.autoApprove` and `chat.tools.terminal.enableAutoApprove` | Off | Off | Off | Off | Shared User Settings; applies to supported VS Code chat flows |
+| `chat.mcp.gallery.enabled` | On | On | On | On | Shared User Settings; enables the MCP server gallery (Preview) |
 | Markdown/JSON formatting and Markdown extension preferences | Shared | Shared | Shared plus prose suggestions off | Shared | Profile User Settings; preserve nested language values |
 | Title-bar and badge colors | Neutral | Purple | Blue | Green | Profile User Settings; do not share across profiles |
 | Profile icon | Built-in gear | Code (`code`) | Robot (`robot`) | Server (`server`) | Profiles editor; separate from User Settings and file/folder icons |
@@ -328,6 +441,8 @@ in each profile's own User Settings.
 | TS/JS, HTML, CSS/SCSS and Prisma formatting; import actions | No | Enabled | Enabled | No | Full Stack overrides, also combined into AI |
 | GitLens inline annotations | No | Off | Off | Off | Profile User Settings where GitLens is selected |
 | File Utils destination display and context menus | No | Configured | Inherited; active if installed | No | Full Stack User Settings, also combined into AI |
+| Auto Barrel generation scope, export detection and formatting | No | Configured | Inherited | No | Profile User Settings; see [Auto Barrel](#auto-barrel-full-stack-and-ai) |
+| Tailwind CSS mode, Prettier registration, HTML class suggestions and SCSS at-rule warning policy | No | Enabled | Inherited | No | Profile User Settings; see [Tailwind CSS](#tailwind-css-full-stack-and-ai) |
 | `.env` associations, formatting and suggestion restrictions | No | Enabled | Enabled | Enabled | Profile User Settings; not an access-control boundary |
 | Pipeline-file language mode | Default detection | Azure Pipelines | YAML | Azure Pipelines | Profile User Settings, matching installed language providers |
 | SQL and Dockerfile format-on-save | Default behavior | Off | Off | Off | Profile User Settings |
@@ -342,10 +457,14 @@ value, merge nested object properties and replace arrays only when intended.
 Do not paste multiple root objects or duplicate keys. In particular, retain
 shared Markdown whitespace settings when applying the AI Markdown override.
 
+To browse MCP servers, open Extensions and search `@mcp`, or run **MCP: Browse
+MCP Servers** from the Command Palette. Enabling the gallery does not install
+servers or change approvals. Follow the [MCP setup guide](../ai/mcp.md) to
+configure a selected server; organization policies can restrict availability.
+
 Markdown All in One's table formatter and automatic table-of-contents updates
 are disabled to give Prettier and deliberate edits clear ownership. Repository
-Prettier and EditorConfig rules still apply. Use Code Spell Checker's personal
-dictionary for spelling exceptions.
+Prettier and EditorConfig rules still apply.
 
 The non-login Zsh terminal requires the shared PATH helper in `.zshrc`. Follow
 the [Zsh recipe](../shell/zsh.md) and replace `/bin/zsh` in both terminal profiles
@@ -768,6 +887,9 @@ Run the checks for the profiles and optional integrations you selected.
 | Switch through your profiles | Each name, accent and enabled extension set matches its matrix column |
 | Open a development terminal and run `node --version`, `git --version` and the project package manager's version command | Each tool resolves to the intended installation |
 | Open an Angular template and Prisma schema in Full Stack or AI | Diagnostics and formatter ownership match the selected extensions |
+| Open a configured Tailwind project in Full Stack or AI | CSS uses Tailwind CSS mode, SCSS keeps its mode, class completion works and Prettier formats CSS on save |
+| Generate a barrel in a disposable TypeScript directory in Full Stack or AI | Exports match the selected files, respect exclusions and pass the project's type check |
+| Search Extensions for `streetsidesoftware.code-spell-checker` in all four profiles | Code Spell Checker is not installed in these profiles |
 | Save and use import shortcuts on a disposable TS/JS change | Sorting and removal follow the chosen policy; the diff contains only intended edits |
 | Inspect icons and HTML token colors in Full Stack | The selected folders and tokens use the configured appearance |
 | Open Good Prompts in Full Stack or AI | A generated prompt can be reviewed before sending it to an agent |
@@ -976,7 +1098,7 @@ approach with their organisation-approved extensions and account policies.
 1. Export the current configuration using the [backup guide](#export-and-back-up-the-configuration).
 2. Create **Tech Content Creator** by copying a reviewed Default profile, or
    choose **Empty Profile** when cleaning up unknown state.
-3. Review the Default column in the [extension matrix](#extension-tables). Markdown, spelling,
+3. Review the Default column in the [extension matrix](#extension-tables). Markdown,
    Prettier and icons cover the writing baseline. Add `usernamehw.errorlens`
    only if inline error messages help your demonstrations.
 4. Apply [shared User Settings](#3-apply-shared-user-settings) and

@@ -9,6 +9,8 @@ const golden = require('../fixtures/vscode/recipes-v1.json');
 // Keep the migration snapshot intact and enumerate supported differences explicitly.
 const expected = structuredClone(golden);
 for (const profile of Object.values(expected)) {
+  profile.settings['chat.mcp.gallery.enabled'] = true;
+  profile.extensions = profile.extensions.filter(id => id !== 'streetsidesoftware.code-spell-checker');
   profile.settings['explorer.compactFolders'] = false;
   profile.settings['git.suggestSmartCommit'] = false;
   profile.settings['git.detectWorktrees'] = true;
@@ -20,9 +22,25 @@ for (const pattern of ['azure-pipelines.yml', 'azure-pipelines.yaml', '**/.azure
   expected.ai.settings['files.associations'][pattern] = 'yaml';
 }
 expected['full-stack'].extensions.push('sleistner.vscode-fileutils');
+expected['full-stack'].optional = expected['full-stack'].optional.filter(id => id !== 'bradlc.vscode-tailwindcss');
 expected.ai.optional.push('sleistner.vscode-fileutils');
 for (const slug of ['full-stack', 'ai']) {
+  expected[slug].extensions.push('bradlc.vscode-tailwindcss');
+  expected[slug].extensions.push('imgildev.vscode-auto-barrel');
+  expected[slug].settings['files.associations']['*.css'] = 'tailwindcss';
+  expected[slug].settings['[html]']['editor.quickSuggestions'] = { strings: 'on' };
   Object.assign(expected[slug].settings, {
+    '[tailwindcss]': { 'editor.defaultFormatter': 'esbenp.prettier-vscode', 'editor.formatOnSave': true },
+    'prettier.documentSelectors': ['**/*.css'],
+    'tailwindCSS.validate': true,
+    'tailwindCSS.lint.invalidApply': 'error',
+    'scss.lint.unknownAtRules': 'ignore',
+    'autoBarrel.files.disableRecursiveBarrelling': true,
+    'autoBarrel.files.supportsHiddenFiles': false,
+    'autoBarrel.files.preserveGitignoreSettings': true,
+    'autoBarrel.files.detectExportsInFiles': true,
+    'autoBarrel.formatting.useSingleQuotes': true,
+    'autoBarrel.formatting.sortExports': 'alphabetical',
     'fileutils.inputBox.pathType': 'root',
     'fileutils.menus.context.explorer': ['moveFile', 'duplicateFile', 'copyFileName'],
     'fileutils.menus.context.editor': [],
