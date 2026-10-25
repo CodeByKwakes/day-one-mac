@@ -26,6 +26,7 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
   "editor.formatOnPaste": false,
   "editor.detectIndentation": true,
   "explorer.compactFolders": false,
+  "explorer.openEditors.visible": 9,
   "workbench.editor.labelFormat": "medium",
   "workbench.editor.enablePreview": false,
   "git.autofetch": true,

@@ -12,6 +12,7 @@ for (const profile of Object.values(expected)) {
   profile.settings['chat.mcp.gallery.enabled'] = true;
   profile.extensions = profile.extensions.filter(id => id !== 'streetsidesoftware.code-spell-checker');
   profile.settings['explorer.compactFolders'] = false;
+  profile.settings['explorer.openEditors.visible'] = 9;
   profile.settings['git.suggestSmartCommit'] = false;
   profile.settings['git.detectWorktrees'] = true;
   profile.settings['git.detectWorktreesLimit'] = 30;

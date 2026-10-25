@@ -425,12 +425,20 @@ and [reference directive](https://tailwindcss.com/docs/functions-and-directives#
 3. Apply the [Default overrides](../../../shared/reference/vscode-profile-data.md#default-overrides)
    to that same object and save the file.
 4. Inspect Settings for unknown keys and open a new integrated terminal.
+5. Open **Explorer → … → Open Editors** and enable it if unchecked.
 
 Expected result: one valid JSON object supplies Dark Modern, a neutral title-bar
 accent, the selected font and the development Zsh terminal. Default's Copilot
 inline suggestions are off. Markdown and JSON use Prettier on explicit saves.
 Explorer displays nested folders on separate rows, including folders with only
 one child folder, because `explorer.compactFolders` is `false`.
+The expanded **Open Editors** section lists your open files.
+
+`explorer.openEditors.visible: 9` sets the initial maximum list height before
+scrolling. It does not enable a hidden view in VS Code 1.143.1. Visibility is
+part of the profile's UI layout; check it after creating or importing each
+profile. The Command Palette action **Explorer: Focus on Open Editors View**
+also reveals the section. See the [VS Code Explorer guide](https://code.visualstudio.com/docs/editing/getting-started/userinterface#can-i-hide-the-open-editors-section-in-the-explorer-view).
 
 Each subsequent profile receives this baseline by copying Default. A shared
 recipe is not automatically a live shared setting. To share an individual
@@ -444,6 +452,8 @@ in each profile's own User Settings.
 |---|---|---|---|---|---|
 | Explicit saves, final newline, editor fonts, rulers and navigation preferences | Shared | Shared | Shared | Shared | User Settings; optional all-profiles sharing for identical values |
 | `explorer.compactFolders` | Off | Off | Off | Off | Shared User Settings; show each nested folder on its own row |
+| `explorer.openEditors.visible` | 9 | 9 | 9 | 9 | Shared User Settings; initial maximum rows before scrolling |
+| Open Editors view visibility | On | On | On | On | Profile UI layout; enable through Explorer's Views menu |
 | Dark Modern and Material Icon Theme | Shared | Shared | Shared | Shared | User Settings |
 | Zsh profiles, terminal font, shell integration and Warp executable | Shared | Shared | Shared | Shared | Machine-specific User Settings; verify paths after import |
 | Git fetch/sync preferences and Conventional Commit instructions | Shared | Shared | Shared | Shared | User Settings |
@@ -525,7 +535,8 @@ instructions. Keep credentials out of settings and exports.
    scoped to this profile instead of selecting the all-profiles action.
 7. Open **Preferences: Open User Settings (JSON)** and combine the blocks below
    in order, following the nested-object merge rules in section 3.
-8. Repeat these steps for each additional profile you chose.
+8. Run **Explorer: Focus on Open Editors View** from the Command Palette.
+9. Repeat these steps for each additional profile you chose.
 
 Expected result: each named profile has the intended accent, extension column
 and settings. AI copies Default's extension baseline, then adds its own list;
@@ -902,6 +913,7 @@ Run the checks for the profiles and optional integrations you selected.
 | Check | Expected result |
 |---|---|
 | Switch through your profiles | Each name, accent and enabled extension set matches its matrix column |
+| Open Explorer in each profile | Open Editors is visible and expanded; opening a file adds it to the list |
 | Open a development terminal and run `node --version`, `git --version` and the project package manager's version command | Each tool resolves to the intended installation |
 | Open an Angular template and Prisma schema in Full Stack or AI | Diagnostics and formatter ownership match the selected extensions |
 | Open a configured Tailwind project in Full Stack or AI | CSS uses Tailwind CSS mode, SCSS keeps its mode, class completion works and Prettier formats CSS on save |
