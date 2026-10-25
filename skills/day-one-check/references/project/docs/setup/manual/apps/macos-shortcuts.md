@@ -649,3 +649,27 @@ follow [skill removal](../ai/day-one-skills.md#update-and-remove) for that scope
 ---
 
 [← Application setup](README.md) · [Keyboard shortcuts](keyboard-shortcuts.md) · [VS Code setup](../editors/vscode.md)
+
+## Change a launcher icon
+
+Use the supplied [Warp icon](../../../../integrations/shortcuts/icons/open-in-warp.icns)
+[Git Clone icon](../../../../integrations/shortcuts/icons/git-clone.icns),
+or [VS Code icon](../../../../integrations/shortcuts/icons/open-in-vscode.icns).
+New standalone builds include these icons automatically. Existing launcher
+apps keep their current icon until you change it.
+
+1. Duplicate the selected launcher into a private recovery folder.
+2. Open the chosen ICNS file in Preview, select its image and copy it.
+3. Select the launcher in Finder and choose **File → Get Info**.
+4. Click the small icon at the top left of the Info window, then paste.
+5. Check the launcher and its Finder toolbar button. Repeat for any separate
+   launcher copies you keep. If the toolbar still shows the previous image,
+   close and reopen the Finder window; re-add the toolbar button if necessary.
+
+Expected result: the icon changes while the shortcut still performs the same
+action. This is a Finder custom icon; do not edit signed app resources.
+Finder adds metadata that can fail `codesign --verify --strict` even when
+normal verification passes and signed contents are unchanged. New standalone
+builds embed icons before signing and pass strict verification.
+To remove the custom icon, select it in Get Info and press Delete. If the app
+already had a custom icon, recover that appearance from your saved copy.

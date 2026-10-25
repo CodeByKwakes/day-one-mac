@@ -5,22 +5,44 @@
 Use this route to create and work with folders through VS Code's Git UI.
 You need an existing Git repository and VS Code's built-in Git support.
 
+## Configure worktree detection
+
+Default, Full Stack, AI and Operations enable automatic discovery of existing
+Git worktrees, with a detection limit of 30. These are profile User Settings
+from the [shared settings block](../../../../shared/reference/vscode-profile-data.md#shared-settings).
+For existing profiles, merge `git.detectWorktrees` and `git.detectWorktreesLimit`
+from that block into each profile's User Settings.
+
+1. In the selected profile, open **Preferences: Open Settings (UI)** and search
+   for `@id:git.detectWorktrees`.
+
+   Expected result: **Git: Detect Worktrees** is checked. Search for
+   `@id:git.detectWorktreesLimit` and confirm the value is `30`.
+
+2. Open a repository with an existing linked worktree and show **Source Control
+   Repositories** through **View: Open View…**.
+
+   Expected result: the linked worktree appears in the repository list after
+   discovery, within the configured limit. Check `git worktree list` in that
+   repository's terminal if no linked worktree appears. Detection does not create
+   worktrees; use the walkthrough below when none exist.
+
+See [VS Code worktree detection](https://code.visualstudio.com/docs/sourcecontrol/branches-worktrees#_automatically-detect-worktrees).
+
 ## Optional VS Code user settings
 
-Open **Preferences: Open User Settings (JSON)** and review these settings:
+The shared profile settings also keep the repository list visible and use
+medium-length editor labels. For additional window and terminal context, open
+**Preferences: Open User Settings (JSON)** and review these optional settings:
 
 ```jsonc
 {
   "window.title": "${rootName} — ${activeEditorShort}${separator}${appName}",
-  "git.detectWorktrees": true,
-  "git.detectWorktreesLimit": 30,
-  "scm.alwaysShowRepositories": true,
   "scm.repositories.selectionMode": "single",
   "terminal.integrated.cwd": "${workspaceFolder}",
   "terminal.integrated.splitCwd": "workspaceRoot",
   "terminal.integrated.tabs.title": "${workspaceFolderName} · ${process}",
-  "terminal.integrated.tabs.description": "${cwdFolder}",
-  "workbench.editor.labelFormat": "medium"
+  "terminal.integrated.tabs.description": "${cwdFolder}"
 }
 ```
 

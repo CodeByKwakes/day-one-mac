@@ -12,6 +12,8 @@ const {catalogue,plan,build}=require(helper);
 const tmp=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'day-one-apps-')));
 try {
   assert.equal(catalogue(root).recipes.length,5);
+  for(const id of ['git-clone','open-in-warp','open-in-vscode'])
+    assert.equal(catalogue(root).recipes.find(r=>r.id===id).icon,`icons/${id}.icns`);
   assert.throws(()=>plan(root,'unknown',path.join(tmp,'unknown')));
   const output=path.join(tmp,"Review é $(touch BAD)");
   const preview=plan(root,'all',output);
@@ -39,6 +41,14 @@ try {
     const info=spawnSync('/usr/libexec/PlistBuddy',['-c','Print :CFBundleIdentifier',path.join(app,'Contents/Info.plist')],{encoding:'utf8'});
     assert.equal(info.status,0,info.stderr);
     assert.equal(info.stdout.trim(),recipe.bundleId);
+    if(recipe.icon) {
+      const iconName=spawnSync('/usr/libexec/PlistBuddy',['-c','Print :CFBundleIconFile',path.join(app,'Contents/Info.plist')],{encoding:'utf8'});
+      assert.equal(iconName.status,0,iconName.stderr);
+      const expected=fs.readFileSync(path.join(root,'integrations/shortcuts',recipe.icon));
+      assert.deepEqual(fs.readFileSync(path.join(app,'Contents/Resources',iconName.stdout.trim())),expected);
+      const manifest=JSON.parse(fs.readFileSync(path.join(output,'build-manifest.json')));
+      assert.equal(manifest.apps.find(r=>r.id===recipe.id).iconSha256,require('node:crypto').createHash('sha256').update(expected).digest('hex'));
+    }
     const signature=spawnSync('/usr/bin/codesign',['--verify','--strict',app],{encoding:'utf8'});
     assert.equal(signature.status,0,signature.stderr);
   }
@@ -95,6 +105,20 @@ try {
   assert.equal(run.status,0,run.stderr);
   assert.deepEqual(JSON.parse(fs.readFileSync(log)),['--new-window','--profile','AI',folder]);
   assert(!fs.existsSync(path.join(tmp,'BAD')));
+  const iconRoot=path.join(tmp,'Icon source');
+  fs.mkdirSync(path.join(iconRoot,'integrations'),{recursive:true});
+  fs.cpSync(path.join(root,'integrations/shortcuts'),path.join(iconRoot,'integrations/shortcuts'),{recursive:true});
+  const iconCatalogue=path.join(iconRoot,'integrations/shortcuts/catalog.json');
+  const iconSpec=JSON.parse(fs.readFileSync(iconCatalogue));
+  for(const invalid of ['../outside.icns','/tmp/outside.icns','icons/missing.icns']) {
+    iconSpec.recipes[0].icon=invalid;fs.writeFileSync(iconCatalogue,JSON.stringify(iconSpec));
+    assert.throws(()=>catalogue(iconRoot));
+  }
+  iconSpec.recipes[0].icon='icons/git-clone.icns';fs.writeFileSync(iconCatalogue,JSON.stringify(iconSpec));
+  const badIcon=path.join(iconRoot,'integrations/shortcuts/icons/git-clone.icns');
+  fs.writeFileSync(badIcon,'not an icon');assert.throws(()=>catalogue(iconRoot),/ICNS/);
+  fs.unlinkSync(badIcon);fs.symlinkSync(path.join(root,'integrations/shortcuts/icons/git-clone.icns'),badIcon);
+  assert.throws(()=>catalogue(iconRoot),/Symlink/);
   const brokenRoot=path.join(tmp,'Broken source');
   fs.mkdirSync(path.join(brokenRoot,'integrations'),{recursive:true});
   fs.cpSync(path.join(root,'integrations/shortcuts'),path.join(brokenRoot,'integrations/shortcuts'),{recursive:true});

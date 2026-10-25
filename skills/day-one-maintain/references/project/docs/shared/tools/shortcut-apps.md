@@ -81,7 +81,8 @@ never manages an installed app directory. Removing a skill does not remove apps
 that were built from it.
 
 The manifest records each recipe ID, app name, bundle identifier and combined
-source hash. It records build provenance, not live functionality or a security
+source hash, plus the icon path and hash when a recipe supplies one. Icons
+are embedded before signing. It records build provenance, not live functionality or a security
 certification. Do not store private notes or generated apps inside an installed
 skill because reinstalling the skill can replace its contents.
 

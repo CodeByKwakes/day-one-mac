@@ -156,6 +156,7 @@ their parent extension; do not install them a second time just to match a count.
 | [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) | `dbaeumer.vscode-eslint` | Repository lint diagnostics and fixes | No | R | R | No |
 | [Prisma](https://marketplace.visualstudio.com/items?itemName=prisma.prisma) | `prisma.prisma` | Prisma schema editing and formatting | No | R | R | No |
 | [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) | `eamodio.gitlens` | History, blame, and comparisons | No | R | R | R |
+| [File Utils](https://marketplace.visualstudio.com/items?itemName=sleistner.vscode-fileutils) | `sleistner.vscode-fileutils` | Duplicate files, enter destination paths and copy file names | No | R | O | No |
 | [Codex - OpenAI’s coding agent](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt) | `openai.chatgpt` | OpenAI coding-agent integration | No | R | R | O |
 | [Claude Code for VS Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) | `anthropic.claude-code` | Anthropic coding-agent integration | No | R | R | O |
 | [Good Prompts](https://marketplace.visualstudio.com/items?itemName=omarbanat.goodprompts) | `omarbanat.goodprompts` | Guided prompt generation and library | No | R | R | No |
@@ -251,6 +252,42 @@ Expected result: clicking **Reload** reopens the current window. If the button
 is absent, run **Developer: Reload Window** from the Command Palette. The native
 command also works without this extension; no additional reload extension is needed.
 
+### File Utils: Full Stack file commands
+
+**File Utils** (`sleistner.vscode-fileutils`, publisher Steffen Leistner) belongs
+in Full Stack and is optional in AI. Install it in the selected profile without
+using **Apply Extension to all Profiles**. For Full Stack, the CLI command is:
+
+```bash
+code --profile "Full Stack" --install-extension sleistner.vscode-fileutils
+```
+
+The [Full Stack settings](../../../shared/reference/vscode-profile-data.md#full-stack-overrides)
+show absolute destination paths and keep **Move**, **Duplicate** and **Copy Name**
+in Explorer and tab menus. The editor text menu has no File Utils additions;
+other extension commands remain in the Command Palette. AI recipes inherit
+these preferences, which take effect only when File Utils is installed there.
+
+To verify after applying the profile settings:
+
+1. Open a disposable file in Full Stack and right-click its tab.
+
+   Expected result: **Move**, **Duplicate** and **Copy Name** appear, with no
+   File Utils rename or delete additions.
+
+2. Run **File Utils: Duplicate...** and enter a new destination filename.
+
+   Expected result: the original remains and a separate copy exists at the
+   chosen path. Inspect the destination before confirming.
+
+Release `3.10.3`, dated 22 July 2023, declares VS Code `^1.74.0`, which includes
+1.143.1. Use native Explorer if the extension's picker omits hidden directories
+such as `.agents` or `.github`. The tracker also contains an open report about
+rename undo settings. These reports are limitations to check on your machine.
+[Released manifest](https://github.com/sleistner/vscode-fileutils/blob/v3.10.3/package.json),
+[hidden-directory report](https://github.com/sleistner/vscode-fileutils/issues/684),
+[undo report](https://github.com/sleistner/vscode-fileutils/issues/686).
+
 ## 3. Apply shared User Settings
 
 1. With Default active, run **Preferences: Open User Settings (JSON)**.
@@ -281,6 +318,8 @@ in each profile's own User Settings.
 | Dark Modern and Material Icon Theme | Shared | Shared | Shared | Shared | User Settings |
 | Zsh profiles, terminal font, shell integration and Warp executable | Shared | Shared | Shared | Shared | Machine-specific User Settings; verify paths after import |
 | Git fetch/sync preferences and Conventional Commit instructions | Shared | Shared | Shared | Shared | User Settings |
+| `git.enableSmartCommit` and `git.suggestSmartCommit` | Off | Off | Off | Off | Shared User Settings; stage selected changes before committing |
+| Automatic Git worktree detection | On, limit 30 | On, limit 30 | On, limit 30 | On, limit 30 | Shared User Settings; discover existing worktrees |
 | `chat.tools.global.autoApprove` and `chat.tools.terminal.enableAutoApprove` | Off | Off | Off | Off | Shared User Settings; applies to supported VS Code chat flows |
 | Markdown/JSON formatting and Markdown extension preferences | Shared | Shared | Shared plus prose suggestions off | Shared | Profile User Settings; preserve nested language values |
 | Title-bar and badge colors | Neutral | Purple | Blue | Green | Profile User Settings; do not share across profiles |
@@ -288,6 +327,7 @@ in each profile's own User Settings.
 | Copilot inline suggestions | Off | On except excluded languages | Off | Off | Profile User Settings; chat availability is separate |
 | TS/JS, HTML, CSS/SCSS and Prisma formatting; import actions | No | Enabled | Enabled | No | Full Stack overrides, also combined into AI |
 | GitLens inline annotations | No | Off | Off | Off | Profile User Settings where GitLens is selected |
+| File Utils destination display and context menus | No | Configured | Inherited; active if installed | No | Full Stack User Settings, also combined into AI |
 | `.env` associations, formatting and suggestion restrictions | No | Enabled | Enabled | Enabled | Profile User Settings; not an access-control boundary |
 | Pipeline-file language mode | Default detection | Azure Pipelines | YAML | Azure Pipelines | Profile User Settings, matching installed language providers |
 | SQL and Dockerfile format-on-save | Default behavior | Off | Off | Off | Profile User Settings |
@@ -316,6 +356,18 @@ The shared `terminal.integrated.suggest.upArrowNavigatesHistory` setting pairs
 with the [Zsh matching-history bindings](../shell/zsh.md#search-matching-commands-with-up-and-down).
 Type `brew ` and press Up/Down to check matching history. The VS Code setting
 alone does not configure Zsh; Warp retains its own input behavior.
+
+Keep Smart Commit and its suggestion disabled in all four profiles. This avoids
+automatically staging unrelated edits when nothing is staged and suppresses the
+Smart Commit suggestion. In each profile, open **Preferences: Open Settings (UI)**
+and check that **Git: Enable Smart Commit** and **Git: Suggest Smart Commit** are
+both unchecked. See [staging and committing changes](https://code.visualstudio.com/docs/sourcecontrol/staging-commits)
+for reviewing and staging individual files or selected lines.
+
+The shared `git.detectWorktrees` setting enables discovery of existing Git
+worktrees, with `git.detectWorktreesLimit` set to 30. This does not create a
+worktree. Follow the [worktree guide](../development/worktrees/vscode.md#configure-worktree-detection)
+to verify discovery and choose optional window and terminal preferences.
 
 Stage intended changes before selecting **Generate Commit Message** in Source
 Control. The shared experimental instructions request a Conventional Commit

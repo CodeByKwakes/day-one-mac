@@ -546,3 +546,11 @@ templates/skills/day-one-recover/SKILL.md
 templates/skills/day-one-second-brain/SKILL.md
 templates/skills/day-one-setup/SKILL.md
 templates/skills/day-one-shortcuts/SKILL.md
+
+# Reviewed developer app icons
+integrations/shortcuts/icons/git-clone.svg
+integrations/shortcuts/icons/git-clone.icns
+integrations/shortcuts/icons/open-in-warp.svg
+integrations/shortcuts/icons/open-in-warp.icns
+integrations/shortcuts/icons/open-in-vscode.svg
+integrations/shortcuts/icons/open-in-vscode.icns

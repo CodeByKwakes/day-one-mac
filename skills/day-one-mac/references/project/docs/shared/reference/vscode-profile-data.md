@@ -31,6 +31,9 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
   "git.autofetch": true,
   "git.confirmSync": true,
   "git.enableSmartCommit": false,
+  "git.suggestSmartCommit": false,
+  "git.detectWorktrees": true,
+  "git.detectWorktreesLimit": 30,
   "scm.alwaysShowRepositories": true,
   "workbench.colorTheme": "Dark Modern",
   "workbench.iconTheme": "material-icon-theme",
@@ -150,6 +153,7 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
 | `ms-azure-devops.azure-pipelines` | Recommended |
 | `ms-azuretools.vscode-containers` | Recommended |
 | `ms-ossdata.vscode-pgsql` | Recommended |
+| `sleistner.vscode-fileutils` | Recommended |
 | `orta.vscode-jest` | Optional |
 | `ms-playwright.playwright` | Optional |
 | `bradlc.vscode-tailwindcss` | Optional |
@@ -299,6 +303,18 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
   "claudeCode.respectGitIgnore": true,
   "chatgpt.followUpQueueMode": "queue",
   "chatgpt.reviewDelivery": "inline",
+  "fileutils.inputBox.pathType": "root",
+  "fileutils.menus.context.explorer": [
+    "moveFile",
+    "duplicateFile",
+    "copyFileName"
+  ],
+  "fileutils.menus.context.editor": [],
+  "fileutils.menus.context.editorTitle": [
+    "moveFile",
+    "duplicateFile",
+    "copyFileName"
+  ],
   "workbench.colorCustomizations": {
     "titleBar.activeBackground": "#452568",
     "titleBar.activeForeground": "#FFFFFF",
@@ -335,6 +351,7 @@ Apply Full Stack overrides before these overrides.
 | `ms-playwright.playwright` | Optional |
 | `ms-ossdata.vscode-pgsql` | Optional |
 | `natqe.reload` | Optional |
+| `sleistner.vscode-fileutils` | Optional |
 
 ### AI overrides
 
