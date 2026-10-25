@@ -24,6 +24,9 @@
     "git.autofetch": true,
     "git.confirmSync": true,
     "git.enableSmartCommit": false,
+    "git.suggestSmartCommit": false,
+    "git.detectWorktrees": true,
+    "git.detectWorktreesLimit": 30,
     "scm.alwaysShowRepositories": true,
     "workbench.colorTheme": "Dark Modern",
     "workbench.iconTheme": "material-icon-theme",
@@ -283,6 +286,18 @@
         "claudeCode.respectGitIgnore": true,
         "chatgpt.followUpQueueMode": "queue",
         "chatgpt.reviewDelivery": "inline",
+        "fileutils.inputBox.pathType": "root",
+        "fileutils.menus.context.explorer": [
+          "moveFile",
+          "duplicateFile",
+          "copyFileName"
+        ],
+        "fileutils.menus.context.editor": [],
+        "fileutils.menus.context.editorTitle": [
+          "moveFile",
+          "duplicateFile",
+          "copyFileName"
+        ],
         "workbench.colorCustomizations": {
           "titleBar.activeBackground": "#452568",
           "titleBar.activeForeground": "#FFFFFF",
@@ -310,7 +325,8 @@
         "redhat.vscode-yaml",
         "ms-azure-devops.azure-pipelines",
         "ms-azuretools.vscode-containers",
-        "ms-ossdata.vscode-pgsql"
+        "ms-ossdata.vscode-pgsql",
+        "sleistner.vscode-fileutils"
       ],
       "optional": [
         "orta.vscode-jest",
@@ -375,7 +391,8 @@
         "orta.vscode-jest",
         "ms-playwright.playwright",
         "ms-ossdata.vscode-pgsql",
-        "natqe.reload"
+        "natqe.reload",
+        "sleistner.vscode-fileutils"
       ]
     },
     "operations": {

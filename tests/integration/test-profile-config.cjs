@@ -10,11 +10,24 @@ const golden = require('../fixtures/vscode/recipes-v1.json');
 const expected = structuredClone(golden);
 for (const profile of Object.values(expected)) {
   profile.settings['explorer.compactFolders'] = false;
+  profile.settings['git.suggestSmartCommit'] = false;
+  profile.settings['git.detectWorktrees'] = true;
+  profile.settings['git.detectWorktreesLimit'] = 30;
   profile.settings['terminal.integrated.suggest.upArrowNavigatesHistory'] = true;
   profile.optional.push('natqe.reload');
 }
 for (const pattern of ['azure-pipelines.yml', 'azure-pipelines.yaml', '**/.azure-pipelines/**/*.yml', '**/.azure-pipelines/**/*.yaml']) {
   expected.ai.settings['files.associations'][pattern] = 'yaml';
+}
+expected['full-stack'].extensions.push('sleistner.vscode-fileutils');
+expected.ai.optional.push('sleistner.vscode-fileutils');
+for (const slug of ['full-stack', 'ai']) {
+  Object.assign(expected[slug].settings, {
+    'fileutils.inputBox.pathType': 'root',
+    'fileutils.menus.context.explorer': ['moveFile', 'duplicateFile', 'copyFileName'],
+    'fileutils.menus.context.editor': [],
+    'fileutils.menus.context.editorTitle': ['moveFile', 'duplicateFile', 'copyFileName'],
+  });
 }
 expected['full-stack'].settings['workbench.colorCustomizations']['titleBar.activeBackground'] = '#452568';
 expected['full-stack'].settings['workbench.colorCustomizations']['activityBarBadge.background'] = '#9B6DDA';
