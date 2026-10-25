@@ -549,8 +549,6 @@ templates/phase-05-shell-files/home/.config/zsh/path.zsh
 templates/phase-05-shell-files/home/.gitignore_global
 templates/phase-05-shell-files/home/.zprofile
 templates/phase-05-shell-files/home/.zshrc
-templates/shell-helpers/navigation.zsh
-templates/shell-helpers/packages.zsh
 templates/skills/day-one-check/SKILL.md
 templates/skills/day-one-contribute/SKILL.md
 templates/skills/day-one-mac/SKILL.md

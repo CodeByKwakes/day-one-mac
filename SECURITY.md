@@ -1,10 +1,11 @@
 # Security policy
 
-## Supported version
+## Supported source
 
-Only the newest published Day One Mac release is supported with security
-updates. A previous installed runtime remains available locally for rollback,
-but it may not contain current fixes.
+Current maintenance covers the documentation, portable skills and reviewed
+helpers on the default branch. Retired runtime releases are historical and no
+longer receive fixes. Include the affected commit or skill source revision when
+reporting a vulnerability.
 
 ## Report a vulnerability privately
 
@@ -12,7 +13,7 @@ Do not open a public issue containing a credential, private key, personal
 inventory, unsafe deletion path, or reproducible security exploit.
 
 Use GitHub's **Security** → **Advisories** → **Report a vulnerability** workflow
-for this repository. Include the affected version, macOS version, command,
+for this repository. Include the affected revision, macOS version, command,
 expected result and observed result. Redact usernames, company names, tokens,
 vault names and recovery paths.
 
@@ -27,7 +28,7 @@ Day One Mac is designed to:
 - keep cleanup and rollback preview-first;
 - avoid disk erase and formatting;
 - keep secrets outside the repository and generated reports;
-- verify standalone runtime archives before installation;
+- validate bundled sources and generated skill packages;
 - preserve software it did not install unless the user explicitly selects a
   broader reviewed cleanup.
 
