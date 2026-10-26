@@ -14,14 +14,8 @@ for (const profile of Object.values(expected)) {
   profile.extensions = profile.extensions.filter(id => id !== 'streetsidesoftware.code-spell-checker');
   profile.settings['explorer.compactFolders'] = false;
   profile.settings['explorer.openEditors.visible'] = 9;
-  Object.assign(profile.settings['[markdown]'], {
-    'prettier.printWidth': 80,
-    'prettier.proseWrap': 'preserve',
-    'prettier.tabWidth': 2,
-    'prettier.useTabs': false,
-    'prettier.endOfLine': 'lf',
-    'prettier.singleQuote': true,
-  });
+  profile.settings['[markdown]']['editor.defaultFormatter'] = 'DavidAnson.vscode-markdownlint';
+  profile.settings['markdownlint.configFile'] = '${userHome}/.config/markdownlint/config.json';
   profile.settings['git.suggestSmartCommit'] = false;
   profile.settings['git.detectWorktrees'] = true;
   profile.settings['git.detectWorktreesLimit'] = 30;

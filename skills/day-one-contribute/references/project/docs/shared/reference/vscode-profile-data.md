@@ -85,19 +85,14 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
     }
   ],
   "markdownlint.run": "onSave",
+  "markdownlint.configFile": "${userHome}/.config/markdownlint/config.json",
   "markdown.extension.toc.updateOnSave": false,
   "markdown.extension.tableFormatter.enabled": false,
   "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint",
     "editor.formatOnSave": true,
     "editor.wordWrap": "on",
-    "files.trimTrailingWhitespace": false,
-    "prettier.printWidth": 80,
-    "prettier.proseWrap": "preserve",
-    "prettier.tabWidth": 2,
-    "prettier.useTabs": false,
-    "prettier.endOfLine": "lf",
-    "prettier.singleQuote": true
+    "files.trimTrailingWhitespace": false
   },
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -106,6 +101,20 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
+  }
+}
+```
+
+## Personal Markdown rules
+
+Save this separate JSON object to `~/.config/markdownlint/config.json`, following the [Markdown setup steps](../../setup/manual/editors/vscode.md#markdown-formatting).
+Profile exports and Settings Sync do not include this external file; back it up separately.
+
+```json
+{
+  "MD060": {
+    "style": "compact",
+    "aligned_delimiter": false
   }
 }
 ```

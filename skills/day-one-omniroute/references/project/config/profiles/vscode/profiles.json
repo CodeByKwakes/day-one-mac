@@ -78,19 +78,14 @@
       }
     ],
     "markdownlint.run": "onSave",
+    "markdownlint.configFile": "${userHome}/.config/markdownlint/config.json",
     "markdown.extension.toc.updateOnSave": false,
     "markdown.extension.tableFormatter.enabled": false,
     "[markdown]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.defaultFormatter": "DavidAnson.vscode-markdownlint",
       "editor.formatOnSave": true,
       "editor.wordWrap": "on",
-      "files.trimTrailingWhitespace": false,
-      "prettier.printWidth": 80,
-      "prettier.proseWrap": "preserve",
-      "prettier.tabWidth": 2,
-      "prettier.useTabs": false,
-      "prettier.endOfLine": "lf",
-      "prettier.singleQuote": true
+      "files.trimTrailingWhitespace": false
     },
     "[json]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -99,6 +94,12 @@
     "[jsonc]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
       "editor.formatOnSave": true
+    }
+  },
+  "markdownlintConfig": {
+    "MD060": {
+      "style": "compact",
+      "aligned_delimiter": false
     }
   },
   "keybindings": {

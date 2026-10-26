@@ -144,11 +144,11 @@ their parent extension; do not install them a second time just to match a count.
 
 | Extension | Identifier | Purpose | Default | Full Stack | AI | Operations |
 |---|---|---|---|---|---|---|
-| [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) | `esbenp.prettier-vscode` | Format supported languages | R | R | R | R |
+| [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) | `esbenp.prettier-vscode` | Format code and JSON | R | R | R | R |
 | [EditorConfig](https://marketplace.visualstudio.com/items?itemName=editorconfig.editorconfig) | `editorconfig.editorconfig` | Respect repository whitespace rules | R | R | R | R |
 | [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=pkief.material-icon-theme) | `pkief.material-icon-theme` | File and folder icons | R | R | R | R |
 | [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) | `yzhang.markdown-all-in-one` | Markdown editing conveniences | R | R | R | R |
-| [markdownlint](https://marketplace.visualstudio.com/items?itemName=davidanson.vscode-markdownlint) | `davidanson.vscode-markdownlint` | Markdown structure checks | R | R | R | R |
+| [markdownlint](https://marketplace.visualstudio.com/items?itemName=davidanson.vscode-markdownlint) | `davidanson.vscode-markdownlint` | Format and check Markdown | R | R | R | R |
 | [Angular Language Service](https://marketplace.visualstudio.com/items?itemName=angular.ng-template) | `angular.ng-template` | Angular template diagnostics and navigation | No | R | R | No |
 | [Rename Angular Component](https://marketplace.visualstudio.com/items?itemName=tomwhite007.rename-angular-component) | `tomwhite007.rename-angular-component` | Rename related Angular files, classes, selectors and references | No | R | R | No |
 | [Angular HTML](https://marketplace.visualstudio.com/items?itemName=ghaschel.vscode-angular-html) | `ghaschel.vscode-angular-html` | Your chosen template highlighting | No | R | No | No |
@@ -470,6 +470,9 @@ and [reference directive](https://tailwindcss.com/docs/functions-and-directives#
 
 ## 3. Apply shared User Settings
 
+Prepare the [personal Markdown rules](#markdown-formatting) before applying
+the shared settings or importing a generated profile.
+
 1. With Default active, run **Preferences: Open User Settings (JSON)**.
 2. Merge the [shared settings block](../../../shared/reference/vscode-profile-data.md#shared-settings)
    into the existing root object, preserving unrelated preferences.
@@ -480,7 +483,8 @@ and [reference directive](https://tailwindcss.com/docs/functions-and-directives#
 
 Expected result: one valid JSON object supplies Dark Modern, a neutral title-bar
 accent, the selected font and the development Zsh terminal. Default's Copilot
-inline suggestions are off. Markdown and JSON use Prettier on explicit saves.
+inline suggestions are off. Markdown uses markdownlint on explicit saves;
+JSON uses Prettier.
 Explorer displays nested folders on separate rows, including folders with only
 one child folder, because `explorer.compactFolders` is `false`.
 The expanded **Open Editors** section lists your open files.
@@ -515,7 +519,7 @@ in each profile's own User Settings.
 | `chat.tools.global.autoApprove` and `chat.tools.terminal.enableAutoApprove` | Off | Off | Off | Off | Shared User Settings; applies to supported VS Code chat flows |
 | `chat.mcp.gallery.enabled` | On | On | On | On | Shared User Settings; enables the MCP server gallery (Preview) |
 | Markdown/JSON formatting and Markdown extension preferences | Shared | Shared | Shared plus prose suggestions off | Shared | Profile User Settings; preserve nested language values |
-| Markdown Prettier style | Shared | Shared | Shared | Shared | Profile User Settings inside `[markdown]`; see [Markdown formatting](#markdown-formatting) |
+| Markdown compact-table style | Shared | Shared | Shared | Shared | Profile User Settings plus one private rules file; see [Markdown formatting](#markdown-formatting) |
 | Title-bar and badge colors | Neutral | Purple | Blue | Green | Profile User Settings; do not share across profiles |
 | Profile icon | Built-in gear | Code (`code`) | Robot (`robot`) | Server (`server`) | Profiles editor; separate from User Settings and file/folder icons |
 | Copilot inline suggestions | Off | On except excluded languages | Off | Off | Profile User Settings; chat availability is separate |
@@ -577,36 +581,76 @@ Keep credentials out of settings and exports.
 
 ### Markdown formatting
 
-All four profiles use Prettier when you explicitly save a Markdown file.
-The language-specific `editor.formatOnSave` value overrides the general value;
-Auto Save remains off. The shared `[markdown]` block in the
-[configuration reference](../../../shared/reference/vscode-profile-data.md#shared-settings)
-owns the exact settings. Merge its properties into each profile's existing
-block, preserving AI's suggestion preferences.
+All four profiles use markdownlint to format Markdown on explicit saves.
+Its compact table rule keeps one space around cell contents instead of padding
+columns to match the longest cell. Prettier remains the formatter for code and
+JSON in the profiles that enable those languages.
 
-The style preserves existing paragraph line breaks and wraps text visually in
-the editor. Its print width guides formatting of supported content, including
-code examples; it does not impose a hard line-length limit. Space indentation,
-LF line endings and single quotes in supported code examples keep the fallback
-style consistent across profiles. TypeScript files retain their own settings.
+1. Create the personal configuration directory in Terminal:
 
-Markdown All in One's table formatter and automatic table-of-contents updates
-are disabled to give Prettier and deliberate edits clear ownership. Markdownlint
-checks structure on save. Disabling generic trailing-whitespace trimming for
-Markdown protects spaces used for explicit line breaks.
+   ```bash
+   mkdir -p "$HOME/.config/markdownlint"
+   ```
 
-Prettier extension 12.4.0 supports these language-specific options, verified on
-26 October 2026. Project Prettier configuration and EditorConfig rules take
-precedence over the extension's formatting defaults. Files excluded by
-`.prettierignore` can remain unformatted. See the publisher's
-[configuration guidance](https://github.com/prettier/prettier-vscode#configuration),
-[language-specific options](https://github.com/prettier/prettier-vscode#language-specific-formatting)
-and [prose wrapping reference](https://prettier.io/docs/options#prose-wrap).
+   Expected result: the directory exists outside your repositories.
 
-To verify, save a disposable `.md` file containing an uneven table and a fenced
-TypeScript example with `Cmd+S` in each profile. Expect aligned table columns,
-formatted code and unchanged paragraph wrapping unless project rules override
-the defaults. Inspect **View → Output → Prettier** if formatting does not run.
+2. Open its rule file in VS Code:
+
+   ```bash
+   code "$HOME/.config/markdownlint/config.json"
+   ```
+
+   Expected result: VS Code opens the existing file or a new buffer. Back up
+   existing contents before editing them.
+
+3. Copy the [personal Markdown rules](../../../shared/reference/vscode-profile-data.md#personal-markdown-rules)
+   into that file and save. For an existing configuration, merge the `MD060`
+   properties while preserving unrelated rules.
+
+   Expected result: a valid JSON file selects the compact table style. The
+   configuration reference owns its exact values.
+
+4. Apply the [shared settings](../../../shared/reference/vscode-profile-data.md#shared-settings)
+   to each selected profile, preserving nested preferences such as AI's
+   suggestion settings.
+
+   Expected result: `markdownlint.configFile` points to the personal rule file,
+   and `[markdown]` selects `DavidAnson.vscode-markdownlint` with format-on-save
+   enabled. Keep Markdown All in One's table formatter disabled. Avoid adding
+   a second formatter or fix-on-save action for Markdown.
+
+5. Save a disposable Markdown file containing compact and padded tables with
+   `Cmd+S` in each profile. Test outside a repository first to isolate your
+   personal rules, then check a project with its own configuration.
+
+   Expected result: compact cells retain their spacing; padded cells lose
+   extra spaces unless project rules select another style. Existing long
+   separator dashes remain unchanged. Shorten them manually to `---` where
+   wanted, preserving alignment markers such as `:---` or `---:`.
+
+Markdownlint 0.62.1 provides this formatter and supports the `MD060` compact
+rule, checked on 26 October 2026. It applies supported lint fixes, including
+spacing around headings and lists, but does not reformat code inside fenced
+examples like Prettier. Language-specific Prettier options do not control this
+Markdown formatter. See the publisher's [formatting commands](https://github.com/DavidAnson/vscode-markdownlint#fix)
+and [table style rule](https://github.com/DavidAnson/markdownlint/blob/main/doc/md060.md).
+
+Word wrapping stays enabled for prose. Long table content can still wrap
+visually; `Option+Z` toggles wrapping in the current editor. It does not change
+the file's spacing. Generic trailing-whitespace trimming remains disabled for
+Markdown to protect spaces used for explicit line breaks.
+
+The supported `markdownlint.configFile` setting supplies personal defaults;
+repository configurations can override them. The older `markdownlint.config`
+setting is deprecated. Keep established project rules authoritative and inspect
+**View → Output → markdownlint** when behavior differs. See the
+[configuration precedence](https://github.com/DavidAnson/vscode-markdownlint#configure)
+and [personal configuration guidance](https://github.com/DavidAnson/vscode-markdownlint#markdownlintconfigfile).
+
+Profile exports and Settings Sync include the setting, not the external rule
+file. Back up `~/.config/markdownlint/config.json` alongside your profile exports
+and restore it before using the profiles on another Mac. To revert the setup,
+restore the saved profile settings and the previous rule file if one existed.
 
 ### Generate Conventional Commit messages with GitLens
 
@@ -1090,6 +1134,8 @@ database migration is safe.
 
 Expected result: each selected profile has a distinct export and older backups
 remain available. Inspect the export for private paths or account details.
+Back up the external rule file described under [Markdown formatting](#markdown-formatting)
+separately; its contents are not stored in the profile export.
 
 VS Code can also save a profile to a GitHub secret gist. Use a local file when
 the profile is private, work-managed, or not intended to leave the Mac. Some
@@ -1245,7 +1291,7 @@ you intend to replace the shared remote state.
 | `code: command not found` | Follow [Open VS Code and enable the CLI](#open-vs-code-and-enable-the-cli), then reopen Terminal |
 | Old extensions reappear | Turn off Settings Sync, remove the unwanted extensions, verify locally, then reconfigure sync |
 | A formatter changes every project | Inspect the active profile's User Settings; scope the formatter by language and remove unintended all-profiles sharing. Keep existing repository formatting rules authoritative |
-| Markdown does not format on save, or its style differs | Confirm Markdown language mode and Prettier enablement in the active profile; inspect **View → Output → Prettier**, workspace overrides, project configuration and ignore rules |
+| Markdown does not format on save, or tables gain padding | Confirm Markdown language mode, markdownlint formatter ownership and the private rule file; inspect **View → Output → markdownlint** and project overrides. Check that another formatter or save action is not formatting tables |
 | Starship symbols are squares | Select JetBrainsMono Nerd Font and reopen the terminal |
 | One profile looks different | Confirm the active profile from **Manage → Profiles** |
 | Reload is missing from the status bar | Check that the extension is enabled in the active profile and inspect local/remote placement; use **Developer: Reload Window** as the fallback |
