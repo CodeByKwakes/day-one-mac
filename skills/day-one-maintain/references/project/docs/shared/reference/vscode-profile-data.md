@@ -112,6 +112,11 @@ Profile exports and Settings Sync do not include this external file; back it up 
 
 ```json
 {
+  "MD013": {
+    "line_length": 100,
+    "tables": false,
+    "code_blocks": false
+  },
   "MD060": {
     "style": "compact",
     "aligned_delimiter": false

@@ -604,11 +604,12 @@ JSON in the profiles that enable those languages.
    existing contents before editing them.
 
 3. Copy the [personal Markdown rules](../../../shared/reference/vscode-profile-data.md#personal-markdown-rules)
-   into that file and save. For an existing configuration, merge the `MD060`
-   properties while preserving unrelated rules.
+   into that file and save. For an existing configuration, merge the `MD013`
+   and `MD060` properties while preserving unrelated rules.
 
-   Expected result: a valid JSON file selects the compact table style. The
-   configuration reference owns its exact values.
+   Expected result: a valid JSON file selects compact tables and a 100-character
+   prose limit, with tables and code blocks exempt. The configuration reference
+   owns its exact values.
 
 4. Apply the [shared settings](../../../shared/reference/vscode-profile-data.md#shared-settings)
    to each selected profile, preserving nested preferences such as AI's
@@ -628,6 +629,14 @@ JSON in the profiles that enable those languages.
    separator dashes remain unchanged. Shorten them manually to `---` where
    wanted, preserving alignment markers such as `:---` or `---:`.
 
+6. Add a table row and a labeled code block with lines longer than 100 characters
+   to the disposable file. Add a prose line longer than 100 characters with
+   several words beyond that limit, then save.
+
+   Expected result: `MD013` flags the prose line but skips the table and code
+   block. Split the prose at a space, then save again to clear that warning.
+   Project rules can select a different limit or include tables and code.
+
 Markdownlint 0.62.1 provides this formatter and supports the `MD060` compact
 rule, checked on 26 October 2026. It applies supported lint fixes, including
 spacing around headings and lists, but does not reformat code inside fenced
@@ -635,10 +644,22 @@ examples like Prettier. Language-specific Prettier options do not control this
 Markdown formatter. See the publisher's [formatting commands](https://github.com/DavidAnson/vscode-markdownlint#fix)
 and [table style rule](https://github.com/DavidAnson/markdownlint/blob/main/doc/md060.md).
 
+The personal `MD013` rule uses a 100-character limit for prose and headings;
+tables and code blocks are exempt so long cells and commands remain intact.
+Markdownlint reports long prose without automatically reflowing it. Wrap prose
+at word boundaries; shorten an overlong heading instead of splitting it.
+The rule retains its default exceptions for unbreakable text such as long URLs.
+See the [line-length rule](https://github.com/DavidAnson/markdownlint/blob/main/doc/md013.md).
+
+Other checks stay enabled. Label command fences with `bash` and plain output
+with `text` to satisfy `MD040`. Put angle-bracket placeholders such as `<app>`
+inside inline code so `MD033` does not treat them as HTML.
+
 Word wrapping stays enabled for prose. Long table content can still wrap
 visually; `Option+Z` toggles wrapping in the current editor. It does not change
-the file's spacing. Generic trailing-whitespace trimming remains disabled for
-Markdown to protect spaces used for explicit line breaks.
+the file's line lengths or resolve `MD013` warnings. Generic trailing-whitespace
+trimming remains disabled for Markdown to protect spaces used for explicit line
+breaks.
 
 The supported `markdownlint.configFile` setting supplies personal defaults;
 repository configurations can override them. The older `markdownlint.config`
