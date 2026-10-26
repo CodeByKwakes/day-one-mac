@@ -515,6 +515,7 @@ in each profile's own User Settings.
 | `chat.tools.global.autoApprove` and `chat.tools.terminal.enableAutoApprove` | Off | Off | Off | Off | Shared User Settings; applies to supported VS Code chat flows |
 | `chat.mcp.gallery.enabled` | On | On | On | On | Shared User Settings; enables the MCP server gallery (Preview) |
 | Markdown/JSON formatting and Markdown extension preferences | Shared | Shared | Shared plus prose suggestions off | Shared | Profile User Settings; preserve nested language values |
+| Markdown Prettier style | Shared | Shared | Shared | Shared | Profile User Settings inside `[markdown]`; see [Markdown formatting](#markdown-formatting) |
 | Title-bar and badge colors | Neutral | Purple | Blue | Green | Profile User Settings; do not share across profiles |
 | Profile icon | Built-in gear | Code (`code`) | Robot (`robot`) | Server (`server`) | Profiles editor; separate from User Settings and file/folder icons |
 | Copilot inline suggestions | Off | On except excluded languages | Off | Off | Profile User Settings; chat availability is separate |
@@ -542,10 +543,6 @@ To browse MCP servers, open Extensions and search `@mcp`, or run **MCP: Browse
 MCP Servers** from the Command Palette. Enabling the gallery does not install
 servers or change approvals. Follow the [MCP setup guide](../ai/mcp.md) to
 configure a selected server; organization policies can restrict availability.
-
-Markdown All in One's table formatter and automatic table-of-contents updates
-are disabled to give Prettier and deliberate edits clear ownership. Repository
-Prettier and EditorConfig rules still apply.
 
 The non-login Zsh terminal requires the shared PATH helper in `.zshrc`. Follow
 the [Zsh recipe](../shell/zsh.md) and replace `/bin/zsh` in both terminal profiles
@@ -577,6 +574,39 @@ the result. This setting applies to Copilot's generator; GitLens uses the
 separate setting below. Codex and Claude use their own instructions.
 Keep credentials out of settings and exports.
 [AI settings reference](https://code.visualstudio.com/docs/agents/reference/ai-settings).
+
+### Markdown formatting
+
+All four profiles use Prettier when you explicitly save a Markdown file.
+The language-specific `editor.formatOnSave` value overrides the general value;
+Auto Save remains off. The shared `[markdown]` block in the
+[configuration reference](../../../shared/reference/vscode-profile-data.md#shared-settings)
+owns the exact settings. Merge its properties into each profile's existing
+block, preserving AI's suggestion preferences.
+
+The style preserves existing paragraph line breaks and wraps text visually in
+the editor. Its print width guides formatting of supported content, including
+code examples; it does not impose a hard line-length limit. Space indentation,
+LF line endings and single quotes in supported code examples keep the fallback
+style consistent across profiles. TypeScript files retain their own settings.
+
+Markdown All in One's table formatter and automatic table-of-contents updates
+are disabled to give Prettier and deliberate edits clear ownership. Markdownlint
+checks structure on save. Disabling generic trailing-whitespace trimming for
+Markdown protects spaces used for explicit line breaks.
+
+Prettier extension 12.4.0 supports these language-specific options, verified on
+26 October 2026. Project Prettier configuration and EditorConfig rules take
+precedence over the extension's formatting defaults. Files excluded by
+`.prettierignore` can remain unformatted. See the publisher's
+[configuration guidance](https://github.com/prettier/prettier-vscode#configuration),
+[language-specific options](https://github.com/prettier/prettier-vscode#language-specific-formatting)
+and [prose wrapping reference](https://prettier.io/docs/options#prose-wrap).
+
+To verify, save a disposable `.md` file containing an uneven table and a fenced
+TypeScript example with `Cmd+S` in each profile. Expect aligned table columns,
+formatted code and unchanged paragraph wrapping unless project rules override
+the defaults. Inspect **View → Output → Prettier** if formatting does not run.
 
 ### Generate Conventional Commit messages with GitLens
 
@@ -1015,6 +1045,7 @@ Run the checks for the profiles and optional integrations you selected.
 |---|---|
 | Switch through your profiles | Each name, accent and enabled extension set matches its matrix column |
 | Open Explorer in each profile | Open Editors is visible and expanded; opening a file adds it to the list |
+| Save a disposable Markdown file in each profile | [Markdown formatting](#markdown-formatting) uses the shared style unless project rules override it |
 | Open a development terminal and run `node --version`, `git --version` and the project package manager's version command | Each tool resolves to the intended installation |
 | Open an Angular template and Prisma schema in Full Stack or AI | Diagnostics and formatter ownership match the selected extensions |
 | Open a configured Tailwind project in Full Stack or AI | CSS uses Tailwind CSS mode, SCSS keeps its mode, class completion works and Prettier formats CSS on save |
@@ -1214,6 +1245,7 @@ you intend to replace the shared remote state.
 | `code: command not found` | Follow [Open VS Code and enable the CLI](#open-vs-code-and-enable-the-cli), then reopen Terminal |
 | Old extensions reappear | Turn off Settings Sync, remove the unwanted extensions, verify locally, then reconfigure sync |
 | A formatter changes every project | Inspect the active profile's User Settings; scope the formatter by language and remove unintended all-profiles sharing. Keep existing repository formatting rules authoritative |
+| Markdown does not format on save, or its style differs | Confirm Markdown language mode and Prettier enablement in the active profile; inspect **View → Output → Prettier**, workspace overrides, project configuration and ignore rules |
 | Starship symbols are squares | Select JetBrainsMono Nerd Font and reopen the terminal |
 | One profile looks different | Confirm the active profile from **Manage → Profiles** |
 | Reload is missing from the status bar | Check that the extension is enabled in the active profile and inspect local/remote placement; use **Developer: Reload Window** as the fallback |

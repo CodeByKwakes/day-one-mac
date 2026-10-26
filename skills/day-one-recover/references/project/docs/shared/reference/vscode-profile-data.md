@@ -91,7 +91,13 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "editor.wordWrap": "on",
-    "files.trimTrailingWhitespace": false
+    "files.trimTrailingWhitespace": false,
+    "prettier.printWidth": 80,
+    "prettier.proseWrap": "preserve",
+    "prettier.tabWidth": 2,
+    "prettier.useTabs": false,
+    "prettier.endOfLine": "lf",
+    "prettier.singleQuote": true
   },
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
