@@ -10,6 +10,7 @@ const golden = require('../fixtures/vscode/recipes-v1.json');
 const expected = structuredClone(golden);
 for (const profile of Object.values(expected)) {
   profile.settings['chat.mcp.gallery.enabled'] = true;
+  profile.settings['gitlens.ai.generateCommitMessage.customInstructions'] = 'Use Conventional Commits: type(scope): description, omitting the scope when unnecessary. Choose feat, fix, docs, refactor, perf, test, build, ci, chore, style, or revert according to the actual changes and repository conventions. Write a specific, imperative subject, preferably within 72 characters, without a trailing period. For substantial changes, add a blank line and a concise body explaining what changed and why, using only evidence from the diff and supplied context. Keep simple changes to a subject alone. Do not invent motivations, test results, issue references, or compatibility guarantees. Use ! and a BREAKING CHANGE footer only for actual breaking changes. Return only the commit message.';
   profile.extensions = profile.extensions.filter(id => id !== 'streetsidesoftware.code-spell-checker');
   profile.settings['explorer.compactFolders'] = false;
   profile.settings['explorer.openEditors.visible'] = 9;

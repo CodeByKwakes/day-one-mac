@@ -509,6 +509,7 @@ in each profile's own User Settings.
 | Dark Modern and Material Icon Theme | Shared | Shared | Shared | Shared | User Settings |
 | Zsh profiles, terminal font, shell integration and Warp executable | Shared | Shared | Shared | Shared | Machine-specific User Settings; verify paths after import |
 | Git fetch/sync preferences and Conventional Commit instructions | Shared | Shared | Shared | Shared | User Settings |
+| GitLens Conventional Commit message instructions | Shared; active if installed | Shared | Shared | Shared | User Settings; separate from Copilot's generator |
 | `git.enableSmartCommit` and `git.suggestSmartCommit` | Off | Off | Off | Off | Shared User Settings; stage selected changes before committing |
 | Automatic Git worktree detection | On, limit 30 | On, limit 30 | On, limit 30 | On, limit 30 | Shared User Settings; discover existing worktrees |
 | `chat.tools.global.autoApprove` and `chat.tools.terminal.enableAutoApprove` | Off | Off | Off | Off | Shared User Settings; applies to supported VS Code chat flows |
@@ -569,11 +570,53 @@ worktree. Follow the [worktree guide](../development/worktrees/vscode.md#configu
 to verify discovery and choose optional window and terminal preferences.
 
 Stage intended changes before selecting **Generate Commit Message** in Source
-Control. The shared experimental instructions request a Conventional Commit
-subject and a useful body for substantial changes. Review the result. These
-instructions apply to Copilot's generator; Codex and Claude use their own
-instructions. Keep credentials out of settings and exports.
+Control. The shared experimental
+`github.copilot.chat.commitMessageGeneration.instructions` setting requests a
+Conventional Commit subject and a useful body for substantial changes. Review
+the result. This setting applies to Copilot's generator; GitLens uses the
+separate setting below. Codex and Claude use their own instructions.
+Keep credentials out of settings and exports.
 [AI settings reference](https://code.visualstudio.com/docs/agents/reference/ai-settings).
+
+### Generate Conventional Commit messages with GitLens
+
+The shared `gitlens.ai.generateCommitMessage.customInstructions` setting asks
+GitLens to use `type(scope): description`, with an optional scope and an
+evidence-based body for substantial changes. Its full value lives in the
+[shared settings JSON](../../../shared/reference/vscode-profile-data.md#shared-settings).
+All four recipes carry it; Default uses it only if GitLens is available.
+This does not add GitLens to Default's extension list or change the AI provider.
+
+The setting and its use by both message generation and commit composition
+were checked against GitLens 19.4.0 on 25 October 2026. Keep
+`gitlens.ai.generateCommits.customInstructions` for additional grouping rules
+if needed; duplicating the message instructions there is unnecessary in this
+version. [GitLens configuration](https://github.com/gitkraken/vscode-gitlens/blob/main/src/config.ts),
+[settings reference](https://help.gitkraken.com/gitlens/gitlens-settings/).
+
+1. Open **Preferences: Open User Settings (JSON)** in the intended profile.
+
+   Expected result: the shared GitLens instruction is present. Add its value
+   from the linked JSON if it is missing.
+
+2. Stage the files or individual changes intended for the next commit.
+
+   Expected result: Source Control's **Staged Changes** contains that scope.
+
+3. Run **GitLens: Generate Commit Message** from the Command Palette.
+
+   Expected result: GitLens fills the commit message using its configured AI
+   provider. Complete its provider or account setup if prompted.
+
+4. Review the generated message against the staged changes before committing.
+
+   Expected result: the type and scope match the change, and any body explains
+   supported facts. Remove invented test results or unsupported breaking-change
+   claims. [GitLens generation workflow](https://help.gitkraken.com/gitlens/gitlens-features/#ai-generated-commit-messages).
+
+These instructions guide generation; a repository hook such as commitlint
+provides format checks. Removing this one User Setting restores GitLens's
+default message instructions without changing Copilot's settings.
 
 ## 4. Apply profile settings
 
@@ -979,6 +1022,7 @@ Run the checks for the profiles and optional integrations you selected.
 | Rename a disposable Angular component in Full Stack or AI | Related files and references match the new name; reviewed changes pass the project's build and tests |
 | Search Extensions for `streetsidesoftware.code-spell-checker` in all four profiles | Code Spell Checker is not installed in these profiles |
 | Save and use import shortcuts on a disposable TS/JS change | Sorting and removal follow the chosen policy; the diff contains only intended edits |
+| Generate a GitLens message for reviewed staged changes | The message follows Conventional Commits and describes only the staged scope; generation alone does not commit |
 | Inspect icons and HTML token colors in Full Stack | The selected folders and tokens use the configured appearance |
 | Open Good Prompts in Full Stack or AI | A generated prompt can be reviewed before sending it to an agent |
 | Inspect selected AI clients and their linked skills/MCP configuration | The intended account, project, permissions and tools are available in that client |
