@@ -173,6 +173,7 @@ their parent extension; do not install them a second time just to match a count.
 | [Jest](https://marketplace.visualstudio.com/items?itemName=orta.vscode-jest) | `orta.vscode-jest` | When the repository uses Jest | No | O | O | No |
 | [Playwright Test](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) | `ms-playwright.playwright` | When the repository uses Playwright | No | O | O | No |
 | [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) | `bradlc.vscode-tailwindcss` | Tailwind classes, directives and `@apply` diagnostics | No | R | R | No |
+| [CSS Peek](https://marketplace.visualstudio.com/items?itemName=pranaygp.vscode-css-peek) | `pranaygp.vscode-css-peek` | Navigate from template classes and IDs to existing CSS, SCSS and Less selectors | No | R | O | No |
 | [Stylelint](https://marketplace.visualstudio.com/items?itemName=stylelint.vscode-stylelint) | `stylelint.vscode-stylelint` | When the repository configures Stylelint | No | O | No | No |
 | [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) | `ms-vscode-remote.remote-containers` | When you develop inside a container | No | O | No | O |
 | [GitHub Pull Requests](https://marketplace.visualstudio.com/items?itemName=github.vscode-pull-request-github) | `github.vscode-pull-request-github` | GitHub-hosted PRs; not Azure Repos PRs | No | O | No | No |
@@ -467,6 +468,61 @@ version 1.23.1 on 25 October 2026. See
 [Auto Barrel documentation](https://github.com/ManuelGil/vscode-auto-barrel)
 and [NestJS circular-dependency guidance](https://docs.nestjs.com/fundamentals/circular-dependency).
 
+### CSS Peek: Full Stack, optional in AI
+
+Use **CSS Peek**, published by Pranay Prakash (`pranaygp`), to inspect authored
+styles from template class names and IDs. Install it in Full Stack; select it
+for AI when reviewing frontend changes. Default and Operations do not need it.
+
+1. Select the existing Full Stack profile and install the extension:
+
+   ```bash
+   code --profile "Full Stack" --install-extension pranaygp.vscode-css-peek
+   ```
+
+   Expected result: CSS Peek appears in Full Stack. Leave **Apply Extension to
+   all Profiles** off. If selected for AI, repeat with `--profile "AI"`.
+
+2. Open **Preferences: Open User Settings (JSON)** and merge the `cssPeek.*`
+   entries from the [Full Stack settings](../../../shared/reference/vscode-profile-data.md#full-stack-overrides).
+
+   Expected result: tag lookup and extension telemetry are disabled. Root
+   `.gitignore` filtering remains enabled, and lookup includes stylesheets
+   beyond those directly linked from the template. AI inherits these recipe
+   values; they take effect only when CSS Peek is installed.
+
+3. In a disposable local folder, save `index.html` containing
+   `<section class="peek-demo">Example</section>` and `styles.scss` containing
+   `.peek-demo { color: red; }`.
+
+   Expected result: both files appear in the same opened VS Code folder.
+
+4. Place the cursor inside `peek-demo` in the HTML file and run **Peek Definition**.
+
+   Expected result: the `.peek-demo` rule appears from `styles.scss`. If it
+   does not, check CSS Peek is enabled in the active profile and the stylesheet
+   is not ignored. Inspect **Output → CSS Peek** for diagnostics.
+
+Keep `cssPeek.supportTags` disabled for Angular, as the publisher recommends.
+Keep `cssPeek.peekToLinkedOnly` disabled because an Angular external template
+does not normally link its component stylesheet directly. Repeated selectors
+can return several candidates; a match does not establish Angular component scope.
+
+CSS Peek finds existing selectors, so retain Tailwind CSS IntelliSense for
+generated utilities and `@apply` support. Keep Angular Language Service for
+framework diagnostics and navigation, and Prettier for formatting. Preserve
+the existing HTML and Tailwind CSS language associations.
+
+CSS Peek 4.5.1's installed manifest and publisher documentation, checked on
+27 October 2026, list these settings and require VS Code 1.91 or newer.
+Root `.gitignore` filtering does not
+handle nested ignore files or negated patterns. See the
+[Marketplace listing](https://marketplace.visualstudio.com/items?itemName=pranaygp.vscode-css-peek)
+and [publisher settings reference](https://github.com/pranaygp/vscode-css-peek#configuration).
+
+To undo this addition, uninstall CSS Peek in the selected profile and remove
+only its `cssPeek.*` settings, restoring any values you previously used.
+
 ### Tailwind CSS: Full Stack and AI
 
 Install **Tailwind CSS IntelliSense** (`bradlc.vscode-tailwindcss`) in both
@@ -588,6 +644,7 @@ in each profile's own User Settings.
 | TS/JS, HTML, CSS/SCSS and Prisma formatting; import actions | No | Enabled | Enabled | No | Full Stack overrides, also combined into AI |
 | GitLens inline annotations | No | Off | Off | Off | Profile User Settings where GitLens is selected |
 | File Utils destination display and context menus | No | Configured | Inherited; active if installed | No | Full Stack User Settings, also combined into AI |
+| CSS Peek selector lookup and telemetry preferences | No | Configured | Inherited; active if installed | No | Full Stack User Settings, also combined into AI |
 | NPM Visual Manager columns, scan depth and background badge checks | No | Configured | Inherited; active if installed | No | Profile User Settings; avoid the workspace-writing Ignore Package button |
 | Auto Barrel generation scope, export detection and formatting | No | Configured | Inherited | No | Profile User Settings; see [Auto Barrel](#auto-barrel-full-stack-and-ai) |
 | Tailwind CSS mode, Prettier registration, HTML class suggestions and SCSS at-rule warning policy | No | Enabled | Inherited | No | Profile User Settings; see [Tailwind CSS](#tailwind-css-full-stack-and-ai) |
@@ -1256,6 +1313,7 @@ Run the checks for the profiles and optional integrations you selected.
 | Open a development terminal and run `node --version`, `git --version` and the project package manager's version command | Each tool resolves to the intended installation |
 | Open an Angular template and Prisma schema in Full Stack or AI | Diagnostics and formatter ownership match the selected extensions |
 | Open a configured Tailwind project in Full Stack or AI | CSS uses Tailwind CSS mode, SCSS keeps its mode, class completion works and Prettier formats CSS on save |
+| Peek a class definition in the disposable CSS Peek example in Full Stack, or AI if selected | The matching authored stylesheet rule appears; Tailwind and Angular tooling remain enabled |
 | Generate a barrel in a disposable TypeScript directory in Full Stack or AI | Exports match the selected files, respect exclusions and pass the project's type check |
 | Rename a disposable Angular component in Full Stack or AI | Related files and references match the new name; reviewed changes pass the project's build and tests |
 | Search Extensions for `streetsidesoftware.code-spell-checker` in all four profiles | Code Spell Checker is not installed in these profiles |

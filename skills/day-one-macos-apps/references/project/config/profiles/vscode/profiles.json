@@ -241,6 +241,10 @@
         "tailwindCSS.validate": true,
         "tailwindCSS.lint.invalidApply": "error",
         "scss.lint.unknownAtRules": "ignore",
+        "cssPeek.supportTags": false,
+        "cssPeek.peekToLinkedOnly": false,
+        "cssPeek.respectGitignore": true,
+        "cssPeek.enableTelemetry": false,
         "renameAngularComponent.showWhatsNewPopup": false,
         "renameAngularComponent.debugLog": false,
         "renameAngularComponent.useLocalDirectPaths": false,
@@ -390,7 +394,8 @@
         "sleistner.vscode-fileutils",
         "bradlc.vscode-tailwindcss",
         "imgildev.vscode-auto-barrel",
-        "tomwhite007.rename-angular-component"
+        "tomwhite007.rename-angular-component",
+        "pranaygp.vscode-css-peek"
       ],
       "optional": [
         "orta.vscode-jest",
@@ -457,7 +462,8 @@
         "ms-ossdata.vscode-pgsql",
         "natqe.reload",
         "sleistner.vscode-fileutils",
-        "luisclementdev.npm-visual-manager"
+        "luisclementdev.npm-visual-manager",
+        "pranaygp.vscode-css-peek"
       ]
     },
     "operations": {

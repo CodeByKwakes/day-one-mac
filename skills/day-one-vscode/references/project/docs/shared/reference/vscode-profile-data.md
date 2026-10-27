@@ -186,6 +186,7 @@ Profile exports and Settings Sync do not include this external file; back it up 
 | `bradlc.vscode-tailwindcss` | Recommended |
 | `imgildev.vscode-auto-barrel` | Recommended |
 | `tomwhite007.rename-angular-component` | Recommended |
+| `pranaygp.vscode-css-peek` | Recommended |
 | `orta.vscode-jest` | Optional |
 | `ms-playwright.playwright` | Optional |
 | `stylelint.vscode-stylelint` | Optional |
@@ -262,6 +263,10 @@ Profile exports and Settings Sync do not include this external file; back it up 
   "tailwindCSS.validate": true,
   "tailwindCSS.lint.invalidApply": "error",
   "scss.lint.unknownAtRules": "ignore",
+  "cssPeek.supportTags": false,
+  "cssPeek.peekToLinkedOnly": false,
+  "cssPeek.respectGitignore": true,
+  "cssPeek.enableTelemetry": false,
   "renameAngularComponent.showWhatsNewPopup": false,
   "renameAngularComponent.debugLog": false,
   "renameAngularComponent.useLocalDirectPaths": false,
@@ -420,6 +425,7 @@ Apply Full Stack overrides before these overrides.
 | `natqe.reload` | Optional |
 | `sleistner.vscode-fileutils` | Optional |
 | `luisclementdev.npm-visual-manager` | Optional |
+| `pranaygp.vscode-css-peek` | Optional |
 
 ### AI overrides
 

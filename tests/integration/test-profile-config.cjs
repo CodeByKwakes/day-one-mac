@@ -42,6 +42,7 @@ expected['full-stack'].extensions.splice(expected['full-stack'].extensions.index
 expected['full-stack'].optional = expected['full-stack'].optional.filter(id => id !== 'bradlc.vscode-tailwindcss');
 expected.ai.optional.push('sleistner.vscode-fileutils');
 expected.ai.optional.push('luisclementdev.npm-visual-manager');
+expected.ai.optional.push('pranaygp.vscode-css-peek');
 expected.ai.settings['chatgpt.reviewDelivery'] = 'inline';
 for (const slug of ['full-stack', 'ai']) {
   expected[slug].extensions.push('bradlc.vscode-tailwindcss');
@@ -63,6 +64,10 @@ for (const slug of ['full-stack', 'ai']) {
     'tailwindCSS.validate': true,
     'tailwindCSS.lint.invalidApply': 'error',
     'scss.lint.unknownAtRules': 'ignore',
+    'cssPeek.supportTags': false,
+    'cssPeek.peekToLinkedOnly': false,
+    'cssPeek.respectGitignore': true,
+    'cssPeek.enableTelemetry': false,
     'renameAngularComponent.showWhatsNewPopup': false,
     'renameAngularComponent.debugLog': false,
     'renameAngularComponent.useLocalDirectPaths': false,
@@ -81,6 +86,7 @@ for (const slug of ['full-stack', 'ai']) {
     'fileutils.menus.context.editorTitle': ['moveFile', 'duplicateFile', 'copyFileName'],
   });
 }
+expected['full-stack'].extensions.push('pranaygp.vscode-css-peek');
 expected['full-stack'].settings['workbench.colorCustomizations']['titleBar.activeBackground'] = '#452568';
 expected['full-stack'].settings['workbench.colorCustomizations']['activityBarBadge.background'] = '#9B6DDA';
 expected.ai.settings['workbench.colorCustomizations']['titleBar.activeBackground'] = '#163A63';
