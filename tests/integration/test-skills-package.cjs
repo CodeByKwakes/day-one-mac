@@ -7,7 +7,7 @@ const os = require('node:os');
 const crypto = require('node:crypto');
 const { spawnSync } = require('node:child_process');
 const root = path.resolve(__dirname, '../..');
-const names = ['day-one-mac', 'day-one-setup', 'day-one-check', 'day-one-maintain', 'day-one-recover', 'day-one-omniroute', 'day-one-contribute', 'day-one-shortcuts', 'day-one-second-brain'];
+const names = ['day-one-mac', 'day-one-setup', 'day-one-check', 'day-one-maintain', 'day-one-recover', 'day-one-omniroute', 'day-one-contribute', 'day-one-shortcuts', 'day-one-second-brain', 'day-one-vscode', 'day-one-macos-apps'];
 const files = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
   const file = path.join(dir, entry.name);
   assert(!entry.isSymbolicLink(), `Unexpected packaged symlink: ${file}`);

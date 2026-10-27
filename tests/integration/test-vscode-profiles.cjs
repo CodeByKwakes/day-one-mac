@@ -17,7 +17,7 @@ const run = (slug, args = [], status = 0) => {
   return result;
 };
 try {
-  for (const [slug, count] of Object.entries({ default: 5, 'full-stack': 23, ai: 18, operations: 11 })) {
+  for (const [slug, count] of Object.entries({ default: 5, 'full-stack': 24, ai: 18, operations: 11 })) {
     const output = path.join(temporary, `${slug} with spaces`);
     const data = recipe(slug);
     assert.equal(data.extensions.length, count);
@@ -94,6 +94,19 @@ else if (args.includes('--install-extension') && args.at(-1) === 'tomoki1207.pdf
   assert.match(failed.stderr, /VS Code failed \(9\)/);
   assert(fs.existsSync(path.join(failOutput, 'settings.json')));
   assert.equal(recipe('default', ['tomoki1207.pdf']).extensions.length, 6);
+  const npmManager = 'luisclementdev.npm-visual-manager';
+  assert(recipe('full-stack').extensions.includes(npmManager));
+  assert(!recipe('ai').extensions.includes(npmManager));
+  assert(recipe('ai', [npmManager]).extensions.includes(npmManager));
+  for (const slug of ['full-stack', 'ai']) {
+    assert.equal(recipe(slug).settings['npm-visual-manager.badge.enabled'], false);
+    assert.equal(recipe(slug).settings['npm-visual-manager.columns.type'], true);
+  }
+  for (const slug of ['default', 'operations']) {
+    assert(!recipe(slug).extensions.includes(npmManager));
+    assert(!Object.keys(recipe(slug).settings).some(key => key.startsWith('npm-visual-manager.')));
+    assert.throws(() => recipe(slug, [npmManager]));
+  }
   console.log('VS Code profile scripts passed: bundles, deep merges, optional selection, safe output, and mock CLI.');
 } finally {
   fs.rmSync(temporary, { recursive: true, force: true });

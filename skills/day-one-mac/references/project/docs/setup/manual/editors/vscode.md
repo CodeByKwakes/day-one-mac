@@ -153,6 +153,7 @@ their parent extension; do not install them a second time just to match a count.
 | [Rename Angular Component](https://marketplace.visualstudio.com/items?itemName=tomwhite007.rename-angular-component) | `tomwhite007.rename-angular-component` | Rename related Angular files, classes, selectors and references | No | R | R | No |
 | [Angular HTML](https://marketplace.visualstudio.com/items?itemName=ghaschel.vscode-angular-html) | `ghaschel.vscode-angular-html` | Your chosen template highlighting | No | R | No | No |
 | [Nx Console](https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console) | `nrwl.angular-console` | Generators, targets, and workspace information | No | R | R | No |
+| [NPM Visual Manager](https://marketplace.visualstudio.com/items?itemName=LuisClementDev.npm-visual-manager) | `luisclementdev.npm-visual-manager` | Dependency dashboard, selected package updates and AI update prompts | No | R | O | No |
 | [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) | `dbaeumer.vscode-eslint` | Repository lint diagnostics and fixes | No | R | R | No |
 | [Prisma](https://marketplace.visualstudio.com/items?itemName=prisma.prisma) | `prisma.prisma` | Prisma schema editing and formatting | No | R | R | No |
 | [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) | `eamodio.gitlens` | History, blame, and comparisons | No | R | R | R |
@@ -294,6 +295,66 @@ rename undo settings. These reports are limitations to check on your machine.
 [Released manifest](https://github.com/sleistner/vscode-fileutils/blob/v3.10.3/package.json),
 [hidden-directory report](https://github.com/sleistner/vscode-fileutils/issues/684),
 [undo report](https://github.com/sleistner/vscode-fileutils/issues/686).
+
+### NPM Visual Manager: Full Stack, optional in AI
+
+Use **NPM Visual Manager** for dependency inspection in Full Stack. Select it in
+AI when you use an assistant to plan package updates. Keep Nx Console for its
+generators and tasks, and native **NPM Scripts** for running project scripts.
+
+1. Switch to the existing Full Stack profile and install the extension:
+
+   ```bash
+   code --profile "Full Stack" --install-extension luisclementdev.npm-visual-manager
+   ```
+
+   Expected result: the extension appears in Full Stack. Leave **Apply Extension
+   to all Profiles** off. If selected for AI, repeat with `--profile "AI"`.
+
+2. Merge the `npm-visual-manager.*` entries from the
+   [Full Stack settings](../../../shared/reference/vscode-profile-data.md#full-stack-overrides)
+   into profile User Settings. AI inherits these preferences in its recipe;
+   they take effect only if the optional extension is installed.
+
+   Expected result: dependency types, update types and security columns are
+   visible. Background badge checks are off, and updates do not force exact
+   version pins. The hidden size column measures installed package size, not
+   the application's production bundle size. The scan depth remains five levels.
+
+3. Open the intended repository or worktree, then run **Open NPM Package Manager**
+   from the Command Palette. Confirm the selected `package.json` and manager.
+
+   Expected result: the dashboard describes the intended project. For private
+   feeds, verify a known package using existing npm authentication. Metadata
+   queries read npm-compatible configuration; native Yarn `.yarnrc.yml` registry
+   settings are not imported. Azure Artifacts acceptance needs a live feed check.
+
+4. Select **AI prompt** when you want an assistant to review the visible updates.
+
+   Expected result: a Markdown plan is copied locally. Review package names,
+   project paths and commands before pasting into your approved client. Copying
+   the prompt does not send it to a provider or install packages.
+
+The Ignore Package button writes Workspace Settings, commonly
+`.vscode/settings.json`. To keep personal preferences outside the repository,
+avoid that button or manage `npm-visual-manager.ignoredPackages` in User Settings.
+A User list affects every project using that profile. It hides updates; it does
+not enforce a dependency version policy.
+
+Review updates from a clean Git state and run the project's checks afterward.
+Use [Nx migrations](https://nx.dev/docs/features/automate-updating-dependencies)
+for applicable Nx upgrades and [Angular updates](https://angular.dev/cli/update)
+for standalone Angular applications. Generic package installation does not run
+their framework migrations. Rollback reinstalls previous package versions; keep
+Git recovery for lockfiles, generated files and source migrations. Disabling
+the badge skips its workspace-wide checks, while the open dashboard can still
+perform registry requests and audits.
+
+Published version 2.1.0 was checked on 27 October 2026 and declares VS Code
+`^1.86.0`. The publisher is Luis Clement Cremades (`LuisClementDev`). See the
+[manifest](https://github.com/luisssc/npm-visual-manager/blob/35430cacff2794936f7a350a46634331ddc99bdf/package.json),
+[release notes](https://github.com/luisssc/npm-visual-manager/blob/35430cacff2794936f7a350a46634331ddc99bdf/CHANGELOG.md)
+and [workspace-ignore implementation](https://github.com/luisssc/npm-visual-manager/blob/35430cacff2794936f7a350a46634331ddc99bdf/src/services/ignoreService.ts).
 
 ### Rename Angular Component: Full Stack and AI
 
@@ -527,6 +588,7 @@ in each profile's own User Settings.
 | TS/JS, HTML, CSS/SCSS and Prisma formatting; import actions | No | Enabled | Enabled | No | Full Stack overrides, also combined into AI |
 | GitLens inline annotations | No | Off | Off | Off | Profile User Settings where GitLens is selected |
 | File Utils destination display and context menus | No | Configured | Inherited; active if installed | No | Full Stack User Settings, also combined into AI |
+| NPM Visual Manager columns, scan depth and background badge checks | No | Configured | Inherited; active if installed | No | Profile User Settings; avoid the workspace-writing Ignore Package button |
 | Auto Barrel generation scope, export detection and formatting | No | Configured | Inherited | No | Profile User Settings; see [Auto Barrel](#auto-barrel-full-stack-and-ai) |
 | Tailwind CSS mode, Prettier registration, HTML class suggestions and SCSS at-rule warning policy | No | Enabled | Inherited | No | Profile User Settings; see [Tailwind CSS](#tailwind-css-full-stack-and-ai) |
 | `.env` associations, formatting and suggestion restrictions | No | Enabled | Enabled | Enabled | Profile User Settings; not an access-control boundary |
@@ -1201,6 +1263,7 @@ Run the checks for the profiles and optional integrations you selected.
 | Generate a GitLens message for reviewed staged changes | The message follows Conventional Commits and describes only the staged scope; generation alone does not commit |
 | Inspect icons and HTML token colors in Full Stack | The selected folders and tokens use the configured appearance |
 | Open Good Prompts in Full Stack or AI | A generated prompt can be reviewed before sending it to an agent |
+| Open NPM Visual Manager in Full Stack, or AI if selected | Intended package file and manager appear; an AI prompt copies without applying updates |
 | Inspect selected AI clients and their linked skills/MCP configuration | The intended account, project, permissions and tools are available in that client |
 | Follow the [Codex continuity check](../ai/workflows.md#continue-a-codex-chat-between-vs-code-and-desktop) when using the desktop app | The existing conversation and a harmless follow-up are visible in both applications |
 | Test selected database connections with the database guide | Local/dev/test work; production uses the separately verified read-only identity |

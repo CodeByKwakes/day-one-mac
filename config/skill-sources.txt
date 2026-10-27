@@ -554,3 +554,7 @@ integrations/shortcuts/icons/open-in-warp.svg
 integrations/shortcuts/icons/open-in-warp.icns
 integrations/shortcuts/icons/open-in-vscode.svg
 integrations/shortcuts/icons/open-in-vscode.icns
+
+# Reviewed editor and macOS application workflows
+templates/skills/day-one-vscode/SKILL.md
+templates/skills/day-one-macos-apps/SKILL.md

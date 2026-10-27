@@ -117,6 +117,38 @@ See [skill installation and lifecycle](docs/setup/manual/ai/day-one-skills.md)
 for global scope, specialist selection, optional agent roles, updates, removal
 and examples for setup. Client sign-in and execution permissions remain separate.
 
+## VS Code and macOS application skills
+
+The main `day-one-mac` skill includes two focused workflows:
+
+| Skill | Use it for |
+|---|---|
+| `day-one-vscode` | Profile audits, extension selection, User Settings, shortcuts, backup and recovery |
+| `day-one-macos-apps` | App installation ownership, preferences, permissions, updates and scoped removal |
+
+For independent installation, run one command in your private setup workspace:
+
+```bash
+npx skills@1.7.4 add "$DAY_ONE_SOURCE/skills" \
+  --skill day-one-vscode day-one-macos-apps \
+  --agent codex github-copilot claude-code
+```
+
+Define `DAY_ONE_SOURCE` using the local installation steps above. Once the
+selected GitHub revision contains the packages, you can use:
+
+```bash
+npx skills@1.7.4 add CodeByKwakes/day-one-mac \
+  --skill day-one-vscode day-one-macos-apps \
+  --agent codex github-copilot claude-code
+```
+
+Add `--global` only when you want user-level availability. Installing these
+skills does not change applications or profiles. Follow the
+[specialist examples and verification](docs/setup/manual/ai/day-one-skills.md#editor-and-application-specialists)
+before requesting changes. One installation of the main skill already includes
+both workflows.
+
 ## Helpers, offline reading and migration
 
 For only developer shortcuts, select `day-one-shortcuts` using either source:

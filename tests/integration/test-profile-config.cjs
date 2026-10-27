@@ -38,8 +38,10 @@ for (const pattern of ['azure-pipelines.yml', 'azure-pipelines.yaml', '**/.azure
   expected.ai.settings['files.associations'][pattern] = 'yaml';
 }
 expected['full-stack'].extensions.push('sleistner.vscode-fileutils');
+expected['full-stack'].extensions.splice(expected['full-stack'].extensions.indexOf('nrwl.angular-console') + 1, 0, 'luisclementdev.npm-visual-manager');
 expected['full-stack'].optional = expected['full-stack'].optional.filter(id => id !== 'bradlc.vscode-tailwindcss');
 expected.ai.optional.push('sleistner.vscode-fileutils');
+expected.ai.optional.push('luisclementdev.npm-visual-manager');
 expected.ai.settings['chatgpt.reviewDelivery'] = 'inline';
 for (const slug of ['full-stack', 'ai']) {
   expected[slug].extensions.push('bradlc.vscode-tailwindcss');
@@ -48,6 +50,14 @@ for (const slug of ['full-stack', 'ai']) {
   expected[slug].settings['files.associations']['*.css'] = 'tailwindcss';
   expected[slug].settings['[html]']['editor.quickSuggestions'] = { strings: 'on' };
   Object.assign(expected[slug].settings, {
+    'npm-visual-manager.columns.type': true,
+    'npm-visual-manager.columns.semverUpdate': true,
+    'npm-visual-manager.columns.security': true,
+    'npm-visual-manager.columns.lastUpdate': true,
+    'npm-visual-manager.columns.size': false,
+    'npm-visual-manager.badge.enabled': false,
+    'npm-visual-manager.scan.maxDepth': 5,
+    'npm-visual-manager.saveExact': false,
     '[tailwindcss]': { 'editor.defaultFormatter': 'esbenp.prettier-vscode', 'editor.formatOnSave': true },
     'prettier.documentSelectors': ['**/*.css'],
     'tailwindCSS.validate': true,

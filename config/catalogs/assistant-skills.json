@@ -13,7 +13,9 @@
         "day-one-omniroute",
         "day-one-contribute",
         "day-one-shortcuts",
-        "day-one-second-brain"
+        "day-one-second-brain",
+        "day-one-vscode",
+        "day-one-macos-apps"
       ],
       "roles": true
     },
@@ -46,6 +48,12 @@
         "extensions/second-brain/obsidian/assets/vault",
         "extensions/second-brain/obsidian/assets/three-vaults"
       ]
+    },
+    {
+      "name": "day-one-vscode"
+    },
+    {
+      "name": "day-one-macos-apps"
     }
   ],
   "assets": [

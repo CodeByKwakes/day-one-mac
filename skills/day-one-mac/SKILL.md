@@ -1,6 +1,6 @@
 ---
 name: day-one-mac
-description: Set up, check, maintain or recover an Apple-silicon Mac development environment, including Second Brain knowledge workflows, optional OmniRoute and developer shortcuts. Use as the single Day One Mac entry point; specialist workflows are bundled without separate skill installations.
+description: Set up, check, maintain or recover an Apple-silicon Mac development environment, including VS Code profiles, macOS apps, Second Brain workflows, optional OmniRoute and developer shortcuts. Use as the single Day One Mac entry point; specialist workflows are bundled without separate skill installations.
 ---
 
 # Day One Mac
@@ -11,6 +11,8 @@ skill, the Day One Mac runtime or a permanent source checkout.
 
 | Request | Workflow to read |
 |---|---|
+| Configure or troubleshoot VS Code profiles, settings, extensions or shortcuts | [VS Code](references/workflows/day-one-vscode.md) |
+| Review or maintain selected macOS apps and system preferences | [macOS apps](references/workflows/day-one-macos-apps.md) |
 | Initial setup or adding a developer tool | [Setup](references/workflows/day-one-setup.md) |
 | Inspect versions, prerequisites or configuration drift | [Check](references/workflows/day-one-check.md) |
 | Update tools or maintain existing configuration | [Maintain](references/workflows/day-one-maintain.md) |
@@ -21,7 +23,9 @@ skill, the Day One Mac runtime or a permanent source checkout.
 | Set up a knowledge system or connect selected code repositories to project notes | [Second Brain](references/workflows/day-one-second-brain.md) |
 | Read, find or open documentation | [Reading options](references/project/docs/shared/reading-and-export.md) |
 
-For a combined request, inspect first, propose the requested changes, and then
+Choose a specific workflow before a general setup or maintenance workflow when
+the request identifies that capability. For a combined request, inspect first,
+propose the requested changes, and then
 use the relevant workflows in dependency order. A check is read-only unless the
 user separately approves a probe with side effects or a repair. Reuse existing
 decisions and approvals; clarify only material missing choices or changed scope.

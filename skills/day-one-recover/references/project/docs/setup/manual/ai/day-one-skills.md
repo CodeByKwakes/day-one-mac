@@ -159,6 +159,8 @@ still does not install applications or change provider credentials.
 | `day-one-contribute` | Change a separately selected source repository | Yes |
 | `day-one-second-brain` | Set up knowledge systems, link selected code repositories and inspect connections | Yes |
 | `day-one-shortcuts` | Inspect, build and maintain selected developer shortcuts and standalone apps | Yes |
+| `day-one-vscode` | Inspect and maintain profiles, extensions, User Settings, shortcuts and recovery | Yes |
+| `day-one-macos-apps` | Review app ownership, preferences, permissions, updates and scoped removal | Yes |
 
 Install a specialist by replacing `--skill day-one-mac` with its exact name.
 Multiple names can follow `--skill`. Avoid `--all`: this repository also contains
@@ -171,6 +173,61 @@ new review directory. Preserve my installed shortcuts." Follow the
 [builder reference](../../../shared/tools/shortcut-apps.md) after approving the
 preview. Updating or removing a skill does not update or remove generated apps;
 their lifecycle belongs to the [manual shortcut guide](../apps/macos-shortcuts.md).
+
+## Editor and application specialists
+
+Use `day-one-vscode` for profile work and `day-one-macos-apps` for application or
+System Settings work. Both are bundled into `day-one-mac`; choose independent
+installation only when you prefer their narrower entry points.
+
+1. In your setup workspace, select one source:
+
+   ```bash
+   npx skills@1.7.4 add "$DAY_ONE_SOURCE/skills" \
+     --skill day-one-vscode day-one-macos-apps \
+     --agent codex github-copilot claude-code
+   ```
+
+   For a published revision containing these packages, use:
+
+   ```bash
+   npx skills@1.7.4 add CodeByKwakes/day-one-mac \
+     --skill day-one-vscode day-one-macos-apps \
+     --agent codex github-copilot claude-code
+   ```
+
+   Expected result: only the selected specialists are installed for the chosen
+   clients. Define `DAY_ONE_SOURCE` using [Install from a local checkout](#install-from-a-local-checkout-or-source-archive)
+   before the local command. Add `--global` only for user-level availability.
+
+2. Verify the installed entry points:
+
+   ```bash
+   test -f .agents/skills/day-one-vscode/SKILL.md
+   test -f .agents/skills/day-one-macos-apps/SKILL.md
+   ```
+
+   Expected result: both commands succeed for the project installation above.
+   Use the CLI-reported destination for global or Claude-only installations.
+
+3. Start with a bounded request:
+
+   ```text
+   Use day-one-vscode to review my Full Stack profile. Compare extensions and
+   formatting settings with the bundled recipe. Propose changes without applying them.
+   ```
+
+   ```text
+   Use day-one-macos-apps to review Warp and its login setting. Preserve its
+   installation owner and current preferences. Propose changes without applying them.
+   ```
+
+   Expected result: observations and a scoped proposal. Approve the selected
+   changes when ready. Skill installation alone does not modify profiles or apps.
+
+Follow [Update and remove](#update-and-remove) with the exact specialist name
+and installation scope. Removing a skill leaves your configured applications
+and their private recovery backups intact.
 
 ## Optional agent roles
 

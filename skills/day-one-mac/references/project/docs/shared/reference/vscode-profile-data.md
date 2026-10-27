@@ -170,6 +170,7 @@ Profile exports and Settings Sync do not include this external file; back it up 
 | `angular.ng-template` | Recommended |
 | `ghaschel.vscode-angular-html` | Recommended |
 | `nrwl.angular-console` | Recommended |
+| `luisclementdev.npm-visual-manager` | Recommended |
 | `dbaeumer.vscode-eslint` | Recommended |
 | `prisma.prisma` | Recommended |
 | `eamodio.gitlens` | Recommended |
@@ -375,7 +376,15 @@ Profile exports and Settings Sync do not include this external file; back it up 
     "titleBar.activeBackground": "#452568",
     "titleBar.activeForeground": "#FFFFFF",
     "activityBarBadge.background": "#9B6DDA"
-  }
+  },
+  "npm-visual-manager.columns.type": true,
+  "npm-visual-manager.columns.semverUpdate": true,
+  "npm-visual-manager.columns.security": true,
+  "npm-visual-manager.columns.lastUpdate": true,
+  "npm-visual-manager.columns.size": false,
+  "npm-visual-manager.badge.enabled": false,
+  "npm-visual-manager.scan.maxDepth": 5,
+  "npm-visual-manager.saveExact": false
 }
 ```
 
@@ -410,6 +419,7 @@ Apply Full Stack overrides before these overrides.
 | `ms-ossdata.vscode-pgsql` | Optional |
 | `natqe.reload` | Optional |
 | `sleistner.vscode-fileutils` | Optional |
+| `luisclementdev.npm-visual-manager` | Optional |
 
 ### AI overrides
 

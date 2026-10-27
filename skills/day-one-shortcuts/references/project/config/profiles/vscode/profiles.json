@@ -355,7 +355,15 @@
           "titleBar.activeBackground": "#452568",
           "titleBar.activeForeground": "#FFFFFF",
           "activityBarBadge.background": "#9B6DDA"
-        }
+        },
+        "npm-visual-manager.columns.type": true,
+        "npm-visual-manager.columns.semverUpdate": true,
+        "npm-visual-manager.columns.security": true,
+        "npm-visual-manager.columns.lastUpdate": true,
+        "npm-visual-manager.columns.size": false,
+        "npm-visual-manager.badge.enabled": false,
+        "npm-visual-manager.scan.maxDepth": 5,
+        "npm-visual-manager.saveExact": false
       },
       "keybindings": "imports",
       "extensions": [
@@ -367,6 +375,7 @@
         "angular.ng-template",
         "ghaschel.vscode-angular-html",
         "nrwl.angular-console",
+        "luisclementdev.npm-visual-manager",
         "dbaeumer.vscode-eslint",
         "prisma.prisma",
         "eamodio.gitlens",
@@ -447,7 +456,8 @@
         "ms-playwright.playwright",
         "ms-ossdata.vscode-pgsql",
         "natqe.reload",
-        "sleistner.vscode-fileutils"
+        "sleistner.vscode-fileutils",
+        "luisclementdev.npm-visual-manager"
       ]
     },
     "operations": {
