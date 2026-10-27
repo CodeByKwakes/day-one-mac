@@ -43,8 +43,11 @@ try {
     assert.deepEqual(JSON.parse(template.extensions).map(item => item.identifier.id), data.extensions);
     assert.deepEqual(template.keybindings ? JSON.parse(JSON.parse(template.keybindings).keybindings) : [], data.keybindings);
     if (template.keybindings) assert.equal(JSON.parse(template.keybindings).platform, 1);
+    assert.deepEqual(data.keybindings.filter(binding => binding.key === 'cmd+t'), [
+      { key: 'cmd+t', command: 'workbench.action.files.newUntitledFile' },
+    ], 'Every exported profile includes the new-tab shortcut exactly once');
     if (slug === 'ai') {
-      assert.equal(data.keybindings.length, 3);
+      assert.equal(data.keybindings.length, 4);
       assert.equal(data.settings['github.copilot.enable']['*'], false);
       assert(data.settings['[typescript]']);
     }

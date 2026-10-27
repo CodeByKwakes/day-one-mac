@@ -20,6 +20,9 @@ for (const [slug, profile] of Object.entries(config.profiles)) {
  for (const [key,label] of [['extensions','Recommended'],['optional','Optional']]) for (const id of profile[key]) text += `| \`${id}\` | ${label} |\n`;
  text += `\n### ${profile.name} overrides\n`+json(profile.settings);
 }
+text += '\n## Shared keybindings\n\n';
+text += 'Merge these entries into every selected profile\'s Keyboard Shortcuts JSON array, preserving existing shortcuts.\n';
+text += 'The [shortcut guide](../../setup/manual/editors/vscode.md#new-file-tab-shortcut) explains the symbol-search trade-off.\n'+json(config.keybindings.shared);
 text += '\n## Import keybindings\n'+json(config.keybindings.imports);
 const target = path.join(root, 'docs/shared/reference/vscode-profile-data.md');
 if (process.argv.includes('--check')) {

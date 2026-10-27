@@ -61,7 +61,9 @@ try {
   assert.equal(fs.readFileSync(path.join(backup, 'settings.before'), 'utf8'), original);
   assert.equal(fs.readFileSync(path.join(backup, 'keybindings.before'), 'utf8'), originalShortcuts);
   assert.equal(JSON.parse(fs.readFileSync(settings))['terminal.integrated.suggest.upArrowNavigatesHistory'], true);
-  assert.deepEqual(JSON.parse(fs.readFileSync(shortcuts)), []);
+  assert.deepEqual(JSON.parse(fs.readFileSync(shortcuts)), [
+    { key: 'cmd+t', command: 'workbench.action.files.newUntitledFile' },
+  ]);
   assert.equal(fs.readFileSync(extensionSentinel, 'utf8'), 'untouched');
   assert.equal(fs.readFileSync(named, 'utf8'), '{"editor.fontSize":21}\n');
   // Backups are verified even when a restore would otherwise be a no-op.
@@ -86,7 +88,11 @@ try {
   const fresh = run('full-stack', ['--replace-settings', '--settings-file', named]);
   const namedApply = run('full-stack', ['--replace-settings', '--settings-file', named, ...approve(fresh)]);
   const namedBackup = namedApply.match(/Backup: (.+)/)[1];
-  assert.equal(JSON.parse(fs.readFileSync(path.join(path.dirname(named), 'keybindings.json'))).length, 3);
+  const namedShortcuts = JSON.parse(fs.readFileSync(path.join(path.dirname(named), 'keybindings.json')));
+  assert.equal(namedShortcuts.length, 4);
+  assert.deepEqual(namedShortcuts.filter(binding => binding.key === 'cmd+t'), [
+    { key: 'cmd+t', command: 'workbench.action.files.newUntitledFile' },
+  ]);
   assert.match(fs.readFileSync(settings, 'utf8'), /A later edit/);
   fs.appendFileSync(named, '\n// Keep later edits\n');
   run('full-stack', ['--restore', namedBackup], 1);

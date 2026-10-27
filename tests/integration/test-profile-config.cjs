@@ -9,11 +9,23 @@ const golden = require('../fixtures/vscode/recipes-v1.json');
 // Keep the migration snapshot intact and enumerate supported differences explicitly.
 const expected = structuredClone(golden);
 for (const profile of Object.values(expected)) {
+  profile.keybindings.unshift({ key: 'cmd+t', command: 'workbench.action.files.newUntitledFile' });
   profile.settings['chat.mcp.gallery.enabled'] = true;
   profile.settings['gitlens.ai.generateCommitMessage.customInstructions'] = 'Use Conventional Commits: type(scope): description, omitting the scope when unnecessary. Choose feat, fix, docs, refactor, perf, test, build, ci, chore, style, or revert according to the actual changes and repository conventions. Write a specific, imperative subject, preferably within 72 characters, without a trailing period. For substantial changes, add a blank line and a concise body explaining what changed and why, using only evidence from the diff and supplied context. Keep simple changes to a subject alone. Do not invent motivations, test results, issue references, or compatibility guarantees. Use ! and a BREAKING CHANGE footer only for actual breaking changes. Return only the commit message.';
   profile.extensions = profile.extensions.filter(id => id !== 'streetsidesoftware.code-spell-checker');
   profile.settings['explorer.compactFolders'] = false;
   profile.settings['explorer.openEditors.visible'] = 9;
+  Object.assign(profile.settings, {
+    'workbench.editor.showTabs': 'multiple',
+    'workbench.editor.labelFormat': 'default',
+    'workbench.editor.wrapTabs': true,
+    'workbench.editor.tabSizing': 'fit',
+    'workbench.editor.enablePreview': false,
+    'workbench.editor.enablePreviewFromQuickOpen': false,
+    'workbench.editor.openPositioning': 'right',
+    'workbench.editor.limit.enabled': false,
+    'workbench.editor.highlightModifiedTabs': true,
+  });
   profile.settings['[markdown]']['editor.defaultFormatter'] = 'DavidAnson.vscode-markdownlint';
   profile.settings['markdownlint.configFile'] = '${userHome}/.config/markdownlint/config.json';
   profile.settings['git.suggestSmartCommit'] = false;
@@ -78,6 +90,15 @@ try {
   fs.writeFileSync(target, JSON.stringify(config));
   assert.throws(() => independent.recipe('default'), /schema/);
   config.schemaVersion = 1;
+  const sharedKeybindings = config.keybindings.shared;
+  config.keybindings.shared = {};
+  fs.writeFileSync(target, JSON.stringify(config));
+  assert.throws(() => independent.recipe('default'), /keybindings/);
+  delete config.keybindings.shared;
+  fs.writeFileSync(target, JSON.stringify(config));
+  assert.deepEqual(independent.recipe('default').keybindings, [], 'Existing configurations without shared shortcuts remain supported');
+  assert.deepEqual(independent.recipe('full-stack').keybindings, expected['full-stack'].keybindings.slice(1));
+  config.keybindings.shared = sharedKeybindings;
   config.profiles.default.optional.push('bad extension');
   fs.writeFileSync(target, JSON.stringify(config));
   assert.throws(() => independent.recipe('default'), /extension ID/);

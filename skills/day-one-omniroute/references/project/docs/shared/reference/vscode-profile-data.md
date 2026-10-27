@@ -27,8 +27,15 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
   "editor.detectIndentation": true,
   "explorer.compactFolders": false,
   "explorer.openEditors.visible": 9,
-  "workbench.editor.labelFormat": "medium",
+  "workbench.editor.showTabs": "multiple",
+  "workbench.editor.labelFormat": "default",
+  "workbench.editor.wrapTabs": true,
+  "workbench.editor.tabSizing": "fit",
   "workbench.editor.enablePreview": false,
+  "workbench.editor.enablePreviewFromQuickOpen": false,
+  "workbench.editor.openPositioning": "right",
+  "workbench.editor.limit.enabled": false,
+  "workbench.editor.highlightModifiedTabs": true,
   "git.autofetch": true,
   "git.confirmSync": true,
   "git.enableSmartCommit": false,
@@ -504,6 +511,20 @@ Apply Full Stack overrides before these overrides.
     "activityBarBadge.background": "#16805D"
   }
 }
+```
+
+## Shared keybindings
+
+Merge these entries into every selected profile's Keyboard Shortcuts JSON array, preserving existing shortcuts.
+The [shortcut guide](../../setup/manual/editors/vscode.md#new-file-tab-shortcut) explains the symbol-search trade-off.
+
+```json
+[
+  {
+    "key": "cmd+t",
+    "command": "workbench.action.files.newUntitledFile"
+  }
+]
 ```
 
 ## Import keybindings

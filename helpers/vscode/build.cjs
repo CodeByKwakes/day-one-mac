@@ -45,8 +45,10 @@ function recipe(slug, selected = []) {
     settings = merge(settings, config.profiles[profile.extends].settings);
   }
   settings = merge(settings, profile.settings);
-  const keybindings = profile.keybindings ? config.keybindings?.[profile.keybindings] : [];
-  if (!Array.isArray(keybindings)) throw new Error('Invalid profile keybindings.');
+  const sharedKeybindings = config.keybindings?.shared === undefined ? [] : config.keybindings.shared;
+  const profileKeybindings = profile.keybindings ? config.keybindings?.[profile.keybindings] : [];
+  if (!Array.isArray(sharedKeybindings) || !Array.isArray(profileKeybindings)) throw new Error('Invalid profile keybindings.');
+  const keybindings = [...sharedKeybindings, ...profileKeybindings];
   const extensions = [...new Set([...required, ...selected])];
   return { name, settings, keybindings, extensions, optional };
 }

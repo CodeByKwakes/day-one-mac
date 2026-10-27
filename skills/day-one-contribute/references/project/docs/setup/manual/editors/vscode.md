@@ -509,6 +509,7 @@ in each profile's own User Settings.
 | `explorer.compactFolders` | Off | Off | Off | Off | Shared User Settings; show each nested folder on its own row |
 | `explorer.openEditors.visible` | 9 | 9 | 9 | 9 | Shared User Settings; initial maximum rows before scrolling |
 | Open Editors view visibility | On | On | On | On | Profile UI layout; enable through Explorer's Views menu |
+| Editor tab layout and opening behavior | Shared | Shared | Shared | Shared | User Settings; see [Editor tabs](#editor-tabs) |
 | Angular rename preferences | No | Shared | Shared | No | Profile User Settings; check standalone versus NgModule mode for each project |
 | Dark Modern and Material Icon Theme | Shared | Shared | Shared | Shared | User Settings |
 | Zsh profiles, terminal font, shell integration and Warp executable | Shared | Shared | Shared | Shared | Machine-specific User Settings; verify paths after import |
@@ -534,6 +535,7 @@ in each profile's own User Settings.
 | Codex and Claude preferences, agent instructions and skill discovery | No | Enabled | Enabled with AI overrides | Manual if selected | Profile User Settings; accounts and CLI permissions remain separate |
 | Codex Cmd+Enter, queued follow-ups and inline reviews | No | Enabled | Inherited | Manual if selected | Profile User Settings; chat sharing has no separate sync setting |
 | Import-cleanup shortcuts | No custom entries | Three chords | Three chords | No custom entries | Profile Keyboard Shortcuts JSON |
+| New file tab shortcut | `Cmd+T` | `Cmd+T` | `Cmd+T` | `Cmd+T` | Shared Keyboard Shortcuts entries; native `Cmd+N` remains available |
 | Angular/NestJS folder associations and Angular HTML token palette | No | Manual | No | No | Full Stack User Settings, sections 7 and 8 |
 | Skills, MCP servers, credentials and database connections | Separate | Separate | Separate | Separate | Their linked client/tool configuration, not the profile settings recipe |
 
@@ -578,6 +580,48 @@ the result. This setting applies to Copilot's generator; GitLens uses the
 separate setting below. Codex and Claude use their own instructions.
 Keep credentials out of settings and exports.
 [AI settings reference](https://code.visualstudio.com/docs/agents/reference/ai-settings).
+
+### Editor tabs
+
+All four profiles use readable file labels and wrap overflowing editor tabs
+onto additional rows. Paths appear when needed to distinguish matching file
+names. Preview tabs are disabled, so opening another file keeps the previous
+file open. New tabs appear to the right of the active tab; an editor-count
+limit does not close older files to make room.
+
+1. Activate each selected profile and run **Preferences: Open User Settings (JSON)**.
+
+   Expected result: the settings file belongs to the intended profile. Back up
+   its existing contents before editing.
+
+2. Merge the `workbench.editor.*` entries from the
+   [shared settings block](../../../shared/reference/vscode-profile-data.md#shared-settings)
+   into its root object and save, preserving unrelated preferences.
+
+   Expected result: the shared tab preferences are present without duplicate
+   keys. These are User Settings; no project configuration file is needed.
+
+3. Press `Cmd+N` twice, then use `Cmd+P` and `Enter` to open a project file.
+
+   Expected result: both blank tabs remain open beside the file tab. Open
+   enough files to fill the tab bar and confirm that further tabs wrap to
+   another row. Edit a disposable blank tab to check its modified highlight,
+   then close the test tabs and discard the disposable edit.
+
+`Cmd+N` creates a blank file even when no empty space remains beside the tabs.
+With space available, double-click the empty editor title area to create one.
+The [shared new-tab shortcut](#new-file-tab-shortcut) also assigns `Cmd+T` to
+this action. Use `Ctrl+Tab` to switch recent editors, `Cmd+Shift+T` to reopen a
+closed editor and `Cmd+W` to close the active one. See the
+[default shortcuts](https://code.visualstudio.com/docs/reference/default-keybindings)
+and [tab guide](https://code.visualstudio.com/docs/editing/getting-started/userinterface#tabs).
+
+Wrapped rows use some vertical space. If a single row suits your screen better,
+disable **Workbench → Editor: Wrap Tabs** and scroll the tab bar instead.
+Settings and defaults were checked against VS Code 1.143.1 on 27 October 2026.
+Workspace settings can override profile preferences; inspect the active
+setting's workspace value if behavior differs. Restoring the saved tab values
+reverts this configuration without replacing other profile settings.
 
 ### Markdown formatting
 
@@ -860,6 +904,11 @@ manual-removal policy if you frequently scaffold code before using imports.
 |---|---|
 | Command Palette | `⇧⌘P` |
 | Open file | `⌘P` |
+| New blank file tab | `⌘N` |
+| Reopen a closed editor | `⇧⌘T` |
+| Switch recent editors | `⌃Tab` |
+| Close the active editor | `⌘W` |
+| Search workspace symbols | `⌘P`, then type `#` and the symbol name |
 | Workspace search | `⇧⌘F` |
 | Source Control | `⌃⇧G` |
 | Keyboard Shortcuts editor | `⌘K`, then `⌘S` |
@@ -876,6 +925,37 @@ The split-editor key conflicts with 1Password Universal Autofill on some Day
 One setups. Resolve that through the [shared shortcut guide](../apps/keyboard-shortcuts.md)
 rather than silently overriding it. Extensions, keyboard layouts, and prior
 keymaps can change defaults; inspect **Preferences: Open Keyboard Shortcuts**.
+
+### New file tab shortcut
+
+The shared shortcut assigns `Cmd+T` to a new blank file tab in Default,
+Full Stack, AI and Operations. Native `Cmd+N` remains available. This replaces
+the default `Cmd+T` workspace symbol search; use `Cmd+P`, then type `#` and a
+symbol name for that search. Symbol results require a language provider for
+the project. See [workspace symbol navigation](https://code.visualstudio.com/docs/editing/editingevolved#open-symbol-by-name).
+
+1. Activate a selected profile and open **Preferences: Open Keyboard Shortcuts**.
+
+   Expected result: searching `cmd+t` shows its current assignments. Inspect
+   any existing custom assignment before replacing it.
+
+2. Open **Preferences: Open Keyboard Shortcuts (JSON)** and back up its contents.
+   Merge the [shared keybindings](../../../shared/reference/vscode-profile-data.md#shared-keybindings)
+   into the existing array, then save. Repeat for each selected profile.
+
+   Expected result: each profile has one custom `cmd+t` entry for
+   `workbench.action.files.newUntitledFile`. Full Stack and AI retain their
+   import-cleanup chords. Generated profile exports include both groups.
+
+3. Press `Cmd+T`, then `Cmd+N`, and close the two blank tabs with `Cmd+W`.
+
+   Expected result: both shortcuts create a new file tab. Confirm that `Cmd+P`
+   followed by `#` opens workspace symbol search in a supported project.
+
+To restore the default symbol-search shortcut, remove only the custom `cmd+t`
+entry or restore its previous assignment from the backup. If another command
+runs, use **Developer: Toggle Keyboard Shortcuts Troubleshooting** and inspect
+which binding wins. [Keyboard configuration](https://code.visualstudio.com/docs/configure/keybindings).
 
 ### Personal import shortcuts
 
@@ -1313,6 +1393,7 @@ you intend to replace the shared remote state.
 | Old extensions reappear | Turn off Settings Sync, remove the unwanted extensions, verify locally, then reconfigure sync |
 | A formatter changes every project | Inspect the active profile's User Settings; scope the formatter by language and remove unintended all-profiles sharing. Keep existing repository formatting rules authoritative |
 | Markdown does not format on save, or tables gain padding | Confirm Markdown language mode, markdownlint formatter ownership and the private rule file; inspect **View → Output → markdownlint** and project overrides. Check that another formatter or save action is not formatting tables |
+| Creating or finding file tabs is awkward | Use `Cmd+N` for a blank file or `Cmd+P` for an existing one. Check the active profile's [tab settings](#editor-tabs) and workspace overrides; wrapped rows keep overflowing tabs visible |
 | Starship symbols are squares | Select JetBrainsMono Nerd Font and reopen the terminal |
 | One profile looks different | Confirm the active profile from **Manage → Profiles** |
 | Reload is missing from the status bar | Check that the extension is enabled in the active profile and inspect local/remote placement; use **Developer: Reload Window** as the fallback |
