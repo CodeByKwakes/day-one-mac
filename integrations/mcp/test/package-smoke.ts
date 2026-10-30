@@ -23,7 +23,7 @@ try {
   const installed=path.join(workspace,'node_modules/day-one-mac-mcp');
   const manifest=JSON.parse(await fs.readFile(path.join(installed,'package.json'),'utf8'));
   assert.equal(manifest.bin['day-one-mac-mcp'],'dist/src/index.js');
-  for (const development of ['typescript','@types/node','@modelcontextprotocol/client']) await assert.rejects(fs.stat(path.join(workspace,'node_modules',development)));
+  for (const development of ['typescript','@types/node','@modelcontextprotocol/client','esbuild']) await assert.rejects(fs.stat(path.join(workspace,'node_modules',development)));
   assert.equal((await fs.stat(path.join(installed,'dist/src/index.js'))).mode & 0o111,0o111);
   const configBin=path.join(workspace,'node_modules/.bin/day-one-mac-mcp-configure');
   const env={...process.env,PATH:path.dirname(process.execPath)+path.delimiter+(process.env.PATH??'')};

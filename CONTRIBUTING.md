@@ -72,6 +72,10 @@ integration and agent boundaries. Edit shared policies under
    image build/smoke checks remain separate, as in CI. These are optional-server
    contributor checks, not prerequisites for ordinary guide or skill users.
 
+   Native plugin changes also run `pnpm run test:plugins`. The
+   [plugin packaging reference](docs/shared/reference/plugin-packaging.md) owns
+   artifact generation and optional native CLI acceptance.
+
 4. For skill packaging or installer changes, test the pinned Skills CLI. Install
    it in a temporary contributor directory, not as a global application:
 

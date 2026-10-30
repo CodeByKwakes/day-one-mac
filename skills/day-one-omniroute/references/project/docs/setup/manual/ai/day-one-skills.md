@@ -5,6 +5,10 @@ developer shortcuts and repository contribution through one entry point. Its wor
 references are bundled. Specialist skills are optional independent installations.
 Neither installation requires the Day One Mac runtime or a permanent checkout.
 
+For the main skill plus a read-only local MCP connection, the
+[optional native plugin](day-one-plugins.md) is an alternative distribution.
+Choose one route for the main skill and avoid duplicate server registrations.
+
 ## Prerequisites and source
 
 Use an approved AI client and Node.js 22.20.0 or newer with npm. Check

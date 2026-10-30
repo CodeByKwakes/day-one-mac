@@ -13,8 +13,9 @@ without any skill, server or permanent checkout.
 | Agent | A delegated goal, decisions and evidence across steps | Shared policies in `templates/agents/shared`; generated Codex, Claude and Copilot adapters beside them |
 
 An executable helper belongs to the integration layer without being a native
-plugin package. Day One Mac has no Codex or Claude plugin manifest. Its optional
-MCP package supplies tools, resources and prompts, not an autonomous agent loop.
+plugin package. Contributor builds produce native Codex and Claude manifests
+from shared metadata under `templates/plugins`. The optional MCP package supplies
+tools, resources and prompts, not an autonomous agent loop.
 MCP prompts carry skill-like instructions; agents consume the server's interface.
 
 `agents/openai.yaml` inside a skill is discovery/UI metadata, not a native agent.
@@ -153,6 +154,9 @@ Second Brain inspection is a bounded helper, while vault and Notion assets are
 knowledge templates. None of these operations requires an autonomous agent.
 
 Source inventories, package catalogs and manifests describe packaging intent.
+The [plugin packaging reference](../reference/plugin-packaging.md) owns independent
+native artifacts and the [plugin recipe](../../setup/manual/ai/day-one-plugins.md)
+owns optional installation. These packages do not activate agent roles.
 Tests, CI, reader generation and build tools validate or distribute their owning
 components. Historical plans and compatibility pages remain reference evidence.
 Preserve existing guide URLs and recovery records when changing the structure.

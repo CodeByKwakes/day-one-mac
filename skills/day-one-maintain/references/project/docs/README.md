@@ -22,6 +22,7 @@ shared references and reviewed skill helpers support individual tasks.
 | [Manual Setup](setup/manual/README.md) | `setup/manual` |
 | [Install and configure selected AI clients](setup/manual/ai/clients.md) | `setup/manual/ai` |
 | [Prepare Day One Mac skills and agents manually](setup/manual/ai/day-one-skills.md) | `setup/manual/ai` |
+| [Optional native Day One Mac plugins](setup/manual/ai/day-one-plugins.md) | `setup/manual/ai` |
 | [Project instructions, agents and skills](setup/manual/ai/instructions-agents-skills.md) | `setup/manual/ai` |
 | [Maintain AI skills and MCP access](setup/manual/ai/maintenance.md) | `setup/manual/ai` |
 | [Set up MCP servers with Docker](setup/manual/ai/mcp-docker.md) | `setup/manual/ai` |

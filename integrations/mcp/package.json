@@ -23,6 +23,7 @@
   "devDependencies": {
     "@modelcontextprotocol/client": "2.4.0",
     "@types/node": "24.10.1",
+    "esbuild": "0.28.2",
     "typescript": "6.0.3"
   },
   "description": "Optional local MCP server for Day One Mac guides, checks and explicitly approved preferences.",

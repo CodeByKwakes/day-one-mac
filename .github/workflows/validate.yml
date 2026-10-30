@@ -30,6 +30,8 @@ jobs:
           npm --prefix integrations/mcp ci --ignore-scripts --no-audit --no-fund
           npm --prefix integrations/mcp test
           npm --prefix integrations/mcp run test:package
+      - name: Verify independent native plugin artifacts
+        run: pnpm run test:plugins
       - name: Validate pull request title
         if: github.event_name == 'pull_request'
         env:

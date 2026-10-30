@@ -30,7 +30,9 @@
     "agents:build": "node tools/build-agents.cjs",
     "agents:check": "node tools/build-agents.cjs --check",
     "test:mcp": "npm --prefix integrations/mcp test && npm --prefix integrations/mcp run test:package",
-    "validate:complete": "tools/validate.sh --all && pnpm run test:mcp && actionlint"
+    "validate:complete": "tools/validate.sh --all && pnpm run test:mcp && pnpm run test:plugins && actionlint",
+    "plugins:build": "pnpm run skills:check && npm --prefix integrations/mcp run build && node tools/build-plugins.cjs",
+    "test:plugins": "npm --prefix integrations/mcp run build && node --test tests/plugins/*.test.cjs"
   },
   "lint-staged": {
     "*.{md,mdx}": "markdownlint-cli2",
