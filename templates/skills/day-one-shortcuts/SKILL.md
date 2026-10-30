@@ -1,6 +1,6 @@
 ---
 name: day-one-shortcuts
-description: Create, inspect, build and maintain selected macOS developer shortcuts and standalone AppleScript apps for Git Clone, VS Code, Warp, existing VS Code profiles and a shared development workspace. Use for Finder, Dock and Shortcuts workflows on Apple-silicon Macs.
+description: Create, inspect, build and maintain selected macOS developer shortcuts, the Send to Archive Finder Quick Action and standalone AppleScript apps for Git Clone, VS Code, Warp, existing VS Code profiles and a shared development workspace. Use for Finder, Dock and Shortcuts workflows on Apple-silicon Macs.
 ---
 
 # Day One shortcuts
@@ -39,6 +39,16 @@ personal shortcut identifiers, saved folders, credentials or unsigned files
 presented as signed shortcut exports. No background manager is required.
 
 Folder apps support one ordinary folder. Keep cancellation free of side effects.
+
+Send to Archive is a separate multi-folder Automator recipe in the catalogue's
+`quickActions` collection; the app builder does not install or build it.
+Preview the category/date destination and preserve each folder's contents.
+Use disposable folders for verification. Treat linked worktrees and repositories
+with worktree metadata through Git's own move procedure, and inspect nested
+repositories separately. Keep recovery records private and report partial moves
+instead of retrying or rolling them back automatically. Fixture checks and Finder
+menu registration do not establish the complete interactive workflow.
+
 Use the registered named-profile guard; never guess profile names or rewrite
 VS Code storage. A missing profile passed to VS Code can create an empty one.
 Do not synthesize a default entry: the built-in default name is localized.

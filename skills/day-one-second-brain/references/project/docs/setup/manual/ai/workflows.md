@@ -22,6 +22,43 @@ For experiments, choose models from the actual client's model picker according
 to the task and approved access. A profile does not change subscription limits
 or provide credentials. Use a separate worktree for independent code changes.
 
+#### Use a daily editing and review loop
+
+Keep Full Stack as the daily application profile and choose AI for focused
+investigation, prompt authoring and review. Use Operations for its selected
+infrastructure tools; a profile change does not change database credentials
+or agent permissions.
+
+1. Open the exact repository or worktree and save the relevant editor buffers.
+   Expected: the editor and agent refer to the same checkout.
+2. State the goal, observable success criteria and constraints. Ask for a plan
+   when the change spans multiple components; keep small edits direct.
+3. Let one agent edit the checkout at a time. Give independent background work
+   its own worktree and open that folder when reviewing the result.
+4. Inspect the diff and run the repository's required checks. Use a second
+   agent for a deliberate review after editing has stopped.
+5. Stage the intended scope, review the commit message and commit. Treat
+   pushing, publishing and deployment as separate operations.
+
+Keep the configured reasoning level as a starting point, then choose a higher
+level in the client's supported model controls for a difficult investigation.
+Use the existing Cmd+Enter, queued follow-up and inline-review preferences.
+The installed Codex extension's `Cmd+Shift+Enter` shortcut can invert queue
+versus steer for one in-progress follow-up. Confirm the shortcut in that
+extension's settings before relying on it.
+[OpenAI developer settings](https://learn.chatgpt.com/docs/developer-settings).
+
+Before adding more extensions, inspect enablement in the running editor.
+A profile can enable Copilot in settings while the current window reports it
+disabled by account, policy or another control. Finish a pending extension
+restart before verification. Export older profiles before retiring them, and
+keep one chosen completion or commit-message tool for each role.
+
+After changing repository recipes, regenerate the bundled packages and
+[update the selected installed skill](day-one-skills.md#update-and-remove)
+deliberately. A repository commit does not refresh an existing skill installation.
+Keep personal extension inventories and account details outside the public guide.
+
 #### Continue a Codex chat between VS Code and desktop
 
 OpenAI documents shared chats and editor context when its desktop app and Codex

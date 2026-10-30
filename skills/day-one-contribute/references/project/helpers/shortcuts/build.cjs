@@ -18,8 +18,9 @@ function catalogue(sourceRoot) {
   const base=path.join(sourceRoot.replace(/^\/tmp(?=\/|$)/,'/private/tmp').replace(/^\/var(?=\/|$)/,'/private/var'),'integrations/shortcuts');
   const value=JSON.parse(regular(path.join(base,'catalog.json')));
   need(value.schema===1 && Array.isArray(value.recipes) && value.recipes.length>0,'Invalid shortcut catalogue');
+  need(value.quickActions===undefined || (Array.isArray(value.quickActions) && value.quickActions.every(recipe=>recipe.format==='automator-quick-action')),'Invalid Quick Action catalogue');
   const ids=new Set(),names=new Set(),bundles=new Set();
-  for(const recipe of value.recipes) {
+  for(const recipe of [...value.recipes,...(value.quickActions || [])]) {
     need(/^[a-z][a-z0-9-]+$/.test(recipe.id) && !ids.has(recipe.id),'Invalid or duplicate recipe ID');ids.add(recipe.id);
     need(typeof recipe.name==='string' && /^[A-Za-z][A-Za-z0-9 ]+$/.test(recipe.name) && !names.has(recipe.name),'Invalid or duplicate app name');names.add(recipe.name);
     need(recipe.bundleId===`com.codebykwakes.day-one-shortcuts.${recipe.id}` && !bundles.has(recipe.bundleId),'Invalid bundle ID');bundles.add(recipe.bundleId);

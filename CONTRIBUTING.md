@@ -5,6 +5,11 @@ Read [Start here](docs/START-HERE.md) and [adding a capability](docs/shared/refe
 before changing behaviour. Work in a branch; keep real inventories, credentials
 and private machine paths outside the public repository.
 
+Use this checkout's `day-one-mac-maintenance` skill for repository upkeep.
+The public `day-one-maintain` and `day-one-contribute` workflows serve different
+scopes; see the [maintenance skill distinction](docs/setup/manual/ai/day-one-skills.md#repository-maintenance-versus-environment-maintenance)
+for their source locations and packaging boundaries.
+
 ## Prepare contributor tools
 
 1. Install Node.js 22.20 or newer, the pnpm version in `package.json`, ShellCheck

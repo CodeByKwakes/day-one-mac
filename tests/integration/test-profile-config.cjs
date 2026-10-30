@@ -45,6 +45,7 @@ expected.ai.optional.push('luisclementdev.npm-visual-manager');
 expected.ai.optional.push('pranaygp.vscode-css-peek');
 expected.ai.settings['chatgpt.reviewDelivery'] = 'inline';
 for (const slug of ['full-stack', 'ai']) {
+  expected[slug].settings['gitlens.currentLine.enabled'] = true;
   expected[slug].extensions.push('bradlc.vscode-tailwindcss');
   expected[slug].extensions.push('imgildev.vscode-auto-barrel');
   expected[slug].extensions.push('tomwhite007.rename-angular-component');

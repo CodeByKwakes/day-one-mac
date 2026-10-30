@@ -836,6 +836,34 @@ file. Back up `~/.config/markdownlint/config.json` alongside your profile export
 and restore it before using the profiles on another Mac. To revert the setup,
 restore the saved profile settings and the previous rule file if one existed.
 
+### Show GitLens blame without editor clutter
+
+Full Stack and AI show current-line blame beside the selected line, with
+CodeLens kept off. Operations keeps blame in the status bar and offers file
+annotations on demand. The exact values live in the
+[profile configuration reference](../../../shared/reference/vscode-profile-data.md).
+
+1. Select the intended profile and open a committed file in the normal editor.
+2. Place the cursor on an unchanged line. Expected: Full Stack and AI show its
+   author, date and commit summary at the end of the line.
+3. Run **GitLens: Toggle File Blame** from `Cmd+Shift+P` for file-wide annotations.
+   Expected: the gutter shows commit information beside groups of lines.
+4. Run the same command again to clear file annotations. Use
+   **GitLens: Toggle Line Blame Annotations** to toggle the current-line display.
+
+If only the bottom status bar shows an author, inspect
+`gitlens.currentLine.enabled` in the active profile's User Settings.
+Check workspace overrides and GitLens's active mode before changing another
+profile. A diff editor, untracked file or newly changed line is a different
+verification target from an unchanged committed line.
+
+Current-line annotations were observed in Full Stack with GitLens 19.4.0 on
+27 October 2026. Saved values were checked for AI separately. These local checks
+do not establish remote-workspace behaviour. See
+[GitLens blame features](https://help.gitkraken.com/gitlens/gitlens-features/)
+and the [settings reference](https://help.gitkraken.com/gitlens/gitlens-settings/).
+Restore the profile's exported settings to undo a personal configuration change.
+
 ### Generate Conventional Commit messages with GitLens
 
 The shared `gitlens.ai.generateCommitMessage.customInstructions` setting asks
@@ -1314,6 +1342,7 @@ Run the checks for the profiles and optional integrations you selected.
 | Open an Angular template and Prisma schema in Full Stack or AI | Diagnostics and formatter ownership match the selected extensions |
 | Open a configured Tailwind project in Full Stack or AI | CSS uses Tailwind CSS mode, SCSS keeps its mode, class completion works and Prettier formats CSS on save |
 | Peek a class definition in the disposable CSS Peek example in Full Stack, or AI if selected | The matching authored stylesheet rule appears; Tailwind and Angular tooling remain enabled |
+| Select an unchanged committed line in Full Stack or AI | GitLens shows current-line blame; file-wide annotations can be toggled on and off |
 | Generate a barrel in a disposable TypeScript directory in Full Stack or AI | Exports match the selected files, respect exclusions and pass the project's type check |
 | Rename a disposable Angular component in Full Stack or AI | Related files and references match the new name; reviewed changes pass the project's build and tests |
 | Search Extensions for `streetsidesoftware.code-spell-checker` in all four profiles | Code Spell Checker is not installed in these profiles |

@@ -485,6 +485,7 @@ integrations/shortcuts/open-in-vscode.applescript
 integrations/shortcuts/open-in-vscode.plist
 integrations/shortcuts/open-in-warp.applescript
 integrations/shortcuts/open-vscode-profile.applescript
+integrations/shortcuts/send-to-archive.applescript
 integrations/warp/Day One Mac/00 Day One Mac Command Catalogue.md
 integrations/warp/Day One Mac/03 Repositories and Hosting/01-ghq-root.yaml
 integrations/warp/Day One Mac/03 Repositories and Hosting/02-ghq-list.yaml

@@ -166,6 +166,26 @@ Install a specialist by replacing `--skill day-one-mac` with its exact name.
 Multiple names can follow `--skill`. Avoid `--all`: this repository also contains
 contributor skills that are separate from these distributable packages.
 
+### Repository maintenance versus environment maintenance
+
+Choose the skill by the thing being maintained. Repository contributor
+instructions and a user's development-environment workflows have separate homes.
+
+| Skill | Purpose | Source and distribution |
+|---|---|---|
+| `day-one-mac-maintenance` | Maintain this checkout's guides, packages and helpers | Repository-local `.agents/skills/day-one-mac-maintenance/SKILL.md`; excluded from public packages |
+| `day-one-maintain` | Review drift and update selected developer tools or installed skills | `templates/skills/day-one-maintain/SKILL.md`; generated into `skills/day-one-maintain` and bundled in the main skill |
+| `day-one-contribute` | Guide repository changes from a separately selected source checkout | `templates/skills/day-one-contribute/SKILL.md`; generated into `skills/day-one-contribute` and bundled in the main skill |
+
+The repository-local skill supplements this checkout's `AGENTS.md` and
+`CONTRIBUTING.md`. It is not a missing public template or a dependency to install
+on a user's Mac. Keep public workflow instructions in `templates/skills/` and
+regenerate their `skills/` packages; keep checkout-specific contributor guidance
+in `.agents/skills/`. Installing the main skill includes both public workflows
+without copying the repository-local contributor skill.
+
+### Install and use the shortcuts specialist
+
 For shortcuts, use the same GitHub/local installation steps with
 `--skill day-one-shortcuts`. Project/global scope and Claude links work the same
 way. Ask: "Use day-one-shortcuts to preview Git Clone and Open in Warp apps in a

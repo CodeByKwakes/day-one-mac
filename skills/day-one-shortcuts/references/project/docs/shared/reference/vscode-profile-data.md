@@ -320,7 +320,7 @@ Profile exports and Settings Sync do not include this external file; back it up 
   "[dockerfile]": {
     "editor.formatOnSave": false
   },
-  "gitlens.currentLine.enabled": false,
+  "gitlens.currentLine.enabled": true,
   "gitlens.codeLens.enabled": false,
   "gitlens.statusBar.enabled": true,
   "github.copilot.enable": {
