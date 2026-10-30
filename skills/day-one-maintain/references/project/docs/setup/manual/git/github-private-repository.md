@@ -1,4 +1,4 @@
-[← Start here](../../../START-HERE.md) · [Day One Mac home](../../../README.md) · [Begin Phase 1 →](../macos.md)
+[← Start here](../../../START-HERE.md) · [Day One Mac home](../../../README.md) · [Begin macOS setup →](../macos.md)
 
 # Clone a private GitHub setup repository
 
@@ -199,4 +199,4 @@ Git checkout once GitHub CLI or SSH authentication is available.
 
 ---
 
-[← Start here](../../../START-HERE.md) · [Continue with Phase 1 →](../macos.md)
+[← Start here](../../../START-HERE.md) · [Continue with macOS setup →](../macos.md)

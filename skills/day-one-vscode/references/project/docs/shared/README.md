@@ -7,6 +7,8 @@ or [Manual Setup](../setup/manual/README.md).
 | Reference | Purpose |
 |---|---|
 | [Prerequisites](prerequisites.md) | Platform, access, tools, storage and network requirements |
+| [Private evidence](private-evidence.md) | Private report locations and permissions |
+| [Client acceptance](reference/client-acceptance.md) | Source checks, fixtures, live evidence and deferred integrations |
 | [Decisions](decisions.md) | One worksheet for supported selections |
 | [Glossary](glossary.md) | Plain-language definitions |
 | [Terminal basics](terminal-basics.md) | Commands, placeholders, prompts and exit status |

@@ -177,8 +177,14 @@ Stdout is reserved for MCP messages; startup failures go to stderr.
 
 ## Part 3: Client integration
 
-Replace `/absolute/path/day-one-mac` with the checkout path printed during native
-installation. The examples use Homebrew executable paths; resolve your installed
+For normal installation, start with the [standalone package recipe](#method-a-native-macos)
+and generate configuration from the installed package. The handwritten examples
+below illustrate a contributor source build: replace `/absolute/path/day-one-mac`
+with that checkout's confirmed root. They do not describe the installed tarball's
+layout and are not required folder names. Neither direct launch nor a local
+native plugin requires publication. Use the
+[installation route and location guide](../../docs/setup/manual/ai/day-one-plugins.md#choose-the-installation-route-and-locations)
+to choose between them. The examples use Homebrew executable paths; resolve your installed
 executables before copying them. Node version managers can expose temporary
 shell paths, so resolve Node's installation path rather than copying a temporary
 launcher. Paths with spaces stay a single JSON argument. JSON/TOML strings do
@@ -360,23 +366,125 @@ The tarball includes compiled code, guide snapshots, a licence and dependency
 shrinkwrap. Installation still needs access to the dependencies' npm registry,
 or a previously populated npm cache.
 
-Copy the tarball and its checksum file into a new folder on the receiving Mac.
-From that folder, verify and install the reviewed artifact:
+For an AI-assisted installation, use the
+[inspection, approval and verification procedure](../../docs/setup/manual/ai/day-one-plugins.md#ai-assisted-installation).
+The same manual steps below apply. Native plugins already include this server;
+do not add a second direct connection in the same client. A standalone package
+is suitable for Claude Desktop and other clients that need only MCP.
 
-```bash
-shasum -a 256 -c day-one-mac-mcp-0.1.1.tgz.sha256
-mkdir -p "$HOME/.local/share/day-one-mac-mcp"
-npm install --prefix "$HOME/.local/share/day-one-mac-mcp" \
-  --ignore-scripts --no-audit --no-fund ./day-one-mac-mcp-0.1.1.tgz
-node "$HOME/.local/share/day-one-mac-mcp/node_modules/day-one-mac-mcp/dist/src/configure.js" \
-  --client all
-```
+1. Obtain the reviewed tarball and its checksum through a trusted source.
+   For the recommended workspace layout, place both under
+   `~/Developer/Resources/Project-Materials/day-one-mac/releases/0.1.1/mcp/`.
+   Check Node and npm before proceeding:
 
-The last command prints the four clients' native configurations with this Mac's
-actual paths. Review and merge the selected entry. Keep the installation folder
-while clients reference it. Back up existing client settings before merging.
-Use an empty install directory for the first installation; review an existing
-installation before updating it.
+   ```bash
+   node --version
+   npm --version
+   ```
+
+   Expected: Node.js 22.20+ and npm are available. Stop if they are missing;
+   use the [language setup recipe](../../docs/setup/manual/languages.md).
+   The following commands illustrate version `0.1.1`; use the received version
+   consistently in the artifact name and install directory.
+
+2. Verify the package from its containing directory:
+
+   ```bash
+   ARTIFACT_ROOT="$HOME/Developer/Resources/Project-Materials/day-one-mac/releases/0.1.1/mcp"
+   cd "$ARTIFACT_ROOT"
+   shasum -a 256 -c day-one-mac-mcp-0.1.1.tgz.sha256
+   ```
+
+   Expected: `day-one-mac-mcp-0.1.1.tgz: OK`. Stop on missing files or mismatch.
+   A matching checksum detects corruption, not publisher identity; compare the
+   expected checksum with the trusted source before installing.
+
+3. Install into a new version directory outside the checkout:
+
+   ```bash
+   MCP_ROOT="$HOME/.local/share/day-one-mac-mcp/0.1.1"
+   test ! -e "$MCP_ROOT" && test ! -L "$MCP_ROOT" &&
+     npm install --prefix "$MCP_ROOT" --ignore-scripts --no-audit --no-fund \
+     "$ARTIFACT_ROOT/day-one-mac-mcp-0.1.1.tgz"
+   ```
+
+   Stop if the destination test fails; inspect the existing installation instead
+   of overwriting it. Expected: the package is under
+   `$MCP_ROOT/node_modules/day-one-mac-mcp`. npm may need registry access for
+   dependencies. No global npm installation or source build is required.
+
+4. Generate the selected client's configuration from that installation:
+
+   ```bash
+   node "$MCP_ROOT/node_modules/day-one-mac-mcp/dist/src/configure.js" --client all
+   ```
+
+   Expected: configuration previews with resolved executable and server paths.
+   Use `--client claude` for a Claude `mcpServers` JSON object or `--client codex`
+   for TOML. The utility prints settings only; it does not install a plugin,
+   write client settings or connect the server. JSON/TOML do not expand `$HOME`
+   or `~`. Keep generated output private because it contains local paths.
+
+5. Back up the selected client's existing configuration privately, then merge
+   only the generated server entry using its [client procedure](#part-3-client-integration).
+   Preserve unrelated settings and check for an existing Day One Mac connection.
+   Retain the install directory while any client references it. For updates, use
+   a new version directory, review the configuration difference and retain the
+   prior installation and configuration backup until the new connection works.
+
+6. Restart or reconnect the selected client after saving current work. Discover
+   the server and invoke `list_guides`, then `read_guide` with `{"id":"macos"}`.
+   Expected: guide listings and Markdown from this server. Keep mutation flags
+   absent. Report a successful package installation separately from a successful
+   client tool call; see [live acceptance limits](../../docs/shared/reference/client-acceptance.md).
+
+#### Claude Desktop configuration and recovery
+
+1. Before opening the editor, inspect whether the configuration already exists
+   and record any original absence privately. Open
+   **Claude → Settings → Developer → Edit Config** from the macOS menu bar.
+   Confirm the file is
+   `~/Library/Application Support/Claude/claude_desktop_config.json`.
+   This is separate from Claude Code's settings and plugin registration.
+2. Before editing, prepare a [private evidence directory](../../docs/shared/private-evidence.md).
+   After completing that directory's ownership checks, create a unique backup
+   folder and copy the existing file:
+
+   ```bash
+   umask 077
+   EVIDENCE_DIR="$(mktemp -d "$HOME/.local/state/development-setup/claude-desktop.XXXXXX")" &&
+     cp "$HOME/Library/Application Support/Claude/claude_desktop_config.json" \
+     "$EVIDENCE_DIR/claude_desktop_config.before.json"
+   ```
+
+   Expected: the copy succeeds. Stop on an error. If creating a configuration
+   for the first time, record that original absence before **Edit Config** creates
+   it; do not describe an empty generated file as a pre-existing configuration.
+3. Generate output with `--client claude` using Step 4's installed utility. Merge
+   its `day-one-mac` entry into `mcpServers`; preserve every unrelated key.
+   Validate the complete file before restarting:
+
+   ```bash
+   node -e 'JSON.parse(require("node:fs").readFileSync(process.argv[1],"utf8"))' \
+     "$HOME/Library/Application Support/Claude/claude_desktop_config.json"
+   ```
+
+   Expected: exit zero with no output. Stop on invalid JSON or an unexpected
+   concurrent edit. Do not replace the entire file with the generated example.
+4. Fully quit and reopen Claude Desktop after saving current work. Inspect the
+   local server's status and available tools, then perform Step 6's harmless reads.
+   On failure, check `~/Library/Logs/Claude` for MCP errors. Missing executables
+   require a verified Node path, not a shell-profile launcher. If the Developer
+   controls are unavailable, check client version and managed policy; stop rather
+   than writing a guessed configuration elsewhere.
+5. For recovery, compare the current file with the private backup and merge back
+   only the previous Day One Mac entry, preserving intervening edits. If the
+   server entry was new, remove only that entry. Restart and verify unrelated
+   servers still work. Retain package versions and recovery evidence.
+
+These Desktop steps follow the
+[official local-server guide](https://modelcontextprotocol.io/docs/develop/connect-local-servers).
+Repository package/protocol tests do not establish live Claude Desktop acceptance.
 
 #### Build and test from source
 

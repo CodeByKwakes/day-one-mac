@@ -40,6 +40,22 @@ No runtime command or workspace exporter is required.
    Expected result: verified, incomplete, failed and not-checked results are
    separate. Installation alone is not evidence of working account access.
 
+## Install the optional Day One Mac connection
+
+For Codex or Claude Code, use the
+[native plugin recipe](../manual/ai/day-one-plugins.md#ai-assisted-installation)
+when you want the main skill and MCP connection together. For Claude Desktop,
+use that recipe's standalone MCP route. The assistant can perform approved local
+installation when its client exposes file and command tools; this ability does
+not come from the read-only Day One Mac MCP server itself.
+
+Start with the recipe's inspection-only prompt. Review the selected clients,
+artifact provenance, version, stable paths, duplicate registrations, private
+backups and recovery before approving installation. A request for documentation
+or a plan does not authorize client changes. Account sign-in, permission prompts
+and saving work before a restart remain explicit human steps. Report package,
+registration and live read-only tool verification separately.
+
 ## Record and resume
 
 With your approval, save private notes outside the installed skill, for example

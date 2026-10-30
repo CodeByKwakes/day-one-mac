@@ -6,8 +6,8 @@ Set up the selected profiles through the [manual VS Code task](../editors/vscode
 
 Shared settings, language formatters, environment-file behaviour, profile
 colours and agent preferences are defined only in the
-[main profile settings](../editors/vscode.md#3-apply-shared-user-settings).
-Use its [AI overrides](../editors/vscode.md#ai-overrides) for the settings discussed
+[main profile settings](../editors/vscode/profiles.md#3-apply-shared-user-settings).
+Use its [AI overrides](../editors/vscode/profiles.md#ai-overrides) for the settings discussed
 below. This section describes how to use the resulting tools.
 
 ### AI profile: focused agent work and prompt authoring
@@ -69,7 +69,7 @@ Copilot and Claude maintain separate conversations.
 
 Use the Codex extension (`openai.chatgpt`) in Full Stack or AI, plus the desktop
 app. Keep both clients current and use the same account and workspace. The
-[profile settings](../editors/vscode.md#ai-overrides) configure Cmd+Enter,
+[profile settings](../editors/vscode/profiles.md#ai-overrides) configure Cmd+Enter,
 queued follow-ups and inline reviews. Those preferences do not enable chat
 sharing; the extension has no separate sync switch.
 

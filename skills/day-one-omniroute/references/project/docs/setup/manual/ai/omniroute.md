@@ -137,13 +137,19 @@ dashboard.
 
 ## 2. Start Docker Desktop or OrbStack and select its Docker context
 
-This module needs a local Docker engine. Choose and start **Docker Desktop** or
+The container route needs a local Docker engine. Choose and start **Docker Desktop** or
 **OrbStack** using [manual container setup](../databases/containers.md).
 If the selected engine is absent and Homebrew is its intended owner, install only that engine:
 
+For Docker Desktop only:
+
 ```bash
 brew install --cask docker-desktop
-# Or:
+```
+
+For OrbStack instead:
+
+```bash
 brew install --cask orbstack
 ```
 
@@ -152,8 +158,23 @@ After first-run setup, list contexts and deliberately choose your engine:
 ```bash
 docker context ls
 docker context show
-docker context use desktop-linux   # Docker Desktop
-# Or: docker context use orbstack
+```
+
+For Docker Desktop, select:
+
+```bash
+docker context use desktop-linux
+```
+
+For OrbStack instead, select:
+
+```bash
+docker context use orbstack
+```
+
+Verify the selected engine:
+
+```bash
 docker version
 docker info
 ```

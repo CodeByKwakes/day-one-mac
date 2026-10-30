@@ -50,6 +50,12 @@ Shortcuts, login items and scheduled tasks for references to the exact old
 launcher. Do not assume the manager installed a service. Keep direct Git,
 Homebrew, chezmoi, application launch and working-directory commands.
 
+The parent `~/.local/share/day-one-mac/` may also hold current versioned plugin
+artifacts under `plugins/`. Inspect the selected clients' marketplace sources
+using the [plugin lifecycle guide](../../setup/manual/ai/day-one-plugins.md).
+Never retire that parent wholesale when a current client uses a child directory.
+Select only confirmed legacy children; unknown ownership means leave them in place.
+
 ## 2. Agree the removal list
 
 Classify every discovered item before moving it:
@@ -80,10 +86,11 @@ printf '%s\n' "$RETIREMENT_BACKUP"
 ```
 
 Expected result: a unique private location. Record it outside the public repo.
-For an approved regular directory, copy it with macOS `ditto`. Example:
+For an approved regular directory, replace the placeholder with the exact
+confirmed legacy child directory, then copy it with macOS `ditto`:
 
 ```bash
-LEGACY_DIRECTORY="$HOME/.local/share/day-one-mac"
+LEGACY_DIRECTORY="/absolute/path/to/confirmed-legacy-directory"
 test -d "$LEGACY_DIRECTORY" && test ! -L "$LEGACY_DIRECTORY"
 ditto "$LEGACY_DIRECTORY" "$RETIREMENT_BACKUP/runtime-copy"
 ```

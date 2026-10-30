@@ -1,4 +1,4 @@
-[← Application guides](../apps/README.md) · [Local database module](../../../shared/tools/09-databases.md) · [VS Code profiles](../../../shared/tools/vscode-profiles.md)
+[← Application guides](../apps/README.md) · [Local database containers](containers.md) · [VS Code profiles](../../../shared/tools/vscode-profiles.md)
 
 # PostgreSQL setup with DataGrip and VS Code
 
@@ -23,8 +23,8 @@ second database or rerun role creation just to add another client.
 
 DataGrip is optional and is not installed or configured by Day One Mac's
 application catalogue. Database access is a shared manual action on both setup
-routes. Module 09 provisions only the selected local containers; it does not
-provision remote environments or apply your application's migrations.
+routes. Follow [local containers](containers.md) only when a new disposable server
+is needed; it does not provision remote services or apply application migrations.
 
 ## Contents
 
@@ -117,7 +117,7 @@ queries there, then the privilege checks in section 10. This demonstrates the
 two access levels without changing real data.
 
 If you skipped section 4, use your repository's database and individual role.
-The Module 09 bootstrap connection is database/user/password `postgres`; reserve
+The manual sandbox bootstrap connection is database/user/password `postgres`; reserve
 it for the disposable sandbox's administration, not the application connection.
 
 ## 6. Prepare shared development, test and production
@@ -260,7 +260,7 @@ connections, close stale sessions and keep the connection worksheet current.
 
 - [ ] Exactly one owner/route manages each local database service.
 - [ ] The database is healthy and published only on the intended loopback port.
-- [ ] Fixed-credential Module 09 containers contain only synthetic disposable data.
+- [ ] Fixed-credential manual sandbox containers contain only synthetic disposable data.
 - [ ] DataGrip and VS Code identify the same intended database and separate login.
 - [ ] Reader checks pass; the application uses its own runtime role.
 - [ ] Private connection data is excluded from repositories, exports and AI prompts.
@@ -284,7 +284,7 @@ is not evidence that a real remote environment has been provisioned or tested.
 
 For local containers, follow the [manual container setup](containers.md).
 For editor extensions and profiles, use the [manual VS Code guide](../editors/vscode.md).
-If you chose assisted database provisioning, [Module 09](../../../shared/tools/09-databases.md)
+For a new disposable server, [manual containers](containers.md)
 owns that procedure. Recheck vendor UI labels against the installed versions
 when they differ from this guide.
 

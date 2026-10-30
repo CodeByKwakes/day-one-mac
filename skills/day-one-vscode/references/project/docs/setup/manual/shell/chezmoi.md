@@ -513,4 +513,4 @@ and [chezmoi merge tools](https://www.chezmoi.io/user-guide/tools/merge/).
 
 ---
 
-[← Reference library](../../../shared/README.md) · [Setup tutorial](chezmoi.md) · [Command reference](../../../shared/reference/chezmoi-commands.md) · [Alias editing guide](aliases.md)
+[← Reference library](../../../shared/README.md) · **Setup tutorial** · [Command reference](../../../shared/reference/chezmoi-commands.md) · [Alias editing guide](aliases.md)

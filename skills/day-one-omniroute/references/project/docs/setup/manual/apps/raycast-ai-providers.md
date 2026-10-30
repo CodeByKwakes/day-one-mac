@@ -33,8 +33,9 @@ This is a complete and supported Day One outcome:
 1. Do not add an API key or provider file.
 2. Do not assign the optional Quick AI hotkey.
 3. Keep using Claude Code, Codex or Copilot independently from Warp or VS Code.
-4. Use [Day One Script Commands](raycast.md) for setup checks and
-   documentation; they do not need Raycast AI.
+4. Bookmark the [handbook](../../../shared/reading-and-export.md) and use each
+   selected guide's verification commands in Terminal. Expected: documentation
+   and setup checks remain usable without a Raycast AI provider or command pack.
 
 ## Option 2 - Use built-in Raycast AI
 

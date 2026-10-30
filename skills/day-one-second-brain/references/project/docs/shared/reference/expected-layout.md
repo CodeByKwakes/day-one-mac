@@ -8,7 +8,10 @@
 | `~/Library/Application Support/Code/User/` | VS Code User/profile resources |
 | User-selected private backup directory | Profile replacement recovery records |
 | `~/.local/share/chezmoi/` | Chezmoi source, only if selected |
-| `~/.local/share/day-one-mac/`, `~/.day-one-mac/` | Legacy manager assets and recovery evidence; never required by current skills |
+| User-selected stable plugin artifact root | Current native-plugin marketplace source; keep versioned copies for recovery |
+| `~/.local/share/day-one-mac/plugins/` | One possible artifact-root choice; inspect actual client registration before moving it |
+| `~/.local/share/day-one-mac/` | May contain current plugin artifacts and historical manager files; never retire this parent as a unit |
+| `~/.day-one-mac/` | Historical manager state and recovery evidence; preserve until inspected |
 
 Global client skill locations vary. Inspect the Skills CLI installation summary
 and follow [skill verification](../../setup/manual/ai/day-one-skills.md).

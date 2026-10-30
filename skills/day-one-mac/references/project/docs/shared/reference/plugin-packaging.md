@@ -23,12 +23,19 @@ are copied. Role templates stay inside skill assets and are not activated.
 ## Build and verify
 
 Prepare contributor dependencies as described in CONTRIBUTING.md, including the
-locked MCP dependencies. Regenerate the skills after editing public sources:
+locked MCP dependencies. Inspect the recommended parent directory for ownership
+and unexpected symlinks before creating missing directories. For reviewed version
+`0.1.1`, prepare the parent and regenerate skills after editing public sources:
 
 ```bash
+mkdir -p "$HOME/Developer/Resources/Project-Materials/day-one-mac/releases/0.1.1"
 pnpm run skills:build
-pnpm run plugins:build --output "$HOME/Downloads/day-one-native-plugins-review"
+pnpm run plugins:build --output "$HOME/Developer/Resources/Project-Materials/day-one-mac/releases/0.1.1/native-plugins"
 ```
+
+Use the reviewed package version in the output path and a destination that does
+not already exist. See the
+[distribution and installation layout](../../setup/manual/ai/day-one-plugins.md#choose-the-installation-route-and-locations).
 
 Expected result: new `codex` and `claude` marketplace directories outside the
 checkout. Existing destinations and destination symlinks are refused. A failed

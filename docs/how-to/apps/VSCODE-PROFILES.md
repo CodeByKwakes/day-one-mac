@@ -10,7 +10,7 @@ See the [current instructions](../../setup/manual/editors/vscode.md).
 
 ## 1. Choose and create profiles
 
-See the [current instructions](../../setup/manual/editors/vscode.md#1-choose-and-create-profiles).
+See the [current instructions](../../setup/manual/editors/vscode/profiles.md#1-choose-and-create-profiles).
 
 ### Manual route — create the selected profiles
 
@@ -34,55 +34,55 @@ See the [current instructions](../../setup/manual/editors/vscode.md).
 
 ## 2. Install the final extension lists
 
-See the [current instructions](../../setup/manual/editors/vscode.md#2-install-the-final-extension-lists).
+See the [current instructions](../../setup/manual/editors/vscode/extensions.md#2-install-the-final-extension-lists).
 
 ### Copilot: already provided through your VS Code setup
 
-See the [current instructions](../../setup/manual/editors/vscode.md#copilot-already-provided-through-your-vs-code-setup).
+See the [current instructions](../../setup/manual/editors/vscode/extensions.md#copilot-already-provided-through-your-vs-code-setup).
 
 ### Extension tables
 
-See the [current instructions](../../setup/manual/editors/vscode.md#extension-tables).
+See the [current instructions](../../setup/manual/editors/vscode/extensions.md#extension-tables).
 
 #### Default extensions
 
-See the [current instructions](../../setup/manual/editors/vscode.md#default-extensions).
+See the [current instructions](../../setup/manual/editors/vscode/extensions.md#default-extensions).
 
 #### Full Stack extensions
 
-See the [current instructions](../../setup/manual/editors/vscode.md#full-stack-extensions).
+See the [current instructions](../../setup/manual/editors/vscode/extensions.md#full-stack-extensions).
 
 #### AI extensions
 
-See the [current instructions](../../setup/manual/editors/vscode.md#ai-extensions).
+See the [current instructions](../../setup/manual/editors/vscode/extensions.md#ai-extensions).
 
 #### Operations extensions
 
-See the [current instructions](../../setup/manual/editors/vscode.md#operations-extensions).
+See the [current instructions](../../setup/manual/editors/vscode/extensions.md#operations-extensions).
 
 ## 3. Apply shared User Settings
 
-See the [current instructions](../../setup/manual/editors/vscode.md#3-apply-shared-user-settings).
+See the [current instructions](../../setup/manual/editors/vscode/profiles.md#3-apply-shared-user-settings).
 
 ## 4. Apply profile settings
 
-See the [current instructions](../../setup/manual/editors/vscode.md#4-apply-profile-settings).
+See the [current instructions](../../setup/manual/editors/vscode/profiles.md#4-apply-profile-settings).
 
 ### Default overrides
 
-See the [current instructions](../../setup/manual/editors/vscode.md#default-overrides).
+See the [current instructions](../../setup/manual/editors/vscode/profiles.md#default-overrides).
 
 ### Full Stack overrides
 
-See the [current instructions](../../setup/manual/editors/vscode.md#full-stack-overrides).
+See the [current instructions](../../setup/manual/editors/vscode/profiles.md#full-stack-overrides).
 
 ### AI overrides
 
-See the [current instructions](../../setup/manual/editors/vscode.md#ai-overrides).
+See the [current instructions](../../setup/manual/editors/vscode/profiles.md#ai-overrides).
 
 ### Operations overrides
 
-See the [current instructions](../../setup/manual/editors/vscode.md#operations-overrides).
+See the [current instructions](../../setup/manual/editors/vscode/profiles.md#operations-overrides).
 
 ## 5. Finish prompts, skills, agents, and MCP
 
@@ -98,8 +98,8 @@ See the [current instructions](../../setup/manual/editors/vscode.md).
 
 ## 8. Verify and export
 
-See the [current instructions](../../setup/manual/editors/vscode.md#9-verify-and-export).
+See the [current instructions](../../setup/manual/editors/vscode/recovery.md#9-verify-and-export).
 
 ## 9. Optional custom profile: Tech Content Creator
 
-See the [current instructions](../../setup/manual/editors/vscode.md#10-optional-custom-profile-tech-content-creator).
+See the [current instructions](../../setup/manual/editors/vscode/profiles.md#10-optional-custom-profile-tech-content-creator).

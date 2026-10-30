@@ -118,8 +118,8 @@ Audit custom Raycast hotkeys under **Raycast Settings → Shortcuts**. Prefer an
 alias typed into Root Search when a command is useful but not frequent enough
 to justify another global shortcut.
 
-The optional [Day One Raycast command pack](raycast.md) provides
-suggested `d1…` and `ai…` aliases. It deliberately assigns no hotkey itself.
+Create an alias through Raycast's Shortcuts settings only when you want it.
+No Day One Mac command pack or alias installation is required.
 
 ## Workspace and voice shortcuts
 

@@ -47,6 +47,8 @@ if (require.main === module) {
   fs.closeSync(reader);
   assert.equal(fs.readFileSync(inventory, 'utf8'), 'new complete inventory\n');
   for (const name of ['../README.md', '/etc/passwd', '.git/config', '.agents/skills/private/SKILL.md', 'config/unreviewed-secret.txt']) assert.throws(() => regular(name));
+  regular('integrations/mcp/README.md');
+  for (const name of ['integrations/mcp/package.json', 'integrations/mcp/src/index.ts', 'integrations/mcp/node_modules/private.txt']) assert.throws(() => regular(name));
   assert.throws(() => reference('docs/START-HERE.md', '../../../../etc/passwd'));
   assert.throws(() => buildPackage({name:'day-one-check', assets:['../private']}));
   assert.throws(() => buildPackage({name:'day-one-check', workflows:['missing-workflow']}));
@@ -54,6 +56,8 @@ if (require.main === module) {
     const folder = path.join(temp, `Independent é ${name}`);
     fs.cpSync(path.join(root, 'skills', name), folder, { recursive: true });
     validatePackage(folder);
+    assert(fs.existsSync(path.join(folder, 'references/project/integrations/mcp/README.md')), 'Standalone installation recipe must be portable');
+    assert(!fs.existsSync(path.join(folder, 'references/project/integrations/mcp/src')), 'Do not bundle MCP source into skills');
     const helper = path.join(folder, 'references/project/helpers/vscode/build.cjs');
     const review = path.join(temp, `Profile output é ${name}`);
     const generated = spawnSync(process.execPath, [helper, 'full-stack', '--output', review], { cwd: temp, encoding: 'utf8' });

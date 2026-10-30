@@ -7,7 +7,7 @@ Git commands below apply only to a source already under version control.
 For a local-only source, keep a verified encrypted backup before editing and
 skip the Git commit and revert steps.
 
-If using the private report paths below, first create the directory with `mkdir -p "$HOME/.local/state/development-setup"` and restrict it with `chmod 700 "$HOME/.local/state/development-setup"`. Expected: reports remain local and outside the repository.
+Before saving reports, complete the [private evidence directory prerequisite](../../../shared/private-evidence.md).
 
 ## 1. Audit the minimal source first
 

@@ -52,7 +52,9 @@ Project version files take precedence over a convenient default runtime.
 
 Do not add Corepack, `npm install -g pnpm` or `pnpm setup` on top of this ownership
 choice. Projects declare their package-manager expectation in `package.json`.
-An optional profile generator requires Node 22 or newer even on a Python-only Mac.
+For an optional profile generator, use the
+[shared Node.js minimum](../../shared/prerequisites.md#tool-prerequisites-by-task),
+including on a Python-only Mac.
 
 ## Python
 

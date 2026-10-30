@@ -21,9 +21,10 @@ These assets require no Day One Mac runtime or permanent checkout.
 
 ## Portability and verification
 
-Generated `.app` launchers depend on local installed shortcuts and are not
-included. The guide records the supplied launchers' review and explains why
-copying them does not back up their actions. Recreate each launcher on its Mac.
+Apps created through Shortcuts' **Add to Dock** depend on an installed shortcut
+and are not included. Recreate those launchers after importing the action on
+the destination Mac. Standalone apps compiled from the AppleScript sources
+below contain their own code and do not depend on Shortcuts.
 Git Clone uses the current user's home folder as the picker's initial location,
 requires confirmation, rejects credential-bearing URL forms and refuses any
 existing destination. Custom SSH commands stop before folder creation; standard

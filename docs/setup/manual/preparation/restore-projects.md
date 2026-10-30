@@ -6,7 +6,7 @@ write a list of files to restore before copying anything. Git access is required
 for repository clones; database and application imports require their selected
 clients.
 
-If using the private report paths below, first create the directory with `mkdir -p "$HOME/.local/state/development-setup"` and restrict it with `chmod 700 "$HOME/.local/state/development-setup"`. Expected: reports remain local and outside the repository.
+Before saving reports, complete the [private evidence directory prerequisite](../../../shared/private-evidence.md).
 
 ## 1. Make the restore decision explicit
 

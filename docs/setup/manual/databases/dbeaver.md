@@ -1,4 +1,4 @@
-[← Application guides](../apps/README.md) · [Local database module](../../../shared/tools/09-databases.md) · [DataGrip alternative](datagrip.md) · [VS Code profiles](../../../shared/tools/vscode-profiles.md)
+[← Application guides](../apps/README.md) · [Local database containers](containers.md) · [DataGrip alternative](datagrip.md) · [VS Code profiles](../../../shared/tools/vscode-profiles.md)
 
 # PostgreSQL setup with DBeaver Community and VS Code
 
@@ -111,28 +111,29 @@ in the worksheet. Request only the environments you need.
 |---|---|
 | You completed the DataGrip local tutorial | Reuse `dev-postgres`, `app_local` and its existing passwords; skip creation |
 | Your application has a documented Compose stack | Use that stack's database, migrations and roles; substitute its connection values below |
-| You need a new disposable sandbox | Choose one Module 09 route below, then create the example roles once |
+| You need a new disposable sandbox | Choose the manual container route below, then create the example roles once |
 | You need retained or sensitive local data | Obtain a separately managed service with unique credentials and an approved backup design |
 
-For a new Module 09 sandbox, check whether port 5432 is already occupied:
+For a new manual sandbox, check whether port 5432 is already occupied:
 
 ```bash
 lsof -nP -iTCP:5432 -sTCP:LISTEN
 ```
 
 Identify an existing service's owner rather than stopping it to fit this guide.
-Module 09's assisted PostgreSQL service uses fixed loopback port 5432. A
+This manual PostgreSQL service uses fixed loopback port 5432. A
 project-owned stack can use another published loopback port if its owner agrees.
 
 ### Manual server route
 
-Follow [Module 09's manual engine, network and PostgreSQL steps](containers.md).
-Do not run both routes for the same service. The manual route has different
-restart and ownership settings; the assisted route does not adopt it silently.
+Follow [the manual engine, network and PostgreSQL steps](containers.md).
+If the intended server already exists, retain its configuration and owner
+instead of provisioning another one. Record the selected engine, service name,
+port and data volume before continuing.
 
 ### Shared manual verification and role setup
 
-The Module 09 sandbox uses PostgreSQL 17 in `dev-postgres`, backed by
+The manual sandbox uses PostgreSQL 17 in `dev-postgres`, backed by
 `dev-pgdata`, at `127.0.0.1:5432`. Its public bootstrap credentials are
 `postgres`/`postgres`. They permit **synthetic disposable data only**; adding
 individual application roles does not remove that bootstrap superuser.

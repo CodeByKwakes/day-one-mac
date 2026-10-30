@@ -51,7 +51,8 @@ Inbox is a temporary state, not a permanent filing cabinet.
 4. Add it to relevant dashboard charts.
 5. Create a domain-specific template only if its page structure is genuinely
    different.
-6. Rerun the local planner if you want the saved plan to match.
+6. Update your private setup notes and any CSV copy you maintain. Expected: the
+   recorded domains match the reviewed Notion database.
 
 ## Migration from Obsidian
 

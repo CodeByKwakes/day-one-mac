@@ -57,7 +57,7 @@ for the normal setup sequence.
 
 ### Manual Setup Handbook
 
-Continue with [Manual Setup](README.md).
+Continue with [the base setup sequence](#follow-the-base-setup).
 
 ### What the CLI does and what you do
 

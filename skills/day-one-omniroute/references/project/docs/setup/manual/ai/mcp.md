@@ -6,7 +6,7 @@ For container-managed servers, use the [Docker MCP setup guide](mcp-docker.md).
 It owns Docker Desktop prerequisites, named profiles, credentials, client
 launchers and verification. This page owns direct project/IDE launchers and
 hosted connections. Choose one route per server; do not enable duplicate direct
-and Docker definitions. Module 11's artifact generator remains HTTPS-only.
+and Docker definitions. Register a selected server through the client procedure below.
 
 ## 1. Configure project and global MCP servers
 
@@ -70,120 +70,32 @@ credentials in a shared file.
 
 ### Copilot and Claude: project installation
 
-From the repository root, create or merge `.mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "nx": {
-      "command": "npx",
-      "args": ["--no-install", "nx", "mcp"]
-    },
-    "angular": {
-      "command": "npx",
-      "args": ["--no-install", "ng", "mcp", "--read-only"]
-    }
-  }
-}
-```
-
-Include Angular only when the installed CLI supports the command and the server
-recognizes your workspace. In an Nx repository without the layout Angular MCP
-expects, retain Nx and use Angular documentation/skills. Do not claim all tools
-work simply because the process starts.
-
-In Copilot, run **MCP: Add Server** for other entries, choose `.mcp.json`, and
-use the launch command/URL from the server table. Review/start the server through
-**MCP: List Servers** and inspect its tools in the chat tool picker.
-
-If using Claude to create the project definitions instead, these commands write
-the same root file; skip them when the JSON entries already exist:
-
-```bash
-claude mcp add --scope project nx -- npx --no-install nx mcp
-claude mcp add --scope project angular -- npx --no-install ng mcp --read-only
-```
+Use the chosen client section below to register project servers. Claude Code
+project scope uses `.mcp.json`; VS Code can use the compatible destinations
+listed above. Select Nx and Angular from the server reference only when their
+installed commands support this workspace. Follow [Claude setup](#4-add-servers-to-claude-code)
+or [VS Code setup](#6-add-servers-to-vs-code-and-built-in-copilot).
 
 ### Copilot: global installation
 
-Run **MCP: Add Server**, select the command/HTTP transport, and choose **Copilot
-Global**. Or merge into `~/.copilot/mcp-config.json`:
-
-```json
-{
-  "mcpServers": {
-    "context7": {
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"]
-    },
-    "playwright": {
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"]
-    }
-  }
-}
-```
-
-Add only the servers you use. These commands register launchers that download
-packages when needed; they are not npm global package installations. After a
-successful setup, consider replacing `@latest`/unversioned packages with reviewed
-versions for reproducibility. Context7's provider offers authenticated setup and
-higher limits; if authentication is required, follow its current client recipe
-rather than committing a key. [Context7 clients](https://context7.com/docs/resources/all-clients).
-
-For a profile-only server, use **MCP: Open User Configuration** and VS Code's
-`servers` format instead. Do not register the same server in both global files
-without an intentional scope reason.
+Use the global destination from the configuration table, then follow
+[Copilot CLI](#github-copilot-cli) or [VS Code setup](#6-add-servers-to-vs-code-and-built-in-copilot).
+Global registrations apply beyond the current repository; avoid duplicating
+a project entry. Each user completes authentication separately.
 
 ### Codex: project and global installation
 
-Project: merge into `.codex/config.toml`:
-
-```toml
-[mcp_servers.nx]
-command = "npx"
-args = ["--no-install", "nx", "mcp"]
-
-[mcp_servers.angular]
-command = "npx"
-args = ["--no-install", "ng", "mcp", "--read-only"]
-```
-
-Launch from the intended worktree and verify the server's working directory.
-If a server starts elsewhere, set its supported `cwd` to that checkout; a
-machine-specific absolute path should remain local. Do not reuse a primary
-checkout's `cwd` when working in a linked worktree.
-
-Global: use the CLI or merge the corresponding tables into personal config:
-
-```bash
-codex mcp add context7 -- npx -y @upstash/context7-mcp
-codex mcp list
-```
-
-The same table syntax works in personal or project config; placement determines
-scope. Do not assume `codex mcp add` creates a project definition. For HTTP
-servers, use `codex mcp add NAME --url URL`; when supported, complete OAuth with
-`codex mcp login NAME`. Keep credentials out of the command text and shared files.
+Follow [Codex setup](#5-add-servers-to-codex-cli) for commands and configuration.
+`codex mcp add` writes personal configuration. For a project definition, merge
+the server table into that project's `.codex/config.toml` and confirm trust.
+Do not register a project-specific Angular or Nx command globally by accident.
 
 ### Claude: global installation
 
-```bash
-claude mcp add --scope user context7 -- npx -y @upstash/context7-mcp
-claude mcp list
-```
-
-For any other local launcher, replace the name and command/arguments using the
-server reference. For a compatible HTTP server:
-
-```bash
-claude mcp add --scope user --transport http github \
-  https://api.githubcopilot.com/mcp/
-```
-
-Use `--scope project` instead of `--scope user` when it should belong to that
-repository. Review auth/tool status in `/mcp`; availability depends on the server
-and account, not simply the command succeeding.
+Follow [Claude setup](#4-add-servers-to-claude-code), selecting `--scope user`
+only when the server belongs across projects. Local scope is personal to the
+current project; project scope is shared through `.mcp.json`. Inspect existing
+entries before adding another one.
 
 ### Playwright scope
 
@@ -479,7 +391,7 @@ For new Copilot servers, current VS Code guidance offers portable workspace
 `.mcp.json` (`mcpServers`) or user `${COPILOT_HOME:-$HOME/.copilot}/mcp-config.json`.
 The VS Code compatibility format uses `.vscode/mcp.json` (`servers`). Open
 profile-specific compatibility settings with **MCP: Open User Configuration**.
-The following example uses that compatibility format, matching Module 11's
+The following example uses that compatibility format, with its own
 generated snippet:
 
 ```jsonc

@@ -1,4 +1,4 @@
-[← MCP module](mcp.md) · [Direct connections](mcp.md) · [Documentation index](../../../README.md)
+[← Direct MCP connections](mcp.md) · [Documentation index](../../../README.md)
 
 # Set up MCP servers with Docker
 
@@ -14,10 +14,9 @@ using the [manual AI client task](clients.md). Install only the clients
 you intend to use. Client availability, account access and organisation policy
 are separate prerequisites from Docker readiness.
 
-This is a **shared manual action**: both Day One Mac routes use the Docker and
-client steps below. Module 11 still generates **HTTPS-only workspace snippets**;
-its `--apply` does not create Docker profiles or activate clients, and its
-`--check` does not verify this Docker setup. No Day One Mac checkout is needed.
+Both setup routes use the Docker and client steps below. Create the selected
+profile and register each client explicitly; installing a skill does neither.
+No Day One Mac checkout or module command is needed.
 
 Instructions were checked against official documentation on **19 October 2026**
 and command help from **Docker MCP CLI 0.44.1**. Toolkit remains a beta feature.
@@ -32,7 +31,7 @@ Use the version checks below; a different release can expose different controls.
 | Direct stdio | A tool needs the project's installed runtime or an IDE | Publisher's local process, such as Angular/Nx or DataGrip |
 | Docker MCP Toolkit | You want reviewed container servers managed through a named profile | Docker Desktop, gateway and selected server containers |
 
-Use [Module 11](mcp.md) for hosted connections and
+Use [direct MCP connections](mcp.md) for hosted servers and
 [the direct connection reference](mcp.md) for project launchers.
 Do not keep direct and Docker copies of the same server active accidentally.
 DataGrip's built-in MCP remains an IDE service; installing Docker does not move
@@ -105,8 +104,8 @@ The client examples specify `--context desktop-linux` so they do not silently
 follow a different default engine. They do not change your default context.
 Investigate inherited `DOCKER_HOST`, `DOCKER_CONTEXT` or `DOCKER_CONFIG` overrides
 before setup; a GUI client and a terminal can use different environments.
-Do not change the recorded engine of existing Module 9/10A resources as a side
-effect of configuring MCP.
+Keep existing database and OmniRoute resources on their selected engine while
+configuring MCP.
 
 ### If you use OrbStack
 
@@ -441,4 +440,4 @@ reviewing the effect on every remaining client. Do not automatically turn it on.
 - [ ] A harmless tool call and restart check pass in each selected client.
 - [ ] Configuration backups, reviewed image references and removal steps are recorded.
 
-[← MCP module](mcp.md) · [Advanced MCP reference](mcp.md)
+[← Direct MCP connections](mcp.md)

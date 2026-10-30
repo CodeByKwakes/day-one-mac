@@ -584,3 +584,10 @@ helpers/workspaces/workspace.cjs
 
 # Main skill display metadata
 templates/skills/day-one-mac/agents/openai.yaml
+docs/setup/manual/editors/vscode/extensions.md
+docs/setup/manual/editors/vscode/profiles.md
+docs/setup/manual/editors/vscode/editing.md
+docs/setup/manual/editors/vscode/recovery.md
+docs/shared/private-evidence.md
+docs/shared/reference/client-acceptance.md
+integrations/mcp/README.md

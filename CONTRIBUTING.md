@@ -60,7 +60,10 @@ integration and agent boundaries. Edit shared policies under
    actionlint
    ```
 
-   Expected result: lint, static and integration checks pass. Fixtures use
+   Expected result: lint, static and integration checks pass. Static checks also
+   reject current links to retired pages, known removed behaviour, combined
+   alternative engine installers, unbundled assets and conflicting Node 22 floors.
+   Reader fixtures verify body search and preserved VS Code section links. Fixtures use
    temporary locations and mock external commands; they do not prove live
    account, provider, hardware or managed-device acceptance.
 

@@ -56,9 +56,9 @@ If work requires separate permissions:
 
 ## Importing the starter domain list
 
-The repository includes `seeds/domains.csv` as an example. After apply, the
-planner also writes a customised copy containing your selected domains under
-`~/.local/state/second-brain-notion/seeds/`. Importing CSV is optional:
+The [example domain CSV](../../../../../extensions/second-brain/notion/seeds/domains.csv)
+is optional. Copy it to a private folder and edit that copy to contain your
+selected domains before importing it. No planner generates or customises it:
 
 1. Open Domains.
 2. Use the database menu and choose **Merge with CSV** or import the CSV as

@@ -441,9 +441,10 @@ To import a trusted Workflow or Notebook:
 3. Choose **Import** and select a supported file or directory.
 4. Review every command before running it.
 
-The optional [Day One Warp Drive module](../../../shared/tools/14-warp-drive.md) imports
-the validated project workflow bundle. The version-controlled bundle contains
-no secrets and keeps cleanup actions in preview mode.
+For a reviewed starting point, inspect the
+[command catalogue](../../../../integrations/warp/Day%20One%20Mac/00%20Day%20One%20Mac%20Command%20Catalogue.md).
+Import supported files yourself using the steps above. Reading or installing a
+skill does not import anything into Warp.
 
 ## Use OmniRoute from Warp - optional
 
@@ -491,7 +492,7 @@ keyboard shortcuts, and checks from the same worktree. Warp owns its completion
 and input UI: exclude `compinit` and optional Zsh line-editor plugins from
 Warp with the documented `TERM_PROGRAM` guard rather than loading every
 conventional-terminal integration. The guide shows how to merge that guard
-into the Phase 5 reference configuration.
+into the shared shell reference configuration.
 
 ## Troubleshooting
 
@@ -547,4 +548,4 @@ and the [GitHub Copilot CLI command reference](https://docs.github.com/en/copilo
 
 ---
 
-[← Configure Raycast](../apps/raycast.md) · [Configure VS Code →](../editors/vscode.md) · [Optional Warp Drive →](../../../shared/tools/14-warp-drive.md)
+[← Configure Raycast](../apps/raycast.md) · [Configure VS Code →](../editors/vscode.md) · [Optional Warp Drive →](warp.md)

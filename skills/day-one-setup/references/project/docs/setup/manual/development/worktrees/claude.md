@@ -110,22 +110,10 @@ feature development. Keep PR review and test snapshots at their intended
 revision. A release hotfix should receive its release-base updates, not
 unreleased main changes.
 
-Choose the completion instruction that matches your repository:
-
-- **PR:** “Review and commit these changes on the feature branch, push it, and
-  create a PR targeting main with the test results.” Inspect the PR and wait
-  for the required checks and reviews; creating it is not merging it.
-- **Local merge:** “In the clean checkout that owns main, fast-forward from
-  origin/main, merge the completed feature branch, and run checks. Report the
-  result before pushing main.” Use only when direct updates are allowed.
-
-After the PR is merged, update the checkout that owns main with
-`git pull --ff-only origin main`. The
-[completion walkthrough](terminal.md#review-and-integrate) explains
-verification, conflicts, squash merges, and cleanup. For an app-managed
-checkout, use its branch/publish or handoff controls to preserve the work
-before integration, and its worktree cleanup controls afterward. Archiving
-alone does not merge code.
+Use the shared [completion instructions](terminal.md#choose-the-integration-route)
+to choose a PR or permitted local merge, update the checkout owning main and
+clean up through the worktree's original owner. Archiving a client task does
+not merge its code.
 
 ## Review and finish
 

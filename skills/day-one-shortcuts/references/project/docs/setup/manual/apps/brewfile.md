@@ -5,7 +5,7 @@ Brewfile. Complete [Homebrew setup](../homebrew.md) first. Keep each application
 existing installation owner and back up the Brewfile before editing it.
 Chezmoi commands apply only when chezmoi owns that file.
 
-If using the private report paths below, first create the directory with `mkdir -p "$HOME/.local/state/development-setup"` and restrict it with `chmod 700 "$HOME/.local/state/development-setup"`. Expected: reports remain local and outside the repository.
+Before saving reports, complete the [private evidence directory prerequisite](../../../shared/private-evidence.md).
 
 ## 1. Inventory the selected software
 

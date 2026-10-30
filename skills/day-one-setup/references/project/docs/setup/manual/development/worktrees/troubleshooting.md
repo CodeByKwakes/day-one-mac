@@ -1,4 +1,4 @@
-[← Worktree overview](README.md) · [Environment files](environment.md) · [Troubleshooting](troubleshooting.md)
+[← Worktree overview](README.md) · [Environment files](environment.md) · **Troubleshooting**
 
 # Git worktree troubleshooting
 

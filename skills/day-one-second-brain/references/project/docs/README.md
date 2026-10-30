@@ -110,13 +110,23 @@ shared references and reviewed skill helpers support individual tasks.
 | [Zsh in VS Code and Warp](setup/manual/shell/zsh.md) | `setup/manual/shell` |
 | [Set up, back up, and restore Warp](setup/manual/terminals/warp.md) | `setup/manual/terminals` |
 
+## VS Code task pages
+
+| Task | Guide |
+|---|---|
+| Minimum setup | [VS Code](setup/manual/editors/vscode.md) |
+| Extension selection | [Extensions](setup/manual/editors/vscode/extensions.md) |
+| Profiles and User Settings | [Profiles](setup/manual/editors/vscode/profiles.md) |
+| Editing and language behaviour | [Editing](setup/manual/editors/vscode/editing.md) |
+| Verification, exports and recovery | [Recovery](setup/manual/editors/vscode/recovery.md) |
+
 ## Shared references and reviewed tools
 
 | Guide | Location |
 |---|---|
 | [Shared library](shared/README.md) | `shared` |
 | [Record setup decisions](shared/decisions.md) | `shared` |
-| [Runtime architecture and state contract](shared/explanation/architecture-and-state.md) | `shared/explanation` |
+| [Skill architecture and evidence boundaries](shared/explanation/architecture-and-state.md) | `shared/explanation` |
 | [Understand chezmoi ownership and safety boundaries](shared/explanation/chezmoi-boundaries.md) | `shared/explanation` |
 | [How setup fits together](shared/explanation/process-overview.md) | `shared/explanation` |
 | [Plain-English glossary](shared/glossary.md) | `shared` |

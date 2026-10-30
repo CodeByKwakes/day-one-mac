@@ -64,6 +64,6 @@ Domains remain dynamic. Adding one later does not require another database.
 - [ ] I have chosen the first domains.
 - [ ] I know whether AI access is allowed.
 - [ ] I understand that a Notion filter is not a permission boundary.
-- [ ] I understand that the local planner does not build the cloud workspace.
+- [ ] I understand that I create the cloud workspace through Notion; skill installation does not build it.
 
 Next: [Workspace and domains →](02-workspace-and-domains.md)

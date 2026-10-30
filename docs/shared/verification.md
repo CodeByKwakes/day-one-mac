@@ -23,7 +23,7 @@ device/account-bound evidence. Neither route replaces organization approval.
 | Firewall and SIP | Enabled under the personal baseline | Organization-approved controls | Current observations; any supported exception needs an approval reference |
 | Recovery | Separate recovery method and a successful recovery drill | Approved escrow, break-glass and workload recovery checks | Record outcome and custody references, never keys or credentials |
 | Software and preferences | Selected software and reviewed personal preferences | Approved publishers/installers; IT owns managed preferences | Homebrew is provisioned by the approved administrator; local preference apply/restore is blocked |
-| Organization acceptance | Add controls required for the workload | Startup, lock/sharing, endpoint agents, privacy, software/editor scopes, network, restoration, peripherals, performance and onboarding | Retained tests for every control in the approved policy; see [pilot acceptance](verification.md) |
+| Organization acceptance | Add controls required for the workload | Startup, lock/sharing, endpoint agents, privacy, software/editor scopes, network, restoration, peripherals, performance and onboarding | Retained tests for every control in the approved policy; see [client and workflow acceptance](reference/client-acceptance.md) |
 
 Manual records identify the policy/baseline, device and account using private
 non-secret references, reviewer, check time, expiry and evidence location. Use
@@ -33,9 +33,8 @@ as passed. An approved exception is distinct from an observed pass.
 
 ## Record results through the selected route
 
-Manual users retain the check date, reviewer, expiry, result and evidence location
-in private notes. Assisted users follow the
-[policy and evidence reference](reference/workstation-readiness.md).
+Both routes retain the check date, reviewer, expiry, result and evidence location
+in [private notes](private-evidence.md).
 Both routes leave untested controls unknown; neither infers approval from a file's
 existence. FileVault and Gatekeeper remain required completion controls.
 
@@ -81,7 +80,7 @@ restore duration and recovered-data age. A copied README or successful staging
 hash is not a substitute for opening/importing restored data. Never erase the
 source until the separately verified backup/recovery boundary is satisfied.
 
-For existing Module 09 data, do not remove or relabel old volumes to satisfy the
+For existing local database data, do not remove or relabel old volumes to satisfy the
 new ownership gate. Back up using vendor tools, verify the export, and plan a
 separate migration to reviewed resources. Preserve the previous daemon/context
 and volumes until restoration has been demonstrated. Endpoint records and

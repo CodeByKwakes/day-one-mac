@@ -1,4 +1,4 @@
-[← Optional apps](README.md) · **Raycast setup** · [Day One command pack](../../../shared/tools/raycast.md) · [AI providers](raycast-ai-providers.md) · [Keyboard shortcuts](keyboard-shortcuts.md) · [Warp setup →](../terminals/warp.md)
+[← Optional apps](README.md) · **Raycast setup** · [AI providers](raycast-ai-providers.md) · [Keyboard shortcuts](keyboard-shortcuts.md) · [Warp setup →](../terminals/warp.md)
 
 # Set up, back up, and restore Raycast
 
@@ -117,9 +117,9 @@ Try the two core controls:
 Create aliases or dedicated hotkeys only for commands used repeatedly. Too many
 global shortcuts become harder to remember and are more likely to conflict.
 
-After the required base is complete, the optional [Day One Raycast command pack](../../../shared/tools/raycast.md)
-can generate safe, track-aware and AI-aware Script Commands. It keeps setup
-checks searchable without assigning dozens of global shortcuts.
+Add a Script Command only for a workflow you have reviewed and tested.
+The [workspace recipe](workspaces.md) provides one optional restore command;
+Raycast does not need a Day One Mac command pack.
 
 ### Fallback commands
 
@@ -338,8 +338,7 @@ Do not assume that moving Raycast to Trash removes its settings or cloud data.
 
 ## Add optional integrations later
 
-- [Day One Mac Raycast commands](../../../shared/tools/raycast.md) adds the reviewed local
-  command directory and the recommended extension catalogue.
+- [Workspace restoration](workspaces.md) adds only the selected, tested layout workflow.
 - [Second Brain - Obsidian and Raycast](../second-brain/obsidian/raycast.md)
   adds vault-aware capture and search commands.
 - [Second Brain - Notion and Raycast](../second-brain/notion/06-raycast-integration.md)
@@ -381,7 +380,7 @@ Do not assume that moving Raycast to Trash removes its settings or cloud data.
 - [ ] Every macOS permission has a named feature that needs it.
 - [ ] AI remains optional and its tools use Ask approval.
 - [ ] A private encrypted `.rayconfig` export exists and its passphrase is in 1Password.
-- [ ] Optional Day One Script Commands, when used, come from the managed directory and contain no cleanup execution shortcut.
+- [ ] Optional Script Commands are reviewed local files, use the intended tools and assign no unreviewed cleanup action.
 
 Official references: [Raycast quickstart](https://manual.raycast.com/quickstart),
 [Settings and Replace Spotlight](https://manual.raycast.com/settings#replace-spotlight),
@@ -396,4 +395,4 @@ format.
 
 ---
 
-[← Optional apps](README.md) · [Add Day One commands](../../../shared/tools/raycast.md) · [Choose an AI provider](raycast-ai-providers.md) · [Configure Warp →](../terminals/warp.md) · [Second Brain options →](../second-brain/README.md)
+[← Optional apps](README.md) · [Add Day One commands](raycast.md) · [Choose an AI provider](raycast-ai-providers.md) · [Configure Warp →](../terminals/warp.md) · [Second Brain options →](../second-brain/README.md)

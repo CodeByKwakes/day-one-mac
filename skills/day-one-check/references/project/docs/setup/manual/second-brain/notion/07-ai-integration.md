@@ -24,31 +24,71 @@ Before the first use:
 - Test with non-sensitive material.
 - Review every factual statement and source.
 
-## Option C - Claude through Notion MCP
+<a id="option-c---claude-through-notion-mcp"></a>
 
-1. Read Notion's current MCP documentation.
-2. Confirm the Claude client is approved for the workspace.
-3. Connect using the current official authentication flow.
-4. Limit testing to non-sensitive pages.
-5. Ask Claude to propose a summary or links.
-6. Set AI Status to **Needs Review**.
-7. Review the result manually before changing it to **Approved**.
+## Option C - Claude Code through Notion MCP
+
+First install and sign in to [Claude Code](../../ai/clients.md). Inspect `/mcp`
+for an existing Notion connection; retain it instead of registering a duplicate.
+Use a harmless page in the approved workspace for the first test.
+
+1. From the intended project, register a personal, project-local connection:
+
+   ```bash
+   claude mcp add --transport http --scope local notion https://mcp.notion.com/mcp
+   ```
+
+   Expected: a local entry named `notion`. Stop if that name already belongs to
+   another connection. Choose user scope only when you need it across projects.
+2. Start `claude`, run `/mcp`, select Notion and complete browser authentication.
+   Expected: the connection identifies the intended workspace. Review consent
+   yourself; an AI policy property does not restrict what this account can access.
+3. Request a read of the harmless page without edits. Expected: an actual tool
+   call returns its title and text. Review the result before requesting drafts.
 
 ## Option D - Codex through Notion MCP
 
-Codex support and connection steps can change independently of Notion. Before
-connecting:
+Install and sign in to [Codex](../../ai/clients.md). Inspect `codex mcp list`
+first. The following CLI registration is personal/global, not project-only:
 
-1. Check the current official Codex documentation for remote/custom MCP support.
-2. Confirm your Notion workspace and account are allowed.
-3. Use the official interactive authentication flow.
-4. Do not paste a Notion token into a chat, repository, shell-history command,
-   or Markdown file.
-5. Test read-only retrieval first.
-6. Require confirmation before creates, edits, moves, or deletes.
+1. Add the remote server only when no intended Notion entry already exists:
 
-If the installed Codex client does not support the required flow, keep Codex
-working on exported/local material or do not connect it.
+   ```bash
+   codex mcp add notion --url https://mcp.notion.com/mcp
+   ```
+
+   Expected: the entry appears in personal configuration. For project-only
+   configuration, follow the [client scope guide](../../ai/mcp.md#understand-configuration-locations).
+2. Authenticate interactively:
+
+   ```bash
+   codex mcp login notion
+   ```
+
+   Expected: browser consent completes for the approved workspace. Never put a
+   Notion token into a command, chat or repository.
+3. In a fresh Codex session, request the harmless page without edits. Expected:
+   the tool returns the intended title and text. Keep write approvals enabled.
+
+These connection methods follow [Notion's client instructions](https://developers.notion.com/guides/mcp/get-started-with-mcp),
+checked on 30 October 2026. Commands were inspected locally; account-backed Notion
+acceptance is still required. Claude Desktop is a different client and is not
+configured by the Claude Code commands above.
+
+### Troubleshoot and disconnect
+
+- Missing command: finish the selected client installation and PATH check first.
+- Authentication failure: confirm the browser account, workspace and enterprise
+  MCP policy; do not substitute an API token into a URL.
+- Missing page: check its sharing and your account's access. Do not widen access
+  just to make a test succeed.
+- Wrong existing entry: preserve its configuration and owner before changing it.
+
+To disconnect the Claude Code entry above, run `claude mcp remove --scope local notion`.
+Use the actual scope if you chose another. For the personal Codex entry, run
+`codex mcp remove notion`. Revoke unwanted
+access in Notion's connection settings separately. Expected: a fresh session no
+longer exposes that connection; unrelated servers and pages remain intact.
 
 ## Shared review workflow
 

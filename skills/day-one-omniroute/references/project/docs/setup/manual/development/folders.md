@@ -1,4 +1,4 @@
-[← Manual handbook](../README.md) · [Phase 4](../git/setup.md)
+[← Manual handbook](../README.md) · [Git setup](../git/setup.md)
 
 # Developer folders and optional ghq
 
@@ -57,6 +57,13 @@ change applications' active configuration locations or import settings.
 Create per-project subfolders when needed. Keep files required to build or run
 a project in its repository; use Resources for supporting material kept outside
 Git. Setup creates the README only if absent and preserves any existing copy.
+
+For Day One Mac package distribution files, use
+`Resources/Project-Materials/day-one-mac/releases/<version>/`. Active client
+installations stay outside Developer so archiving a project does not disconnect
+its tools. Follow the [plugin and standalone MCP location guide](../ai/day-one-plugins.md#choose-the-installation-route-and-locations)
+for the complete layout. This convention does not create folders or move existing
+installations automatically.
 
 Old numbered folders, `_sandbox`, `_archive`, and projects outside Developer
 remain valid. Selecting another layout creates missing folders for future work;
@@ -212,12 +219,15 @@ For Azure Repos Git, use the [clone and update walkthrough](../git/multiple-iden
 which covers both optional ghq and ordinary Git. Folder setup does not clone
 repositories or prove provider access. For Azure HTTPS URLs, use
 `ghq get --vcs git 'https://dev.azure.com/ORG/PROJECT/_git/REPO'` to bypass VCS
-detection. The track-aware persistent defaults are configured separately in
-[Phase 4](../git/setup.md).
+detection. Configure any persistent provider choices explicitly through the
+[multiple-identity guide](../git/multiple-identities.md).
 Keep notes separate and use
 [manual Second Brain links](../second-brain/README.md#link-a-repository-without-syncing-its-contents).
 
-## CLI-assisted equivalent
+<a id="cli-assisted-equivalent"></a>
 
-The [assisted folder operation](../git/setup.md) is
-a separate route. The manual steps above are complete without it.
+## AI-assisted use
+
+Ask the main Day One Mac skill to inspect your selected roots and propose the
+same manual steps above. Review the exact directories and Git settings before
+changes. There is no separate folder-operation command or additional setup route.
