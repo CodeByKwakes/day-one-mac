@@ -111,6 +111,12 @@ Check whether the referenced sibling skills and helper scripts exist before
 using them. Some repositories install this skill without the companion
 `subagent-driven-development` or `requesting-code-review` packages.
 
+This availability rule takes precedence over later required-companion and
+helper invocations. If `test-driven-development` is absent, verify meaningful
+behaviour changes with focused failing/passing checks and the repository gates.
+If `finishing-a-development-branch` is absent, review the diff, report evidence
+and follow the user's commit/push scope. No missing companion blocks ordinary work.
+
 When those packages are absent, use the approved task list and the repository's
 validation commands directly. Keep a task ledger in the repository's established
 maintainer location or a task-specific temporary directory. Record the baseline,

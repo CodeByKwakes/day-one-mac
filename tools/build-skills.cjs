@@ -147,6 +147,9 @@ function writeAtomic(file, content) {
 function main() {
   const check = process.argv.length === 3 && process.argv[2] === '--check';
   if (!check && process.argv.length !== 2) throw new Error('Usage: node tools/build-skills.cjs [--check]');
+  for (const [name, content] of require('./build-agents.cjs').buildAgents()) {
+    if (!fs.existsSync(path.join(root, name)) || read(name) !== content) throw new Error('Native agent adapters are stale. Run pnpm run agents:build first.');
+  }
   if (metadata.schema !== 1 || new Set(metadata.skills.map(s => s.name)).size !== metadata.skills.length) throw new Error('Invalid skill catalogue.');
   const expected = new Map();
   for (const spec of metadata.skills) for (const [file, content] of buildPackage(spec)) expected.set(`skills/${spec.name}/${file}`, content);

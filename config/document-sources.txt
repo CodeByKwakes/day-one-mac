@@ -558,3 +558,14 @@ integrations/shortcuts/icons/open-in-warp.svg
 integrations/shortcuts/icons/open-in-warp.icns
 integrations/shortcuts/icons/open-in-vscode.svg
 integrations/shortcuts/icons/open-in-vscode.icns
+
+# Shared agent policies and native adapter metadata
+config/catalogs/assistant-agents.json
+templates/agents/shared/day-one-maintainer.md
+templates/agents/shared/day-one-operator.md
+templates/agents/shared/day-one-planner.md
+templates/agents/shared/day-one-verifier.md
+
+# AI component contracts
+docs/shared/explanation/ai-components.md
+config/mcp/day-one-mac.json

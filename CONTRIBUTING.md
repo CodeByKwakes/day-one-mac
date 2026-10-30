@@ -10,6 +10,11 @@ The public `day-one-maintain` and `day-one-contribute` workflows serve different
 scopes; see the [maintenance skill distinction](docs/setup/manual/ai/day-one-skills.md#repository-maintenance-versus-environment-maintenance)
 for their source locations and packaging boundaries.
 
+The [AI component reference](docs/shared/explanation/ai-components.md) owns skill,
+integration and agent boundaries. Edit shared policies under
+`templates/agents/shared` and role metadata in
+`config/catalogs/assistant-agents.json`; native adapters are generated.
+
 ## Prepare contributor tools
 
 1. Install Node.js 22.20 or newer, the pnpm version in `package.json`, ShellCheck
@@ -37,6 +42,7 @@ for their source locations and packaging boundaries.
 
    ```bash
    pnpm run docs:sync
+   pnpm run agents:build
    pnpm run skills:build
    ```
 
@@ -53,6 +59,18 @@ for their source locations and packaging boundaries.
    Expected result: lint, static and integration checks pass. Fixtures use
    temporary locations and mock external commands; they do not prove live
    account, provider, hardware or managed-device acceptance.
+
+   When changing MCP or shared AI integration contracts, install its locked
+   contributor dependencies and run the combined gate:
+
+   ```bash
+   npm --prefix integrations/mcp ci --ignore-scripts --no-audit --no-fund
+   pnpm run validate:complete
+   ```
+
+   This adds MCP protocol and relocated-package checks to the root gate. Docker
+   image build/smoke checks remain separate, as in CI. These are optional-server
+   contributor checks, not prerequisites for ordinary guide or skill users.
 
 4. For skill packaging or installer changes, test the pinned Skills CLI. Install
    it in a temporary contributor directory, not as a global application:

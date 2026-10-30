@@ -15,7 +15,7 @@ const result = await promisify(execFile)(process.execPath, [process.env.npm_exec
 const records = JSON.parse(result.stdout);
 if (records.length !== 1 || records[0].name !== pkg.name || records[0].version !== pkg.version || path.basename(records[0].filename) !== records[0].filename) throw Error('Unexpected package identity; inspect the reserved artifact directory.');
 for (const { path: file } of records[0].files) {
-  if (!/^(package\.json|npm-shrinkwrap\.json|README\.md|LICENSE|dist\/guides\.json|dist\/src\/[a-z-]+\.(js|d\.ts))$/.test(file)) throw Error(`Unexpected packed file: ${file}`);
+  if (!/^(package\.json|npm-shrinkwrap\.json|README\.md|LICENSE|dist\/(guides|server-spec)\.json|dist\/src\/[a-z-]+\.(js|d\.ts))$/.test(file)) throw Error(`Unexpected packed file: ${file}`);
 }
 const file = path.join(output, records[0].filename);
 const hash = createHash('sha256'); for await (const block of createReadStream(file)) hash.update(block);

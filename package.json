@@ -21,12 +21,16 @@
     "test:integration": "tools/validate.sh --regressions",
     "docs:sync": "node tools/sync-vscode-reference.cjs",
     "docs:check": "node tools/sync-vscode-reference.cjs --check",
-    "skills:build": "node tools/build-skills.cjs",
-    "skills:check": "node tools/build-skills.cjs --check",
+    "skills:build": "node tools/build-agents.cjs && node tools/build-skills.cjs",
+    "skills:check": "node tools/build-agents.cjs --check && node tools/build-skills.cjs --check",
     "test:skills": "node tests/integration/test-skills-package.cjs",
     "test:skills-cli": "node tests/integration/test-skills-cli.cjs",
     "docs:export": "node tools/export-docs.cjs",
-    "docs:build": "node tools/build-docs-site.cjs"
+    "docs:build": "node tools/build-docs-site.cjs",
+    "agents:build": "node tools/build-agents.cjs",
+    "agents:check": "node tools/build-agents.cjs --check",
+    "test:mcp": "npm --prefix integrations/mcp test && npm --prefix integrations/mcp run test:package",
+    "validate:complete": "tools/validate.sh --all && pnpm run test:mcp && actionlint"
   },
   "lint-staged": {
     "*.{md,mdx}": "markdownlint-cli2",

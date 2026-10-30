@@ -6,6 +6,7 @@ import path from 'node:path';
 import { Client } from '@modelcontextprotocol/client';
 import { StdioClientTransport } from '@modelcontextprotocol/client/stdio';
 import { DesktopClick, CONFIRMATION, readDesktopPreference, type Host } from '../src/server.js';
+import { serverSpec } from '../src/spec.js';
 
 async function fixture() {
   const dir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'day-one-mcp-')));
@@ -110,13 +111,19 @@ test('stdio discovery, resource/prompt reads, invalid input and default denial',
   const client = new Client({ name: 'day-one-mac-test', version: '0.1.0' });
   try {
     await client.connect(transport);
-    assert.deepEqual((await client.listTools()).tools.map(t => t.name).sort(), ['check_host', 'desktop_click', 'list_guides', 'read_guide']);
-    assert.equal((await client.listResources()).resources.length, 8);
+    const tools = (await client.listTools()).tools;
+    assert.deepEqual(tools.map(t => t.name).sort(), ['check_host', 'desktop_click', 'list_guides', 'preview_desktop_click', 'read_guide']);
+    assert(tools.every(t => t.annotations?.readOnlyHint === true), 'Default server must expose no mutation-capable tool');
+    for (const name of serverSpec.readOnlyTools) assert.equal(tools.find(t => t.name === name)?.annotations?.readOnlyHint, true, `Unsafe or unknown allowlisted tool: ${name}`);
+    assert.equal((await client.listResources()).resources.length, 11);
     assert.equal((await client.listPrompts()).prompts.length, 2);
     const resource = await client.readResource({ uri: 'day-one-mac://guide/macos' });
     assert.match((resource.contents[0] as { text: string }).text, /Prepare macOS/);
     const prompt = await client.getPrompt({ name: 'setup_plan', arguments: { topic: 'git' } });
     assert.match((prompt.messages[0].content as { text: string }).text, /explicit human approval/);
+    const shortcuts = await client.callTool({name:'read_guide', arguments:{id:'shortcuts'}});
+    assert.match(JSON.parse((shortcuts.content as {text:string}[])[0].text).text, /Send to Archive/);
+    await assert.rejects(client.callTool({name:'apply_desktop_click', arguments:{mode:'always'}}), /not found/);
     for (const args of [{ id: '../../auth.json' }, { id: 'macos', path: '/etc/passwd' }]) {
       const invalid = await client.callTool({ name: 'read_guide', arguments: args }); assert.equal(invalid.isError, true);
     }
@@ -130,6 +137,26 @@ test('stdio discovery, resource/prompt reads, invalid input and default denial',
     assert.equal(denied.isError, true);
     const host = await client.callTool({ name: 'check_host', arguments: {} }); assert.equal(host.isError, false);
   } finally { await client.close(); await transport.close(); }
+});
+
+test('mutation tool discovery requires startup opt-in; rejected apply creates no recovery files', async () => {
+  const directory = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'day-one-mcp-discovery-')));
+  const transport = new StdioClientTransport({command:process.execPath, args:[path.resolve('dist/src/index.js'), '--allow-changes', '--backup-dir', directory], stderr:'pipe'});
+  const client = new Client({name:'day-one-opt-in-test', version:'0.1.0'});
+  try {
+    await client.connect(transport);
+    const tools = (await client.listTools()).tools;
+    assert.equal(tools.length, 6);
+    assert.equal(tools.find(t => t.name === 'preview_desktop_click')?.annotations?.readOnlyHint, true);
+    for (const name of ['apply_desktop_click', 'desktop_click']) {
+      assert.equal(tools.find(t => t.name === name)?.annotations?.readOnlyHint, false);
+      assert.equal(tools.find(t => t.name === name)?.annotations?.destructiveHint, true);
+    }
+    for (const name of serverSpec.readOnlyTools) assert.equal(tools.find(t => t.name === name)?.annotations?.readOnlyHint, true);
+    const invalid = await client.callTool({name:'apply_desktop_click', arguments:{mode:'always', preview_token:'00000000-0000-4000-8000-000000000000', confirmation:CONFIRMATION}});
+    assert.equal(invalid.isError, true);
+    assert.deepEqual(await fs.readdir(directory), []);
+  } finally { await client.close(); await transport.close(); await fs.rm(directory, {recursive:true}); }
 });
 
 test('different backup directories still serialize the same user preference', async () => {

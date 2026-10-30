@@ -39,6 +39,7 @@
   "files": [
     "dist/src/",
     "dist/guides.json",
+    "dist/server-spec.json",
     "LICENSE",
     "README.md",
     "npm-shrinkwrap.json"

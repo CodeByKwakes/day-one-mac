@@ -6,15 +6,18 @@ description: Maintain Day One Mac's manual guides, portable AI skills, reviewed 
 # Day One Mac maintenance
 
 Read AGENTS.md, docs/START-HERE.md and the owning capability guide. AI-assisted
-and manual setup share canonical manual recipes. There is no optional runtime,
-global command, setup wizard, background manager or permanent checkout requirement.
+and manual setup share canonical manual recipes. There is no mandatory runtime, global setup command, setup wizard, background
+manager or permanent checkout requirement. The separately installed optional
+MCP server under `integrations/mcp` is a bounded tool transport, not a setup
+route or machine manager.
 
 ## Implementation contracts
 
 - Target native Apple silicon. Shell helpers use macOS Bash 3.2, quote paths and
   preserve spaces and Unicode. Do not source user profiles for inspection.
-- Keep skill sources under `templates/skills/` and client roles under
-  `templates/agents/`. Generate installable packages under `skills/`.
+- Keep skill sources under `templates/skills/` and shared role policies under
+  `templates/agents/shared/`. Generate native role adapters before installable
+  packages under `skills/`. Keep contributor skills out of public packages.
 - Review every addition to `config/skill-sources.txt` and
   `config/document-sources.txt`. Package regular public files only, never private
   notes, contributor skills, credentials or dependency trees.

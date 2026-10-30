@@ -4,6 +4,7 @@ COPY integrations/mcp/package.json integrations/mcp/npm-shrinkwrap.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund
 COPY integrations/mcp/ ./
 COPY docs/ /app/docs/
+COPY config/mcp/ /app/config/mcp/
 COPY LICENSE /app/LICENSE
 RUN npm test && npm prune --omit=dev --ignore-scripts --no-audit --no-fund
 
@@ -18,5 +19,6 @@ COPY --from=build /app/integrations/mcp/LICENSE ./LICENSE
 COPY --from=build /app/integrations/mcp/node_modules/ ./node_modules/
 COPY --from=build /app/integrations/mcp/dist/src/ ./dist/src/
 COPY --from=build /app/integrations/mcp/dist/guides.json ./dist/guides.json
+COPY --from=build /app/integrations/mcp/dist/server-spec.json ./dist/server-spec.json
 USER node
 ENTRYPOINT ["node", "dist/src/index.js"]

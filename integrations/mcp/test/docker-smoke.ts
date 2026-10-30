@@ -7,8 +7,8 @@ const transport = new StdioClientTransport({ command: process.argv[2] ?? 'docker
 const client = new Client({ name: 'day-one-mac-docker-smoke', version: '0.1.0' });
 try {
   await client.connect(transport);
-  assert.equal((await client.listTools()).tools.length, 4);
-  assert.equal((await client.listResources()).resources.length, 8);
+  assert.equal((await client.listTools()).tools.length, 5);
+  assert.equal((await client.listResources()).resources.length, 11);
   assert.equal((await client.listPrompts()).prompts.length, 2);
   const host = await client.callTool({ name: 'check_host', arguments: {} });
   const metadata = JSON.parse((host.content as {text: string}[])[0].text);

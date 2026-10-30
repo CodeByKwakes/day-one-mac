@@ -13,7 +13,7 @@ These rules govern documents, not chat replies. Length and section rules apply t
 
 ## When to invoke
 
-Load this skill for any technical prose, then the matching document-type skill on top. These are routing hints; each skill's own body is the authority.
+Load this skill for technical prose. Use a matching document-type skill only when it is installed. The table below names optional companion packages, not dependencies to install. When one is absent, use the repository's `documentation-writer` skill for document structure and the truth/style references bundled here. Complete ordinary writing without waiting for another package.
 
 When a repository regularly produces documents, record the invocation in project memory: one line in its CLAUDE.md or the platform's equivalent, telling agents to load this skill for any technical prose there.
 
@@ -101,7 +101,7 @@ Non-negotiable, in every document:
 3. **Draft conclusion-first** at every level: document, chapter, paragraph. No run-up, no context paragraphs before the outcome. Each chapter opens with what came out of it, not how it was approached.
 4. **Ground every claim** and label its confidence: `references/truth.md`.
 5. **Style pass** over sentences, words, headings, and the banned-constructions list: `references/style.md`.
-6. **Verify before delivery**: load `reviewing-technical-prose` for the checklist. Check references by actually following them.
+6. **Verify before delivery**: use `reviewing-technical-prose` when installed. Otherwise check claims against sources, follow relative links, remove repetition, match the reader's task and run the repository documentation checks.
 
 ## Audience
 

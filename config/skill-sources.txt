@@ -559,3 +559,14 @@ integrations/shortcuts/icons/open-in-vscode.icns
 # Reviewed editor and macOS application workflows
 templates/skills/day-one-vscode/SKILL.md
 templates/skills/day-one-macos-apps/SKILL.md
+
+# Shared agent policies and native adapter metadata
+config/catalogs/assistant-agents.json
+templates/agents/shared/day-one-maintainer.md
+templates/agents/shared/day-one-operator.md
+templates/agents/shared/day-one-planner.md
+templates/agents/shared/day-one-verifier.md
+
+# AI component contracts
+docs/shared/explanation/ai-components.md
+config/mcp/day-one-mac.json

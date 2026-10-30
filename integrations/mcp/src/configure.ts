@@ -3,6 +3,7 @@ import * as fs from 'node:fs/promises';
 import { constants } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { serverSpec } from './spec.js';
 
 export type ClientName = 'all' | 'claude' | 'codex' | 'vscode' | 'raycast';
 export type Launch = 'direct' | 'npm' | 'docker';
@@ -61,13 +62,16 @@ export async function configuration(options: ConfigurationOptions) {
         env: { PATH: [path.dirname(node), '/usr/bin', '/bin', '/usr/sbin', '/sbin'].join(path.delimiter) } };
     }
   }
-  const codex = ['[mcp_servers.day_one_mac]', `command = ${JSON.stringify(server.command)}`, `args = ${JSON.stringify(server.args)}`, 'startup_timeout_sec = 60', 'tool_timeout_sec = 15'];
-  if (server.env) codex.push('', '[mcp_servers.day_one_mac.env]', ...Object.entries(server.env).map(([key, value]) => `${key} = ${JSON.stringify(value)}`));
+  const names = serverSpec.names;
+  const codex = [`[mcp_servers.${names.codex}]`, `command = ${JSON.stringify(server.command)}`, `args = ${JSON.stringify(server.args)}`,
+    `startup_timeout_sec = ${serverSpec.startupTimeoutSeconds}`, `tool_timeout_sec = ${serverSpec.toolTimeoutSeconds}`,
+    `enabled_tools = ${JSON.stringify(serverSpec.readOnlyTools)}`];
+  if (server.env) codex.push('', `[mcp_servers.${names.codex}.env]`, ...Object.entries(server.env).map(([key, value]) => `${key} = ${JSON.stringify(value)}`));
   return {
-    claude: { mcpServers: { 'day-one-mac': server } },
+    claude: { mcpServers: { [names.claude]: server } },
     codex: codex.join('\n') + '\n',
-    vscode: { servers: { 'day-one-mac': { type: 'stdio', ...server } } },
-    raycast: { name: 'day-one-mac', transport: 'stdio', ...server }
+    vscode: { servers: { [names.vscode]: { type: 'stdio', ...server } } },
+    raycast: { name: names.raycast, transport: serverSpec.transport, ...server }
   };
 }
 

@@ -1,6 +1,11 @@
-# Allow only server sources and seven reviewed public guides.
+# Allow only server sources, the MCP specification and reviewed public guides.
 **
 !LICENSE
+!config/
+config/**
+!config/mcp/
+config/mcp/**
+!config/mcp/day-one-mac.json
 !integrations/
 integrations/**
 !integrations/mcp/
@@ -39,6 +44,11 @@ docs/setup/manual/editors/**
 !docs/setup/manual/apps/
 docs/setup/manual/apps/**
 !docs/setup/manual/apps/README.md
+!docs/setup/manual/apps/macos-shortcuts.md
+!docs/setup/manual/ai/
+docs/setup/manual/ai/**
+!docs/setup/manual/ai/day-one-skills.md
+!docs/setup/manual/ai/mcp.md
 !docs/shared/
 docs/shared/**
 !docs/shared/verification.md

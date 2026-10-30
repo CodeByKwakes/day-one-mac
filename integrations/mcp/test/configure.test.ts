@@ -18,6 +18,10 @@ test('direct configurations share the actual installed Node and server path', as
   assert.deepEqual(configs.vscode.servers['day-one-mac'], {type:'stdio',...expected});
   assert.deepEqual(configs.raycast.args,expected.args);
   assert.match(configs.codex,/startup_timeout_sec = 60/);
+  const allowlist = JSON.parse(configs.codex.match(/^enabled_tools = (.+)$/m)![1]) as string[];
+  assert(allowlist.includes('preview_desktop_click'));
+  assert(!allowlist.includes('apply_desktop_click'));
+  assert(!allowlist.includes('desktop_click'), 'Mixed legacy interface is not a default client permission');
   const printed = JSON.parse(execFileSync(process.execPath,['dist/src/configure.js'],{encoding:'utf8'}));
   assert.deepEqual(printed.claude,configs.claude);
 });

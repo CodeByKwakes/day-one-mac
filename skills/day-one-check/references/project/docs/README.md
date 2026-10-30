@@ -13,6 +13,7 @@ shared references and reviewed skill helpers support individual tasks.
 | [Use the setup workspace with Codex](setup/ai/clients/codex.md) | `setup/ai/clients` |
 | [Use the setup workspace with GitHub Copilot](setup/ai/clients/copilot.md) | `setup/ai/clients` |
 | [Operate and maintain the setup assistant](setup/ai/operation.md) | `setup/ai` |
+| [AI component ownership and compatibility](shared/explanation/ai-components.md) | `shared/explanation` |
 
 ## Manual setup
 

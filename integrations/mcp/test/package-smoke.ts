@@ -15,8 +15,8 @@ try {
   const records = JSON.parse(await npm(['pack','--ignore-scripts','--json','--pack-destination',root],process.cwd()));
   assert.equal(records.length,1); assert.equal(records[0].name,'day-one-mac-mcp');
   const files: string[] = records[0].files.map((f: {path: string}) => f.path);
-  for (const name of files) assert(/^(package\.json|npm-shrinkwrap\.json|README\.md|LICENSE|dist\/guides\.json|dist\/src\/[a-z-]+\.(js|d\.ts))$/.test(name), 'Unexpected packed file: '+name);
-  for (const name of ['LICENSE','README.md','npm-shrinkwrap.json','dist/guides.json','dist/src/index.js','dist/src/configure.js']) assert(files.includes(name));
+  for (const name of files) assert(/^(package\.json|npm-shrinkwrap\.json|README\.md|LICENSE|dist\/(guides|server-spec)\.json|dist\/src\/[a-z-]+\.(js|d\.ts))$/.test(name), 'Unexpected packed file: '+name);
+  for (const name of ['LICENSE','README.md','npm-shrinkwrap.json','dist/guides.json','dist/server-spec.json','dist/src/index.js','dist/src/configure.js']) assert(files.includes(name));
   const workspace = path.join(root,'Standalone Mac é with spaces'); await fs.mkdir(workspace);
   const tarball = path.join(root,records[0].filename);
   await npm(['install','--prefix',workspace,'--ignore-scripts','--no-audit','--no-fund','--prefer-offline','--fetch-retries=0','--fetch-timeout=20000',tarball],workspace);
@@ -35,8 +35,8 @@ try {
   const client=new Client({name:'packed-install-test',version:'0.1.0'});
   try {
     await client.connect(transport);
-    assert.equal((await client.listTools()).tools.length,4);
-    assert.equal((await client.listResources()).resources.length,8);
+    assert.equal((await client.listTools()).tools.length,5);
+    assert.equal((await client.listResources()).resources.length,11);
     assert.equal((await client.listPrompts()).prompts.length,2);
     const guide=await client.readResource({uri:'day-one-mac://guide/macos'});
     assert.match((guide.contents[0] as {text:string}).text,/# Prepare macOS/);
@@ -48,7 +48,7 @@ try {
     args:npmLaunch.args.map((arg:string)=>arg.startsWith('--package=')?'--package='+tarball:arg),cwd:gui,
     env:{...npmLaunch.env,npm_config_cache:path.join(root,'cache'),npm_config_offline:'true',npm_config_update_notifier:'false'},stderr:'pipe'});
   const npmClient=new Client({name:'minimal-gui-npm-launch',version:'0.1.0'});
-  try {await npmClient.connect(npmTransport);assert.equal((await npmClient.listTools()).tools.length,4);}
+  try {await npmClient.connect(npmTransport);assert.equal((await npmClient.listTools()).tools.length,5);}
   finally {await npmClient.close();await npmTransport.close();}
   const artifact=path.join(root,'checked-package');
   const artifactScript=path.resolve('scripts/package-artifact.mjs');

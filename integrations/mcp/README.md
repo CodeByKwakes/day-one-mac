@@ -11,6 +11,26 @@ application installation stay guided tasks. The server has no package installer,
 arbitrary command tool, filesystem browser, whole-machine runner or background
 service. Building or registering it does not perform setup on the Mac.
 
+## Ownership and configuration
+
+This is an executable integration, not an agent or a native Codex/Claude plugin
+package. Its prompts carry workflow instructions; tools and resources belong to
+the server. Agent roles consume these interfaces without owning registrations.
+
+The reviewed `config/mcp/day-one-mac.json` owns guide sources, client names,
+timeouts and the default read-only tool list. Builds copy it into the independent
+package. Configuration output prints client-native entries without writing any
+client settings. Merge only the selected entry, inspect existing direct/Docker
+registrations, and keep credentials outside repository files. Do not symlink
+Codex TOML to Claude JSON or VS Code settings.
+
+Generated Codex configuration uses `enabled_tools` to allow only the four modern
+read-only tools. To enable an approved native preference change, separately review
+the startup flags and add `apply_desktop_click` to that client allowlist. Claude
+Code and VS Code retain their own permission controls; no model-supplied string
+can establish human approval. Local Claude Code is the compatibility target;
+Claude Desktop and hosted clients need separate acceptance.
+
 ## Part 1: Capabilities
 
 All tool results contain JSON in a text content block. Errors use `isError: true`.
@@ -22,11 +42,17 @@ machine evidence.
 | `list_guides` | List the bundled recipes | `{}` | `[{"id":"macos","title":"Prepare macOS","uri":"day-one-mac://guide/macos","source":"docs/setup/manual/macos.md"}, ...]` |
 | `read_guide` | Read one guide by ID | `{"id":"macos"}` | `{"id":"macos","title":"Prepare macOS","source":"docs/setup/manual/macos.md","text":"# Prepare macOS\n..."}` |
 | `check_host` | Read OS/architecture and native macOS version | `{}` | `{"platform":"darwin","arch":"arm64","native_mac":true,"macos":"26.7.1",...}` |
-| `desktop_click` | Preview or explicitly apply one wallpaper-click preference | `{"mode":"stage-manager-only"}` | `{"dry_run":true,"before":true,"desired":false,"preview_token":"<UUID>","expires_in_seconds":60,...}` |
+| `preview_desktop_click` | Preview one wallpaper-click preference without writes | `{"mode":"stage-manager-only"}` | `{"dry_run":true,"before":true,"desired":false,"preview_token":"<UUID>","expires_in_seconds":60,...}` |
+
+`apply_desktop_click` is advertised only with startup opt-in and private backups.
+It accepts `mode`, `preview_token` and `confirmation`; it cannot create a preview.
+The compatibility tool `desktop_click` remains available: its default-process
+schema accepts previews only. With startup opt-in it retains the original mixed
+interface. Prefer the separate tools for precise client permissions.
 
 The catalogue resource is `day-one-mac://catalog`. Reading it with
 `{"uri":"day-one-mac://catalog"}` returns the same list as `list_guides`.
-The seven other resources use `text/markdown`:
+The ten other resources use `text/markdown`:
 
 | Resource URI | Purpose | Example read input | Example output text |
 |---|---|---|---|
@@ -37,11 +63,13 @@ The seven other resources use `text/markdown`:
 | `day-one-mac://guide/vscode` | VS Code profiles and formatting | `{"uri":"day-one-mac://guide/vscode"}` | VS Code recipe Markdown |
 | `day-one-mac://guide/apps` | Route application setup | `{"uri":"day-one-mac://guide/apps"}` | Application index Markdown |
 | `day-one-mac://guide/verification` | Setup verification criteria | `{"uri":"day-one-mac://guide/verification"}` | Verification guide Markdown |
+| `day-one-mac://guide/shortcuts` | App recipes and Send to Archive | `{"uri":"day-one-mac://guide/shortcuts"}` | macOS shortcut guide Markdown |
+| `day-one-mac://guide/skills` | Skill installation and maintenance boundaries | `{"uri":"day-one-mac://guide/skills"}` | Skill guide Markdown |
+| `day-one-mac://guide/mcp` | Native client registration | `{"uri":"day-one-mac://guide/mcp"}` | MCP connection guide Markdown |
 
 Resource responses wrap text in `contents: [{uri, mimeType, text}]`. These are
 build-time snapshots of allowlisted public guides. Their relative links refer to
-the canonical repository documentation; this package bundles only the seven
-listed guides. Rebuild after changing those sources.
+the canonical repository documentation; this package bundles only the listed guides. Rebuild after changing those sources.
 
 | Prompt | Purpose | Example arguments | Example output |
 |---|---|---|---|
@@ -49,13 +77,14 @@ listed guides. Rebuild after changing those sources.
 | `troubleshoot_setup` | Investigate before repairing | `{"symptom":"Windows move when I click the wallpaper"}` | User message requesting reproduction, relevant guide and a recoverable repair preview |
 
 Prompts return `messages: [{role: "user", content: {type: "text", text: ...}}]`.
-`topic` accepts the same seven IDs as `read_guide`; symptoms are 1-2000 characters.
+`topic` accepts the same ten IDs as `read_guide`; symptoms are 1-2000 characters.
 All tool and prompt argument objects reject unknown keys.
 
 ### Safety and confirmation
 
-The default process cannot apply changes. `desktop_click` defaults to
-`dry_run: true`, accepts only `always` or `stage-manager-only`, and addresses only
+The default process exposes only read-only tools. `preview_desktop_click`
+always previews; the compatibility `desktop_click` defaults to `dry_run: true`
+and rejects `false` without startup opt-in. The preference tools accept only `always` or `stage-manager-only`, and addresses only
 `com.apple.WindowManager` / `EnableStandardClickToShowDesktop` as a boolean.
 It does not toggle Stage Manager or restart Window Manager.
 
@@ -64,12 +93,12 @@ An application requires every condition below:
 1. A native `darwin` / `arm64` process started with `--allow-changes` and `--backup-dir`.
 2. An existing, user-owned backup directory with mode `700` and no symlink components.
 3. A preview from the same running server, less than 60 seconds old, for the same desired value.
-4. Human approval in the client's tool confirmation UI, followed by this exact call:
+4. Human approval in the client's tool confirmation UI, followed by a call to
+   `apply_desktop_click` with these arguments:
 
    ```json
    {
      "mode": "stage-manager-only",
-     "dry_run": false,
      "preview_token": "UUID_FROM_THE_PREVIEW",
      "confirmation": "APPLY DESKTOP CLICK"
    }
@@ -85,7 +114,8 @@ preference domain is copied. A missing key is recorded as `null`, separately fro
 an existing `false` value. Unexpected types and command errors stop the operation.
 
 The confirmation string proves the caller supplied it, not that a human did.
-Keep client write approvals enabled; do not auto-approve `desktop_click`.
+Keep client write approvals enabled; do not auto-approve `apply_desktop_click` or the mutation-enabled
+compatibility `desktop_click`.
 Managed-device authorization remains the operator's responsibility. The server
 cannot determine who approved a tool call or override OS/client policy.
 
@@ -130,7 +160,7 @@ SDK's stdio transport, validated tools, static resources and prompts.
 | `src/index.ts` | Validate startup flags, load bundled guides and serve stdio |
 | `src/configure.ts` | Resolve local executables and print client configurations |
 | `src/server.ts` | Full tool/resource/prompt implementation and bounded preference operation |
-| `scripts/bundle-guides.mjs` | Package only seven public canonical guides; reject symlink sources |
+| `scripts/bundle-guides.mjs` | Package reviewed canonical guides from the shared specification; reject symlink sources |
 | `test/server.test.ts` | Safety fixtures and real stdio protocol test |
 | `test/docker-smoke.ts` | Check discovery and macOS-operation denial in the final image |
 | `test/package-smoke.ts` | Inspect and install the real tarball outside the checkout |
@@ -481,11 +511,15 @@ account access.
 For each selected client:
 
 1. Check connection status: Claude `/mcp`, Codex `codex mcp list`, VS Code **MCP: List Servers**, or Raycast **Manage MCP Servers**.
-2. Confirm four tools: `list_guides`, `read_guide`, `check_host`, `desktop_click`.
+2. The default server advertises five tools: `list_guides`, `read_guide`, `check_host`,
+   `preview_desktop_click` and compatibility `desktop_click`. All are annotated
+   read-only. Generated Codex configuration exposes only the four modern tools
+   through its allowlist. Startup opt-in adds `apply_desktop_click` and makes the legacy
+   interface mutation-capable; the preview tool remains read-only.
 3. Call `list_guides` with `{}`, then `read_guide` with `{"id":"macos"}`.
 4. Call `check_host` and confirm whether the process is native or containerized.
-5. Where supported, read `day-one-mac://catalog` and request `setup_plan` with `{"topic":"git"}`. The server advertises eight resources and two prompts.
-6. On native Apple silicon, call `desktop_click` with `{"mode":"stage-manager-only"}` and confirm `dry_run: true`. Do not apply merely to test discovery.
+5. Where supported, read `day-one-mac://catalog` and request `setup_plan` with `{"topic":"git"}`. The server advertises eleven resources and two prompts.
+6. On native Apple silicon, call `preview_desktop_click` with `{"mode":"stage-manager-only"}` and confirm `dry_run: true`. Do not apply merely to test discovery.
 
 | Error or symptom | Fix |
 |---|---|

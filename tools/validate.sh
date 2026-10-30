@@ -8,6 +8,7 @@ mode="${1:---all}"
 case "$mode" in --all|--static|--regressions) ;; *) exit 2 ;; esac
 if [[ "$mode" == --all ]]; then pnpm run lint; fi
 if [[ "$mode" != --regressions ]]; then
+  node tools/build-agents.cjs --check
   node tools/check-project-layout.cjs
   node tools/sync-vscode-reference.cjs --check
   node tools/build-skills.cjs --check

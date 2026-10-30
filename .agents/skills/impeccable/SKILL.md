@@ -37,6 +37,15 @@ The mode names what the visitor's success looks like on this surface.
 
 Choose the mode from the requested surface, not the product, and persist it only in that surface brief. A tool's landing page is still Persuade; a fashion house's documentation is still Read; a docs index is Read, not Persuade. See [new-work.md](reference/new-work.md) for new surfaces and [operate.md](reference/operate.md) for deeper Operate/Read guidance.
 
+## Native agent portability
+
+The TOML files under `agents/` are Codex role definitions, not cross-client
+agent registrations. Do not assume that linking this skill activates them.
+On Claude Code, use an explicitly installed native Markdown adapter when one
+exists; otherwise perform the relevant procedure in the current session.
+Preserve client permissions and the user's delegation scope. Do not install
+agent definitions or download a companion just to satisfy an unavailable role.
+
 ## Commands
 
 | Command | Category | Description | Reference |
