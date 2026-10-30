@@ -1,0 +1,11 @@
+services:
+  day-one-mac:
+    image: day-one-mac-mcp:0.1.0
+    build:
+      context: ../..
+      dockerfile: integrations/mcp/Dockerfile
+    stdin_open: true
+    tty: false
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]

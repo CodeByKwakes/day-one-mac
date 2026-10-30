@@ -1,4 +1,5 @@
 # Reviewed public source files. Additions require review; do not discover private files.
+integrations/mcp/README.md
 AGENTS.md
 CHANGELOG.md
 CONTRIBUTING.md
