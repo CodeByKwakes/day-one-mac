@@ -34,6 +34,12 @@ automatically. Configure through the app's interface; avoid undocumented
 7. [Add advanced features selectively](#7-add-advanced-features-selectively)
 8. [Verify, back up, and maintain the setup](#8-verify-back-up-and-maintain-the-setup)
 
+For named multi-display Office/Home workspaces, use the
+[workspace guide](workspaces.md). In that recipe Raycast owns window placement;
+leave equivalent Vorssaint window bindings disabled while retaining monitoring,
+ports and quit protection. The individual-window baseline below remains an
+alternative when Vorssaint is your selected window owner.
+
 ## 1. Choose the baseline and permissions
 
 Open Vorssaint from Applications, then open **Settings** from its menu bar

@@ -575,3 +575,9 @@ config/mcp/day-one-mac.json
 docs/setup/manual/ai/day-one-plugins.md
 docs/shared/reference/plugin-packaging.md
 templates/plugins/metadata.json
+
+# Reviewed display workspace recipes and bounded restore tool
+docs/setup/manual/apps/workspaces.md
+docs/setup/manual/apps/atticus.md
+docs/shared/tools/workspaces.md
+helpers/workspaces/workspace.cjs

@@ -36,6 +36,8 @@ shared references and reviewed skill helpers support individual tasks.
 | [Optional macOS Shortcuts for development](setup/manual/apps/macos-shortcuts.md) | `setup/manual/apps` |
 | [Choose and configure a Raycast AI provider](setup/manual/apps/raycast-ai-providers.md) | `setup/manual/apps` |
 | [Set up, back up, and restore Raycast](setup/manual/apps/raycast.md) | `setup/manual/apps` |
+| [Restore a developer workspace across displays](setup/manual/apps/workspaces.md) | `setup/manual/apps` |
+| [Pilot Atticus as an optional voice companion](setup/manual/apps/atticus.md) | `setup/manual/apps` |
 | [Configure Vorssaint for software development on macOS](setup/manual/apps/vorssaint.md) | `setup/manual/apps` |
 | [Verify and back up the finished setup](setup/manual/backup-and-restore.md) | `setup/manual` |
 | [Database setup and operations](setup/manual/databases/README.md) | `setup/manual/databases` |

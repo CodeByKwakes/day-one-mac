@@ -74,3 +74,17 @@ Verify the actual requested workflow after mutation and report anything requirin
 a restart or human interaction. Read-only audits must not launch apps, trigger
 updates or change permissions as a probe without that scope. Return the selected
 app, before/after evidence, retained data and recovery location.
+
+## Restore a selected developer workspace
+
+Use the [workspace guide](../../../docs/setup/manual/apps/workspaces.md) for desk
+calibration and app placement, and the optional
+[restore tool](../../../docs/shared/tools/workspaces.md) for bounded automation.
+Inspect the actual desk, DisplayLink readiness and built-in display before
+capture. Keep calibration private; use exact display identities, not count or
+localized names. Preview and approve the selected operation before mutation.
+Stop on changed/duplicate IDs or multiple matching activities. Preserve recovery
+snapshots and report display verification separately from a Raycast request.
+Several VS Code windows need an explicit project selection; never infer success
+from opening a deep link. Do not install a watcher or connect/query databases.
+Atticus is an optional pilot, not a prerequisite or verified Codex/Copilot backend.

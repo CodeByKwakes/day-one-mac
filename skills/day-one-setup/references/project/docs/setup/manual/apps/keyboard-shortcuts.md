@@ -121,6 +121,22 @@ to justify another global shortcut.
 The optional [Day One Raycast command pack](raycast.md) provides
 suggested `d1…` and `ai…` aliases. It deliberately assigns no hotkey itself.
 
+## Workspace and voice shortcuts
+
+Choose the [workspace recipe](workspaces.md) before assigning these optional
+bindings. They do not change VS Code's own profile shortcuts.
+
+| Shortcut | Proposed owner | Conflict check |
+|---|---|---|
+| `⌃⌥⌘D` | Reviewed workspace restore Script Command | Check all apps first; prefer an alias until tested |
+| `⌃⌥⌘←` / `⌃⌥⌘→` / `⌃⌥⌘↑` / `⌃⌥⌘↓` | Raycast window commands in the workspace recipe | Remove equivalent Vorssaint bindings; choose one window owner |
+| `⌃⌥Space` | Optional Atticus push-to-talk | Preserve `⌥Space` for Raycast and check existing voice/dictation tools |
+| fn / Globe | Optional Atticus dictation | Review the macOS Globe action; leave dictation unused if the native action is preferred |
+
+The workspace command asks for confirmation and stops on ambiguous desk/activity
+matches. No hotkey is assigned by installing a skill. See the
+[tool reference](../../../shared/tools/workspaces.md) for the optional wrapper.
+
 ## Warp
 
 | Shortcut | Action |

@@ -60,3 +60,17 @@ Use the manual guide's Terminal fallback without changing existing Git settings.
 Report the selected recipes, sources, output paths, checks performed and remaining
 manual steps. Installing or updating this skill does not install, replace or
 remove previously built apps. Preserve notes and recovery copies outside skills.
+
+## Restore a selected developer workspace
+
+Use the [workspace guide](../project/docs/setup/manual/apps/workspaces.md) for desk
+calibration and app placement, and the optional
+[restore tool](../project/docs/shared/tools/workspaces.md) for bounded automation.
+Inspect the actual desk, DisplayLink readiness and built-in display before
+capture. Keep calibration private; use exact display identities, not count or
+localized names. Preview and approve the selected operation before mutation.
+Stop on changed/duplicate IDs or multiple matching activities. Preserve recovery
+snapshots and report display verification separately from a Raycast request.
+Several VS Code windows need an explicit project selection; never infer success
+from opening a deep link. Do not install a watcher or connect/query databases.
+Atticus is an optional pilot, not a prerequisite or verified Codex/Copilot backend.

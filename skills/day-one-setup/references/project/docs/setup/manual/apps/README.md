@@ -13,6 +13,8 @@ its selected authentication route. Additional applications are optional.
 | Raycast | [Launcher setup](raycast.md) | Hotkey, app launch and selected permissions |
 | 1Password | [Security setup](../security/1password.md) | Intended account, agent and repository access |
 | Vorssaint | [Window management](vorssaint.md) | Layouts and shortcut conflicts |
+| Multi-display development workspace | [Desk layouts and recovery](workspaces.md) | Correct screens, project window and display recovery |
+| Atticus (optional) | [Voice pilot](atticus.md) | Chosen backend, permissions and an unambiguous harmless command |
 | Database clients | [Database tasks](../databases/README.md) | Intended server and database-enforced role |
 | Raycast AI | [Provider setup](raycast-ai-providers.md) | Intended account and a harmless request |
 | Developer shortcuts and apps | [macOS Shortcuts](macos-shortcuts.md) | Folder input, selected profile, Warp directory and clone destination |

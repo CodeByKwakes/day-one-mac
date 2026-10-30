@@ -209,6 +209,10 @@ if macOS requests it and the feature is wanted. Suggested shortcuts are kept
 in [Keyboard shortcuts](keyboard-shortcuts.md); skip them on a managed Mac when
 global shortcuts or Accessibility access are restricted.
 
+For named Office/Home layouts, display arrangement and optional on-demand
+restoration, follow the [developer workspace guide](workspaces.md). Keep the
+workspace recipe as the owner of its window layout and recovery checks.
+
 ### Raycast AI
 
 Raycast AI is not part of the required launcher. Leave it unconfigured unless
