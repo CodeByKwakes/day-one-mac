@@ -6,10 +6,18 @@ description: Maintain Day One Mac's manual guides, portable AI skills, reviewed 
 # Day One Mac maintenance
 
 Read AGENTS.md, docs/START-HERE.md and the owning capability guide. AI-assisted
-and manual setup share canonical manual recipes. There is no mandatory runtime, global setup command, setup wizard, background
-manager or permanent checkout requirement. The separately installed optional
+and manual setup share canonical manual recipes. There is no mandatory runtime,
+global setup command, setup wizard, background manager or permanent checkout
+requirement. The separately installed optional
 MCP server under `integrations/mcp` is a bounded tool transport, not a setup
 route or machine manager.
+
+## Optional contributor toolkit
+
+This is the only checkout-local contributor skill. General planning, debugging,
+review, writing and design helpers belong in a personal toolkit. They are not
+required to contribute: use AGENTS.md, CONTRIBUTING.md and the repository gates
+when a helper is unavailable. Never install companions merely to follow this skill.
 
 ## Implementation contracts
 

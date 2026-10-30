@@ -87,6 +87,8 @@ function buildPackage(spec) {
     if (!pending.includes(source) && !output.has(targets.get(source))) pending.push(source);
   };
   schedule(entry);
+  const ui = `templates/skills/${spec.name}/agents/openai.yaml`;
+  if (fs.existsSync(path.join(root, ui))) schedule(ui, 'agents/openai.yaml');
   schedule('LICENSE', 'LICENSE');
   for (const name of spec.workflows || []) schedule(`templates/skills/${name}/SKILL.md`);
   for (const asset of new Set([...metadata.assets, ...assetsFor(spec)])) for (const source of walk(asset)) schedule(source);

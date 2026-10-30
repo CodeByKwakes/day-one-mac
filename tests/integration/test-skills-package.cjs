@@ -85,6 +85,7 @@ if (require.main === module) {
       fs.unlinkSync(misplaced);
     }
     if (name === 'day-one-mac') {
+      assert(fs.existsSync(path.join(folder, 'agents/openai.yaml')), 'Main package UI metadata must survive independent installation');
       for (const specialist of names.slice(1)) {
         assert(fs.existsSync(path.join(folder, 'references/workflows', `${specialist}.md`)));
       }

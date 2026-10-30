@@ -8,6 +8,11 @@ const { spawnSync } = require('node:child_process');
 const { buildAgents } = require('../../tools/build-agents.cjs');
 const root = path.resolve(__dirname, '../..');
 
+const localSkills = fs.readdirSync(path.join(root, '.agents/skills'), {withFileTypes:true}).filter(e => e.isDirectory()).map(e => e.name).sort();
+assert.deepEqual(localSkills, ['day-one-mac-maintenance'], 'General personal helpers must not be vendored as project skills');
+assert.deepEqual(fs.readdirSync(path.join(root, '.claude/skills')).filter(name => name !== '.DS_Store').sort(), localSkills, 'Claude aliases must expose only project-owned skills');
+assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, 'skills-lock.json'), 'utf8')).skills, {}, 'The repository lock must not restore migrated personal helpers');
+
 const check = spawnSync(process.execPath, ['tools/build-agents.cjs', '--check'], {cwd: root, encoding: 'utf8'});
 assert.equal(check.status, 0, check.stdout + check.stderr);
 const instruction = path.join(root, 'CLAUDE.md');

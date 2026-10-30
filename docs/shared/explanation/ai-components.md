@@ -32,27 +32,28 @@ that single entry point; install standalone specialists for selective use.
 Generated packages under `skills/` are independent distribution snapshots.
 Edit their sources and regenerate them rather than editing snapshots directly.
 
-Repository contributors use these checkout-local skills under `.agents/skills`:
+The only checkout-local contributor skill is `day-one-mac-maintenance`, under
+`.agents/skills`, with a matching Claude symlink. Its Codex display name is
+**Maintain this repository**. The public main skill's Codex display name is
+**Use Day One Mac**. Invocation names remain unchanged; Claude uses the shared
+skill's canonical name.
 
-| Skill | Owner of the procedure |
-|---|---|
-| `day-one-mac-maintenance` | Repository contracts, public sources and recovery boundaries |
-| `codebase-design` | Module interfaces and architecture vocabulary |
-| `design-taste-frontend` | Visual direction for new or redesigned interfaces |
-| `impeccable` | Targeted interface critique, refinement and design procedures |
-| `documentation-writer` | Document purpose, structure and reader journey |
-| `technical-writing` | Truth, prose and house style |
-| `review-and-refactor` | General code review and refactoring |
-| `differential-review` | Security-focused change review |
-| `systematic-debugging` | Reproduction and root-cause investigation |
-| `writing-plans` | Implementation task planning |
-| `executing-plans` | Approved plan execution and evidence |
-| `verification-before-completion` | Fresh verification before completion claims |
+General planning, architecture, debugging, verification, review, writing and
+design skills belong in a contributor's personal toolkit. They are not shipped
+as project requirements or installed by the Day One Mac plugin. Choose one
+default writing helper and one default interface-design helper; keep overlapping
+alternatives and specialist security review outside automatic discovery until
+needed. Keep the whole skill folder together so its references remain usable.
 
-Choose the owner of the requested task; do not load every overlapping skill.
-Optional companion references do not authorize installing packages or extending
-scope. When a companion is absent, use the skill's local fallback and repository
-checks. External skills and host-provided plugins remain separate dependencies.
+Contributors do not need that personal toolkit. Follow AGENTS.md, CONTRIBUTING.md
+and the repository checks when helpers are absent. Preserve differing copies
+before consolidating them, and do not alter another project's local skill merely
+because it has the same name. External skills and host-provided plugins remain
+separate dependencies.
+
+The repository `skills-lock.json` has no external contributor-skill entries.
+Keep personal helper provenance outside that lock so restoring project skills
+cannot reinstall a contributor's general toolkit into this checkout.
 
 `day-one-mac-maintenance` maintains this repository. `day-one-maintain` maintains
 a Mac environment. `day-one-maintainer` is a delegated repository role. The
@@ -87,9 +88,9 @@ client before activation.
 [Codex agents](https://learn.chatgpt.com/docs/agent-configuration/subagents),
 [Claude agents](https://code.claude.com/docs/en/sub-agents).
 
-Impeccable's four nested TOML definitions are contributor-skill assets. They are
-not installed in native discovery directories. A Claude skill symlink does not
-translate those TOMLs into Claude agents. Use a native adapter when explicitly
+Personal design skills may supply their own nested agent definitions. Those are
+separate from Day One Mac roles. Linking a skill does not register agents or
+translate Codex TOML into Claude Markdown. Use a native adapter when explicitly
 installed; otherwise perform the relevant procedure in the current session.
 
 ## Shared sources and platform adapters

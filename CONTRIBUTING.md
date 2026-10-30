@@ -6,6 +6,10 @@ before changing behaviour. Work in a branch; keep real inventories, credentials
 and private machine paths outside the public repository.
 
 Use this checkout's `day-one-mac-maintenance` skill for repository upkeep.
+It is the only repository-owned contributor skill, displayed as **Maintain this
+repository**. General planning, writing, design and review helpers belong in a
+contributor's personal toolkit. They are optional; AGENTS.md, this guide and the
+repository checks are sufficient to contribute.
 The public `day-one-maintain` and `day-one-contribute` workflows serve different
 scopes; see the [maintenance skill distinction](docs/setup/manual/ai/day-one-skills.md#repository-maintenance-versus-environment-maintenance)
 for their source locations and packaging boundaries.

@@ -580,3 +580,6 @@ docs/setup/manual/apps/workspaces.md
 docs/setup/manual/apps/atticus.md
 docs/shared/tools/workspaces.md
 helpers/workspaces/workspace.cjs
+
+# Main skill display metadata
+templates/skills/day-one-mac/agents/openai.yaml

@@ -2,6 +2,7 @@
   "schema": 1,
   "skill": "day-one-mac",
   "files": {
+    "agents/openai.yaml": "b202844640f51a21ee2181ada910abcdb5c4ee391d0292aae5c8dcc318719e29",
     "assets/agents/claude/day-one-maintainer.md": "24587b0893168f4e6b1935e6e97b8bf03ea589b6d309cc49df4790799d0cd10b",
     "assets/agents/claude/day-one-operator.md": "14d346957489ef37f922b0dcc1f7b09e9bac2a3392cc9703c6ca3a378649e9df",
     "assets/agents/claude/day-one-planner.md": "39524fdd5076c68b150ecab552c43dc7fa35752bbfb992af733cc00857395506",
@@ -119,7 +120,7 @@
     "references/project/docs/setup/manual/shell/zsh.md": "e3ec222c338c26e27b4621796f7c1a2885f1a4b46ce28bd6d8c8489a3d002958",
     "references/project/docs/setup/manual/terminals/warp.md": "bd2d6edffca614d5aa803f735db460f055dbd73454ce23263840192d99bd0f72",
     "references/project/docs/shared/decisions.md": "1182a39d5b6bbe254ee260b01f02dc610b4658a68706f6e306448f7b76bc4adc",
-    "references/project/docs/shared/explanation/ai-components.md": "d6b3d304b1acd2438772d3898444090dbed9346b23dcce573bbe62151a422304",
+    "references/project/docs/shared/explanation/ai-components.md": "bee6139d36c1213b39b31f80d60df00a64b02f129cef4bdde231c36e74103235",
     "references/project/docs/shared/explanation/architecture-and-state.md": "3ef95eb2ae5353df51a9f89e63c16294cb2fcefb30fef6e3030a8e39319cd427",
     "references/project/docs/shared/explanation/chezmoi-boundaries.md": "0b3f4a0d7013f75beee741f52035370761a1bd08a802d1486afdd39916097350",
     "references/project/docs/shared/explanation/process-overview.md": "df143dc2155c3c39d2acada09b5cdc7385cfd1028c6374259ffcff9059b581a5",

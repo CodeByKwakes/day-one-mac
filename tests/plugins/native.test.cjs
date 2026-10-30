@@ -19,6 +19,13 @@ test('native plugin artifacts relocate without checkout/dependencies, preserve l
   try {
     const output = path.join(temp, 'Plugin output é');
     const built = await buildPlugins(output);
+    const fixtureMarketplace = `day-one-mac-fixture-${process.pid}`;
+    for (const [platform, relative] of [['codex','.agents/plugins/marketplace.json'], ['claude','.claude-plugin/marketplace.json']]) {
+      const file = path.join(output,platform,relative);
+      const catalog = JSON.parse(await fs.readFile(file,'utf8'));
+      catalog.name = fixtureMarketplace;
+      await fs.writeFile(file, JSON.stringify(catalog));
+    }
     await assert.rejects(buildPlugins(output), /EEXIST/);
     await assert.rejects(buildPlugins(path.join(root, 'private-plugin-output')), /outside the checkout/);
     const alias = path.join(temp, 'existing-output-link'); await fs.symlink(output, alias);
@@ -80,9 +87,9 @@ test('native plugin artifacts relocate without checkout/dependencies, preserve l
         env:{...process.env,CLAUDE_CONFIG_DIR:path.join(temp,'claude-config'),DISABLE_AUTOUPDATER:'1',CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC:'1'}});
     }
     if (process.env.DAY_ONE_CODEX_BIN) {
-      const catalog = await exec(process.env.DAY_ONE_CODEX_BIN, ['plugin','list','--available','--json','--marketplace','day-one-mac-local',
-        '-c','marketplaces.day-one-mac-local.source_type="local"', '-c',`marketplaces.day-one-mac-local.source=${JSON.stringify(path.join(output,'codex'))}`], {timeout:30000});
-      const entry = JSON.parse(catalog.stdout).available.find(plugin => plugin.pluginId === 'day-one-mac@day-one-mac-local');
+      const catalog = await exec(process.env.DAY_ONE_CODEX_BIN, ['plugin','list','--available','--json','--marketplace',fixtureMarketplace,
+        '-c',`marketplaces.${fixtureMarketplace}.source_type="local"`, '-c',`marketplaces.${fixtureMarketplace}.source=${JSON.stringify(path.join(output,'codex'))}`], {timeout:30000});
+      const entry = JSON.parse(catalog.stdout).available.find(plugin => plugin.pluginId === `day-one-mac@${fixtureMarketplace}`);
       assert(entry, 'Codex did not discover the native package');
       assert.equal(entry.installed,false); assert.equal(entry.enabled,false);
     }
