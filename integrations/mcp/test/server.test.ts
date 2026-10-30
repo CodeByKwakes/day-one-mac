@@ -115,7 +115,7 @@ test('stdio discovery, resource/prompt reads, invalid input and default denial',
     assert.deepEqual(tools.map(t => t.name).sort(), ['check_host', 'desktop_click', 'list_guides', 'preview_desktop_click', 'read_guide']);
     assert(tools.every(t => t.annotations?.readOnlyHint === true), 'Default server must expose no mutation-capable tool');
     for (const name of serverSpec.readOnlyTools) assert.equal(tools.find(t => t.name === name)?.annotations?.readOnlyHint, true, `Unsafe or unknown allowlisted tool: ${name}`);
-    assert.equal((await client.listResources()).resources.length, 11);
+    assert.equal((await client.listResources()).resources.length, 14);
     assert.equal((await client.listPrompts()).prompts.length, 2);
     const resource = await client.readResource({ uri: 'day-one-mac://guide/macos' });
     assert.match((resource.contents[0] as { text: string }).text, /Prepare macOS/);
@@ -123,6 +123,11 @@ test('stdio discovery, resource/prompt reads, invalid input and default denial',
     assert.match((prompt.messages[0].content as { text: string }).text, /explicit human approval/);
     const shortcuts = await client.callTool({name:'read_guide', arguments:{id:'shortcuts'}});
     assert.match(JSON.parse((shortcuts.content as {text:string}[])[0].text).text, /Send to Archive/);
+    for (const [id, expected] of [['workspaces', /Restore a developer workspace/], ['atticus', /optional voice companion/], ['components', /Personal|personal toolkit/]] as const) {
+      const guide = await client.callTool({name:'read_guide', arguments:{id}});
+      assert.equal(guide.isError, false);
+      assert.match(JSON.parse((guide.content as {text:string}[])[0].text).text, expected);
+    }
     await assert.rejects(client.callTool({name:'apply_desktop_click', arguments:{mode:'always'}}), /not found/);
     for (const args of [{ id: '../../auth.json' }, { id: 'macos', path: '/etc/passwd' }]) {
       const invalid = await client.callTool({ name: 'read_guide', arguments: args }); assert.equal(invalid.isError, true);

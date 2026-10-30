@@ -9,7 +9,7 @@ COPY LICENSE /app/LICENSE
 RUN npm test && npm prune --omit=dev --ignore-scripts --no-audit --no-fund
 
 FROM node:24-bookworm-slim@sha256:c86ecead9e55a5210ac1727de38a4ca840bf03dcaf34dc9749addbf383b1920c
-ARG VERSION=0.1.0
+ARG VERSION=0.1.1
 LABEL org.opencontainers.image.title="day-one-mac-mcp" \
       org.opencontainers.image.version=$VERSION \
       org.opencontainers.image.source="https://github.com/CodeByKwakes/day-one-mac"

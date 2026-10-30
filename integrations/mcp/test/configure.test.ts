@@ -29,7 +29,7 @@ test('npm configuration pins the package and includes Node on the child PATH', a
   const configs = await configuration({client:'all',launch:'npm'});
   const server = configs.claude.mcpServers['day-one-mac'];
   assert.match(server.args[0],/npm-cli\.js$/);
-  assert(server.args.includes('--package=day-one-mac-mcp@0.1.0'));
+  assert(server.args.includes('--package=day-one-mac-mcp@0.1.1'));
   assert(server.args.includes('--ignore-scripts'));
   assert.equal(server.env?.PATH.split(path.delimiter)[0],path.dirname(server.command));
   const fallback = JSON.parse(execFileSync(process.execPath, ['dist/src/configure.js','--launch','npm'], {encoding:'utf8',env:{...process.env,npm_execpath:''},stdio:['pipe','pipe','pipe']}));
@@ -43,7 +43,7 @@ test('Docker configuration resolves the executable on this machine and rejects m
     const mock=path.join(dir,'docker');await fs.writeFile(mock,'#!/bin/sh\nexit 0\n',{mode:0o755});
     const configs=JSON.parse(execFileSync(process.execPath,['dist/src/configure.js','--launch','docker'],{encoding:'utf8',env:{...process.env,PATH:dir}}));
     assert.equal(configs.claude.mcpServers['day-one-mac'].command,mock);
-    assert.equal(configs.claude.mcpServers['day-one-mac'].args.at(-1),'day-one-mac-mcp:0.1.0');
+    assert.equal(configs.claude.mcpServers['day-one-mac'].args.at(-1),'day-one-mac-mcp:0.1.1');
     assert.throws(()=>execFileSync(process.execPath,['dist/src/configure.js','--launch','docker'],{encoding:'utf8',env:{...process.env,PATH:''},stdio:['pipe','pipe','pipe']}));
   } finally {await fs.rm(dir,{recursive:true});}
 });

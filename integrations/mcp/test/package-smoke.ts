@@ -30,13 +30,13 @@ try {
   const configs=JSON.parse((await exec(configBin,[],{cwd:workspace,env})).stdout);
   assert.equal(configs.claude.mcpServers['day-one-mac'].args[0],path.join(installed,'dist/src/index.js'));
   const npmConfigs=JSON.parse((await exec(configBin,['--launch','npm'],{cwd:workspace,env})).stdout);
-  assert(npmConfigs.claude.mcpServers['day-one-mac'].args.includes('--package=day-one-mac-mcp@0.1.0'));
+  assert(npmConfigs.claude.mcpServers['day-one-mac'].args.includes('--package=day-one-mac-mcp@0.1.1'));
   const transport=new StdioClientTransport({command:path.join(workspace,'node_modules/.bin/day-one-mac-mcp'),args:[],cwd:workspace,env:env as Record<string,string>,stderr:'pipe'});
-  const client=new Client({name:'packed-install-test',version:'0.1.0'});
+  const client=new Client({name:'packed-install-test',version:'0.1.1'});
   try {
     await client.connect(transport);
     assert.equal((await client.listTools()).tools.length,5);
-    assert.equal((await client.listResources()).resources.length,11);
+    assert.equal((await client.listResources()).resources.length,14);
     assert.equal((await client.listPrompts()).prompts.length,2);
     const guide=await client.readResource({uri:'day-one-mac://guide/macos'});
     assert.match((guide.contents[0] as {text:string}).text,/# Prepare macOS/);
@@ -47,15 +47,15 @@ try {
   const npmTransport=new StdioClientTransport({command:npmLaunch.command,
     args:npmLaunch.args.map((arg:string)=>arg.startsWith('--package=')?'--package='+tarball:arg),cwd:gui,
     env:{...npmLaunch.env,npm_config_cache:path.join(root,'cache'),npm_config_offline:'true',npm_config_update_notifier:'false'},stderr:'pipe'});
-  const npmClient=new Client({name:'minimal-gui-npm-launch',version:'0.1.0'});
+  const npmClient=new Client({name:'minimal-gui-npm-launch',version:'0.1.1'});
   try {await npmClient.connect(npmTransport);assert.equal((await npmClient.listTools()).tools.length,5);}
   finally {await npmClient.close();await npmTransport.close();}
   const artifact=path.join(root,'checked-package');
   const artifactScript=path.resolve('scripts/package-artifact.mjs');
   await exec(process.execPath,[artifactScript,artifact],{cwd:gui,env:process.env});
-  const checksum=await fs.readFile(path.join(artifact,'day-one-mac-mcp-0.1.0.tgz.sha256'),'utf8');
+  const checksum=await fs.readFile(path.join(artifact,'day-one-mac-mcp-0.1.1.tgz.sha256'),'utf8');
   await assert.rejects(exec(process.execPath,[artifactScript,artifact],{cwd:gui,env:process.env}));
-  assert.equal(await fs.readFile(path.join(artifact,'day-one-mac-mcp-0.1.0.tgz.sha256'),'utf8'),checksum);
+  assert.equal(await fs.readFile(path.join(artifact,'day-one-mac-mcp-0.1.1.tgz.sha256'),'utf8'),checksum);
   console.log('PASS: GUI-like pinned npm launch and no-overwrite package artifact command');
   console.log('PASS: inspected tarball; production-only installation, executable bins, client configuration and stdio work outside the checkout in a Unicode path with spaces');
 } finally {await fs.rm(root,{recursive:true,force:true});}

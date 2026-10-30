@@ -53,14 +53,14 @@ test('native plugin artifacts relocate without checkout/dependencies, preserve l
       assert(licenses.some(entry => entry.name === '@modelcontextprotocol/server'));
       assert(licenses.some(entry => entry.name === 'zod'));
       const manifest = JSON.parse(await fs.readFile(path.join(folder, platform === 'codex' ? '.codex-plugin/plugin.json' : '.claude-plugin/plugin.json'),'utf8'));
-      assert.equal(manifest.name, 'day-one-mac'); assert.equal(manifest.version, '0.1.0');
+      assert.equal(manifest.name, 'day-one-mac'); assert.equal(manifest.version, '0.1.1');
       assert(!manifest.agents && !manifest.hooks);
       const config = JSON.parse(await fs.readFile(path.join(folder,'.mcp.json'),'utf8')).mcpServers[platform === 'codex' ? 'day_one_mac' : 'day-one-mac'];
       const variable = platform === 'codex' ? '${PLUGIN_ROOT}' : '${CLAUDE_PLUGIN_ROOT}';
       assert.equal(config.args.length, 1);
       assert(config.args[0].startsWith(variable + '/'));
       const transport = new StdioClientTransport({command:config.command, args:config.args.map(arg => arg.replace(variable,folder)), cwd:temp, stderr:'pipe', env:{PATH:path.dirname(process.execPath)}});
-      const client = new Client({name:'day-one-plugin-fixture',version:'0.1.0'});
+      const client = new Client({name:'day-one-plugin-fixture',version:'0.1.1'});
       try {
         await client.connect(transport);
         const tools = (await client.listTools()).tools;
@@ -68,6 +68,8 @@ test('native plugin artifacts relocate without checkout/dependencies, preserve l
         assert(!tools.some(tool => tool.name === 'apply_desktop_click'));
         const read = await client.callTool({name:'read_guide',arguments:{id:'shortcuts'}});
         assert.match(JSON.parse(read.content[0].text).text, /Send to Archive/);
+        const workspace = await client.callTool({name:'read_guide',arguments:{id:'workspaces'}});
+        assert.match(JSON.parse(workspace.content[0].text).text, /Restore a developer workspace/);
       } finally {await client.close(); await transport.close();}
       if (platform === 'claude' && process.env.DAY_ONE_CLAUDE_BIN) {
         const result = await exec(process.env.DAY_ONE_CLAUDE_BIN, ['plugin','validate',folder,'--strict'], {timeout:30000,
@@ -81,7 +83,7 @@ test('native plugin artifacts relocate without checkout/dependencies, preserve l
       assert.match(report.stdout, /Validation passed/);
       const roles = path.join(temp,'role-validation-only');
       await fs.mkdir(path.join(roles,'.claude-plugin'), {recursive:true});
-      await fs.writeFile(path.join(roles,'.claude-plugin/plugin.json'), JSON.stringify({name:'day-one-role-validation',version:'0.1.0',description:'Temporary role format validation',author:{name:'Day One Mac contributors'}}));
+      await fs.writeFile(path.join(roles,'.claude-plugin/plugin.json'), JSON.stringify({name:'day-one-role-validation',version:'0.1.1',description:'Temporary role format validation',author:{name:'Day One Mac contributors'}}));
       await fs.cp(path.join(root,'templates/agents/claude'),path.join(roles,'agents'),{recursive:true});
       await exec(process.env.DAY_ONE_CLAUDE_BIN,['plugin','validate',roles,'--strict'],{timeout:30000,
         env:{...process.env,CLAUDE_CONFIG_DIR:path.join(temp,'claude-config'),DISABLE_AUTOUPDATER:'1',CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC:'1'}});

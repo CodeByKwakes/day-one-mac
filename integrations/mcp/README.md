@@ -52,7 +52,7 @@ interface. Prefer the separate tools for precise client permissions.
 
 The catalogue resource is `day-one-mac://catalog`. Reading it with
 `{"uri":"day-one-mac://catalog"}` returns the same list as `list_guides`.
-The ten other resources use `text/markdown`:
+The thirteen other resources use `text/markdown`:
 
 | Resource URI | Purpose | Example read input | Example output text |
 |---|---|---|---|
@@ -66,6 +66,9 @@ The ten other resources use `text/markdown`:
 | `day-one-mac://guide/shortcuts` | App recipes and Send to Archive | `{"uri":"day-one-mac://guide/shortcuts"}` | macOS shortcut guide Markdown |
 | `day-one-mac://guide/skills` | Skill installation and maintenance boundaries | `{"uri":"day-one-mac://guide/skills"}` | Skill guide Markdown |
 | `day-one-mac://guide/mcp` | Native client registration | `{"uri":"day-one-mac://guide/mcp"}` | MCP connection guide Markdown |
+| `day-one-mac://guide/workspaces` | Desk calibration and layout recovery | `{"uri":"day-one-mac://guide/workspaces"}` | Workspace guide Markdown |
+| `day-one-mac://guide/atticus` | Optional voice pilot | `{"uri":"day-one-mac://guide/atticus"}` | Atticus guide Markdown |
+| `day-one-mac://guide/components` | Product and personal toolkit boundaries | `{"uri":"day-one-mac://guide/components"}` | Component reference Markdown |
 
 Resource responses wrap text in `contents: [{uri, mimeType, text}]`. These are
 build-time snapshots of allowlisted public guides. Their relative links refer to
@@ -77,7 +80,7 @@ the canonical repository documentation; this package bundles only the listed gui
 | `troubleshoot_setup` | Investigate before repairing | `{"symptom":"Windows move when I click the wallpaper"}` | User message requesting reproduction, relevant guide and a recoverable repair preview |
 
 Prompts return `messages: [{role: "user", content: {type: "text", text: ...}}]`.
-`topic` accepts the same ten IDs as `read_guide`; symptoms are 1-2000 characters.
+`topic` accepts the same thirteen IDs as `read_guide`; symptoms are 1-2000 characters.
 All tool and prompt argument objects reject unknown keys.
 
 ### Safety and confirmation
@@ -202,7 +205,7 @@ server and resolves Node's real executable path. It does not depend on a clone.
 | `--client` | `all` | Print `all`, `claude`, `codex`, `vscode` or `raycast`; Codex-only output is TOML, other output is JSON |
 | `--launch` | `direct` | Choose an installed server, a pinned npm registry package (`npm`), or the local Docker image (`docker`) |
 | `--npm-cli` | Detected | With `--launch npm`, supply an absolute `npm-cli.js` path when automatic discovery fails |
-| `--image` | `day-one-mac-mcp:0.1.0` | With `--launch docker`, select an image tag or digest |
+| `--image` | `day-one-mac-mcp:0.1.1` | With `--launch docker`, select an image tag or digest |
 | `--help` | Off | Print usage without generating configurations |
 
 Examples from a source build:
@@ -361,10 +364,10 @@ Copy the tarball and its checksum file into a new folder on the receiving Mac.
 From that folder, verify and install the reviewed artifact:
 
 ```bash
-shasum -a 256 -c day-one-mac-mcp-0.1.0.tgz.sha256
+shasum -a 256 -c day-one-mac-mcp-0.1.1.tgz.sha256
 mkdir -p "$HOME/.local/share/day-one-mac-mcp"
 npm install --prefix "$HOME/.local/share/day-one-mac-mcp" \
-  --ignore-scripts --no-audit --no-fund ./day-one-mac-mcp-0.1.0.tgz
+  --ignore-scripts --no-audit --no-fund ./day-one-mac-mcp-0.1.1.tgz
 node "$HOME/.local/share/day-one-mac-mcp/node_modules/day-one-mac-mcp/dist/src/configure.js" \
   --client all
 ```
@@ -414,7 +417,7 @@ The following is a future release command, not a claim that this package name or
 version is currently published by the intended owner:
 
 ```bash
-npx --yes --ignore-scripts --package=day-one-mac-mcp@0.1.0 \
+npx --yes --ignore-scripts --package=day-one-mac-mcp@0.1.1 \
   day-one-mac-mcp-configure --client all --launch npm
 ```
 
@@ -429,7 +432,7 @@ Run from the repository root with an approved, running Docker installation:
 ```bash
 npm --prefix integrations/mcp run image:build
 docker run -i --rm --read-only --cap-drop=ALL \
-  --security-opt=no-new-privileges day-one-mac-mcp:0.1.0
+  --security-opt=no-new-privileges day-one-mac-mcp:0.1.1
 ```
 
 After building native test dependencies and artifacts, verify the final image
@@ -447,8 +450,8 @@ npm --prefix integrations/mcp run image:export -- "$IMAGE_PARENT/transfer"
 Copy the resulting `.tar` and `.sha256` files to the receiving Mac. In that folder:
 
 ```bash
-shasum -a 256 -c day-one-mac-mcp-0.1.0-docker.tar.sha256
-docker image load --input day-one-mac-mcp-0.1.0-docker.tar
+shasum -a 256 -c day-one-mac-mcp-0.1.1-docker.tar.sha256
+docker image load --input day-one-mac-mcp-0.1.1-docker.tar
 ```
 
 The native image build matches its builder's platform; use the arm64 artifact
@@ -465,7 +468,7 @@ For any stdio client above, replace the native command and arguments with:
 ```json
 {
   "command": "/opt/homebrew/bin/docker",
-  "args": ["run", "-i", "--rm", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "day-one-mac-mcp:0.1.0"]
+  "args": ["run", "-i", "--rm", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "day-one-mac-mcp:0.1.1"]
 }
 ```
 
@@ -475,7 +478,7 @@ Retain VS Code's outer `servers` wrapper and `type: "stdio"`, or Claude's
 ```toml
 [mcp_servers.day_one_mac]
 command = "/opt/homebrew/bin/docker"
-args = ["run", "-i", "--rm", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "day-one-mac-mcp:0.1.0"]
+args = ["run", "-i", "--rm", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "day-one-mac-mcp:0.1.1"]
 startup_timeout_sec = 60
 ```
 
@@ -518,7 +521,7 @@ For each selected client:
    interface mutation-capable; the preview tool remains read-only.
 3. Call `list_guides` with `{}`, then `read_guide` with `{"id":"macos"}`.
 4. Call `check_host` and confirm whether the process is native or containerized.
-5. Where supported, read `day-one-mac://catalog` and request `setup_plan` with `{"topic":"git"}`. The server advertises eleven resources and two prompts.
+5. Where supported, read `day-one-mac://catalog` and request `setup_plan` with `{"topic":"git"}`. The server advertises fourteen resources and two prompts.
 6. On native Apple silicon, call `preview_desktop_click` with `{"mode":"stage-manager-only"}` and confirm `dry_run: true`. Do not apply merely to test discovery.
 
 | Error or symptom | Fix |

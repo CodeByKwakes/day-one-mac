@@ -20,6 +20,9 @@
     "verification": "docs/shared/verification.md",
     "shortcuts": "docs/setup/manual/apps/macos-shortcuts.md",
     "skills": "docs/setup/manual/ai/day-one-skills.md",
-    "mcp": "docs/setup/manual/ai/mcp.md"
+    "mcp": "docs/setup/manual/ai/mcp.md",
+    "workspaces": "docs/setup/manual/apps/workspaces.md",
+    "atticus": "docs/setup/manual/apps/atticus.md",
+    "components": "docs/shared/explanation/ai-components.md"
   }
 }

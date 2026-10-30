@@ -45,6 +45,8 @@ docs/setup/manual/editors/**
 docs/setup/manual/apps/**
 !docs/setup/manual/apps/README.md
 !docs/setup/manual/apps/macos-shortcuts.md
+!docs/setup/manual/apps/workspaces.md
+!docs/setup/manual/apps/atticus.md
 !docs/setup/manual/ai/
 docs/setup/manual/ai/**
 !docs/setup/manual/ai/day-one-skills.md
@@ -52,6 +54,9 @@ docs/setup/manual/ai/**
 !docs/shared/
 docs/shared/**
 !docs/shared/verification.md
+!docs/shared/explanation/
+docs/shared/explanation/**
+!docs/shared/explanation/ai-components.md
 **/node_modules
 **/dist
 **/.env

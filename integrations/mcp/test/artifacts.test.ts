@@ -18,7 +18,7 @@ async function fixture() {
 test('image export reserves a destination, hashes its contents and refuses overwrites',async()=>{
   const f=await fixture();try{
     const dir=path.join(f.root,'output');await f.run(dir);
-    const file=path.join(dir,'day-one-mac-mcp-0.1.0-docker.tar');
+    const file=path.join(dir,'day-one-mac-mcp-0.1.1-docker.tar');
     const contents=await fs.readFile(file);const sum=await fs.readFile(file+'.sha256','utf8');
     assert.equal(sum,createHash('sha256').update(contents).digest('hex')+'  '+path.basename(file)+'\n');
     await assert.rejects(f.run(dir),/EEXIST/);assert.deepEqual(await fs.readFile(file),contents);

@@ -1,6 +1,6 @@
 services:
   day-one-mac:
-    image: day-one-mac-mcp:0.1.0
+    image: day-one-mac-mcp:0.1.1
     build:
       context: ../..
       dockerfile: integrations/mcp/Dockerfile

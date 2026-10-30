@@ -1,8 +1,10 @@
 {
   "name": "day-one-mac",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Day One Mac skills and a local, read-only MCP connection for Apple-silicon setup guidance.",
-  "author": { "name": "Day One Mac contributors" },
+  "author": {
+    "name": "Day One Mac contributors"
+  },
   "repository": "https://github.com/CodeByKwakes/day-one-mac",
   "license": "MIT"
 }
