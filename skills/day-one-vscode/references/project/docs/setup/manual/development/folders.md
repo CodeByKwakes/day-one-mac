@@ -61,7 +61,7 @@ Git. Setup creates the README only if absent and preserves any existing copy.
 For Day One Mac package distribution files, use
 `Resources/Project-Materials/day-one-mac/releases/<version>/`. Active client
 installations stay outside Developer so archiving a project does not disconnect
-its tools. Follow the [plugin and standalone MCP location guide](../ai/day-one-plugins.md#choose-the-installation-route-and-locations)
+its tools. Follow the [native plugin location guide](../ai/day-one-plugins.md#choose-the-installation-route-and-locations)
 for the complete layout. This convention does not create folders or move existing
 installations automatically.
 

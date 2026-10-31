@@ -57,7 +57,7 @@
     "references/project/docs/setup/manual/databases/README.md": "8bf586a93864f57c989fffd74eb46430d1f7b131f6553c73c008686679d489f4",
     "references/project/docs/setup/manual/databases/vscode.md": "07ccac1b7303008fabe6c543b435e6244c8a37ec49b2cf61877ff64b8daf31c0",
     "references/project/docs/setup/manual/development/ai-workspaces.md": "2acd5f5a2aac48aa02be3ef96ecae198aa11947d07c90c39c082b19cd5077c15",
-    "references/project/docs/setup/manual/development/folders.md": "b40b5fbdae2b0d18d01f9f09bc5196d350140315354aa5fa6aed8d1906475030",
+    "references/project/docs/setup/manual/development/folders.md": "0fe60d4f84e366dd6780ef110c20ff72f2f394a50364d4cded3030a2e93a2029",
     "references/project/docs/setup/manual/development/resources.md": "e66412f5a97813eaa409fdf945ee6469ff772923e4f8fd7cf8b61bc08dcd2bcb",
     "references/project/docs/setup/manual/development/worktrees/claude.md": "1529d510846194e737ed80e94e293e6dc56aadb4f9396de3fb123d29a3fb4df5",
     "references/project/docs/setup/manual/development/worktrees/codex.md": "3bed730349cedf74a03fc58e0ef1d07c1955b2b6c7b4250ade9573092b2d0236",
@@ -232,7 +232,7 @@
     "references/workflows/day-one-omniroute.md": "77bd3b8fc15cf1b17eb9ad4f1ef088eeb2d1d710a56468adf65dc62ebefc9502",
     "references/workflows/day-one-recover.md": "6fecf1949fc85b932ce94f3c62e869c139bbf7198de9735b74038c64300dfe9c",
     "references/workflows/day-one-second-brain.md": "89c41a4cfe704e3a7b17e657df36eafb44c83770991b3735f1ae96b33b1f81a6",
-    "references/workflows/day-one-setup.md": "789c1b3cf67d96ea42214b6604496fe076e6f2fbbd4ffd7cbbb5bfbc916891ce",
+    "references/workflows/day-one-setup.md": "20ee68e4aadd8dcd93667830a568362a57e496caeaaf9906b494cfc4dcd1a34d",
     "references/workflows/day-one-shortcuts.md": "4e2fef2902863a44556feb8465d56876b30fef8c896affd9d157e33452fd4c22",
     "references/workflows/day-one-vscode.md": "b4649020ec611700954d588d6549b2d3fe497c7a7b8897a707f1549e6a1ae8ec",
     "SKILL.md": "3f44a01200d771775ec710762e19591dd3dcca5fd81a93de5c7a00e7a8e95ec8"

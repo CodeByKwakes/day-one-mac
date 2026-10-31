@@ -23,6 +23,9 @@ function checkDocumentationQuality(documents, bundledFiles = null, nodeMinimum =
     if (/\b(?:re)?run the (?:local )?planner\b|\bplanner (?:also )?writes\b|\bModule (?:09|11) (?:still )?(?:generates|provisions)\b|\bDay One Script Commands\b|\bworkspace\s+updates by creating a new export\b/i.test(prose)) {
       errors.push(`${file}: retired behaviour in current instructions`);
     }
+    if (/\bnative plugin and standalone MCP recipe\b|\bplugin and standalone MCP location guide\b|Use native plugins for selected Codex\/Claude Code clients and a separate MCP\s+registration for Claude Desktop/i.test(prose)) {
+      errors.push(`${file}: archived Day One Mac MCP route in current instructions`);
+    }
     if (['README.md', 'docs/setup/manual/ai/day-one-skills.md'].includes(file)
         && /npx skills@\S+ add CodeByKwakes\/day-one-mac/.test(text) && !text.includes('git --version')) {
       errors.push(`${file}: Git prerequisite check missing from the skill installation entry point`);

@@ -27,6 +27,14 @@ assert.deepEqual(checkDocumentationQuality(new Map([['guide.md', 'Use Node.js 22
 assert(checkDocumentationQuality(new Map([['guide.md', '# Guide\n\n[Continue]()']])).some(error => error.includes('empty destination')));
 assert(checkDocumentationQuality(new Map([['guide.md', '# Guide\n\nUse Day One Script Commands for setup checks.']])).some(error => error.includes('retired behaviour')));
 assert(checkDocumentationQuality(new Map([['guide.md', 'An assistant workspace\nupdates by creating a new export.']])).some(error => error.includes('retired behaviour')));
+for (const text of [
+  'For Day One Mac itself, follow the [native plugin and standalone MCP recipe](guide.md).',
+  'Use native plugins for selected Codex/Claude Code clients and a separate MCP\nregistration for Claude Desktop.',
+  'Follow the [plugin and standalone MCP location guide](guide.md).',
+]) {
+  assert(checkDocumentationQuality(new Map([['templates/skills/day-one-setup/SKILL.md', text]])).some(error => error.includes('archived Day One Mac MCP route')));
+}
+assert.deepEqual(checkDocumentationQuality(new Map([['guide.md', 'Day One Mac native plugins start no MCP server. External MCP services have their own recipes.']])), []);
 for (const entry of ['README.md', 'docs/setup/manual/ai/day-one-skills.md']) {
   assert(checkDocumentationQuality(new Map([[entry, 'Use Node.js and npm.\n\n```bash\nnpx skills@1.7.4 add CodeByKwakes/day-one-mac --list\n```']])).some(error => error.includes('Git prerequisite')));
   assert.deepEqual(checkDocumentationQuality(new Map([[entry, 'Check `git --version` first.\n\n```bash\nnpx skills@1.7.4 add CodeByKwakes/day-one-mac --list\n```']])), []);

@@ -7,6 +7,9 @@ description: Plan and configure selected development tools on an Apple-silicon M
 
 Read [Start here](references/project/docs/START-HERE.md) and the [AI operation guide](references/project/docs/setup/ai/operation.md).
 
+The setup routes are AI-assisted setup and manual setup. Both use the same
+canonical recipes. Skill installation methods are separate delivery choices.
+
 1. Establish whether the user wants guidance or approved local execution. Reuse
    stated choices. Inspect the current machine before proposing installations.
 2. Before depending on AI, verify the chosen client and provider connection.
@@ -23,17 +26,20 @@ Read [Start here](references/project/docs/START-HERE.md) and the [AI operation g
    authorized. Distinguish installed, configured and verified. Explain remaining
    account/UI actions and the next runnable step.
 
-For Day One Mac itself, follow the
-[native plugin and standalone MCP recipe](references/project/docs/setup/manual/ai/day-one-plugins.md#ai-assisted-installation).
-Use native plugins for selected Codex/Claude Code clients and a separate MCP
-registration for Claude Desktop. Inspect existing registrations first; never add
-both native-plugin and direct Day One Mac connections to the same client. Use
-reviewed versioned installation paths outside the source checkout, back up and
-merge client settings, and retain prior versions for recovery. Documentation or
-planning requests do not authorize installation. Report installed files,
-registration, discovery and a live read-only call separately. The read-only MCP
-server cannot install itself or other packages; installation needs the parent
-client's separately approved local tools.
+For Day One Mac itself, use the [portable skill recipe](references/project/docs/setup/manual/ai/day-one-skills.md)
+or the [optional native plugin recipe](references/project/docs/setup/manual/ai/day-one-plugins.md#ai-assisted-installation)
+for a selected Codex or Claude Code client. Inspect existing discovery and use
+one active delivery method for the main skill in each client. Current native
+plugins contain skills and guides only; they start no MCP server. Claude Desktop
+is not a verified target for these native packages. The
+[Day One Mac MCP archive notice](references/project/integrations/mcp/README.md) owns existing
+server connections; do not install or restore that server as a setup route.
+
+Use reviewed versioned installation paths outside the source checkout, back up
+and merge client settings, and retain prior versions for recovery. Documentation
+or planning requests do not authorize installation. Report installed files,
+registration, skill discovery and a live read-only invocation separately.
+Installation needs the parent client's separately approved local tools.
 
 A skill does not grant filesystem, network or administrator permissions.
 Existing phase markers do not prove current readiness. Never read credentials
