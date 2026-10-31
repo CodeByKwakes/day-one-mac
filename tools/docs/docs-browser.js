@@ -129,9 +129,9 @@ function documentationNavigation(documents) {
   return { groups, titles, coreSequence };
 }
 
-function findDocumentation(titles, query) {
+function findDocumentation(titles, query, documents = new Map()) {
   const term = query.trim().toLowerCase();
-  return term ? Array.from(titles).filter(([path, title]) => `${title} ${path}`.toLowerCase().includes(term)) : [];
+  return term ? Array.from(titles).filter(([path, title]) => `${title} ${path} ${documents.get(path) || ''}`.toLowerCase().includes(term)) : [];
 }
 
 if (typeof module !== 'undefined') module.exports = { documentationRenderer, documentationNavigation, findDocumentation, requiredSequence, resolveDocumentationRoute };
@@ -408,9 +408,9 @@ if (typeof document !== 'undefined') {
     results.replaceChildren();
     const status = document.getElementById('search-status');
     if (!query) { status.textContent = ''; return; }
-    const matches = findDocumentation(titles, query);
+    const matches = findDocumentation(titles, query, documents);
     status.textContent = matches.length
-      ? `${matches.length} ${matches.length === 1 ? 'guide matches' : 'guides match'} your title or path search.`
+      ? `${matches.length} ${matches.length === 1 ? 'guide matches' : 'guides match'} your guide text search.`
       : 'No matching guides. Try a shorter title or browse the chapters below.';
     for (const [path, title] of matches) {
       results.append(guideLink(path, title));

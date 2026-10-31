@@ -3,7 +3,7 @@
     ".agents/**",
     ".claude/skills/**",
     "CHANGELOG.md",
-    "node_modules/**",
+    "**/node_modules/**",
     "extensions/second-brain/obsidian/assets/**",
     "skills/*/references/project/extensions/second-brain/obsidian/assets/**"
   ],

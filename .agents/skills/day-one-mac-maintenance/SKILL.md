@@ -6,15 +6,26 @@ description: Maintain Day One Mac's manual guides, portable AI skills, reviewed 
 # Day One Mac maintenance
 
 Read AGENTS.md, docs/START-HERE.md and the owning capability guide. AI-assisted
-and manual setup share canonical manual recipes. There is no optional runtime,
-global command, setup wizard, background manager or permanent checkout requirement.
+and manual setup share canonical manual recipes. There is no mandatory runtime,
+global setup command, setup wizard, background manager or permanent checkout
+requirement. The Day One Mac MCP source is archived under
+`maintainers/archive/2026-10-31-day-one-mac-mcp`; it is excluded from active
+plugin builds and CI. Preserve its source and restoration boundaries.
+
+## Optional contributor toolkit
+
+This is the only checkout-local contributor skill. General planning, debugging,
+review, writing and design helpers belong in a personal toolkit. They are not
+required to contribute: use AGENTS.md, CONTRIBUTING.md and the repository gates
+when a helper is unavailable. Never install companions merely to follow this skill.
 
 ## Implementation contracts
 
 - Target native Apple silicon. Shell helpers use macOS Bash 3.2, quote paths and
   preserve spaces and Unicode. Do not source user profiles for inspection.
-- Keep skill sources under `templates/skills/` and client roles under
-  `templates/agents/`. Generate installable packages under `skills/`.
+- Keep skill sources under `templates/skills/` and shared role policies under
+  `templates/agents/shared/`. Generate native role adapters before installable
+  packages under `skills/`. Keep contributor skills out of public packages.
 - Review every addition to `config/skill-sources.txt` and
   `config/document-sources.txt`. Package regular public files only, never private
   notes, contributor skills, credentials or dependency trees.

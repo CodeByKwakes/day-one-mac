@@ -21,7 +21,7 @@ const portableNotes = '\n## Installed package\n\n'
   + 'help and preview output before approving changes. Manual recipes need no helpers.\n';
 function regular(name) {
   if (!name || path.isAbsolute(name) || name.split('/').some(part => !part || part === '.' || part === '..')) throw new Error(`Unsafe source: ${name}`);
-  if (!/^(docs\/|config\/|helpers\/|templates\/|integrations\/shortcuts\/|extensions\/second-brain\/obsidian\/assets\/|README\.md$|CONTRIBUTING\.md$|AGENTS\.md$|LICENSE$)/.test(name)) throw new Error(`Unapproved source: ${name}`);
+  if (!/^(docs\/|config\/|helpers\/|templates\/|integrations\/(?:shortcuts|warp)\/|integrations\/mcp\/README\.md$|extensions\/second-brain\/(?:obsidian\/assets\/|notion\/seeds\/)|README\.md$|CONTRIBUTING\.md$|AGENTS\.md$|LICENSE$)/.test(name)) throw new Error(`Unapproved source: ${name}`);
   if (!sources.has(name)) throw new Error(`Source is not in the reviewed skill-source inventory: ${name}`);
   for (let current = name; current !== '.'; current = path.dirname(current)) {
     if (fs.lstatSync(path.join(root, current)).isSymbolicLink()) throw new Error(`Symlink source: ${current}`);
@@ -87,6 +87,8 @@ function buildPackage(spec) {
     if (!pending.includes(source) && !output.has(targets.get(source))) pending.push(source);
   };
   schedule(entry);
+  const ui = `templates/skills/${spec.name}/agents/openai.yaml`;
+  if (fs.existsSync(path.join(root, ui))) schedule(ui, 'agents/openai.yaml');
   schedule('LICENSE', 'LICENSE');
   for (const name of spec.workflows || []) schedule(`templates/skills/${name}/SKILL.md`);
   for (const asset of new Set([...metadata.assets, ...assetsFor(spec)])) for (const source of walk(asset)) schedule(source);
@@ -147,6 +149,9 @@ function writeAtomic(file, content) {
 function main() {
   const check = process.argv.length === 3 && process.argv[2] === '--check';
   if (!check && process.argv.length !== 2) throw new Error('Usage: node tools/build-skills.cjs [--check]');
+  for (const [name, content] of require('./build-agents.cjs').buildAgents()) {
+    if (!fs.existsSync(path.join(root, name)) || read(name) !== content) throw new Error('Native agent adapters are stale. Run pnpm run agents:build first.');
+  }
   if (metadata.schema !== 1 || new Set(metadata.skills.map(s => s.name)).size !== metadata.skills.length) throw new Error('Invalid skill catalogue.');
   const expected = new Map();
   for (const spec of metadata.skills) for (const [file, content] of buildPackage(spec)) expected.set(`skills/${spec.name}/${file}`, content);

@@ -1,4 +1,4 @@
-[← Phase 5](../../docs/setup/assisted/05-dotfiles-and-shell.md) · [Reference library](../../docs/reference/README.md)
+[← Shell setup](../../docs/setup/manual/shell/README.md) · [Reference library](../../docs/shared/README.md)
 
 # Shell-file reference
 
@@ -101,4 +101,4 @@ command -v node
 
 ---
 
-[← Phase 5](../../docs/setup/assisted/05-dotfiles-and-shell.md) · [Reference library](../../docs/reference/README.md)
+[← Shell setup](../../docs/setup/manual/shell/README.md) · [Reference library](../../docs/shared/README.md)

@@ -40,6 +40,22 @@ No runtime command or workspace exporter is required.
    Expected result: verified, incomplete, failed and not-checked results are
    separate. Installation alone is not evidence of working account access.
 
+## Choose optional native skill delivery
+
+Use the [main skill installation](../manual/ai/day-one-skills.md) as the primary
+AI-assisted route. For Codex or Claude Code, the
+[native plugin recipe](../manual/ai/day-one-plugins.md#ai-assisted-installation)
+provides the same bundled guidance through plugin lifecycle controls. Current
+packages start no MCP server. The Day One Mac server is archived; external
+services have their own selected MCP recipes.
+
+Start with the recipe's inspection-only prompt. Review selected clients,
+artifact provenance, version, stable paths, duplicate skill discovery, private
+backups and recovery before approving installation. A request for a plan does
+not authorize client changes. Account sign-in, permissions and saving work before
+a restart remain explicit human steps. Report installed-version and actual
+skill invocation separately; a configuration flag does not prove discovery.
+
 ## Record and resume
 
 With your approval, save private notes outside the installed skill, for example

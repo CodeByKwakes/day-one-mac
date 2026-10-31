@@ -9,6 +9,7 @@ helpers when the user approves their scope.
 | `helpers/vscode/build.cjs` | Generate profile review files or add selected extensions | New export folder; extension installation only when requested |
 | VS Code replacement mode | Preview, replace or restore settings and shortcuts | Explicit VS Code files plus private recovery backups |
 | `helpers/second-brain/inspect.cjs` | Validate selected repository connections and hash eligible text | None; no network or file bodies in output |
+| `helpers/workspaces/workspace.cjs` | Inspect, capture, preview or restore a selected display workspace | Private calibration/recovery data; approved display changes and Raycast request |
 | `helpers/check.cjs` | Inspect platform and selected tool versions | None; no account or service probes |
 | `helpers/shortcuts/build-apps.sh` | Preview or compile selected standalone developer apps | New private review folder only; no app installation or launch |
 
@@ -44,3 +45,6 @@ can [retire the legacy manager](../migration/remove-legacy-manager.md).
 
 The [Second Brain connection reference](../tools/second-brain-connections.md) owns
 private connection fields, exclusions, report output and limitations.
+
+The [workspace tool reference](../tools/workspaces.md) owns private calibration,
+approval tokens, Raycast wrapper setup and display-only recovery.

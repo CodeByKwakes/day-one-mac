@@ -112,7 +112,7 @@ knowledge in and finds it; Obsidian is the human interface and source of truth;
 Claude Code or Codex proposes transformations under review.
 
 Official references: [Logseq documentation](https://docs.logseq.com/),
-[DEVONthink documentation](https://docs.devontechnologies.com/), and
+[DEVONthink handbooks](https://www.devontechnologies.com/support/download/extras), and
 [Notion workspace search](https://www.notion.com/help/search).
 
 ---

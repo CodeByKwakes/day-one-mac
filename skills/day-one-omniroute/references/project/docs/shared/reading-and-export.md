@@ -19,7 +19,8 @@ the guides under `references/project/docs/`; it does not depend on the website.
    press `/` to focus search when you are not typing in another field. On a small
    screen, choose **Browse guides** to reveal search and chapter navigation.
 
-   Expected result: matching guide titles appear. Select one to read it; a
+   Expected result: guides matching titles, paths, headings or body text appear.
+   Select one to read it; a
    missing result leaves the chapter list available.
 
 3. If you want a macOS shortcut, drag the website address from the browser to

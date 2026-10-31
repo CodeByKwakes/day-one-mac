@@ -5,7 +5,7 @@ hosting providers. Have the intended author name, email and repository paths
 available. Back up Git configuration through its current owner before adding
 identity rules. Complete only the provider and worktree sections you need.
 
-If using the private report paths below, first create the directory with `mkdir -p "$HOME/.local/state/development-setup"` and restrict it with `chmod 700 "$HOME/.local/state/development-setup"`. Expected: reports remain local and outside the repository.
+Before saving reports, complete the [private evidence directory prerequisite](../../../shared/private-evidence.md).
 
 ## 1. Confirm the selected track
 

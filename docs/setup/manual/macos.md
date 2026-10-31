@@ -53,6 +53,7 @@ On a personal Mac, change only preferences you need:
 |---|---|---|
 | Finder extensions/path/status | Finder Settings and View menu | A test file shows the expected extension and location |
 | Dock behaviour | System Settings > Desktop & Dock | Open and switch between two applications |
+| Wallpaper click | [Keep windows visible when clicking the desktop](#keep-windows-visible-when-clicking-the-desktop) | Click an empty area of wallpaper; windows stay in place |
 | Keyboard and shortcuts | System Settings > Keyboard | Check shortcuts in the intended application |
 | Trackpad gestures | System Settings > Trackpad | Try the selected gesture |
 | Screenshot destination | Screenshot app, Options | Capture a harmless test and confirm its location |
@@ -61,6 +62,34 @@ On a personal Mac, change only preferences you need:
 Managed preferences remain with IT. Optional preferences can be skipped without
 blocking the development foundation. Record the original value before a change
 so it can be restored through the same UI.
+
+### Keep windows visible when clicking the desktop
+
+Choose **Only in Stage Manager** to stop ordinary wallpaper clicks from moving
+windows out of the way. This requires Stage Manager to be off. Apple's
+[Desktop & Dock settings guide](https://support.apple.com/guide/mac-help/mchlp1119/mac)
+describes the wallpaper-click options; labels vary by macOS version.
+
+1. Open **System Settings > Desktop & Dock > Desktop & Stage Manager**.
+2. Record the current **Click wallpaper to reveal desktop** and **Stage Manager** values privately.
+3. Set **Click wallpaper to reveal desktop** to **Only in Stage Manager**. Some versions label the menu **Show Desktop** and the option **Only in Stage Manager on Click**.
+4. Turn **Stage Manager** off if it is on and you want wallpaper clicks to leave windows visible.
+5. Click an empty area of wallpaper while an application window is open. Expected: the window stays in place.
+
+To undo the change, restore both recorded values through the same controls.
+
+If windows still slide to the screen edges, confirm both settings before
+refreshing Window Manager. In Terminal, run:
+
+```bash
+killall WindowManager
+```
+
+The desktop may briefly flicker while Window Manager restarts. Repeat the
+wallpaper-click test afterward. This refresh resolved the behaviour in a live
+macOS 26.7.1 check on 2026-10-27; it does not guarantee resolution on other
+versions. If the behaviour persists, inspect Show Desktop shortcuts and
+Hot Corners under **Desktop & Dock** before changing another preference.
 
 ## Verify and continue
 

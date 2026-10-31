@@ -45,8 +45,10 @@ function recipe(slug, selected = []) {
     settings = merge(settings, config.profiles[profile.extends].settings);
   }
   settings = merge(settings, profile.settings);
-  const keybindings = profile.keybindings ? config.keybindings?.[profile.keybindings] : [];
-  if (!Array.isArray(keybindings)) throw new Error('Invalid profile keybindings.');
+  const sharedKeybindings = config.keybindings?.shared === undefined ? [] : config.keybindings.shared;
+  const profileKeybindings = profile.keybindings ? config.keybindings?.[profile.keybindings] : [];
+  if (!Array.isArray(sharedKeybindings) || !Array.isArray(profileKeybindings)) throw new Error('Invalid profile keybindings.');
+  const keybindings = [...sharedKeybindings, ...profileKeybindings];
   const extensions = [...new Set([...required, ...selected])];
   return { name, settings, keybindings, extensions, optional };
 }
@@ -157,6 +159,8 @@ function main(args) {
     + 'To update an existing profile (especially the built-in Default), switch to it and merge settings.json\n'
     + 'into Preferences: Open User Settings (JSON). Merge keybindings only after checking conflicts.\n'
     + 'Do not replace unrelated personal settings. Install-mode targets the original profile name, not Review.\n'
+    + 'Before importing, create the personal Markdown rules at ~/.config/markdownlint/config.json\n'
+    + 'using docs/setup/manual/editors/vscode.md#markdown-formatting. Profile exports do not include that file.\n'
     + 'For deliberate complete settings/shortcut replacement, use the separate --replace-settings preview and approval workflow.\n'
     + 'Copilot is intentionally excluded from the installation list. Account sign-in remains manual.\n'
     + 'Folder icon mappings, Angular token colours, shell files, skills, agents, MCP, and database\n'

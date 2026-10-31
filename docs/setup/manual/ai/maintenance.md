@@ -6,7 +6,7 @@ configuration. Edit files through their configuration owner, the person or tool
 responsible for maintaining them. Chezmoi commands apply only to chezmoi-owned
 files; Git commands apply only to a versioned source.
 
-If using the private report paths below, first create the directory with `mkdir -p "$HOME/.local/state/development-setup"` and restrict it with `chmod 700 "$HOME/.local/state/development-setup"`. Expected: reports remain local and outside the repository.
+Before saving reports, complete the [private evidence directory prerequisite](../../../shared/private-evidence.md).
 
 ## 1. Record the selected clients and purpose
 

@@ -11,7 +11,7 @@ describes an action or a file the user may need to review.
 | **AI gateway** | A service between an AI client and one or more model providers. OmniRoute is an optional local gateway; it routes model requests but does not control the client's file or Terminal permissions. |
 | **Authentication** | Proving to a service that you are the account owner, usually through a browser, device code, or SSH key. |
 | **Authentication mode** | How this Mac authenticates to GitHub or Azure DevOps: `1password` (the default SSH agent), `keychain` (a private-key file on disk whose passphrase is stored in macOS Keychain), `external` (an existing agent), or `https` (HTTPS credentials). Record the selected mode in your private worksheet. |
-| **AUTO_CD** | An optional zsh setting that changes directory when you type a bare path, so `~` goes home instead of failing. Offered in Module 13; off by default on macOS. |
+| **AUTO_CD** | An optional zsh setting that changes directory when you type a bare path, so `~` goes home instead of failing. Choose it in your shell configuration; off by default on macOS. |
 | **Brewfile** | A text list of software that Homebrew can reinstall. It is desired state, not a backup of application data. |
 | **Cask** | Homebrew's package type for a macOS application or font, such as VS Code or Raycast. |
 | **External application** | A valid application or command that Homebrew does not own. It may have come from Company Portal, the Mac App Store, a company administrator, or a manual installer. Day One Mac preserves it. |
@@ -26,12 +26,12 @@ describes an action or a file the user may need to review.
 | **Dotfile / dotfiles** | A configuration file whose name begins with a dot, such as `~/.zshrc` or `~/.gitconfig`. macOS hides these in Finder by default. They hold your personal settings for tools like the shell and Git, their owner may be the user, chezmoi or an approved management system. |
 | **Dry run / preview** | Show intended actions without making the changes. |
 | **Environment variable** | A named value inherited by commands, such as `PNPM_HOME`. It configures behavior without being typed into every command. |
-| **APFS** | Apple File System: the current macOS disk format. Stage 0 requires an encrypted external APFS volume for an account-preserving cleanup archive. |
-| **Fingerprint** | A checksum of the phase implementation dependencies, schema and relevant selections/policy. Old phase fingerprints are historical evidence; retained tools use their own current checks. |
+| **APFS** | Apple File System: the current macOS disk format. An account-preserving archive needs an approved encrypted external volume; see the backup destination guide. |
+| **Fingerprint** | A checksum used to detect changes to selected content. A matching checksum does not prove that an account, application or device works. |
 | **FileVault** | Apple's full-disk encryption. With it on, the contents of the disk are unreadable without your login password or recovery key, so a lost or stolen Mac does not expose your files. |
 | **fnm** | Fast Node Manager: installs multiple Node.js versions under your account and switches between them per project, so no single Node release is baked into the system. |
 | **Formula** | Homebrew's package type for a command-line tool or library. |
-| **Gate** | A check that must pass before a phase can be marked complete. |
+| **Gate** | A required check before continuing a setup task or accepting a change. |
 | **Configuration owner** | The person or tool responsible for editing a file, such as you, chezmoi or an approved management system. Use that owner's workflow to avoid conflicting edits. |
 | **Gatekeeper** | The macOS feature that checks an application is from an identified developer and has not been tampered with before letting it run. Verify it during security review. |
 | **ghq** | A command-line tool that stores cloned Git repositories in a predictable provider/owner/repository folder structure. |
@@ -43,10 +43,10 @@ describes an action or a file the user may need to review.
 | **Lockfile** | A project file, such as `pnpm-lock.yaml`, that records exact dependency versions for repeatable installs. |
 | **LTS** | Long-Term Support: a Node.js release intended to receive fixes for longer than short-lived releases. |
 | **Manifest** | A machine-readable list of items a script installed or changed. Cleanup uses it to avoid guessing ownership. |
-| **Preflight / audit** | A check performed before changes. In Stage 0 it means a read-only safety report; it does not copy, remove, or back up data. |
+| **Preflight / audit** | An inspection before changes. Keep its scope explicit; observations do not copy, remove or back up data. |
 | **Provenance** | Evidence showing where an application came from and whether Day One Mac installed it. The application provenance report distinguishes Homebrew from external ownership. |
-| **Safety report** | The required first Stage 0 step for Route A and Route B. It lists current applications, repositories, packages, containers, and configuration locations so backup risks can be reviewed. |
-| **Stage 0** | The optional process used before Phase 1 when a Mac still has data or settings: create the safety report, test an encrypted backup, then choose AI-assisted or manual setup. |
+| **Safety report** | Private evidence describing selected tools and recovery risks. Inspect only the task scope; no automatic whole-machine report is required. |
+| **Stage 0** | Historical name for the retired existing-Mac preparation workflow. Current setup uses prerequisites, an independent tested backup and a selected manual or AI-assisted task. |
 | **Route A** | Erase the current accounts, applications, files, settings, and credentials using Apple's Erase All Content and Settings. The Day One script shows the handoff but does not perform the erase. |
 | **Route B** | Keep the current macOS account and non-Homebrew applications while removing the known development setup after a no-change preview and backup gates. Unknown settings can remain. |
 | **Dirty repository** | A Git repository containing local file changes that have not been committed. These changes may exist nowhere else. |
@@ -89,5 +89,5 @@ describes an action or a file the user may need to review.
 | **Secure token / bootstrap token** | macOS account and management mechanisms involved in protected operations such as FileVault and managed account provisioning; IT verifies their state. |
 | **Escrow** | Retaining recovery material with an approved custodian so it can be recovered under policy. |
 
-When a command or error still is unclear, copy the exact message and the phase
+When a command or error still is unclear, copy the exact message and the setup task
 number. Do not hide or paraphrase the first failing line.

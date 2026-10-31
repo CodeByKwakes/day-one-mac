@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const markdown = require('./vendor/markdown-it/markdown-it.min.js')();
 const { documentationRenderer } = require('./docs/docs-browser.js');
+const { checkDocumentationQuality } = require('./docs/document-quality.cjs');
 const root = path.resolve(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 function regular(file) {
@@ -26,7 +27,7 @@ try {
   }
   const documents = new Map([...new Set(inventories.flatMap(set => [...set]))].filter(f => f.endsWith('.md')).map(f => [f,read(f)]));
   const rendered = new Map([...documents].map(([file,text]) => [file,documentationRenderer(require('./vendor/markdown-it/markdown-it.min.js'),documents,file).render(text)]));
-  const failures = [];
+  const failures = checkDocumentationQuality(documents, inventories[1], JSON.parse(read('config/catalogs/assistant-skills.json')).nodeMinimum);
   for (const [file,text] of documents) {
     const visit = tokens => { for (const token of tokens) {
       const href = token.attrGet('href') || token.attrGet('src');

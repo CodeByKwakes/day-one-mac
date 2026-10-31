@@ -30,31 +30,31 @@ See the [current instructions](../../setup/manual/ai/workflows.md#1-ai-workflow-
 
 ## 4. Configure import cleanup and keyboard shortcuts
 
-See the [current instructions](../../setup/manual/editors/vscode.md#5-configure-import-cleanup-and-keyboard-shortcuts).
+See the [current instructions](../../setup/manual/editors/vscode/editing.md#5-configure-import-cleanup-and-keyboard-shortcuts).
 
 ### Choose one import policy
 
-See the [current instructions](../../setup/manual/editors/vscode.md#choose-one-import-policy).
+See the [current instructions](../../setup/manual/editors/vscode/editing.md#choose-one-import-policy).
 
 ### Useful built-in macOS shortcuts
 
-See the [current instructions](../../setup/manual/editors/vscode.md#useful-built-in-macos-shortcuts).
+See the [current instructions](../../setup/manual/editors/vscode/editing.md#useful-built-in-macos-shortcuts).
 
 ### Personal import shortcuts
 
-See the [current instructions](../../setup/manual/editors/vscode.md#personal-import-shortcuts).
+See the [current instructions](../../setup/manual/editors/vscode/editing.md#personal-import-shortcuts).
 
 ## 5. Edit environment files
 
-See the [current instructions](../../setup/manual/editors/vscode.md#6-edit-environment-files).
+See the [current instructions](../../setup/manual/editors/vscode/editing.md#6-edit-environment-files).
 
 ## 6. Configure Angular and NestJS folder icons
 
-See the [current instructions](../../setup/manual/editors/vscode.md#7-configure-angular-and-nestjs-folder-icons).
+See the [current instructions](../../setup/manual/editors/vscode/editing.md#7-configure-angular-and-nestjs-folder-icons).
 
 ## 7. Configure Angular HTML highlighting
 
-See the [current instructions](../../setup/manual/editors/vscode.md#8-configure-angular-html-highlighting).
+See the [current instructions](../../setup/manual/editors/vscode/editing.md#8-configure-angular-html-highlighting).
 
 ## 8. Create a native Git worktree: worked example
 

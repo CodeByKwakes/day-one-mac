@@ -1,4 +1,4 @@
-[← Worktree overview](README.md) · [Environment files](environment.md) · [Troubleshooting](troubleshooting.md)
+[← Worktree overview](README.md) · **Environment files** · [Troubleshooting](troubleshooting.md)
 
 # Worktree environment files and running applications
 

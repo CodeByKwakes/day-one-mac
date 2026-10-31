@@ -1,0 +1,9 @@
+# Files created by macOS or temporary terminal editors.
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Trashes
+*.swp
+*.swo
+*~

@@ -33,10 +33,24 @@ supported setup targets.
 | Containers | One selected, running container engine | `docker info` and the intended Docker context |
 | PostgreSQL client | A reachable server, database, permitted role and environment details | Complete the chosen [database guide](../setup/manual/databases/README.md) |
 | AI client or MCP integration | Chosen client/account, access policy and required executable | Check that client's guide before installing servers |
+| GitHub skill installation | Node.js 22.20 or newer, npm, working Git and an approved client | `node --version`; `npm --version`; `git --version`; [source selection](../setup/manual/ai/day-one-skills.md#choose-a-reviewed-source) |
 
 A Python-only base does not automatically satisfy a later Node-based tool's
 requirements. Install that prerequisite deliberately when choosing the optional
 task. Full Xcode is optional; Command Line Tools suffice for the base.
+
+## Capability-specific limits
+
+The platform baseline above applies to the base journey. Check optional tasks
+before selecting them; passing the base does not satisfy every application's floor.
+
+| Capability | Additional requirement or boundary | Owning guide |
+|---|---|---|
+| Manual skill copy | Reviewed complete package and a client that discovers it; no Node or Git needed just to copy files | [Skill sources](../setup/manual/ai/day-one-skills.md#choose-a-reviewed-source) |
+| Native plugins | The selected client's plugin commands and a reviewed artifact; verify discovery separately | [Plugin prerequisites](../setup/manual/ai/day-one-plugins.md#prerequisites-and-package-review) |
+| Atticus voice pilot | Its reviewed source requires macOS 26+ and separate build/provider prerequisites | [Atticus](../setup/manual/apps/atticus.md#decide-whether-it-fits) |
+| Developer shortcut launchers | Rebuild/import on the destination; inspected Add to Dock launchers require macOS 26.7 and reference local shortcuts | [Portable shortcut forms](../setup/manual/apps/macos-shortcuts.md#understand-launcher-apps-and-transferable-shortcuts) |
+| Display workspace restore | Actual monitor topology, approved driver and private calibration | [Workspace setup](../setup/manual/apps/workspaces.md) |
 
 ## Accounts and managed devices
 

@@ -1,6 +1,6 @@
 ---
 name: day-one-mac
-description: Set up, check, maintain or recover an Apple-silicon Mac development environment, including Second Brain knowledge workflows, optional OmniRoute and developer shortcuts. Use as the single Day One Mac entry point; specialist workflows are bundled without separate skill installations.
+description: Set up, check, maintain or recover an Apple-silicon Mac development environment, including VS Code profiles, macOS apps, Second Brain workflows, optional OmniRoute and developer shortcuts. Use as the single Day One Mac entry point; specialist workflows are bundled without separate skill installations.
 ---
 
 # Day One Mac
@@ -11,6 +11,8 @@ skill, the Day One Mac runtime or a permanent source checkout.
 
 | Request | Workflow to read |
 |---|---|
+| Configure or troubleshoot VS Code profiles, settings, extensions or shortcuts | [VS Code](../day-one-vscode/SKILL.md) |
+| Review or maintain selected macOS apps and system preferences | [macOS apps](../day-one-macos-apps/SKILL.md) |
 | Initial setup or adding a developer tool | [Setup](../day-one-setup/SKILL.md) |
 | Inspect versions, prerequisites or configuration drift | [Check](../day-one-check/SKILL.md) |
 | Update tools or maintain existing configuration | [Maintain](../day-one-maintain/SKILL.md) |
@@ -21,7 +23,9 @@ skill, the Day One Mac runtime or a permanent source checkout.
 | Set up a knowledge system or connect selected code repositories to project notes | [Second Brain](../day-one-second-brain/SKILL.md) |
 | Read, find or open documentation | [Reading options](../../../docs/shared/reading-and-export.md) |
 
-For a combined request, inspect first, propose the requested changes, and then
+Choose a specific workflow before a general setup or maintenance workflow when
+the request identifies that capability. For a combined request, inspect first,
+propose the requested changes, and then
 use the relevant workflows in dependency order. A check is read-only unless the
 user separately approves a probe with side effects or a repair. Reuse existing
 decisions and approvals; clarify only material missing choices or changed scope.

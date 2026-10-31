@@ -485,6 +485,7 @@ integrations/shortcuts/open-in-vscode.applescript
 integrations/shortcuts/open-in-vscode.plist
 integrations/shortcuts/open-in-warp.applescript
 integrations/shortcuts/open-vscode-profile.applescript
+integrations/shortcuts/send-to-archive.applescript
 integrations/warp/Day One Mac/00 Day One Mac Command Catalogue.md
 integrations/warp/Day One Mac/03 Repositories and Hosting/01-ghq-root.yaml
 integrations/warp/Day One Mac/03 Repositories and Hosting/02-ghq-list.yaml
@@ -554,3 +555,38 @@ integrations/shortcuts/icons/open-in-warp.svg
 integrations/shortcuts/icons/open-in-warp.icns
 integrations/shortcuts/icons/open-in-vscode.svg
 integrations/shortcuts/icons/open-in-vscode.icns
+
+# Reviewed editor and macOS application workflows
+templates/skills/day-one-vscode/SKILL.md
+templates/skills/day-one-macos-apps/SKILL.md
+
+# Shared agent policies and native adapter metadata
+config/catalogs/assistant-agents.json
+templates/agents/shared/day-one-maintainer.md
+templates/agents/shared/day-one-operator.md
+templates/agents/shared/day-one-planner.md
+templates/agents/shared/day-one-verifier.md
+
+# AI component contracts
+docs/shared/explanation/ai-components.md
+
+# Optional native plugin distribution
+docs/setup/manual/ai/day-one-plugins.md
+docs/shared/reference/plugin-packaging.md
+templates/plugins/metadata.json
+
+# Reviewed display workspace recipes and bounded restore tool
+docs/setup/manual/apps/workspaces.md
+docs/setup/manual/apps/atticus.md
+docs/shared/tools/workspaces.md
+helpers/workspaces/workspace.cjs
+
+# Main skill display metadata
+templates/skills/day-one-mac/agents/openai.yaml
+docs/setup/manual/editors/vscode/extensions.md
+docs/setup/manual/editors/vscode/profiles.md
+docs/setup/manual/editors/vscode/editing.md
+docs/setup/manual/editors/vscode/recovery.md
+docs/shared/private-evidence.md
+docs/shared/reference/client-acceptance.md
+integrations/mcp/README.md

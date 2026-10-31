@@ -25,6 +25,8 @@ jobs:
         env:
           HUSKY: 0
         run: pnpm install --frozen-lockfile
+      - name: Verify independent native plugin artifacts
+        run: pnpm run test:plugins
       - name: Validate pull request title
         if: github.event_name == 'pull_request'
         env:
@@ -46,7 +48,7 @@ jobs:
 
   validate:
     name: validate
-    needs: platform
+    needs: [platform]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:

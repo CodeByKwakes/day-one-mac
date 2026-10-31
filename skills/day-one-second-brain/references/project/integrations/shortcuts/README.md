@@ -14,15 +14,17 @@ These assets require no Day One Mac runtime or permanent checkout.
 | `open-in-warp.applescript` | App entry source | Open a Warp tab using the encoded folder URI |
 | `open-vscode-profile.applescript` | App entry source | Choose a verified existing stable VS Code profile |
 | `open-development-workspace.applescript` | App entry source | Open the same folder in VS Code and Warp |
+| `send-to-archive.applescript` | Automator Quick Action source | Move multiple selected project folders into an Archive category and dated folder |
 | `catalog.json` | Build metadata | Recipe IDs, source order, dependencies, bundle identifiers and optional icons |
 | `icons/` | SVG sources and multi-resolution ICNS assets | Teal terminal/folder for Warp; orange branch/download for Git Clone; blue code/folder for VS Code |
 | Open in Warp | [Native-action recipe](../../docs/setup/manual/apps/macos-shortcuts.md#create-open-in-warp) | Recreate selected-folder input and Open File in Warp; no signed export is supplied |
 
 ## Portability and verification
 
-Generated `.app` launchers depend on local installed shortcuts and are not
-included. The guide records the supplied launchers' review and explains why
-copying them does not back up their actions. Recreate each launcher on its Mac.
+Apps created through Shortcuts' **Add to Dock** depend on an installed shortcut
+and are not included. Recreate those launchers after importing the action on
+the destination Mac. Standalone apps compiled from the AppleScript sources
+below contain their own code and do not depend on Shortcuts.
 Git Clone uses the current user's home folder as the picker's initial location,
 requires confirmation, rejects credential-bearing URL forms and refuses any
 existing destination. Custom SSH commands stop before folder creation; standard
@@ -40,6 +42,13 @@ the interactive shortcut or authenticates to a provider. The manual guide owns
 first-run application, permission and folder checks.
 
 ## Maintain the assets
+
+Send to Archive is created with the
+[manual Automator recipe](../../docs/setup/manual/apps/macos-shortcuts.md#create-send-to-archive).
+The catalogue keeps it in `quickActions`, separate from the five standalone
+`recipes` built by the app helper. Its fixtures never run the interactive
+handler or move real projects. Keep recovery records and generated `.workflow`
+bundles private; distribute the readable source and recipe.
 
 The [standalone app procedure](../../docs/setup/manual/apps/macos-shortcuts.md#build-standalone-apps-manually)
 uses Script Editor. The optional [build helper](../../docs/shared/tools/shortcut-apps.md)

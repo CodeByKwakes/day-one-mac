@@ -26,8 +26,16 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
   "editor.formatOnPaste": false,
   "editor.detectIndentation": true,
   "explorer.compactFolders": false,
-  "workbench.editor.labelFormat": "medium",
-  "workbench.editor.enablePreview": false,
+  "explorer.openEditors.visible": 9,
+  "workbench.editor.showTabs": "multiple",
+  "workbench.editor.labelFormat": "default",
+  "workbench.editor.wrapTabs": true,
+  "workbench.editor.tabSizing": "fit",
+  "workbench.editor.enablePreview": true,
+  "workbench.editor.enablePreviewFromQuickOpen": true,
+  "workbench.editor.openPositioning": "right",
+  "workbench.editor.limit.enabled": false,
+  "workbench.editor.highlightModifiedTabs": true,
   "git.autofetch": true,
   "git.confirmSync": true,
   "git.enableSmartCommit": false,
@@ -64,6 +72,8 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
   "terminal.external.osxExec": "Warp.app",
   "chat.tools.global.autoApprove": false,
   "chat.tools.terminal.enableAutoApprove": false,
+  "chat.mcp.gallery.enabled": true,
+  "gitlens.ai.generateCommitMessage.customInstructions": "Use Conventional Commits: type(scope): description, omitting the scope when unnecessary. Choose feat, fix, docs, refactor, perf, test, build, ci, chore, style, or revert according to the actual changes and repository conventions. Write a specific, imperative subject, preferably within 72 characters, without a trailing period. For substantial changes, add a blank line and a concise body explaining what changed and why, using only evidence from the diff and supplied context. Keep simple changes to a subject alone. Do not invent motivations, test results, issue references, or compatibility guarantees. Use ! and a BREAKING CHANGE footer only for actual breaking changes. Return only the commit message.",
   "github.copilot.chat.commitMessageGeneration.instructions": [
     {
       "text": "Use Conventional Commits: <type>(<optional scope>): <description>. Choose feat, fix, docs, refactor, perf, test, build, ci, chore, or revert based on the actual change. Follow repository conventions when available."
@@ -82,10 +92,11 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
     }
   ],
   "markdownlint.run": "onSave",
+  "markdownlint.configFile": "${userHome}/.config/markdownlint/config.json",
   "markdown.extension.toc.updateOnSave": false,
   "markdown.extension.tableFormatter.enabled": false,
   "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint",
     "editor.formatOnSave": true,
     "editor.wordWrap": "on",
     "files.trimTrailingWhitespace": false
@@ -101,6 +112,25 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
 }
 ```
 
+## Personal Markdown rules
+
+Save this separate JSON object to `~/.config/markdownlint/config.json`, following the [Markdown setup steps](../../setup/manual/editors/vscode.md#markdown-formatting).
+Profile exports and Settings Sync do not include this external file; back it up separately.
+
+```json
+{
+  "MD013": {
+    "line_length": 100,
+    "tables": false,
+    "code_blocks": false
+  },
+  "MD060": {
+    "style": "compact",
+    "aligned_delimiter": false
+  }
+}
+```
+
 ## Default
 
 | Extension ID | Selection |
@@ -109,7 +139,6 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
 | `editorconfig.editorconfig` | Recommended |
 | `pkief.material-icon-theme` | Recommended |
 | `yzhang.markdown-all-in-one` | Recommended |
-| `streetsidesoftware.code-spell-checker` | Recommended |
 | `davidanson.vscode-markdownlint` | Recommended |
 | `tomoki1207.pdf` | Optional |
 | `grapecity.gc-excelviewer` | Optional |
@@ -137,11 +166,11 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
 | `editorconfig.editorconfig` | Recommended |
 | `pkief.material-icon-theme` | Recommended |
 | `yzhang.markdown-all-in-one` | Recommended |
-| `streetsidesoftware.code-spell-checker` | Recommended |
 | `davidanson.vscode-markdownlint` | Recommended |
 | `angular.ng-template` | Recommended |
 | `ghaschel.vscode-angular-html` | Recommended |
 | `nrwl.angular-console` | Recommended |
+| `luisclementdev.npm-visual-manager` | Recommended |
 | `dbaeumer.vscode-eslint` | Recommended |
 | `prisma.prisma` | Recommended |
 | `eamodio.gitlens` | Recommended |
@@ -154,9 +183,12 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
 | `ms-azuretools.vscode-containers` | Recommended |
 | `ms-ossdata.vscode-pgsql` | Recommended |
 | `sleistner.vscode-fileutils` | Recommended |
+| `bradlc.vscode-tailwindcss` | Recommended |
+| `imgildev.vscode-auto-barrel` | Recommended |
+| `tomwhite007.rename-angular-component` | Recommended |
+| `pranaygp.vscode-css-peek` | Recommended |
 | `orta.vscode-jest` | Optional |
 | `ms-playwright.playwright` | Optional |
-| `bradlc.vscode-tailwindcss` | Optional |
 | `stylelint.vscode-stylelint` | Optional |
 | `ms-vscode-remote.remote-containers` | Optional |
 | `github.vscode-pull-request-github` | Optional |
@@ -208,7 +240,10 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
   },
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.quickSuggestions": {
+      "strings": "on"
+    }
   },
   "[scss]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -218,6 +253,32 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
   },
+  "[tailwindcss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "prettier.documentSelectors": [
+    "**/*.css"
+  ],
+  "tailwindCSS.validate": true,
+  "tailwindCSS.lint.invalidApply": "error",
+  "scss.lint.unknownAtRules": "ignore",
+  "cssPeek.supportTags": false,
+  "cssPeek.peekToLinkedOnly": false,
+  "cssPeek.respectGitignore": true,
+  "cssPeek.enableTelemetry": false,
+  "renameAngularComponent.showWhatsNewPopup": false,
+  "renameAngularComponent.debugLog": false,
+  "renameAngularComponent.useLocalDirectPaths": false,
+  "renameAngularComponent.followAngular20FolderAndSelectorNamingConvention": false,
+  "autoBarrel.files.disableRecursiveBarrelling": false,
+  "autoBarrel.files.maxSearchRecursionDepth": 3,
+  "autoBarrel.files.supportsHiddenFiles": false,
+  "autoBarrel.files.preserveGitignoreSettings": true,
+  "autoBarrel.files.detectExportsInFiles": true,
+  "autoBarrel.files.useNamedExports": true,
+  "autoBarrel.formatting.useSingleQuotes": true,
+  "autoBarrel.formatting.sortExports": "alphabetical",
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma",
     "editor.formatOnSave": true
@@ -235,6 +296,7 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
     "**/.angular/**": true
   },
   "files.associations": {
+    "*.css": "tailwindcss",
     "azure-pipelines.yml": "azure-pipelines",
     "azure-pipelines.yaml": "azure-pipelines",
     "**/.azure-pipelines/**/*.yml": "azure-pipelines",
@@ -258,7 +320,7 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
   "[dockerfile]": {
     "editor.formatOnSave": false
   },
-  "gitlens.currentLine.enabled": false,
+  "gitlens.currentLine.enabled": true,
   "gitlens.codeLens.enabled": false,
   "gitlens.statusBar.enabled": true,
   "github.copilot.enable": {
@@ -319,7 +381,15 @@ Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit t
     "titleBar.activeBackground": "#452568",
     "titleBar.activeForeground": "#FFFFFF",
     "activityBarBadge.background": "#9B6DDA"
-  }
+  },
+  "npm-visual-manager.columns.type": true,
+  "npm-visual-manager.columns.semverUpdate": true,
+  "npm-visual-manager.columns.security": true,
+  "npm-visual-manager.columns.lastUpdate": true,
+  "npm-visual-manager.columns.size": false,
+  "npm-visual-manager.badge.enabled": false,
+  "npm-visual-manager.scan.maxDepth": 5,
+  "npm-visual-manager.saveExact": false
 }
 ```
 
@@ -333,7 +403,6 @@ Apply Full Stack overrides before these overrides.
 | `editorconfig.editorconfig` | Recommended |
 | `pkief.material-icon-theme` | Recommended |
 | `yzhang.markdown-all-in-one` | Recommended |
-| `streetsidesoftware.code-spell-checker` | Recommended |
 | `davidanson.vscode-markdownlint` | Recommended |
 | `openai.chatgpt` | Recommended |
 | `anthropic.claude-code` | Recommended |
@@ -345,6 +414,9 @@ Apply Full Stack overrides before these overrides.
 | `prisma.prisma` | Recommended |
 | `mikestead.dotenv` | Recommended |
 | `redhat.vscode-yaml` | Recommended |
+| `bradlc.vscode-tailwindcss` | Recommended |
+| `imgildev.vscode-auto-barrel` | Recommended |
+| `tomwhite007.rename-angular-component` | Recommended |
 | `ms-vscode.vscode-chat-customizations-evaluations` | Optional |
 | `ms-windows-ai-studio.windows-ai-studio` | Optional |
 | `orta.vscode-jest` | Optional |
@@ -352,6 +424,8 @@ Apply Full Stack overrides before these overrides.
 | `ms-ossdata.vscode-pgsql` | Optional |
 | `natqe.reload` | Optional |
 | `sleistner.vscode-fileutils` | Optional |
+| `luisclementdev.npm-visual-manager` | Optional |
+| `pranaygp.vscode-css-peek` | Optional |
 
 ### AI overrides
 
@@ -364,7 +438,6 @@ Apply Full Stack overrides before these overrides.
   "github.copilot.enable": {
     "*": false
   },
-  "chatgpt.reviewDelivery": "detached",
   "[markdown]": {
     "editor.quickSuggestions": {
       "other": "off",
@@ -389,7 +462,6 @@ Apply Full Stack overrides before these overrides.
 | `editorconfig.editorconfig` | Recommended |
 | `pkief.material-icon-theme` | Recommended |
 | `yzhang.markdown-all-in-one` | Recommended |
-| `streetsidesoftware.code-spell-checker` | Recommended |
 | `davidanson.vscode-markdownlint` | Recommended |
 | `eamodio.gitlens` | Recommended |
 | `redhat.vscode-yaml` | Recommended |
@@ -455,6 +527,20 @@ Apply Full Stack overrides before these overrides.
     "activityBarBadge.background": "#16805D"
   }
 }
+```
+
+## Shared keybindings
+
+Merge these entries into every selected profile's Keyboard Shortcuts JSON array, preserving existing shortcuts.
+The [shortcut guide](../../setup/manual/editors/vscode.md#new-file-tab-shortcut) explains the symbol-search trade-off.
+
+```json
+[
+  {
+    "key": "cmd+t",
+    "command": "workbench.action.files.newUntitledFile"
+  }
+]
 ```
 
 ## Import keybindings

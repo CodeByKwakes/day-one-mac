@@ -19,8 +19,16 @@
     "editor.formatOnPaste": false,
     "editor.detectIndentation": true,
     "explorer.compactFolders": false,
-    "workbench.editor.labelFormat": "medium",
-    "workbench.editor.enablePreview": false,
+    "explorer.openEditors.visible": 9,
+    "workbench.editor.showTabs": "multiple",
+    "workbench.editor.labelFormat": "default",
+    "workbench.editor.wrapTabs": true,
+    "workbench.editor.tabSizing": "fit",
+    "workbench.editor.enablePreview": true,
+    "workbench.editor.enablePreviewFromQuickOpen": true,
+    "workbench.editor.openPositioning": "right",
+    "workbench.editor.limit.enabled": false,
+    "workbench.editor.highlightModifiedTabs": true,
     "git.autofetch": true,
     "git.confirmSync": true,
     "git.enableSmartCommit": false,
@@ -57,6 +65,8 @@
     "terminal.external.osxExec": "Warp.app",
     "chat.tools.global.autoApprove": false,
     "chat.tools.terminal.enableAutoApprove": false,
+    "chat.mcp.gallery.enabled": true,
+    "gitlens.ai.generateCommitMessage.customInstructions": "Use Conventional Commits: type(scope): description, omitting the scope when unnecessary. Choose feat, fix, docs, refactor, perf, test, build, ci, chore, style, or revert according to the actual changes and repository conventions. Write a specific, imperative subject, preferably within 72 characters, without a trailing period. For substantial changes, add a blank line and a concise body explaining what changed and why, using only evidence from the diff and supplied context. Keep simple changes to a subject alone. Do not invent motivations, test results, issue references, or compatibility guarantees. Use ! and a BREAKING CHANGE footer only for actual breaking changes. Return only the commit message.",
     "github.copilot.chat.commitMessageGeneration.instructions": [
       {
         "text": "Use Conventional Commits: <type>(<optional scope>): <description>. Choose feat, fix, docs, refactor, perf, test, build, ci, chore, or revert based on the actual change. Follow repository conventions when available."
@@ -75,10 +85,11 @@
       }
     ],
     "markdownlint.run": "onSave",
+    "markdownlint.configFile": "${userHome}/.config/markdownlint/config.json",
     "markdown.extension.toc.updateOnSave": false,
     "markdown.extension.tableFormatter.enabled": false,
     "[markdown]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.defaultFormatter": "DavidAnson.vscode-markdownlint",
       "editor.formatOnSave": true,
       "editor.wordWrap": "on",
       "files.trimTrailingWhitespace": false
@@ -92,7 +103,24 @@
       "editor.formatOnSave": true
     }
   },
+  "markdownlintConfig": {
+    "MD013": {
+      "line_length": 100,
+      "tables": false,
+      "code_blocks": false
+    },
+    "MD060": {
+      "style": "compact",
+      "aligned_delimiter": false
+    }
+  },
   "keybindings": {
+    "shared": [
+      {
+        "key": "cmd+t",
+        "command": "workbench.action.files.newUntitledFile"
+      }
+    ],
     "imports": [
       {
         "key": "cmd+k cmd+i",
@@ -138,7 +166,6 @@
         "editorconfig.editorconfig",
         "pkief.material-icon-theme",
         "yzhang.markdown-all-in-one",
-        "streetsidesoftware.code-spell-checker",
         "davidanson.vscode-markdownlint"
       ],
       "optional": [
@@ -191,7 +218,10 @@
         },
         "[html]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode",
-          "editor.formatOnSave": true
+          "editor.formatOnSave": true,
+          "editor.quickSuggestions": {
+            "strings": "on"
+          }
         },
         "[scss]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -201,6 +231,32 @@
           "editor.defaultFormatter": "esbenp.prettier-vscode",
           "editor.formatOnSave": true
         },
+        "[tailwindcss]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "prettier.documentSelectors": [
+          "**/*.css"
+        ],
+        "tailwindCSS.validate": true,
+        "tailwindCSS.lint.invalidApply": "error",
+        "scss.lint.unknownAtRules": "ignore",
+        "cssPeek.supportTags": false,
+        "cssPeek.peekToLinkedOnly": false,
+        "cssPeek.respectGitignore": true,
+        "cssPeek.enableTelemetry": false,
+        "renameAngularComponent.showWhatsNewPopup": false,
+        "renameAngularComponent.debugLog": false,
+        "renameAngularComponent.useLocalDirectPaths": false,
+        "renameAngularComponent.followAngular20FolderAndSelectorNamingConvention": false,
+        "autoBarrel.files.disableRecursiveBarrelling": false,
+        "autoBarrel.files.maxSearchRecursionDepth": 3,
+        "autoBarrel.files.supportsHiddenFiles": false,
+        "autoBarrel.files.preserveGitignoreSettings": true,
+        "autoBarrel.files.detectExportsInFiles": true,
+        "autoBarrel.files.useNamedExports": true,
+        "autoBarrel.formatting.useSingleQuotes": true,
+        "autoBarrel.formatting.sortExports": "alphabetical",
         "[prisma]": {
           "editor.defaultFormatter": "Prisma.prisma",
           "editor.formatOnSave": true
@@ -218,6 +274,7 @@
           "**/.angular/**": true
         },
         "files.associations": {
+          "*.css": "tailwindcss",
           "azure-pipelines.yml": "azure-pipelines",
           "azure-pipelines.yaml": "azure-pipelines",
           "**/.azure-pipelines/**/*.yml": "azure-pipelines",
@@ -241,7 +298,7 @@
         "[dockerfile]": {
           "editor.formatOnSave": false
         },
-        "gitlens.currentLine.enabled": false,
+        "gitlens.currentLine.enabled": true,
         "gitlens.codeLens.enabled": false,
         "gitlens.statusBar.enabled": true,
         "github.copilot.enable": {
@@ -302,7 +359,15 @@
           "titleBar.activeBackground": "#452568",
           "titleBar.activeForeground": "#FFFFFF",
           "activityBarBadge.background": "#9B6DDA"
-        }
+        },
+        "npm-visual-manager.columns.type": true,
+        "npm-visual-manager.columns.semverUpdate": true,
+        "npm-visual-manager.columns.security": true,
+        "npm-visual-manager.columns.lastUpdate": true,
+        "npm-visual-manager.columns.size": false,
+        "npm-visual-manager.badge.enabled": false,
+        "npm-visual-manager.scan.maxDepth": 5,
+        "npm-visual-manager.saveExact": false
       },
       "keybindings": "imports",
       "extensions": [
@@ -310,11 +375,11 @@
         "editorconfig.editorconfig",
         "pkief.material-icon-theme",
         "yzhang.markdown-all-in-one",
-        "streetsidesoftware.code-spell-checker",
         "davidanson.vscode-markdownlint",
         "angular.ng-template",
         "ghaschel.vscode-angular-html",
         "nrwl.angular-console",
+        "luisclementdev.npm-visual-manager",
         "dbaeumer.vscode-eslint",
         "prisma.prisma",
         "eamodio.gitlens",
@@ -326,12 +391,15 @@
         "ms-azure-devops.azure-pipelines",
         "ms-azuretools.vscode-containers",
         "ms-ossdata.vscode-pgsql",
-        "sleistner.vscode-fileutils"
+        "sleistner.vscode-fileutils",
+        "bradlc.vscode-tailwindcss",
+        "imgildev.vscode-auto-barrel",
+        "tomwhite007.rename-angular-component",
+        "pranaygp.vscode-css-peek"
       ],
       "optional": [
         "orta.vscode-jest",
         "ms-playwright.playwright",
-        "bradlc.vscode-tailwindcss",
         "stylelint.vscode-stylelint",
         "ms-vscode-remote.remote-containers",
         "github.vscode-pull-request-github",
@@ -351,7 +419,6 @@
         "github.copilot.enable": {
           "*": false
         },
-        "chatgpt.reviewDelivery": "detached",
         "[markdown]": {
           "editor.quickSuggestions": {
             "other": "off",
@@ -372,7 +439,6 @@
         "editorconfig.editorconfig",
         "pkief.material-icon-theme",
         "yzhang.markdown-all-in-one",
-        "streetsidesoftware.code-spell-checker",
         "davidanson.vscode-markdownlint",
         "openai.chatgpt",
         "anthropic.claude-code",
@@ -383,7 +449,10 @@
         "nrwl.angular-console",
         "prisma.prisma",
         "mikestead.dotenv",
-        "redhat.vscode-yaml"
+        "redhat.vscode-yaml",
+        "bradlc.vscode-tailwindcss",
+        "imgildev.vscode-auto-barrel",
+        "tomwhite007.rename-angular-component"
       ],
       "optional": [
         "ms-vscode.vscode-chat-customizations-evaluations",
@@ -392,7 +461,9 @@
         "ms-playwright.playwright",
         "ms-ossdata.vscode-pgsql",
         "natqe.reload",
-        "sleistner.vscode-fileutils"
+        "sleistner.vscode-fileutils",
+        "luisclementdev.npm-visual-manager",
+        "pranaygp.vscode-css-peek"
       ]
     },
     "operations": {
@@ -449,7 +520,6 @@
         "editorconfig.editorconfig",
         "pkief.material-icon-theme",
         "yzhang.markdown-all-in-one",
-        "streetsidesoftware.code-spell-checker",
         "davidanson.vscode-markdownlint",
         "eamodio.gitlens",
         "redhat.vscode-yaml",

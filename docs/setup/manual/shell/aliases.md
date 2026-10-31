@@ -1,4 +1,4 @@
-[← the base shell task](README.md) · [Shell automation](../../../shared/tools/17-shell-and-package-automation.md)
+[← the base shell task](README.md) · [Shell automation](package-workflows.md)
 
 # Add, edit, save, and remove Zsh aliases
 
@@ -240,8 +240,8 @@ and press **Right Arrow** to accept its grey suggestion, or press **Ctrl+Space**
 for VS Code's terminal suggestion dropdown. Warp supplies its own input editor
 and completions; guard Zsh completion and line-editor plugins so they do not
 load there. Follow the [shared VS Code/Warp Zsh setup](zsh.md#1-use-zsh-consistently-in-vs-code-and-warp)
-for the exact guard and profile settings. The base shell task files do not yet add
-that Warp guard; merge it before using these optional plugins with Warp.
+for the exact guard and profile settings. The baseline includes that Warp guard;
+when updating an existing configuration, merge only the missing guarded blocks.
 
 ### Other optional shell integrations
 

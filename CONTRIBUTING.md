@@ -5,6 +5,20 @@ Read [Start here](docs/START-HERE.md) and [adding a capability](docs/shared/refe
 before changing behaviour. Work in a branch; keep real inventories, credentials
 and private machine paths outside the public repository.
 
+Use this checkout's `day-one-mac-maintenance` skill for repository upkeep.
+It is the only repository-owned contributor skill, displayed as **Maintain this
+repository**. General planning, writing, design and review helpers belong in a
+contributor's personal toolkit. They are optional; AGENTS.md, this guide and the
+repository checks are sufficient to contribute.
+The public `day-one-maintain` and `day-one-contribute` workflows serve different
+scopes; see the [maintenance skill distinction](docs/setup/manual/ai/day-one-skills.md#repository-maintenance-versus-environment-maintenance)
+for their source locations and packaging boundaries.
+
+The [AI component reference](docs/shared/explanation/ai-components.md) owns skill,
+integration and agent boundaries. Edit shared policies under
+`templates/agents/shared` and role metadata in
+`config/catalogs/assistant-agents.json`; native adapters are generated.
+
 ## Prepare contributor tools
 
 1. Install Node.js 22.20 or newer, the pnpm version in `package.json`, ShellCheck
@@ -32,6 +46,7 @@ and private machine paths outside the public repository.
 
    ```bash
    pnpm run docs:sync
+   pnpm run agents:build
    pnpm run skills:build
    ```
 
@@ -45,9 +60,19 @@ and private machine paths outside the public repository.
    actionlint
    ```
 
-   Expected result: lint, static and integration checks pass. Fixtures use
+   Expected result: lint, static and integration checks pass. Static checks also
+   reject current links to retired pages, known removed behaviour, combined
+   alternative engine installers, unbundled assets and conflicting Node 22 floors.
+   Reader fixtures verify body search and preserved VS Code section links. Fixtures use
    temporary locations and mock external commands; they do not prove live
    account, provider, hardware or managed-device acceptance.
+
+   Native plugin changes also run `pnpm run test:plugins`, or the combined
+   `pnpm run validate:complete` gate. The
+   [plugin packaging reference](docs/shared/reference/plugin-packaging.md) owns
+   skill-only artifact generation and optional native CLI validation. The archived
+   Day One Mac MCP is not built or tested by normal CI; see its contributor archive
+   before proposing a restoration.
 
 4. For skill packaging or installer changes, test the pinned Skills CLI. Install
    it in a temporary contributor directory, not as a global application:
@@ -70,6 +95,25 @@ and private machine paths outside the public repository.
    Git hooks check formatting and messages; CI checks all supported runners.
 
 ## Publishing and compatibility
+
+In the source checkout, use `maintainers/acceptance/CURRENT-READINESS.md` to
+separate local artifact checks, public availability and clean-device pilots.
+Contributor acceptance records are not part of the installed skill package.
+For an opt-in public-link check with approved network access, run:
+
+```bash
+pnpm run docs:check-links
+```
+
+Expected: a JSON summary and any unresolved destinations. Exit 0 means the checked
+URLs were reachable, 1 means a 404/410 response, and 2 means a network failure or
+another unverified response such as 403/429. Inspect those pages manually before
+declaring them broken. Redirects and requests are bounded; local/example addresses,
+historical changelog links and compatibility pages are excluded. Add `--json` for
+all results. The check does not validate remote fragments or certify page content.
+Normal validation remains offline; link-checker tests use injected responses.
+For a managed certificate error, use the approved system trust configuration;
+never disable TLS verification to make the check pass.
 
 There is no runtime release pipeline, installer archive or release token
 requirement. Reviewed commits and optional tags identify skill snapshots.

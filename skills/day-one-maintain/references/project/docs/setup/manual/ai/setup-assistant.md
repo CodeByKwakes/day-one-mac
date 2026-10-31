@@ -135,7 +135,7 @@ unrestricted execution mode merely to make setup prompts disappear.
 ## 4. Prepare a private setup task
 
 1. Follow [skill installation](day-one-skills.md) in a new private setup folder.
-   Install the single `day-one-mac` skill for your selected client. Its six
+   Install the single `day-one-mac` skill for your selected client. Its bundled
    workflows and supporting guides are included; native agent roles are optional.
 
    Expected result: `.agents/skills/day-one-mac/SKILL.md` and its bundled

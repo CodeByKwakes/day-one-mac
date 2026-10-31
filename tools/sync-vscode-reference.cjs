@@ -10,6 +10,9 @@ text += 'Generated from the versioned [profile configuration](../../../config/pr
 text += 'Use the [profile guide](../../setup/manual/editors/vscode.md) for selection, import and verification.\n';
 text += 'Maintainers update this page with `node tools/sync-vscode-reference.cjs`; edit the configuration source first.\n\n';
 text += '## Shared settings\n' + json(config.sharedSettings);
+text += '\n## Personal Markdown rules\n\n';
+text += 'Save this separate JSON object to `~/.config/markdownlint/config.json`, following the [Markdown setup steps](../../setup/manual/editors/vscode.md#markdown-formatting).\n';
+text += 'Profile exports and Settings Sync do not include this external file; back it up separately.\n' + json(config.markdownlintConfig);
 for (const [slug, profile] of Object.entries(config.profiles)) {
  text += `\n## ${profile.name}\n\n`;
  if (profile.extends) text += `Apply ${config.profiles[profile.extends].name} overrides before these overrides.\n\n`;
@@ -17,6 +20,9 @@ for (const [slug, profile] of Object.entries(config.profiles)) {
  for (const [key,label] of [['extensions','Recommended'],['optional','Optional']]) for (const id of profile[key]) text += `| \`${id}\` | ${label} |\n`;
  text += `\n### ${profile.name} overrides\n`+json(profile.settings);
 }
+text += '\n## Shared keybindings\n\n';
+text += 'Merge these entries into every selected profile\'s Keyboard Shortcuts JSON array, preserving existing shortcuts.\n';
+text += 'The [shortcut guide](../../setup/manual/editors/vscode.md#new-file-tab-shortcut) explains the symbol-search trade-off.\n'+json(config.keybindings.shared);
 text += '\n## Import keybindings\n'+json(config.keybindings.imports);
 const target = path.join(root, 'docs/shared/reference/vscode-profile-data.md');
 if (process.argv.includes('--check')) {

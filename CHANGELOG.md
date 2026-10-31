@@ -1,5 +1,10 @@
 # Changelog
 
+These entries describe historical runtime releases. Current documentation and
+portable skills follow the [upgrade and migration notes](docs/shared/upgrade-notes.md).
+The contributor-tooling version and native plugin version have separate purposes;
+see [plugin packaging](docs/shared/reference/plugin-packaging.md).
+
 ## [1.5.0](https://github.com/CodeByKwakes/day-one-mac/compare/v1.4.0...v1.5.0) (2026-10-01)
 
 

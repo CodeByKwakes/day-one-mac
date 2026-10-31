@@ -5,7 +5,7 @@ also require the selected [Node toolchain](../languages.md) and a disposable
 project for checks. Back up shell files through their current owner.
 Run ghq, chezmoi and plugin-specific commands only when those tools are selected.
 
-If using the private report paths below, first create the directory with `mkdir -p "$HOME/.local/state/development-setup"` and restrict it with `chmod 700 "$HOME/.local/state/development-setup"`. Expected: reports remain local and outside the repository.
+Before saving reports, complete the [private evidence directory prerequisite](../../../shared/private-evidence.md).
 
 ## 1. Measure before adding plugins
 

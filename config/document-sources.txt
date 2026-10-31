@@ -1,4 +1,5 @@
 # Reviewed public source files. Additions require review; do not discover private files.
+integrations/mcp/README.md
 AGENTS.md
 CHANGELOG.md
 CONTRIBUTING.md
@@ -485,6 +486,7 @@ integrations/shortcuts/open-in-vscode.applescript
 integrations/shortcuts/open-in-vscode.plist
 integrations/shortcuts/open-in-warp.applescript
 integrations/shortcuts/open-vscode-profile.applescript
+integrations/shortcuts/send-to-archive.applescript
 integrations/warp/Day One Mac/00 Day One Mac Command Catalogue.md
 integrations/warp/Day One Mac/03 Repositories and Hosting/01-ghq-root.yaml
 integrations/warp/Day One Mac/03 Repositories and Hosting/02-ghq-list.yaml
@@ -540,12 +542,14 @@ templates/phase-05-shell-files/home/.zshrc
 templates/skills/day-one-check/SKILL.md
 templates/skills/day-one-contribute/SKILL.md
 templates/skills/day-one-mac/SKILL.md
+templates/skills/day-one-macos-apps/SKILL.md
 templates/skills/day-one-maintain/SKILL.md
 templates/skills/day-one-omniroute/SKILL.md
 templates/skills/day-one-recover/SKILL.md
 templates/skills/day-one-second-brain/SKILL.md
 templates/skills/day-one-setup/SKILL.md
 templates/skills/day-one-shortcuts/SKILL.md
+templates/skills/day-one-vscode/SKILL.md
 
 # Reviewed developer app icons
 integrations/shortcuts/icons/git-clone.svg
@@ -554,3 +558,33 @@ integrations/shortcuts/icons/open-in-warp.svg
 integrations/shortcuts/icons/open-in-warp.icns
 integrations/shortcuts/icons/open-in-vscode.svg
 integrations/shortcuts/icons/open-in-vscode.icns
+
+# Shared agent policies and native adapter metadata
+config/catalogs/assistant-agents.json
+templates/agents/shared/day-one-maintainer.md
+templates/agents/shared/day-one-operator.md
+templates/agents/shared/day-one-planner.md
+templates/agents/shared/day-one-verifier.md
+
+# AI component contracts
+docs/shared/explanation/ai-components.md
+
+# Optional native plugin distribution
+docs/setup/manual/ai/day-one-plugins.md
+docs/shared/reference/plugin-packaging.md
+templates/plugins/metadata.json
+
+# Reviewed display workspace recipes and bounded restore tool
+docs/setup/manual/apps/workspaces.md
+docs/setup/manual/apps/atticus.md
+docs/shared/tools/workspaces.md
+helpers/workspaces/workspace.cjs
+
+# Main skill display metadata
+templates/skills/day-one-mac/agents/openai.yaml
+docs/setup/manual/editors/vscode/extensions.md
+docs/setup/manual/editors/vscode/profiles.md
+docs/setup/manual/editors/vscode/editing.md
+docs/setup/manual/editors/vscode/recovery.md
+docs/shared/private-evidence.md
+docs/shared/reference/client-acceptance.md

@@ -62,27 +62,27 @@ See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## Export and back up the configuration
 
-See the [current instructions](../setup/manual/editors/vscode.md#export-and-back-up-the-configuration).
+See the [current instructions](../setup/manual/editors/vscode/recovery.md#export-and-back-up-the-configuration).
 
 ### Export a portable profile — preferred
 
-See the [current instructions](../setup/manual/editors/vscode.md#export-a-portable-profile---preferred).
+See the [current instructions](../setup/manual/editors/vscode/recovery.md#export-a-portable-profile---preferred).
 
 ### Record the extension inventory
 
-See the [current instructions](../setup/manual/editors/vscode.md#record-the-extension-inventory).
+See the [current instructions](../setup/manual/editors/vscode/recovery.md#record-the-extension-inventory).
 
 ### Back up the complete local user folder — recovery copy
 
-See the [current instructions](../setup/manual/editors/vscode.md#back-up-the-complete-local-user-folder---recovery-copy).
+See the [current instructions](../setup/manual/editors/vscode/recovery.md#back-up-the-complete-local-user-folder---recovery-copy).
 
 ## Reset selected local settings or profiles
 
-See the [current instructions](../setup/manual/editors/vscode.md#reset-selected-local-settings-or-profiles).
+See the [current instructions](../setup/manual/editors/vscode/recovery.md#reset-selected-local-settings-or-profiles).
 
 ## Change or clear Settings Sync later
 
-See the [current instructions](../setup/manual/editors/vscode.md#change-or-clear-settings-sync-later).
+See the [current instructions](../setup/manual/editors/vscode/recovery.md#change-or-clear-settings-sync-later).
 
 ## Change settings later
 
@@ -90,7 +90,7 @@ See the [current instructions](../setup/manual/editors/vscode.md).
 
 ## Troubleshooting
 
-See the [current instructions](../setup/manual/editors/vscode.md#troubleshooting).
+See the [current instructions](../setup/manual/editors/vscode/recovery.md#troubleshooting).
 
 ## VS Code completion checklist 🚦
 

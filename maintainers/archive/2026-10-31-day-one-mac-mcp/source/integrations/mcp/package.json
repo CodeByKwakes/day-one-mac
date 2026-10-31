@@ -1,0 +1,48 @@
+{
+  "name": "day-one-mac-mcp",
+  "version": "0.1.1",
+  "type": "module",
+  "engines": {
+    "node": ">=22.20"
+  },
+  "scripts": {
+    "build": "tsc && node scripts/bundle-guides.mjs",
+    "start": "node dist/src/index.js",
+    "test": "npm run build && node --test dist/test/*.test.js",
+    "test:docker": "node dist/test/docker-smoke.js",
+    "prepack": "npm run build",
+    "test:package": "npm run build && node dist/test/package-smoke.js",
+    "image:build": "node scripts/image-artifact.mjs build",
+    "image:export": "node scripts/image-artifact.mjs export",
+    "package:local": "npm run build && node scripts/package-artifact.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.4.0",
+    "zod": "4.3.6"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.4.0",
+    "@types/node": "24.10.1",
+    "esbuild": "0.28.2",
+    "typescript": "6.0.3"
+  },
+  "description": "Optional local MCP server for Day One Mac guides, checks and explicitly approved preferences.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodeByKwakes/day-one-mac.git",
+    "directory": "integrations/mcp"
+  },
+  "bin": {
+    "day-one-mac-mcp": "dist/src/index.js",
+    "day-one-mac-mcp-configure": "dist/src/configure.js"
+  },
+  "files": [
+    "dist/src/",
+    "dist/guides.json",
+    "dist/server-spec.json",
+    "LICENSE",
+    "README.md",
+    "npm-shrinkwrap.json"
+  ]
+}

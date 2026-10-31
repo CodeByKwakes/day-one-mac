@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "transport": "stdio",
+  "names": {
+    "codex": "day_one_mac",
+    "claude": "day-one-mac",
+    "vscode": "day-one-mac",
+    "raycast": "day-one-mac"
+  },
+  "startupTimeoutSeconds": 60,
+  "toolTimeoutSeconds": 15,
+  "readOnlyTools": ["list_guides", "read_guide", "check_host", "preview_desktop_click"],
+  "guides": {
+    "macos": "docs/setup/manual/macos.md",
+    "homebrew": "docs/setup/manual/homebrew.md",
+    "shell": "docs/setup/manual/shell/zsh.md",
+    "git": "docs/setup/manual/git/setup.md",
+    "vscode": "docs/setup/manual/editors/vscode.md",
+    "apps": "docs/setup/manual/apps/README.md",
+    "verification": "docs/shared/verification.md",
+    "shortcuts": "docs/setup/manual/apps/macos-shortcuts.md",
+    "skills": "docs/setup/manual/ai/day-one-skills.md",
+    "mcp": "docs/setup/manual/ai/mcp.md",
+    "workspaces": "docs/setup/manual/apps/workspaces.md",
+    "atticus": "docs/setup/manual/apps/atticus.md",
+    "components": "docs/shared/explanation/ai-components.md"
+  }
+}

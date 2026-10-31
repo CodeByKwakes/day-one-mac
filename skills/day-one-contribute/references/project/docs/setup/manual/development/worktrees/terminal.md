@@ -446,6 +446,21 @@ when you intend to preserve its exact revision. Create a separate integration
 test branch if you need to test the combined result. For a release hotfix,
 update from its release base rather than importing unreleased main changes.
 
+## Choose the integration route
+
+State one completion scope explicitly:
+
+- PR: review and commit the feature changes, push the selected branch and open a
+  PR targeting the intended base. Creating the PR does not merge it.
+- Local integration: only when repository policy permits direct changes, use the
+  clean checkout owning main, update it, merge the feature and run checks. Treat
+  pushing main as a separate approved operation.
+
+After a PR merge, update the checkout owning main with `git pull --ff-only origin main`.
+For an app-managed checkout, use its branch/publish or handoff controls before
+integration and its cleanup controls afterward. Archiving alone does not merge
+code. The following walkthrough covers conflicts, squash merges and cleanup.
+
 ## Review and integrate
 
 Completion means the intended commits have reached the target branch and any

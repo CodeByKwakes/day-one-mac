@@ -24,15 +24,20 @@ Do not start all services “just in case.” A repository-owned `compose.yaml` 
 preferable when the service belongs to one project. The commands below provide
 a simple machine-level development service without requiring Docker Compose.
 
-## 2. choose Docker Desktop or OrbStack
+## 2. Choose Docker Desktop or OrbStack
 
 Keep an approved existing installation. If neither is installed, choose one:
 
+For Docker Desktop only:
+
 ```bash
-# Docker Desktop:
 brew install --cask docker-desktop
 open -a Docker
-# Or OrbStack:
+```
+
+For OrbStack instead:
+
+```bash
 brew install --cask orbstack
 open -a OrbStack
 ```
@@ -44,10 +49,15 @@ an app bundle alone does not prove the CLI or server works.
 If `docker` is missing from PATH, use the matching bundled location for this
 Terminal window:
 
+For Docker Desktop's user CLI installation:
+
 ```bash
-# Docker Desktop user CLI install:
 export PATH="$HOME/.docker/bin:$PATH"
-# Or OrbStack:
+```
+
+For OrbStack instead:
+
+```bash
 export PATH="$HOME/.orbstack/bin:$PATH"
 ```
 
@@ -55,8 +65,7 @@ Docker Desktop also bundles its CLI in
 `/Applications/Docker.app/Contents/Resources/bin`. In its settings choose the
 system or user CLI installation location. Save the matching PATH export via
 your selected shell configuration owner if your login shell does not already load it.
-Day One Mac discovers these locations for its own container commands without
-creating competing CLI symlinks. See [Docker's Mac CLI installation guidance](https://docs.docker.com/desktop/setup/install/mac-permission-requirements/).
+See [Docker's Mac CLI installation guidance](https://docs.docker.com/desktop/setup/install/mac-permission-requirements/).
 
 Verify the command and the engine separately:
 
@@ -71,7 +80,7 @@ Both **Client** and **Server** must appear. An installed CLI with no server is
 incomplete. Continue with the same chosen context for all commands below;
 containers and named volumes belong to that engine.
 
-## 3. create a shared development network
+## 3. Create a shared development network
 
 ```bash
 docker network inspect dev-net >/dev/null 2>&1 || \

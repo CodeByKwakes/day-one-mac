@@ -117,7 +117,7 @@ In the **Azure DevOps website**, not the Azure Portal:
 For package consumption, use **Packaging: Read**. Publishing requires write
 permission; do not grant it simply to install dependencies. Microsoft's general
 npm connection example requests read/write, so distinguish that broader example
-from your actual needs. See the [Packaging scope definitions](https://github.com/MicrosoftDocs/azure-devops-docs/blob/main/docs/integrate/includes/scopes.md).
+from your actual needs. See the [Packaging scope definitions](https://learn.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/oauth?view=azure-devops#oauth-scopes).
 
 A PAT cannot grant access its owner lacks. Ask a feed administrator if your
 account cannot read the packages. Saving new upstream packages also requires

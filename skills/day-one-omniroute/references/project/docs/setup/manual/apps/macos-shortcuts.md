@@ -13,7 +13,8 @@ The optional `day-one-shortcuts` skill can assist with the same recipes; see
 The Finder **Open in VS Code** recipe was tested on macOS 26.7.1 with a folder
 whose name contained spaces. It uses the built-in **Open File** action; no
 shell script, `code` launcher, or **Allow Running Scripts** setting is needed.
-The other recipes are optional configurations to verify on your own Mac.
+The archive action's source checks and Finder menu registration are described
+[below](#create-send-to-archive). Verify each selected recipe on your own Mac.
 
 ## Choose a shortcut
 
@@ -27,6 +28,7 @@ The other recipes are optional configurations to verify on your own Mac.
 | Open Selected Folder in VS Code | Run from a Finder toolbar button | A toolbar copy configured below |
 | Open Project in VS Code | Choose a folder when launching the shortcut directly | VS Code and the first recipe |
 | Open Developer Folder | Return to your chosen development root | An existing development folder |
+| Send to Archive | Move selected project folders into a chosen category and today's date | Automator and an existing Archive root |
 | New Terminal at Folder / New Warp Tab Here | Start a shell in the selected folder | The relevant Finder service |
 | Copy Folder Path | Copy an exact path for a command or support request | Finder only |
 
@@ -245,6 +247,85 @@ Close the editor; Shortcuts saves automatically.
 For a real repository, open the individual repository or worktree folder.
 Review any Workspace Trust prompt for that folder; opening a folder does not
 require trusting the entire developer root.
+
+## Create Send to Archive
+
+Use this Automator Quick Action to move selected project folders into
+`~/Developer/Archive/<category>/<yyyy-MM-dd>/<project>`. Choose an existing
+category or enter a new one. The action calculates the date each time it runs;
+for example, a run on 27 October 2026 uses `2026-10-27`.
+
+This is a folder move, not a compressed archive or a backup. Keep an independent
+backup and close the selected projects and their development servers before
+confirming the move. Select individual project roots, not a container of
+repositories or worktrees. Follow the
+[developer-folder guide](../development/folders.md) to establish the Archive
+root if it is absent; the action does not create or reorganise that root.
+
+### Build the Finder action in Automator
+
+1. Open **Automator**, choose **File > New**, then select **Quick Action**.
+2. Set **Workflow receives current** to **folders** in **Finder**.
+   Keep **Output replaces selected text** off.
+3. Add **Run AppleScript** from the action library.
+4. Paste the complete [Send to Archive source](../../../../integrations/shortcuts/send-to-archive.applescript)
+   into the action, replacing the sample handler. Click **Compile**.
+5. Save the Quick Action as **Send to Archive**. Preserve any existing action
+   with that name before choosing whether to replace it.
+6. In Finder, select two disposable project folders and open
+   **right-click > Quick Actions > Send to Archive**.
+
+Expected result: the category chooser opens with the existing Archive folders
+and **+ New category…**. The saved service normally lives at
+`~/Library/Services/Send to Archive.workflow`. It embeds its source and needs
+no checkout, Node.js or Python installation. This recipe uses Automator rather
+than Shortcuts' script setting or a signed `.shortcut` import.
+
+If the entry is missing, open the saved workflow in Automator, compile and
+save it again. Reopen Finder's menu and check **Quick Actions > Customize…**
+for the action. Keep the workflow name and its folders/Finder input unchanged.
+The standalone app builder handles the catalogue's `recipes` collection;
+this manual service belongs to its separate `quickActions` collection.
+
+### Verify moves, cancellation and recovery
+
+1. Choose **+ New category…** and enter a disposable category name.
+   Expected: no category or dated folder exists before confirmation.
+2. Review both source paths and the complete dated destination, then choose
+   **Cancel**. Expected: the original folders and Archive root remain unchanged.
+3. Run the action again on the disposable folders and confirm **Move to Archive**.
+   Expected: both folders appear under the chosen category/date with their
+   contents intact, and the original locations are absent.
+4. Choose **Show in Finder**. Expected: Finder opens the dated destination.
+5. Try another disposable source with an already archived folder's name.
+   Expected: the action refuses the move without merging or overwriting.
+
+The action also refuses files, package bundles, symlink paths, nested source
+selections, duplicate names and selection of the Archive root or its ancestors.
+It checks folder identity after confirmation and before each move. A project
+with a `.git` file or `.git/worktrees` metadata needs its Git-specific move
+procedure first; nested repositories are not scanned by this guard.
+
+Each run writes a private hidden `.archive-move-<id>.json` record in the dated
+folder. It lists original paths, destination paths and completed moves.
+If a later move fails, earlier moves remain in place. Inspect both locations
+and the record before retrying; the action does not attempt automatic rollback.
+To undo, move each archived folder back to its recorded original parent and
+refuse replacement if that location has since been recreated.
+
+The source's non-interactive fixtures verify folder moves, contents, Git
+metadata, private records, conflicts, containment and worktree refusal.
+Finder menu registration and Automator compilation were observed on macOS
+26.7.1 on 27 October 2026. The category chooser and complete Finder-triggered
+move were not verified in that check because the UI client could not inspect
+the service runner. Complete the disposable-folder checks above before relying
+on the action for real projects.
+
+To update, duplicate the workflow and preserve a private copy before replacing
+its source and repeating verification. To remove it, move only the owned
+`Send to Archive.workflow` to Trash. Archived projects and recovery records
+remain in Archive. Updating the Day One Mac skill does not replace the installed
+workflow or add a Finder toolbar button.
 
 ## Add a Finder toolbar button
 

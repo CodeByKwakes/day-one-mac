@@ -54,5 +54,5 @@ If an agent changed unrelated files, preserve the diff and restore only those
 changes after review; do not reset a whole dirty repository. Keep one editing
 agent per worktree and use a separate branch for independent code tasks.
 
-The [optional workspace utility](ai-workspaces.md) is an
-optional alternative for users of that route; it is not needed for this task.
+Use the selected client's supported folder and worktree controls. There is no
+separate Day One Mac task-folder manager to install or run.

@@ -7,7 +7,7 @@ const os = require('node:os');
 const crypto = require('node:crypto');
 const { spawnSync } = require('node:child_process');
 const root = path.resolve(__dirname, '../..');
-const names = ['day-one-mac', 'day-one-setup', 'day-one-check', 'day-one-maintain', 'day-one-recover', 'day-one-omniroute', 'day-one-contribute', 'day-one-shortcuts', 'day-one-second-brain'];
+const names = ['day-one-mac', 'day-one-setup', 'day-one-check', 'day-one-maintain', 'day-one-recover', 'day-one-omniroute', 'day-one-contribute', 'day-one-shortcuts', 'day-one-second-brain', 'day-one-vscode', 'day-one-macos-apps'];
 const files = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
   const file = path.join(dir, entry.name);
   assert(!entry.isSymbolicLink(), `Unexpected packaged symlink: ${file}`);
@@ -47,6 +47,9 @@ if (require.main === module) {
   fs.closeSync(reader);
   assert.equal(fs.readFileSync(inventory, 'utf8'), 'new complete inventory\n');
   for (const name of ['../README.md', '/etc/passwd', '.git/config', '.agents/skills/private/SKILL.md', 'config/unreviewed-secret.txt']) assert.throws(() => regular(name));
+  regular('integrations/mcp/README.md');
+  assert.throws(() => regular('maintainers/archive/2026-10-31-day-one-mac-mcp/source/integrations/mcp/src/index.ts'));
+  for (const name of ['integrations/mcp/package.json', 'integrations/mcp/src/index.ts', 'integrations/mcp/node_modules/private.txt']) assert.throws(() => regular(name));
   assert.throws(() => reference('docs/START-HERE.md', '../../../../etc/passwd'));
   assert.throws(() => buildPackage({name:'day-one-check', assets:['../private']}));
   assert.throws(() => buildPackage({name:'day-one-check', workflows:['missing-workflow']}));
@@ -54,6 +57,8 @@ if (require.main === module) {
     const folder = path.join(temp, `Independent é ${name}`);
     fs.cpSync(path.join(root, 'skills', name), folder, { recursive: true });
     validatePackage(folder);
+    assert(fs.existsSync(path.join(folder, 'references/project/integrations/mcp/README.md')), 'Archive notice must remain portable');
+    assert(!fs.existsSync(path.join(folder, 'references/project/integrations/mcp/src')), 'Do not bundle MCP source into skills');
     const helper = path.join(folder, 'references/project/helpers/vscode/build.cjs');
     const review = path.join(temp, `Profile output é ${name}`);
     const generated = spawnSync(process.execPath, [helper, 'full-stack', '--output', review], { cwd: temp, encoding: 'utf8' });
@@ -85,6 +90,7 @@ if (require.main === module) {
       fs.unlinkSync(misplaced);
     }
     if (name === 'day-one-mac') {
+      assert(fs.existsSync(path.join(folder, 'agents/openai.yaml')), 'Main package UI metadata must survive independent installation');
       for (const specialist of names.slice(1)) {
         assert(fs.existsSync(path.join(folder, 'references/workflows', `${specialist}.md`)));
       }

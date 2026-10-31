@@ -34,6 +34,16 @@ personal shortcut identifiers, saved folders, credentials or unsigned files
 presented as signed shortcut exports. No background manager is required.
 
 Folder apps support one ordinary folder. Keep cancellation free of side effects.
+
+Send to Archive is a separate multi-folder Automator recipe in the catalogue's
+`quickActions` collection; the app builder does not install or build it.
+Preview the category/date destination and preserve each folder's contents.
+Use disposable folders for verification. Treat linked worktrees and repositories
+with worktree metadata through Git's own move procedure, and inspect nested
+repositories separately. Keep recovery records private and report partial moves
+instead of retrying or rolling them back automatically. Fixture checks and Finder
+menu registration do not establish the complete interactive workflow.
+
 Use the registered named-profile guard; never guess profile names or rewrite
 VS Code storage. A missing profile passed to VS Code can create an empty one.
 Do not synthesize a default entry: the built-in default name is localized.
@@ -50,3 +60,11 @@ Use the manual guide's Terminal fallback without changing existing Git settings.
 Report the selected recipes, sources, output paths, checks performed and remaining
 manual steps. Installing or updating this skill does not install, replace or
 remove previously built apps. Preserve notes and recovery copies outside skills.
+
+## Restore a selected developer workspace
+
+Read the [workspace procedure](../project/docs/setup/manual/apps/workspaces.md)
+and its [bounded helper contract](../project/docs/shared/tools/workspaces.md).
+Follow their identity, approval, recovery and editor-selection checks before a
+restore. Keep calibration private and distinguish a Raycast request from verified
+window placement. Atticus remains an optional, separately reviewed pilot.

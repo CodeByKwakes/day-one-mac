@@ -13,7 +13,7 @@ Select only tools needed for the chosen workload. The catalogue is reference
 material, not an executable installer or a mandate to install every item.
 Keep existing approved installations and update them through their actual owner.
 Sign-in, trust, configuration and functional verification remain separate tasks.
-The selection column describes relevant use cases; old phase numbers are historical.
+The selection column identifies the task that needs each package.
 
 A Homebrew **formula** usually supplies a command-line package. A **cask** can
 supply a desktop app, font or CLI: `1password-cli` and `codex` are casks here.
@@ -29,24 +29,24 @@ not know about it. Update through the actual owner. Choose Homebrew only when it
 IDs identify entries in the reviewed application catalogue. They are not shell
 commands. Use the linked manual guide to install and verify a selected tool.
 
-| ID | Name and purpose | Homebrew cask | Selection / phase | Manual setup and verification |
+| ID | Name and purpose | Homebrew cask | Selected task | Manual setup and verification |
 |---|---|---|---|---|
-| `1password` | 1Password - account secrets and vault-owned SSH keys | `1password` | `1password` auth / 03 | Unlock correct account, establish recovery, enable agent; [walkthrough](../../setup/manual/security/1password.md) |
-| `1password-cli` | 1Password CLI - authorised vault access from Terminal | `1password-cli` | `1password` auth / 03 | Enable integration; `op --version`, then approved account access; [walkthrough](../../setup/manual/security/1password.md) |
-| `git-credential-manager` | Git Credential Manager - HTTPS Git browser sign-in and secure credential storage | `git-credential-manager` | HTTPS helper `gcm`, including core / 04 | Existing external installation is preserved; executable, scoped helper and real Git access checks; [Manual recipe](../../setup/manual/git/setup.md) |
-| `jetbrains-mono-nerd-font` | JetBrains Mono Nerd Font - coding font with prompt glyphs | `font-jetbrains-mono-nerd-font` | Non-core productivity / 04 | Select font in terminal/editor; inspect glyphs; [font check](../../setup/manual/apps/README.md#check-the-selected-font) |
-| `raycast` | Raycast - launcher, capture and chosen workflow shortcuts | `raycast` | Non-core productivity / 04 | Choose shortcuts/permissions, test launch; [Raycast](../../setup/manual/apps/raycast.md) |
-| `visual-studio-code` | Visual Studio Code - editor, profiles and extensions | `visual-studio-code` | Non-core productivity / 04, configuration 07 | Check `code --version` after CLI integration; select profile; [VS Code](../../setup/manual/editors/vscode.md) |
-| `warp` | Warp - terminal and optional shared workflows | `warp` | Non-core productivity / 04 | Open shell, check prompt/font, review account/import; [Warp](../../setup/manual/terminals/warp.md) |
-| `docker-desktop` | Docker Desktop - local container engine | `docker-desktop` | Optional / 09 | Finish first-run setup; verify `docker --version` and `docker info`; [databases](../../setup/manual/databases/containers.md) |
-| `orbstack` | OrbStack - local container engine | `orbstack` | Optional / 09 | Launch, review resources/startup and `docker context show`; [databases](../../setup/manual/databases/containers.md) |
-| `dbeaver-community` | DBeaver Community - database connection/query GUI | `dbeaver-community` | Optional / 09 | [DBeaver and VS Code setup](../../setup/manual/databases/dbeaver.md); connect to intended local test DB; [database services](../../setup/manual/databases/containers.md) |
-| `claude-code` | Claude Code - terminal AI coding client | `claude-code` | Optional / 10 | `claude --version`, chosen account and workspace permissions; [AI clients](../../setup/manual/ai/clients.md) |
-| `codex` | Codex CLI - terminal AI coding client, not the desktop app | `codex` | Optional / 10 | `codex --version`, chosen account and workspace permissions; [AI clients](../../setup/manual/ai/clients.md) |
-| `copilot-app` | GitHub Copilot app - graphical AI client | `github-copilot-app` | Optional / 10 | Open app, confirm account/entitlement and permissions; [AI clients](../../setup/manual/ai/clients.md) |
-| `copilot-cli` | GitHub Copilot CLI - terminal AI client | `copilot-cli` | Optional / 10 | `copilot --version`, chosen account and permissions; [AI clients](../../setup/manual/ai/clients.md) |
-| `obsidian` | Obsidian - local Markdown knowledge vaults | `obsidian` | Optional / Second Brain | Open intended vault and test capture/search/backup; [Second Brain](../../setup/manual/second-brain/README.md) |
-| `purge` | Purge - optional cleanup application | `jithin-sabu/tap/purge` | Optional / 21 | Review exact candidates and recovery before any deletion; [maintenance](../../setup/manual/maintenance.md) |
+| `1password` | 1Password - account secrets and vault-owned SSH keys | `1password` | `1password` auth | Unlock correct account, establish recovery, enable agent; [walkthrough](../../setup/manual/security/1password.md) |
+| `1password-cli` | 1Password CLI - authorised vault access from Terminal | `1password-cli` | `1password` auth | Enable integration; `op --version`, then approved account access; [walkthrough](../../setup/manual/security/1password.md) |
+| `git-credential-manager` | Git Credential Manager - HTTPS Git browser sign-in and secure credential storage | `git-credential-manager` | HTTPS helper `gcm`, when selected | Existing external installation is preserved; executable, scoped helper and real Git access checks; [Manual recipe](../../setup/manual/git/setup.md) |
+| `jetbrains-mono-nerd-font` | JetBrains Mono Nerd Font - coding font with prompt glyphs | `font-jetbrains-mono-nerd-font` | Selected productivity tools | Select font in terminal/editor; inspect glyphs; [font check](../../setup/manual/apps/README.md#check-the-selected-font) |
+| `raycast` | Raycast - launcher, capture and chosen workflow shortcuts | `raycast` | Selected productivity tools | Choose shortcuts/permissions, test launch; [Raycast](../../setup/manual/apps/raycast.md) |
+| `visual-studio-code` | Visual Studio Code - editor, profiles and extensions | `visual-studio-code` | Selected editor setup | Check `code --version` after CLI integration; select profile; [VS Code](../../setup/manual/editors/vscode.md) |
+| `warp` | Warp - terminal and optional shared workflows | `warp` | Selected productivity tools | Open shell, check prompt/font, review account/import; [Warp](../../setup/manual/terminals/warp.md) |
+| `docker-desktop` | Docker Desktop - local container engine | `docker-desktop` | Optional | Finish first-run setup; verify `docker --version` and `docker info`; [databases](../../setup/manual/databases/containers.md) |
+| `orbstack` | OrbStack - local container engine | `orbstack` | Optional | Launch, review resources/startup and `docker context show`; [databases](../../setup/manual/databases/containers.md) |
+| `dbeaver-community` | DBeaver Community - database connection/query GUI | `dbeaver-community` | Optional | [DBeaver and VS Code setup](../../setup/manual/databases/dbeaver.md); connect to intended local test DB; [database services](../../setup/manual/databases/containers.md) |
+| `claude-code` | Claude Code - terminal AI coding client | `claude-code` | Optional | `claude --version`, chosen account and workspace permissions; [AI clients](../../setup/manual/ai/clients.md) |
+| `codex` | Codex CLI - terminal AI coding client, not the desktop app | `codex` | Optional | `codex --version`, chosen account and workspace permissions; [AI clients](../../setup/manual/ai/clients.md) |
+| `copilot-app` | GitHub Copilot app - graphical AI client | `github-copilot-app` | Optional | Open app, confirm account/entitlement and permissions; [AI clients](../../setup/manual/ai/clients.md) |
+| `copilot-cli` | GitHub Copilot CLI - terminal AI client | `copilot-cli` | Optional | `copilot --version`, chosen account and permissions; [AI clients](../../setup/manual/ai/clients.md) |
+| `obsidian` | Obsidian - local Markdown knowledge vaults | `obsidian` | Optional knowledge system | Open intended vault and test capture/search/backup; [Second Brain](../../setup/manual/second-brain/README.md) |
+| `purge` | Purge - optional cleanup application | `jithin-sabu/tap/purge` | Optional | Review exact candidates and recovery before any deletion; [maintenance](../../setup/manual/maintenance.md) |
 
 GUI apps should also be opened and tested: a valid bundle is not evidence of
 permissions, connectivity or usability. Do not launch a cleanup operation as an
@@ -77,13 +77,14 @@ Do not run commands against real projects solely as a presence check.
 
 ## Optional formulae
 
-Every row below is opt-in via [Module 13](../../setup/manual/shell/README.md).
+Every row below is optional. Select tools for an actual task through the
+[shell and tool workflow](../../setup/manual/shell/package-workflows.md).
 The purpose descriptions mirror `config/catalogs/optional-formulae.tsv`. Installation
 does not activate shell hooks, trust a certificate authority, accept an App Store
 purchase or update a desired-state Brewfile. Use a reviewed Brewfile through
-[Module 16](../../setup/manual/apps/brewfile.md) when deliberately adding
+[selective Brewfile procedure](../../setup/manual/apps/brewfile.md) when deliberately adding
 long-term ownership. The table is a supported selection catalogue, not all formulae
-that Homebrew or Module 16 may accept.
+that Homebrew may accept.
 
 | Group | Formula | Purpose | Command / manual follow-up |
 |---|---|---|---|
@@ -95,7 +96,7 @@ that Homebrew or Module 16 may accept.
 | Development | `act` | Run GitHub Actions workflows locally | `act`; inspect workflow code, secrets and container context |
 | Development | `actionlint` | Statically check GitHub Actions workflow files | `actionlint`; point at intended workflow |
 | Development | `httpie` | Human-friendly HTTP client | `http`, `https`; avoid tokens in command history |
-| Development | `mkcert` | Create locally trusted development certificates | `mkcert`; CA trust is a separate manual decision in [Module 19](../../setup/manual/macos.md) |
+| Development | `mkcert` | Create locally trusted development certificates | `mkcert`; CA trust is a separate manual decision in the [local HTTPS task](../../setup/manual/local-https.md) |
 | Development | `shellcheck` | Static analysis for shell scripts | `shellcheck`; checks text without running the script |
 | Development | `shfmt` | Format shell scripts consistently | `shfmt`; inspect a diff before write mode |
 | Development | `watchman` | Watch files and trigger rebuilds | `watchman`; scope watches to the intended project |
@@ -126,7 +127,7 @@ that Homebrew or Module 16 may accept.
 For a harmless install check, prefer `brew list --formula TOKEN` and
 `command -v COMMAND` (replace both placeholders). Shell plugins have no executable to find.
 Then use the tool's help in a test context; command presence does not prove shell
-activation or correct configuration. [Module 17](../../setup/manual/shell/package-workflows.md)
+activation or correct configuration. [Shell configuration](../../setup/manual/shell/zsh.md)
 covers reviewed helper activation, not automatic trust of every shell plugin.
 
 ## Related tools with different owners
@@ -138,10 +139,10 @@ covers reviewed helper activation, not automatic trust of every shell plugin.
 | Node.js and npm | Node installed through `fnm` during language setup; npm comes with Node, not a second global installation |
 | Python | Managed through `uv` for the selected stack; do not replace macOS's system Python |
 | Azure DevOps CLI extension | Installed through `az extension`, not a separate brew formula |
-| Git Credential Manager | Conditional required CLI cask when HTTPS with `--https-helper gcm` is selected, including the core preset; external approved installations are preserved |
+| Git Credential Manager | Conditional required CLI cask when GCM is the selected HTTPS credential owner; external approved installations are preserved |
 | Notion | Cloud account/workspace; browser/manual approved app route, not an automatically installed catalogue cask; [setup](../../setup/manual/second-brain/README.md) |
 | SSH, Keychain, FileVault | macOS facilities; use Apple's SSH tools for Keychain integration; [security](../../setup/manual/security/README.md) |
-| Database images and OmniRoute | Container payloads with separate versions/digests, volumes and startup policy; Modules 09/10A, not brew formulae |
+| Database images and OmniRoute | Container payloads with separate versions/digests, volumes and startup policy; the database and gateway guides, not brew formulae |
 | VS Code / Raycast extensions | Owned by the app/profile and its extension system; review permissions separately |
 | MCP servers and AI subscriptions | Selected endpoint/package/account owners; installation does not grant trust or pay for access |
 | Contributor dependencies | Repository `package.json`/lockfile; not required for end-user setup or offline documentation |

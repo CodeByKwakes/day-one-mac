@@ -10,9 +10,13 @@ Create an independent copy and understand what it can and cannot restore.
 
 Once a month, or before a major redesign:
 
-1. Open Notion Settings.
-2. Find the workspace or page export control.
-3. Export as Markdown and CSV with files included where available.
+1. In Notion on desktop or web, open **Settings → General**.
+   Expected: settings for the intended workspace are visible.
+2. Select **Export all workspace content**. For one page instead, use that
+   page's **••• → Export** menu. Expected: the intended export scope is selected.
+3. Choose **Markdown & CSV** and review the inclusion options. Complete the
+   export and download it through Notion's provided link. Expected: a ZIP arrives;
+   a successful request alone is not a downloaded backup.
 4. Save the download under a dated folder such as:
 
    ```text
@@ -24,6 +28,12 @@ Once a month, or before a major redesign:
 7. Confirm Knowledge, Projects, Sources, attachments, and several page bodies
    are present.
 8. Record the verification date in your Weekly or Monthly Review.
+
+If export is unavailable, check your workspace role and administrator policy.
+The export excludes content your account cannot access; compare the result with
+your intended scope before claiming a complete backup. Do not change sharing
+just to make export work. The [official backup procedure](https://www.notion.com/help/back-up-your-data)
+was checked on 30 October 2026; labels and policy controls can change.
 
 ## Important limitation
 

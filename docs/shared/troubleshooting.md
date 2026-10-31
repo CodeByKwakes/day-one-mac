@@ -20,10 +20,13 @@ index points to remedies; it does not maintain a second copy of them.
 | Assisted profile replacement/restore conflict | [Profile operation](tools/vscode-profiles.md) |
 | Database connection, role, TLS or recovery failure | [Database operations](../setup/manual/databases/operations.md) |
 | Agent cannot find a skill or uses the wrong instructions | [Instructions and skills](../setup/manual/ai/instructions-agents-skills.md) |
+| Native plugin version, marketplace path or GUI Node error | [Plugin lifecycle and troubleshooting](../setup/manual/ai/day-one-plugins.md#acceptance-and-troubleshooting) |
+| Send to Archive missing, cancelled, conflicting or partly moved | [Archive setup and recovery](../setup/manual/apps/macos-shortcuts.md#create-send-to-archive) |
+| Missing displays, ambiguous preset or incorrect editor window | [Workspace verification and recovery](../setup/manual/apps/workspaces.md#verify-and-recover) |
 | MCP server unavailable in a client | [MCP](../setup/manual/ai/mcp.md) or [Docker MCP](../setup/manual/ai/mcp-docker.md) |
 | Worktree already checked out or environment clashes | [Worktree troubleshooting](../setup/manual/development/worktrees/troubleshooting.md) |
 | Obsidian/Notion capture or recovery problem | [Second Brain](../setup/manual/second-brain/README.md) |
-| Assisted selection or saved state is stale | [Module execution](reference/module-execution.md) and [readiness](reference/workstation-readiness.md) |
+| Setup notes or an installed guide snapshot are stale | [Resume with fresh evidence](verification.md) and [client acceptance](reference/client-acceptance.md) |
 | Need to undo recorded changes | [Assisted recovery](reference/tools.md) or [manual restore](../setup/manual/backup-and-restore.md) |
 
 ## Information to retain

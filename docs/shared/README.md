@@ -7,6 +7,8 @@ or [Manual Setup](../setup/manual/README.md).
 | Reference | Purpose |
 |---|---|
 | [Prerequisites](prerequisites.md) | Platform, access, tools, storage and network requirements |
+| [Private evidence](private-evidence.md) | Private report locations and permissions |
+| [Client acceptance](reference/client-acceptance.md) | Source checks, fixtures, live evidence and deferred integrations |
 | [Decisions](decisions.md) | One worksheet for supported selections |
 | [Glossary](glossary.md) | Plain-language definitions |
 | [Terminal basics](terminal-basics.md) | Commands, placeholders, prompts and exit status |
@@ -15,7 +17,7 @@ or [Manual Setup](../setup/manual/README.md).
 | [Reading and export](reading-and-export.md) | Online reading and static offline exports |
 | [Upgrade notes](upgrade-notes.md) | Compatibility and route transitions |
 | [Software catalogue](reference/software-catalogue.md) | Conditional package choices and owners |
-| [Application ownership](reference/application-ownership.md) | Existing, external and recorded installation boundaries |
+| [Application ownership](../setup/manual/lifecycle.md) | Existing, external and recorded installation boundaries |
 | [Expected layout](reference/expected-layout.md) | Skill, backup and user-resource locations |
 | [Chezmoi commands](reference/chezmoi-commands.md) | Command semantics, separate from the complete manual task |
 | [VS Code profile data](reference/vscode-profile-data.md) | Generated settings and keybinding JSON |

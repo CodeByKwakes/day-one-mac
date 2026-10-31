@@ -13,6 +13,7 @@ shared references and reviewed skill helpers support individual tasks.
 | [Use the setup workspace with Codex](setup/ai/clients/codex.md) | `setup/ai/clients` |
 | [Use the setup workspace with GitHub Copilot](setup/ai/clients/copilot.md) | `setup/ai/clients` |
 | [Operate and maintain the setup assistant](setup/ai/operation.md) | `setup/ai` |
+| [AI component ownership and compatibility](shared/explanation/ai-components.md) | `shared/explanation` |
 
 ## Manual setup
 
@@ -21,6 +22,7 @@ shared references and reviewed skill helpers support individual tasks.
 | [Manual Setup](setup/manual/README.md) | `setup/manual` |
 | [Install and configure selected AI clients](setup/manual/ai/clients.md) | `setup/manual/ai` |
 | [Prepare Day One Mac skills and agents manually](setup/manual/ai/day-one-skills.md) | `setup/manual/ai` |
+| [Optional native Day One Mac plugins](setup/manual/ai/day-one-plugins.md) | `setup/manual/ai` |
 | [Project instructions, agents and skills](setup/manual/ai/instructions-agents-skills.md) | `setup/manual/ai` |
 | [Maintain AI skills and MCP access](setup/manual/ai/maintenance.md) | `setup/manual/ai` |
 | [Set up MCP servers with Docker](setup/manual/ai/mcp-docker.md) | `setup/manual/ai` |
@@ -34,6 +36,8 @@ shared references and reviewed skill helpers support individual tasks.
 | [Optional macOS Shortcuts for development](setup/manual/apps/macos-shortcuts.md) | `setup/manual/apps` |
 | [Choose and configure a Raycast AI provider](setup/manual/apps/raycast-ai-providers.md) | `setup/manual/apps` |
 | [Set up, back up, and restore Raycast](setup/manual/apps/raycast.md) | `setup/manual/apps` |
+| [Restore a developer workspace across displays](setup/manual/apps/workspaces.md) | `setup/manual/apps` |
+| [Pilot Atticus as an optional voice companion](setup/manual/apps/atticus.md) | `setup/manual/apps` |
 | [Configure Vorssaint for software development on macOS](setup/manual/apps/vorssaint.md) | `setup/manual/apps` |
 | [Verify and back up the finished setup](setup/manual/backup-and-restore.md) | `setup/manual` |
 | [Database setup and operations](setup/manual/databases/README.md) | `setup/manual/databases` |
@@ -106,13 +110,23 @@ shared references and reviewed skill helpers support individual tasks.
 | [Zsh in VS Code and Warp](setup/manual/shell/zsh.md) | `setup/manual/shell` |
 | [Set up, back up, and restore Warp](setup/manual/terminals/warp.md) | `setup/manual/terminals` |
 
+## VS Code task pages
+
+| Task | Guide |
+|---|---|
+| Minimum setup | [VS Code](setup/manual/editors/vscode.md) |
+| Extension selection | [Extensions](setup/manual/editors/vscode/extensions.md) |
+| Profiles and User Settings | [Profiles](setup/manual/editors/vscode/profiles.md) |
+| Editing and language behaviour | [Editing](setup/manual/editors/vscode/editing.md) |
+| Verification, exports and recovery | [Recovery](setup/manual/editors/vscode/recovery.md) |
+
 ## Shared references and reviewed tools
 
 | Guide | Location |
 |---|---|
 | [Shared library](shared/README.md) | `shared` |
 | [Record setup decisions](shared/decisions.md) | `shared` |
-| [Runtime architecture and state contract](shared/explanation/architecture-and-state.md) | `shared/explanation` |
+| [Skill architecture and evidence boundaries](shared/explanation/architecture-and-state.md) | `shared/explanation` |
 | [Understand chezmoi ownership and safety boundaries](shared/explanation/chezmoi-boundaries.md) | `shared/explanation` |
 | [How setup fits together](shared/explanation/process-overview.md) | `shared/explanation` |
 | [Plain-English glossary](shared/glossary.md) | `shared` |

@@ -1,0 +1,10 @@
+{
+  "name": "day-one-mac",
+  "version": "0.1.2",
+  "description": "Portable Day One Mac skills and guides for Apple-silicon development setup.",
+  "author": {
+    "name": "Day One Mac contributors"
+  },
+  "repository": "https://github.com/CodeByKwakes/day-one-mac",
+  "license": "MIT"
+}
