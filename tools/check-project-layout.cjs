@@ -42,5 +42,5 @@ try {
     visit(markdown.parse(text,{}));
   }
   if (failures.length) throw new Error(failures.join('\n'));
-  console.log(`PASS: reviewed sources, ${Object.keys(aliases).length} aliases and ${documents.size} document links/anchors`);
+  console.log(`PASS: reviewed sources, ${Object.keys(aliases).length} aliases and links/anchors across ${documents.size} documents`);
 } catch (e) { console.error(e.message); process.exitCode=1; }

@@ -87,7 +87,7 @@ For the shortest successful setup, complete one client before adding the rest:
 | Provider connection | Gives OmniRoute access to an approved model service; it may use OAuth or a provider API key | The selected server’s private data directory or volume |
 | Endpoint key | Lets a local client call this OmniRoute server; it is not the provider's account key | Loaded privately by each client |
 
-The request path is:
+For a local container, the request path is:
 
 ```text
 Raycast or a Claude/Codex/Copilot CLI command started in Warp
@@ -96,7 +96,7 @@ Raycast or a Claude/Codex/Copilot CLI command started in Warp
        http://127.0.0.1:20128 on macOS
                     │
                     ▼
-       OrbStack Docker engine → OmniRoute container
+       selected Docker engine → OmniRoute container
                     │
                     ▼
              approved AI provider
@@ -105,7 +105,7 @@ Raycast or a Claude/Codex/Copilot CLI command started in Warp
 Docker Desktop or OrbStack is the container engine. OmniRoute does not connect to a separate
 OrbStack service, and the `docker run` command does not need an OrbStack-only
 flag. The Docker command sends work to whichever Docker **context** is active;
-Step 2 makes the OrbStack context explicit before anything is created.
+Step 2 makes the selected engine's context explicit before anything is created.
 
 OmniRoute is an **AI gateway**, not an MCP server. It routes model requests.
 Claude Code, Codex, or VS Code still controls files, Terminal commands, MCP
@@ -395,14 +395,16 @@ Skip this step unless Codex was selected and `codex --version` works. This
 configures **Codex CLI**. It does not replace the ChatGPT/Codex desktop app's
 normal workspace sign-in or cloud service.
 
-First back up the existing user configuration:
+Select the user configuration:
 
 ```bash
-mkdir -p "$HOME/.local/state/development-setup/manual-backups"
-cp "$HOME/.codex/config.toml" \
-  "$HOME/.local/state/development-setup/manual-backups/codex-config.before-omniroute.toml" \
-  2>/dev/null || true
+TARGET_FILE="$HOME/.codex/config.toml"
 ```
+
+Follow steps 1-2 of the [configuration-file walkthrough](../../../shared/terminal-basics.md#create-or-edit-a-configuration-file)
+with this target instead of its Zsh example. Inspect ownership and parents,
+then create and record a private recovery copy or an absence record. Stop if
+the backup fails; keep earlier recovery folders.
 
 Open `~/.codex/config.toml` and merge this provider block exactly once. Do not
 replace unrelated settings:
@@ -416,7 +418,9 @@ requires_openai_auth = false
 wire_api = "responses"
 ```
 
-Next create `~/.codex/omniroute.config.toml` as a separate Codex profile:
+Next select `TARGET_FILE="$HOME/.codex/omniroute.config.toml"` and repeat the
+same inspection and backup steps before creating or merging this separate
+Codex profile:
 
 ```toml
 model_provider = "omniroute"
@@ -517,21 +521,24 @@ or old static example. Instead:
 4. Choose **Copy manual config**, not **Apply Config**.
 5. Confirm the generated target and fields match the help/configuration output
    of the installed `copilot` release.
-6. Back up that exact host file under
-   `~/.local/state/development-setup/manual-backups/` before merging the generated fields.
+6. Select that exact host file as `TARGET_FILE` and follow steps 1-2 of the
+   [configuration-file walkthrough](../../../shared/terminal-basics.md#create-or-edit-a-configuration-file)
+   before merging the generated fields. Record the private recovery folder and
+   stop on a backup failure.
 7. Start Copilot CLI and send a small read-only request.
 8. Confirm the request appears in OmniRoute and that the normal Copilot login
    still works after the custom route is disabled.
 
-Why manual copy is required: OmniRoute runs inside Docker. An **Apply Config**
-action would target the container's home folder, not the macOS user's files,
-and a correctly protected OmniRoute container refuses that write. Do not bind
+For a Docker installation, **Apply Config** targets the container's home folder,
+not the macOS user's files, and a correctly protected container refuses that
+write. Native and existing-service users must also review the destination and
+merge only the selected host configuration. Do not bind
 mount `~/.copilot`, `~/.codex`, or `~/.claude` merely to bypass this boundary.
 
 ## 11. Connect Raycast AI
 
-Skip this step unless **Raycast AI** was selected. The Raycast app is already a
-required Installation Centre install, but Custom Providers require a paid Raycast plan.
+Skip this step unless **Raycast AI** was selected. Install and verify the optional
+[Raycast app](../apps/raycast.md) first. Custom Providers require a paid Raycast plan.
 This connection uses Raycast's supported OpenAI-compatible provider interface;
 it is separate from Raycast's built-in models and does not consume Raycast AI
 credits. Provider usage and billing still apply.
@@ -545,18 +552,18 @@ the provider guide covers the alternatives and shared secret-handling rules.
 
 1. Open **Raycast Settings → AI → Models & Providers**.
 2. Scroll to **Custom Providers** and choose **Reveal Providers Config**.
-3. Raycast creates `~/.config/raycast/ai/providers.template.yaml`. If
-   `providers.yaml` does not exist, copy the template to that name. If it does
-   exist, merge the OmniRoute entry into its existing top-level `providers`
-   list; do not replace other providers.
-4. Before editing an existing file, make a private backup:
+3. Raycast creates `~/.config/raycast/ai/providers.template.yaml`.
+4. Select the live provider file before creating or editing it:
 
    ```bash
-   mkdir -p "$HOME/.local/state/development-setup/manual-backups"
-   cp "$HOME/.config/raycast/ai/providers.yaml" \
-     "$HOME/.local/state/development-setup/manual-backups/raycast-providers.before-omniroute.yaml" \
-     2>/dev/null || true
+   TARGET_FILE="$HOME/.config/raycast/ai/providers.yaml"
    ```
+
+   Follow steps 1-2 of the [configuration-file walkthrough](../../../shared/terminal-basics.md#create-or-edit-a-configuration-file)
+   with this target instead of its Zsh example. Record the private backup or
+   absence record and stop on any failure. For a new file, copy the template's
+   contents in the editor. For an existing file, preserve its top-level
+   `providers` list and other providers.
 
 5. Add this one provider entry. Replace both complete placeholders. Use an
    exact model ID returned by Step 5 that accepts OpenAI-compatible chat
@@ -697,7 +704,7 @@ and independent backups until the exact resource owner approves disposal.
 
 | Symptom | What to check |
 |---|---|
-| Dashboard does not open | `docker ps` and `docker logs --tail 100 omniroute`; confirm the host port is 20128 |
+| Dashboard does not open | For a container, check `docker ps` and `docker logs --tail 100 omniroute`; for native/existing services, use the recorded owner's status and logs. Confirm the selected address and port |
 | Container exits during a long coding request | Review Docker memory in `docker stats`; the image's light-use default is not enough for a coding agent |
 | Client receives `401` or `403` | Reload the endpoint key; do not substitute the upstream provider key |
 | No models appear | Reconnect the provider, check its quota, then retest `/v1/models` before the client |
@@ -708,16 +715,19 @@ and independent backups until the exact resource owner approves disposal.
 | Raycast reports `401` or `403` | Recopy or replace only the dedicated `raycast-local` endpoint key; do not use the upstream provider key |
 | A command launched in Warp bypasses OmniRoute | Load the endpoint key and client-specific configuration in that same tab, then use the matching Claude, Codex, or Copilot instructions from this guide |
 | Warp AI has no OmniRoute model | Expected: the documented path uses Warp as the terminal for Claude/Codex/Copilot CLI; Warp AI has no supported generic local endpoint setting |
-| `docker ps` shows no OmniRoute after it previously worked | Run `docker context show`; switch back to `orbstack` before assuming the container or volume was deleted |
+| `docker ps` shows no OmniRoute after it previously worked | Compare `docker context show` with the recorded engine owner; select that approved context (`desktop-linux` or `orbstack`) before assuming data was deleted |
 | Dashboard cannot apply a host config | Expected in Docker: copy and merge the manual host snippet instead |
 | Another computer cannot connect | Expected: the guide binds to loopback for local-only access; do not widen it casually |
 
 ## Optional completion checklist 🚦
 
-- [ ] OmniRoute appears as `Up` in `docker ps`.
-- [ ] Port 20128 is bound to `127.0.0.1`, not every network interface.
-- [ ] `docker context show` reports `orbstack`.
-- [ ] The `omniroute-data` volume exists and its backup policy is understood.
+- [ ] For a local container, OmniRoute appears as `Up` in `docker ps`,
+  `docker context show` matches the recorded engine owner, and the
+  `omniroute-data` volume exists with an understood backup policy.
+- [ ] For a native installation or existing service, its owner's start, stop,
+  update and recovery procedures are recorded; container checks are skipped.
+- [ ] A local service listens on `127.0.0.1:20128`, not every network interface;
+  an existing remote service uses its approved address and access policy.
 - [ ] Only approved providers are connected.
 - [ ] A separate, least-privilege endpoint key exists for local clients.
 - [ ] The endpoint key is stored in 1Password or the client's OS-backed secret

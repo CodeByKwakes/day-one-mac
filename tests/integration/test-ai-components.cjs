@@ -8,25 +8,53 @@ const { spawnSync } = require('node:child_process');
 const { buildAgents } = require('../../tools/build-agents.cjs');
 const root = path.resolve(__dirname, '../..');
 
-const localSkills = fs.readdirSync(path.join(root, '.agents/skills'), {withFileTypes:true}).filter(e => e.isDirectory()).map(e => e.name).sort();
-assert.deepEqual(localSkills, ['day-one-mac-maintenance'], 'General personal helpers must not be vendored as project skills');
-assert.deepEqual(fs.readdirSync(path.join(root, '.claude/skills')).filter(name => name !== '.DS_Store').sort(), localSkills, 'Claude aliases must expose only project-owned skills');
-assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, 'skills-lock.json'), 'utf8')).skills, {}, 'The repository lock must not restore migrated personal helpers');
+const ownedSkills = ['day-one-mac-maintenance'];
+const localSkills = fs.readdirSync(path.join(root, '.agents/skills')).filter(name => name !== '.DS_Store').sort();
+assert.deepEqual(localSkills.filter(name => name !== 'gstack'), ownedSkills, 'Only the owned maintenance skill and optional local gstack dependency belong here');
+assert.deepEqual(fs.readdirSync(path.join(root, '.claude/skills')).filter(name => name !== '.DS_Store').sort(), ownedSkills, 'Claude aliases must expose only project-owned skills');
+const lock = JSON.parse(fs.readFileSync(path.join(root, 'skills-lock.json'), 'utf8'));
+assert.equal(lock.version, 1);
+assert.deepEqual(Object.keys(lock.skills), ['gstack'], 'Only the reviewed optional contributor dependency belongs in the lock');
+assert.deepEqual(Object.keys(lock.skills.gstack).sort(), ['computedHash', 'skillPath', 'source', 'sourceType']);
+assert.equal(lock.skills.gstack.source, 'garrytan/gstack');
+assert.equal(lock.skills.gstack.sourceType, 'github');
+assert.equal(lock.skills.gstack.skillPath, 'SKILL.md');
+assert.match(lock.skills.gstack.computedHash, /^[a-f0-9]{64}$/);
 
 const check = spawnSync(process.execPath, ['tools/build-agents.cjs', '--check'], {cwd: root, encoding: 'utf8'});
 assert.equal(check.status, 0, check.stdout + check.stderr);
 const instruction = path.join(root, 'CLAUDE.md');
 assert(fs.lstatSync(instruction).isSymbolicLink());
 assert.equal(fs.realpathSync(instruction), path.join(root, 'AGENTS.md'));
-for (const entry of fs.readdirSync(path.join(root, '.agents/skills'), {withFileTypes:true}).filter(e => e.isDirectory())) {
-  const link = path.join(root, '.claude/skills', entry.name);
-  assert(fs.lstatSync(link).isSymbolicLink(), `Claude skill must share source: ${entry.name}`);
-  assert.equal(fs.realpathSync(link), fs.realpathSync(path.join(root, '.agents/skills', entry.name)));
+for (const name of ownedSkills) {
+  const link = path.join(root, '.claude/skills', name);
+  assert(fs.lstatSync(link).isSymbolicLink(), `Claude skill must share source: ${name}`);
+  assert.equal(fs.realpathSync(link), fs.realpathSync(path.join(root, '.agents/skills', name)));
   assert(fs.existsSync(path.join(link, 'SKILL.md')));
 }
 
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'day-one-roles-'));
 try {
+  // Exercise the lint boundary without installing or modifying any real toolkit.
+  const lintRoot = path.join(temp, 'lint fixture é');
+  fs.mkdirSync(path.join(lintRoot, 'tools'), {recursive: true});
+  fs.copyFileSync(path.join(root, 'tools/lint.sh'), path.join(lintRoot, 'tools/lint.sh'));
+  const owned = ['tools/owned.sh', '.agents/skills/day-one-mac-maintenance/check.sh', '.agents/skills/unreviewed/check.sh'];
+  const dependencies = ['.agents/skills/gstack/vendor.sh', 'node_modules/pkg/dependency.sh', '.husky/_/hook.sh'];
+  for (const file of [...owned, ...dependencies]) {
+    fs.mkdirSync(path.dirname(path.join(lintRoot, file)), {recursive: true});
+    fs.writeFileSync(path.join(lintRoot, file), '#!/bin/bash\ntrue\n');
+  }
+  const bin = path.join(temp, 'bin');
+  const capture = path.join(temp, 'lint-inputs.txt');
+  fs.mkdirSync(bin);
+  fs.writeFileSync(path.join(bin, 'shellcheck'), '#!/bin/sh\nif [ "$1" = --version ]; then\n  printf "version: fixture\\n"\nelse\n  printf "%s\\n" "$@" > "$LINT_FIXTURE_CAPTURE"\nfi\n', {mode: 0o700});
+  const lint = spawnSync('/bin/bash', [path.join(lintRoot, 'tools/lint.sh')], {encoding: 'utf8', env: {...process.env, PATH: `${bin}:${process.env.PATH}`, LINT_FIXTURE_CAPTURE: capture}});
+  assert.equal(lint.status, 0, lint.stdout + lint.stderr);
+  const lintInputs = fs.readFileSync(capture, 'utf8').split('\n');
+  for (const file of owned) assert(lintInputs.includes(path.join(lintRoot, file)), `Must lint owned/unreviewed source: ${file}`);
+  for (const file of dependencies) assert(!lintInputs.includes(path.join(lintRoot, file)), `Must exclude dependency: ${file}`);
+
   for (const directory of ['config/catalogs', 'templates/agents']) {
     fs.mkdirSync(path.dirname(path.join(temp, directory)), {recursive: true});
     fs.cpSync(path.join(root, directory), path.join(temp, directory), {recursive:true});

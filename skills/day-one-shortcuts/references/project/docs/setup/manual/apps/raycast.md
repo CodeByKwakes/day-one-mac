@@ -215,7 +215,7 @@ workspace recipe as the owner of its window layout and recovery checks.
 
 ### Raycast AI
 
-Raycast AI is not part of the required launcher. Leave it unconfigured unless
+Raycast AI is not part of the launcher. Leave it unconfigured unless
 it was deliberately selected after checking the operation prerequisites. When selected, keep tool approval
 on **Ask**, leave the globally allowed-tools list empty, then choose exactly one
 initial provider route in the [Raycast AI providers guide](raycast-ai-providers.md).
@@ -248,7 +248,9 @@ For Raycast AI, keep tool permissions on **Ask**. If you previously chose
 review the allow-list, and remove individual tools or reset the list. AI is not
 required by Day One Mac.
 
-## 6. Test the required launcher
+<a id="6-test-the-required-launcher"></a>
+
+## 6. Test the launcher
 
 1. Press `⌥Space` and confirm Raycast opens.
 2. Test `⌘Space`: it opens Spotlight in alongside mode and remains unassigned

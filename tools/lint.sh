@@ -13,8 +13,8 @@ usage() {
     '  --severity  error, warning, info or style (default: style, the strictest)' \
     '  --format    tty, gcc, json or checkstyle (default: tty)' \
     '' \
-    'Configuration, including the reviewed list of disabled checks and why each' \
-    'is disabled, lives in .shellcheckrc at the project root.'
+    'Configuration lives in .shellcheckrc at the project root. Document verified' \
+    'false positives with narrowly scoped inline suppressions.'
 }
 
 severity='style'
@@ -35,13 +35,14 @@ if ! command -v shellcheck >/dev/null 2>&1; then
 fi
 
 # Collect scripts deterministically, skipping Git metadata and third-party
-# dependencies. Dependencies are verified through the package lockfile; they
-# are not project source and must not be linted as if they were.
+# dependencies. Optional repo-local gstack has its own upstream conventions;
+# skills-lock.json records its source. Other local skills remain in scope.
 scripts=()
 while IFS= read -r -d '' script; do
   scripts+=("$script")
 done < <(find "$PROJECT_DIR" \
-  \( -name '.git' -o -name 'node_modules' -o -path '*/.husky/_' \) -prune \
+  \( -name '.git' -o -name 'node_modules' -o -path '*/.husky/_' \
+     -o -path "$PROJECT_DIR/.agents/skills/gstack" \) -prune \
   -o -type f -name '*.sh' -print0 | sort -z)
 
 if [[ "${#scripts[@]}" -eq 0 ]]; then
@@ -60,6 +61,6 @@ if shellcheck --severity="$severity" --format="$format" -- "${scripts[@]}"; then
 fi
 
 printf '\n✗ ShellCheck reported findings. Fix them, or — if a finding is genuinely\n' >&2
-printf '  a false positive — add a justified entry to .shellcheckrc or an inline\n' >&2
+printf '  a false positive — add a narrowly scoped inline\n' >&2
 printf '  "# shellcheck disable=SCxxxx" comment explaining why.\n' >&2
 exit 1

@@ -4,6 +4,9 @@
 
 This folder contains project-maintenance evidence rather than setup steps.
 
+- [31 October cross-device readiness review](2026-10-31-readiness-review.md)
+  separates corrected-candidate validation, earlier clean-VM software observations
+  and deferred human, recovery and device acceptance.
 - [24 October manual setup audit](2026-10-24-manual-setup-audit.md) records
   findings, approved repairs, assistant design and acceptance limits.
 - [24 October setup coverage inventory](2026-10-24-setup-coverage-inventory.md)
@@ -16,8 +19,10 @@ This folder contains project-maintenance evidence rather than setup steps.
 - [14 October technical audit](TECHNICAL-AUDIT-2026-10-14.md) and
   [implementation record](AUDIT-IMPLEMENTATION-2026-10-14.md) distinguish code
   remediation from managed-device, hardware and release pilot evidence.
-- [Acceptance procedure](../acceptance/ACCEPTANCE.md) covers packaged-runtime checks,
-  disposable native restore testing and release-readiness reports.
+- [Current acceptance procedure](../acceptance/CURRENT-READINESS.md) covers manual
+  guides, portable skills, native plugins and reader/device acceptance.
+- [Historical runtime acceptance](../acceptance/ACCEPTANCE.md) preserves the
+  packaged-runtime checks and native restore procedure for that earlier system.
 - [Candidate release notes](../releasing/RELEASE-CANDIDATE.md) separate proposed changes,
   compatibility limits and evidence still required before publication.
 - Executable structural and regression checks live in

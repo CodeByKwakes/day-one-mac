@@ -70,19 +70,36 @@ open until a new session has passed the owning guide's checks.
    backup directory for this edit:
 
    ```bash
-   umask 077
-   EDIT_BACKUP="$(mktemp -d "$HOME/.local/state/development-setup/edit.XXXXXX")" && {
+   (
+     set -euo pipefail
+     umask 077
+     if [[ -L "$TARGET_FILE" || ( -e "$TARGET_FILE" && ! -f "$TARGET_FILE" ) ]]; then
+       printf 'Stop: target is a link or is not a regular file.\n' >&2
+       exit 1
+     fi
+     if [[ -e "$TARGET_FILE" && ! -O "$TARGET_FILE" ]]; then
+       printf 'Stop: target belongs to another owner.\n' >&2
+       exit 1
+     fi
+     EDIT_BACKUP="$(mktemp -d "$HOME/.local/state/development-setup/edit.XXXXXX")"
+     chmod 700 "$EDIT_BACKUP"
      if [[ -f "$TARGET_FILE" ]]; then
-       cp -p "$TARGET_FILE" "$EDIT_BACKUP/original"
+       cp "$TARGET_FILE" "$EDIT_BACKUP/original"
+       chmod 600 "$EDIT_BACKUP/original"
+       cmp -s "$TARGET_FILE" "$EDIT_BACKUP/original"
      else
        printf 'The target did not exist before this edit.\n' > "$EDIT_BACKUP/absent.txt"
-     fi && printf 'Recovery folder: %s\n' "$EDIT_BACKUP"
-   }
+     fi
+     printf 'Recovery folder: %s\n' "$EDIT_BACKUP"
+   )
    ```
 
    Expected: a new recovery folder containing `original` or `absent.txt`. Stop
-   on any error. Record that folder and the target path privately; these terminal
-   variables are not available automatically in a later session.
+   on any error or if no recovery folder is printed; do not edit the target.
+   Each run creates a separate folder and preserves earlier copies. The saved
+   content is checked against the source and restricted to your account.
+   Record that folder and the target path privately; the backup variable is
+   scoped to this block and must be set again for recovery.
 
 3. Create the selected parent directory and open the file:
 

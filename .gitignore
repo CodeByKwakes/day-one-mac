@@ -1,5 +1,7 @@
 .DS_Store
 node_modules/
+# Optional third-party contributor dependency; provenance is in skills-lock.json.
+.agents/skills/gstack/
 dist/
 integrations/mcp/artifacts/
 *.log

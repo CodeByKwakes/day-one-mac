@@ -68,8 +68,19 @@ warnings individually; do not use recursive `sudo chmod` on Homebrew or home.
 brew install git jq ripgrep
 ```
 
-Expected result: `git --version`, `jq --version` and `rg --version` each report a
-version. Homebrew keeps already-installed packages under its own management.
+After installation, refresh the command cache in macOS's default Zsh terminal
+and check which executables it selects:
+
+```zsh
+rehash
+command -v git jq rg
+```
+
+Expected result: all three paths begin with `/opt/homebrew/bin/`. Then run
+`git --version`, `jq --version` and `rg --version`. The current terminal can
+otherwise keep selecting a previously used Apple executable. If a path still
+points elsewhere, repeat Step 5 and these checks before continuing. Homebrew
+keeps already-installed packages under its own management.
 
 ## Select further packages
 
