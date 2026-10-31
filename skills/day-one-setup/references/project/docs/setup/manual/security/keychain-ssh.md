@@ -67,6 +67,10 @@ session before retrying; do not globally delete every agent setting.
 
 ## 4. Configure the selected hosts
 
+Use the [file-editing walkthrough](../../../shared/terminal-basics.md#create-or-edit-a-configuration-file)
+if you need help creating a plain-text file. Select `~/.ssh/config` as the target;
+SSH configuration uses the verification below rather than the Zsh syntax check.
+
 merge these into `~/.ssh/config` using an editor, retaining unrelated
 hosts. Include only selected providers, before broad `Host *` defaults:
 

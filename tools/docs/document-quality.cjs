@@ -20,8 +20,12 @@ function checkDocumentationQuality(documents, bundledFiles = null, nodeMinimum =
     }
     const tokens = markdown.parse(text, {});
     const prose = tokens.filter(t => t.type === 'inline').map(t => t.content).join('\n');
-    if (/\b(?:re)?run the (?:local )?planner\b|\bplanner (?:also )?writes\b|\bModule (?:09|11) (?:still )?(?:generates|provisions)\b|\bDay One Script Commands\b/i.test(prose)) {
+    if (/\b(?:re)?run the (?:local )?planner\b|\bplanner (?:also )?writes\b|\bModule (?:09|11) (?:still )?(?:generates|provisions)\b|\bDay One Script Commands\b|\bworkspace\s+updates by creating a new export\b/i.test(prose)) {
       errors.push(`${file}: retired behaviour in current instructions`);
+    }
+    if (['README.md', 'docs/setup/manual/ai/day-one-skills.md'].includes(file)
+        && /npx skills@\S+ add CodeByKwakes\/day-one-mac/.test(text) && !text.includes('git --version')) {
+      errors.push(`${file}: Git prerequisite check missing from the skill installation entry point`);
     }
     for (const token of tokens) {
       if (token.type === 'fence' && /^(?:bash|sh|zsh)\b/.test(token.info)

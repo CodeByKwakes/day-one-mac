@@ -55,6 +55,10 @@ not prove its executable is available to the extension host.
 
 ## Create or merge the startup files
 
+If you have not edited hidden configuration files before, follow the
+[plain-text editing walkthrough](../../../shared/terminal-basics.md#create-or-edit-a-configuration-file).
+It uses macOS's existing editor and includes backup, saving and recovery steps.
+
 1. Back up existing `.zprofile`, `.zshrc` and `~/.config/zsh` with your chosen
    configuration owner. Keep a working terminal open.
 

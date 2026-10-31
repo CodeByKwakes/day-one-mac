@@ -1,196 +1,194 @@
 # Optional native Day One Mac plugins
 
-Install the main Day One Mac skill and its read-only local MCP connection as one
-native plugin. Plain [skill installation](day-one-skills.md) is sufficient when
-you need instructions without this connection. Choose one delivery method for
-the main skill. Neither method activates native agent templates.
+Install the portable main skill through Codex or Claude Code's plugin manager
+when you prefer native plugin lifecycle controls. These packages contain skills
+and guides only. They start no MCP server and activate no agent roles.
+Plain [skill installation](day-one-skills.md) remains the primary, sufficient route.
 
 ## Choose the installation route and locations
 
-Use the native plugin for Codex or Claude Code when you want the main skill and
-local MCP connection together. For Claude Desktop, use the separate
-[standalone MCP installation](../../../../integrations/mcp/README.md#method-a-native-macos).
-A Claude Code plugin does not configure Claude Desktop. Neither local route
-requires npm publication or a public plugin-directory listing.
+Choose one active delivery method for the main skill in each client. Use the
+[native plugin](#install-the-selected-client-package) for plugin discovery and
+updates, or the [Skills CLI](day-one-skills.md) for portable installation across
+supported clients. Claude Desktop is not a verified target for these native
+packages. The [Day One Mac MCP archive notice](../../../../integrations/mcp/README.md)
+owns older server installations; external MCP services remain separate.
 
-The recommended locations fit the optional
-[purpose-oriented workspace](../development/folders.md#choose-a-layout):
+Keep reviewed distribution files and installed copies separate:
 
 ```text
-~/Developer/
-├── Sandbox/day-one-mac/                 Editable source, if already kept here
-└── Resources/Project-Materials/day-one-mac/
-    └── releases/<version>/
-        ├── native-plugins/             Reviewed distribution files
-        └── mcp/                        Standalone tarball and checksum
-~/.local/share/
-├── day-one-mac/plugins/<version>/       Stable native package root
-└── day-one-mac-mcp/<version>/           Stable standalone MCP installation
+~/Developer/Resources/Project-Materials/day-one-mac/releases/<version>/native-plugins/
+~/.local/share/day-one-mac/plugins/<version>/
 ```
 
-`<version>` means the reviewed package version, for example `0.1.1`. The source
-location is illustrative: preserve an existing checkout wherever it lives.
-Normal users need no checkout. Resources holds distribution files; clients
-reference installed copies under `.local/share`. Keep these copies while any
-client references them, and retain the previous version for recovery. Do not
-put active installations in Sandbox, Downloads or Archive. No new symlink is
-required. Existing installations at other stable paths remain valid.
-
-Shell commands expand `$HOME`; JSON and TOML do not. `/absolute/path/to/...`
-is an example to replace with an observed path, not a required folder name or
-an indication that the package needs publishing. The standalone configuration
-utility prints resolved paths; native plugins resolve their bundled MCP paths
-through the client's plugin-root variable.
+Both package roots contain `codex` and `claude` directories directly. The source
+checkout may live elsewhere and is not needed by installed packages. Keep old
+and new artifacts in separate stable folders; avoid Downloads or a temporary
+folder as an active registration source. See the
+[purpose-oriented folder guide](../development/folders.md#choose-a-layout).
 
 ## AI-assisted installation
 
-Use a client with approved local file and command access. A chat without those
-tools can explain the manual steps but cannot install packages on the Mac.
-No general filesystem MCP server is required to bootstrap this installation.
-
-1. Give the assistant this inspection-only request:
+1. Ask a client with approved local file and command access:
 
    ```text
-   Plan installation of Day One Mac for my selected clients. Do not install yet.
-   Inspect existing skills, plugin registrations and direct MCP entries. Use the
-   native plugin for Codex/Claude Code and standalone MCP for Claude Desktop.
-   Verify the reviewed package version, provenance, hashes, Node requirement
-   and stable destination. Show commands, configuration changes, scope, private
-   backups, verification and recovery. Preserve unrelated settings and report
-   any sign-in, approval or restart that I must complete.
+   Inspect Day One Mac's existing skills and plugin registrations for my selected
+   clients. Plan installation of the reviewed skill-only native plugin. Do not
+   install yet. Show version, source, hashes, scope, stable paths, configuration
+   backups, duplicate-skill handling, verification and recovery. Do not register
+   a Day One Mac MCP server or change unrelated integrations.
    ```
 
-   Expected: a plan based on existing registrations and the selected artifact.
-   Stop if the artifact is unavailable or its provenance cannot be established.
-   A checksum beside a package detects corruption; it does not authenticate its
-   publisher. Obtain the expected checksum through a trusted source.
+   Expected: a bounded plan using the manual procedure below. Browser-only
+   guidance can explain steps but cannot perform local installation.
 
-2. Review the proposed change, then approve only the named clients, version,
-   paths and scope when ready. Asking for a plan does not authorize installation.
+2. Approve the named clients, reviewed artifact, paths and scope when ready.
 
-   Expected: the assistant follows the manual recipe below, or the linked
-   standalone recipe, backs up affected configuration privately and merges only
-   the selected entry. Existing plugin copies and unrelated servers are preserved.
-   It must not add a direct Day One Mac MCP connection alongside the same client's
-   native plugin. Standalone MCP does not install a skill.
-
-3. Complete sign-in and permission prompts yourself. If a client must restart,
-   finish or save current work before restarting it. Have the assistant verify
-   discovery and a harmless `list_guides` or `read_guide` call after the restart.
-
-   Expected: installed files, registration, server discovery and a successful
-   read are reported separately. A pending restart is an incomplete live check.
-   Keep the server read-only; this installation does not authorize preference
-   changes, publication, pushing or automatic future updates.
+   Expected: only the selected registration changes. Sign-in, client approvals
+   and required restarts remain explicit human actions.
 
 ## Manual installation
 
-Follow the prerequisites, then the procedure for your selected client below.
-For Claude Desktop, follow the standalone MCP recipe linked above instead.
+Use only the selected client procedure. A repository change does not update an
+installed package. Preserve the prior working version until verification passes.
 
 <a id="review-the-package"></a>
 
 ## Prerequisites and package review
 
-1. Install and sign in to the selected [AI client](clients.md). Check its command:
+1. Install and sign in to the selected [AI client](clients.md), then inspect its
+   version and plugin commands:
 
    ```bash
    codex --version
+   codex plugin --help
    ```
 
-   For Claude Code instead, run:
+   For Claude Code instead:
 
    ```bash
    claude --version
+   claude plugin --help
    ```
 
-   Expected: the selected CLI is available. The commands below were checked with
-   Codex CLI 0.165.0 and Claude Code 2.1.308 on 30 October 2026. These are tested
-   versions, not established minimums. Check `plugin --help` in your version;
-   stop if the required command is unavailable.
+   Expected: the required commands are available. Current client support must
+   be checked locally; package parsing does not establish account-backed use.
 
-2. Obtain the reviewed artifact for your client from a maintainer using the
-   [packaging procedure](../../../shared/reference/plugin-packaging.md).
-   Artifacts are local build outputs, not a public-directory or npm release.
-   Keep old and new versions in separate stable folders outside a checkout.
+2. Follow [receive and place a package](#receive-and-place-a-package) below.
 
-   Expected: the selected folder contains `codex` and `claude` directories.
-   Normal users do not need contributor builds or a permanent source checkout.
+   Expected: the package has a reviewed source, a matching archive checksum and
+   a new stable version folder. Preserve older artifacts and installed skills.
 
-3. Place the reviewed package in a new stable version folder. For version
-   `0.1.1`, the recommended root is below. It must contain the received `codex`
-   and `claude` directories directly; setting this variable does not copy or
-   install anything. If the package already lives elsewhere, use its confirmed
-   absolute root instead. Do not overwrite an existing version directory.
+3. In Terminal, select the received root. For the skill-only package version:
 
    ```bash
-   PACKAGE_ROOT="$HOME/.local/share/day-one-mac/plugins/0.1.1"
+   PACKAGE_ROOT="$HOME/.local/share/day-one-mac/plugins/0.1.2"
    test -f "$PACKAGE_ROOT/codex/day-one-mac/artifact.json"
    test -f "$PACKAGE_ROOT/claude/day-one-mac/artifact.json"
    ```
 
-   Expected: both tests return zero without output. Stop on a missing file.
-   Inspect each package's `artifact.json`, manifests, license notices and skill.
-   Compare the recorded hashes with the received files before trusting them.
-   Never use a folder inside an installed skill for private notes or backups.
+   Expected: both tests return zero. Setting the variable does not copy or
+   install files. Use the observed absolute path if your stable root differs.
+   Review the manifests, LICENSE and main skill. The archive checksum covers
+   the received files; `artifact.json` also records individual file hashes.
+   There should be no `runtime`, `.mcp.json`
+   or `mcp.json` in either plugin root. The native package starts no Node process;
+   selected reviewed helpers have their own prerequisites.
 
-4. Check the required Node.js version:
+4. Inspect duplicate main-skill discovery and back up the affected client
+   configuration privately through supported controls or a verified file copy.
+
+   Expected: one active main skill per client, without deleting shared skill
+   files needed by another client. Keep credentials and notes outside packages.
+
+## Receive and place a package
+
+The repository does not configure a public native-plugin download service.
+Obtain `day-one-mac-native-plugins-0.1.2.zip` from the maintainer through an approved
+channel, together with its expected SHA-256 digest and reviewed source identity.
+Alternatively, follow the [contributor build and handoff](../../../shared/reference/plugin-packaging.md#prepare-a-package-handoff)
+using a source snapshot that contains this plugin version. If neither source is
+available, use the [plain skill installation](day-one-skills.md).
+
+1. Put the received ZIP in Downloads and inspect its checksum:
 
    ```bash
-   command -v node
-   node --version
+   RECEIVED_ARCHIVE="$HOME/Downloads/day-one-mac-native-plugins-0.1.2.zip"
+   shasum -a 256 "$RECEIVED_ARCHIVE"
    ```
 
-   Expected: Node.js 22.20 or newer. The plugin launches `node`; a graphical
-   client must also find it. If the terminal works but the plugin reports
-   `spawn node ENOENT`, inspect that client's MCP logs and launch environment.
-   Follow [language setup](../languages.md) and the client's supported executable
-   configuration. Do not source `.zshrc` from an MCP launcher or add another
-   Node installation merely to mask the failure. Retain the prior working plugin.
+   Expected: the 64-character digest exactly matches the value supplied through
+   the approved channel. Stop on a mismatch. A digest from the archive itself
+   cannot authenticate its publisher. Adapt the filename for another version.
 
-5. Inspect existing standalone skills and direct MCP registrations. Disable a
-   duplicate main skill or server through its original client/installer controls
-   before enabling the plugin. Preserve files for other clients and unrelated
-   server entries. See [component ownership](../../../shared/explanation/ai-components.md).
+2. Extract the reviewed ZIP in Finder. Open the resulting folder and confirm
+   that it contains `codex` and `claude` directories directly. In Terminal, set
+   `RECEIVED_ROOT` to that folder's actual path; for this example:
 
-   Expected: one active main skill and one Day One Mac MCP connection per client.
-   Claude plugin skills have a namespace such as `/day-one-mac:day-one-mac`.
+   ```bash
+   RECEIVED_ROOT="$HOME/Downloads/day-one-mac-native-plugins-0.1.2"
+   test -f "$RECEIVED_ROOT/codex/day-one-mac/artifact.json" &&
+   test -f "$RECEIVED_ROOT/claude/day-one-mac/artifact.json"
+   ```
+
+   Expected: both checks succeed without output. Finder may choose a different
+   folder name, so inspect it before using the example. Open `artifact.json` and
+   the selected client's plugin manifest in a text editor; confirm the version
+   and publisher against the reviewed handoff.
+
+3. Copy to a new stable location. This block refuses an existing version folder:
+
+   ```bash
+   (
+     set -euo pipefail
+     PACKAGE_ROOT="$HOME/.local/share/day-one-mac/plugins/0.1.2"
+     test -f "$RECEIVED_ROOT/codex/day-one-mac/artifact.json"
+     test -f "$RECEIVED_ROOT/claude/day-one-mac/artifact.json"
+     mkdir -p "$(dirname "$PACKAGE_ROOT")"
+     mkdir -m 700 "$PACKAGE_ROOT"
+     cp -R "$RECEIVED_ROOT/codex" "$RECEIVED_ROOT/claude" "$PACKAGE_ROOT/"
+     diff -qr "$RECEIVED_ROOT/codex" "$PACKAGE_ROOT/codex"
+     diff -qr "$RECEIVED_ROOT/claude" "$PACKAGE_ROOT/claude"
+   )
+   ```
+
+   Expected: the copy checks show no differences. Inspect any existing parent
+   directory's ownership before the copy. Do not register a partial copy after
+   an error. Return to package review step 3 to set `PACKAGE_ROOT` in your
+   current terminal, then use the selected client procedure.
 
 ## Install the selected client package
 
-Choose only the client procedure you need. Codex registrations are personal.
-Claude Code offers user, project and local scopes; the examples below use
-**user** scope for one person's Mac setup. For a project-owned installation,
-choose `--scope project` deliberately and use that same scope for every later
-update/removal. Do not install the same plugin at several scopes accidentally.
+Codex registrations are personal. The Claude example uses user scope; choose
+project or local scope only deliberately and use that same scope for updates
+and removal. A Claude plugin skill has a namespace such as `/day-one-mac:day-one-mac`.
 
 ### Codex
 
-1. Register the marketplace:
+1. Register the selected marketplace:
 
    ```bash
    codex plugin marketplace add "$PACKAGE_ROOT/codex"
    ```
 
-   Expected: `day-one-mac-local` is registered at this source. If that name is
-   already registered at another source, use the update procedure below.
+   Expected: `day-one-mac-local` references this source. If it already points
+   elsewhere, use the update procedure before changing it.
 
-2. Inspect available packages:
+2. Inspect the available package:
 
    ```bash
    codex plugin list --marketplace day-one-mac-local --available --json
    ```
 
-   Expected: `day-one-mac` and its reviewed version appear.
+   Expected: the reviewed `day-one-mac` version is available.
 
-3. Install the selected plugin:
+3. Install it:
 
    ```bash
    codex plugin add day-one-mac@day-one-mac-local --json
    ```
 
-   Expected: the result identifies the installed plugin and cache location.
-   Record these privately, then complete verification below.
+   Expected: installed identity and cache location match the selected artifact.
 
 ### Claude Code
 
@@ -200,171 +198,134 @@ update/removal. Do not install the same plugin at several scopes accidentally.
    claude plugin validate "$PACKAGE_ROOT/claude" --strict
    ```
 
-   Expected: validation succeeds. Parsing is not a security review or account test.
+   Expected: strict validation passes. This is not a source or account review.
 
-2. Register it:
+2. Register the selected source:
 
    ```bash
    claude plugin marketplace add "$PACKAGE_ROOT/claude"
    ```
 
-   Expected: `day-one-mac-local` points at the reviewed folder.
+   Expected: `day-one-mac-local` references the reviewed directory.
 
-3. Install at the selected scope:
+3. Install at user scope:
 
    ```bash
    claude plugin install day-one-mac@day-one-mac-local --scope user
    ```
 
-   Expected: one installed plugin at user scope. Reload the session before testing.
+   Expected: one user-scoped installation. Reload before testing discovery.
 
 <a id="verify-and-remove"></a>
+<a id="verify-the-installed-version-and-connection"></a>
 
-## Verify the installed version and connection
+## Verify the installed version and skill
 
-1. Inspect the selected client's installation:
+1. Inspect the selected client's installed package:
 
    ```bash
    codex plugin list --marketplace day-one-mac-local --json
    ```
 
-   For Claude Code instead:
+   Or, for Claude Code:
 
    ```bash
    claude plugin list --json
    ```
 
-   Expected: installed/enabled status and version match the reviewed artifact,
-   not merely the marketplace's advertised version. Record any scope differences.
+   Expected: installed/enabled state and version match the selected artifact,
+   not merely a marketplace's advertised version.
 
-2. Start a fresh client session. Ask it to use Day One Mac's `list_guides`, then
-   `read_guide` with `{"id":"shortcuts"}`.
+2. Start a fresh client session and explicitly invoke the main skill for a
+   read-only explanation of the bundled shortcut guide.
 
-   Expected: the guide titles and shortcut recipe return successfully. Confirm
-   the client actually called the tool; an unaided answer does not prove MCP works.
+   Expected: one main skill is discovered and its bundled references resolve.
+   No tool call to `list_guides` or `read_guide` is required for skill use.
 
-3. Inspect the tool list. The default server exposes `list_guides`, `read_guide`,
-   `check_host`, `preview_desktop_click` and preview-only `desktop_click`.
+3. Inspect the client's MCP list for stale Day One Mac registrations.
 
-   Expected: `apply_desktop_click` is absent. Do not change preferences merely to
-   test discovery. A container reports Linux, not the Mac host. The skill can
-   describe approved changes using other client tools, so retain their approvals.
+   Expected: this skill-only plugin introduces none. An old direct registration
+   or older plugin may remain until disabled and the session refreshed. Follow
+   the archive notice; do not disable external MCP servers merely because this
+   particular integration is archived.
 
 ## Update an existing installation
 
-1. Record the current plugin version, scope and marketplace source with the list
-   commands above and `plugin marketplace list` in the chosen client. Preserve
-   the old artifact directory and back up the affected client configuration
-   through its supported export or a verified private file copy.
+1. Record the installed version, scope and marketplace source. Preserve the old
+   artifact and private configuration backup, then review the new package.
 
-   Expected: the previous source and permissions can be recovered. Do not clear
-   an entire client configuration or copy authentication files between clients.
+   Expected: the previous registration can be recovered without replacing
+   unrelated settings or authentication files.
 
-2. Review the new artifact and repeat the prerequisite checks. Set `PACKAGE_ROOT`
-   to the new reviewed root. In the same shell, record the exact old artifact root:
+2. Set `PACKAGE_ROOT` to the new stable root and record `PREVIOUS_PACKAGE_ROOT`
+   as the old absolute root in your private session notes.
 
-   ```bash
-   PREVIOUS_PACKAGE_ROOT="/absolute/path/to/previous-plugin-artifacts"
-   ```
+   Expected: both directories remain available and have different versioned contents.
 
-   Expected: both roots remain available and have different versioned contents.
-   Never overwrite the old artifact in place.
-
-3. For Codex, replace only the named marketplace registration:
+3. For Codex, repoint the local marketplace, then refresh the selected package:
 
    ```bash
    codex plugin marketplace remove day-one-mac-local
-   ```
-
-   Expected: only that source registration is removed. Then register the new source:
-
-   ```bash
    codex plugin marketplace add "$PACKAGE_ROOT/codex"
-   ```
-
-   Expected: the source points at the new root. Then refresh the installed plugin:
-
-   ```bash
    codex plugin add day-one-mac@day-one-mac-local --json
    ```
 
-   Expected: the installed version/cache matches the new artifact. Stop after any
-   error; retain the old artifacts and use recovery below. Git marketplace
-   `upgrade` is not a replacement for changing a local directory source.
+   Expected: only the selected source/package changes. Stop after an error.
+   A Git marketplace upgrade is not a substitute for changing a local source.
 
-4. For Claude Code instead, repoint the directory source, then update at the
-   existing installation scope:
+4. For Claude Code instead, repoint and update at the existing scope:
 
    ```bash
    claude plugin marketplace add "$PACKAGE_ROOT/claude"
-   ```
-
-   Expected: the named source points at the new directory. Then run:
-
-   ```bash
    claude plugin update day-one-mac@day-one-mac-local --scope user
    ```
 
-   Expected: the installed version changes at user scope. Replace the scope
-   only if the existing installation uses another one.
+   Expected: the installed package reflects the selected source and scope.
+   If it was disabled, enable it deliberately through supported plugin controls
+   only after checking duplicate standalone-skill discovery.
 
-5. Reload existing sessions and repeat all verification steps. Keep the old
-   source until the new skill invocation and harmless tool call work.
+5. Reload and repeat installed-version, skill-discovery and MCP-absence checks.
 
-   Expected: unrelated skills, MCP servers and permissions remain unchanged.
-   A repository commit or skill update alone does not update an installed plugin.
+   Expected: the new package works. Source edits alone do not update an installed
+   plugin or remove an older session's tool catalog.
 
 ## Recover or remove
 
-If an update fails, stop using the affected plugin. Preserve its error and the
-new artifact for inspection. Restore the old source using
-`PREVIOUS_PACKAGE_ROOT` from the update procedure:
+For recovery, repoint the named marketplace to `PREVIOUS_PACKAGE_ROOT` and repeat
+that client's refresh command. If a downgrade is refused, use supported plugin
+removal and reinstall from the preserved source; do not edit client caches.
+Restoring a server-bearing older version also requires reviewing its MCP policy.
 
-- Codex: remove only `day-one-mac-local`, add
-  `"$PREVIOUS_PACKAGE_ROOT/codex"`, then run the same `plugin add` command.
-- Claude Code: add `"$PREVIOUS_PACKAGE_ROOT/claude"` as the marketplace source,
-  then run the same scoped `plugin update` command.
-
-Expected: fresh installation status and a tool call prove recovery. If the client
-refuses a version downgrade, disable or remove only this plugin using its native
-controls, reinstall from the preserved source at its original scope, and verify.
-Do not force a downgrade by editing the cache. Restore a settings backup only
-if the exact affected entries cannot be recovered through supported controls;
-review newer unrelated settings before replacing anything.
-
-For intentional removal, disable the plugin in the client's plugin manager first.
-Then use the selected client's command:
+For removal, disable the selected plugin through its native manager, then run
+only the selected client's command:
 
 ```bash
 codex plugin remove day-one-mac@day-one-mac-local
 ```
 
-For Claude Code instead:
+Or, for Claude Code:
 
 ```bash
 claude plugin uninstall day-one-mac@day-one-mac-local --scope user
 ```
 
-Expected: the selected installation is absent. Remove the marketplace registration
-only when no remaining installation uses it. Developer applications, Mac settings,
-private notes and recovery records remain separate. Keep artifact folders until
-no client depends on them and recovery is no longer needed.
+Expected: only that installation is absent. Remove its marketplace only when no
+remaining installation uses it. Keep old artifacts, notes and recovery records
+until recovery is no longer needed. Developer applications and Mac settings are
+separate and are not uninstalled by plugin removal.
 
 ## Acceptance and troubleshooting
 
 The [client acceptance matrix](../../../shared/reference/client-acceptance.md)
-distinguishes fixtures, live checks and deferred integrations. Claude Code
-acceptance does not establish Claude Desktop compatibility. Native agent
-activation is also separate.
+distinguishes artifact fixtures, optional native CLI checks and live invocation.
 
-| Symptom | Next action |
+| Symptom | Action |
 |---|---|
-| Plugin commands are missing | Compare CLI version/help with the tested baseline; use plain skills until a supported client is available |
-| Same marketplace name, different source | Preserve the old path, then use the directory-source update procedure |
-| Installed version differs from the source | Check installed status/scope, rerun the selected update, then reload |
-| Main skill appears twice | Review standalone versus plugin discovery; disable only the duplicate registration |
-| MCP fails only in the graphical app | Inspect its log and Node executable environment; a terminal version check is insufficient |
-| Tool list includes apply unexpectedly | Stop and review startup flags and duplicate direct-server registrations before use |
+| Plugin commands missing | Inspect installed CLI help; use the plain skill route if unsupported |
+| Version or source differs | Inspect installed status and use the scoped directory-source update procedure |
+| Main skill appears twice | Disable only the duplicate delivery method; preserve other clients' shared files |
+| Day One MCP still appears | Inspect old direct registrations, plugin version and session refresh; this package declares no server |
+| Broken bundled reference | Retain the working artifact and report the selected package/version |
 
 Sources: [Codex plugin packaging](https://developers.openai.com/plugins/build/plugins),
 [Claude plugin management](https://code.claude.com/docs/en/discover-plugins).

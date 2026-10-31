@@ -18,6 +18,18 @@ This manual sequence is complete without an AI account or Day One Mac tools.
 
 ## Follow the base setup
 
+For a first personal Mac setup, start with the **core** selection, Apple's Zsh,
+user-owned configuration and the existing prompt. Choose the language stack your
+first project needs and one hosting provider with its approved authentication
+method. Existing or managed software keeps its owner. You can add chezmoi,
+Starship, extra clients and productivity apps after the first project works.
+
+Record these choices in the worksheet, then follow rows 1 through 8 below.
+Each row links the complete procedure. When a task asks you to save a file, use
+[create or edit a configuration file](../../shared/terminal-basics.md#create-or-edit-a-configuration-file).
+Core users can skip optional application installation in row 7 and use their
+chosen existing editor. Stop after row 8 until another project needs a capability.
+
 Each row is a complete task. Finish its verification before continuing.
 
 | Order | Task | Expected outcome |

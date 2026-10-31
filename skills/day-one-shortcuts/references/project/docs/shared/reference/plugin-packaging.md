@@ -1,72 +1,101 @@
 # Build native plugin artifacts
 
-Contributor tooling builds Codex and Claude Code packages from the generated
-main skill and the optional MCP server. Normal users install a reviewed artifact
-using the [native plugin recipe](../../setup/manual/ai/day-one-plugins.md);
-they do not need this checkout or its build helpers.
+Contributor tooling packages the generated main skill for Codex and Claude Code.
+Current native plugins contain no MCP server, runtime or auto-activated agent.
+Normal users follow the [plugin recipe](../../setup/manual/ai/day-one-plugins.md)
+and need no source checkout.
 
 ## Sources and output
 
-`templates/plugins/metadata.json` owns shared identity and version. The version
-matches `integrations/mcp/package.json`. `tools/build-plugins.cjs` produces native
-manifests, local marketplace catalogs and per-package `artifact.json` hashes.
-Each package contains the main skill with its independent references, compiled
-MCP code, reviewed guide snapshots and dependency license notices.
+`templates/plugins/metadata.json` owns plugin identity and version independently
+of the archived MCP package. `tools/build-plugins.cjs` copies the main skill,
+LICENSE and contained references, then writes native manifests, local marketplace
+catalogs and SHA-256 hashes in `artifact.json`. It needs no MCP dependencies,
+server build, Docker image or bundler.
 
-The bundler is pinned in the MCP contributor lockfile. It combines production
-code into one Node.js module without shipping `node_modules`. Runtime metadata
-retains the import-relative layout used by the server. Native manifests use
-`${PLUGIN_ROOT}` for Codex and `${CLAUDE_PLUGIN_ROOT}` for Claude Code.
-No account configuration, private notes, contributor skills or dependency trees
-are copied. Role templates stay inside skill assets and are not activated.
+No client configuration, private notes or contributor toolkit is copied. Role
+templates remain skill assets and are not activated. Source-independent skill
+helpers retain their own prerequisites; plugin startup runs no executable helper.
 
 ## Build and verify
 
-Prepare contributor dependencies as described in CONTRIBUTING.md, including the
-locked MCP dependencies. Inspect the recommended parent directory for ownership
-and unexpected symlinks before creating missing directories. For reviewed version
-`0.1.1`, prepare the parent and regenerate skills after editing public sources:
+1. Prepare contributor dependencies through CONTRIBUTING.md and regenerate skills:
+
+   ```bash
+   pnpm run skills:build
+   ```
+
+   Expected: generated packages match their reviewed sources.
+
+2. Choose a new absolute output outside the checkout with an existing trusted
+   parent. For example, prepare a private temporary parent:
+
+   ```bash
+   PLUGIN_REVIEW_PARENT="$(mktemp -d "${TMPDIR:-/tmp}/day-one-plugin-review.XXXXXX")"
+   pnpm run plugins:build --output "$PLUGIN_REVIEW_PARENT/native-plugins"
+   ```
+
+   Expected: new `codex` and `claude` directories. Existing outputs and symlinked
+   destinations are refused. Do not distribute a partial output after failure.
+   A temporary review folder is not a stable installation source; copy reviewed
+   artifacts to a versioned stable location before registration.
+
+3. Run artifact fixtures and the full gate:
+
+   ```bash
+   pnpm run test:plugins
+   pnpm run validate:complete
+   ```
+
+   Expected: relocation, hashes, contained sources, no-overwrite and absence of
+   MCP manifests/runtime pass. These fixtures leave live registrations alone.
+
+4. For native CLI validation, supply only approved executables:
+
+   ```bash
+   DAY_ONE_CLAUDE_BIN="$(command -v claude)" DAY_ONE_CODEX_BIN="$(command -v codex)" pnpm run test:plugins
+   ```
+
+   Expected: strict Claude plugin/marketplace validation and Codex marketplace
+   discovery. Claude uses a temporary config; Codex uses temporary command-line
+   source overrides. No plugin is installed or enabled in the live clients.
+   Without these variables, native CLI validation is not claimed. Neither form
+   proves account-backed skill invocation.
+
+## Prepare a package handoff
+
+After the build and checks succeed, create a ZIP with `codex` and `claude` at its
+root. The example uses the `PLUGIN_REVIEW_PARENT` from the build above and the
+version in `templates/plugins/metadata.json`:
 
 ```bash
-mkdir -p "$HOME/Developer/Resources/Project-Materials/day-one-mac/releases/0.1.1"
-pnpm run skills:build
-pnpm run plugins:build --output "$HOME/Developer/Resources/Project-Materials/day-one-mac/releases/0.1.1/native-plugins"
+(
+  set -euo pipefail
+  PLUGIN_VERSION="$(node -p "require('./templates/plugins/metadata.json').version")"
+  PLUGIN_ARCHIVE="$PLUGIN_REVIEW_PARENT/day-one-mac-native-plugins-$PLUGIN_VERSION.zip"
+  test ! -e "$PLUGIN_ARCHIVE" && test ! -L "$PLUGIN_ARCHIVE"
+  cd "$PLUGIN_REVIEW_PARENT/native-plugins"
+  zip -qr "$PLUGIN_ARCHIVE" codex claude
+  shasum -a 256 "$PLUGIN_ARCHIVE"
+)
 ```
 
-Use the reviewed package version in the output path and a destination that does
-not already exist. See the
-[distribution and installation layout](../../setup/manual/ai/day-one-plugins.md#choose-the-installation-route-and-locations).
+Expected: a new archive and its SHA-256 digest. Inspect `unzip -l` for the selected
+archive, extract it into a separate temporary folder, and compare both client
+trees with the built output before sharing. Include the digest and reviewed
+source identity in the approved handoff channel. A modified local source needs
+its reviewed diff as evidence; do not label it with a clean commit alone.
 
-Expected result: new `codex` and `claude` marketplace directories outside the
-checkout. Existing destinations and destination symlinks are refused. A failed
-build retains its reserved output for inspection; do not distribute partial
-output or retry into that directory. Builds do not register or start a client.
+The receiver follows the [package receiving procedure](../../setup/manual/ai/day-one-plugins.md#receive-and-place-a-package).
+Creating an archive is local preparation. Publishing or sending it to another
+person requires the corresponding approval. Keep the active registration source
+in a stable directory rather than the temporary build location.
 
-Run the plugin fixture and combined gate:
+The MCP is archived; its source, dependency lock, previous server-bearing plugin
+builder and related evidence live under
+`maintainers/archive/2026-10-31-day-one-mac-mcp`. They are excluded from normal
+packaging and CI. The [archive notice](../../../integrations/mcp/README.md)
+owns existing-connection guidance. Restoring an MCP is a separate reviewed change.
 
-```bash
-pnpm run test:plugins
-pnpm run validate:complete
-```
-
-The plugin fixture checks relocation into paths with spaces and Unicode,
-source-independent MCP startup, read-only discovery, license notices, hashes,
-output ownership and no-overwrite. It leaves live client configuration alone.
-For authoritative native Claude validation, supply an approved CLI explicitly:
-
-```bash
-DAY_ONE_CLAUDE_BIN="$(command -v claude)" pnpm run test:plugins
-```
-
-Expected result: strict Claude validation of the generated plugin and marketplace,
-in addition to the protocol fixture. The fixture uses a temporary Claude config
-directory, disables updates and does not log into an account. Without this
-variable, native CLI validation is not claimed. CLI validation does not establish
-account-backed invocation. Set `DAY_ONE_CODEX_BIN` to an approved Codex executable
-to check local marketplace discovery using temporary command-line overrides;
-the fixture does not register, install or enable it. CI runs the portable artifact fixture; native client
-acceptance and MCP container acceptance remain separate checks.
-
-Keep generated artifacts outside Git and inside a stable reviewed location before
-manual registration. Public-directory submission, registry publication, pushing
-and automatic client installation require separate scope.
+Public submission, registry publication, pushing and automatic client updates
+require their own scope. A successful build does not register a marketplace.

@@ -67,21 +67,12 @@ integration and agent boundaries. Edit shared policies under
    temporary locations and mock external commands; they do not prove live
    account, provider, hardware or managed-device acceptance.
 
-   When changing MCP or shared AI integration contracts, install its locked
-   contributor dependencies and run the combined gate:
-
-   ```bash
-   npm --prefix integrations/mcp ci --ignore-scripts --no-audit --no-fund
-   pnpm run validate:complete
-   ```
-
-   This adds MCP protocol and relocated-package checks to the root gate. Docker
-   image build/smoke checks remain separate, as in CI. These are optional-server
-   contributor checks, not prerequisites for ordinary guide or skill users.
-
-   Native plugin changes also run `pnpm run test:plugins`. The
+   Native plugin changes also run `pnpm run test:plugins`, or the combined
+   `pnpm run validate:complete` gate. The
    [plugin packaging reference](docs/shared/reference/plugin-packaging.md) owns
-   artifact generation and optional native CLI acceptance.
+   skill-only artifact generation and optional native CLI validation. The archived
+   Day One Mac MCP is not built or tested by normal CI; see its contributor archive
+   before proposing a restoration.
 
 4. For skill packaging or installer changes, test the pinned Skills CLI. Install
    it in a temporary contributor directory, not as a global application:
@@ -104,6 +95,25 @@ integration and agent boundaries. Edit shared policies under
    Git hooks check formatting and messages; CI checks all supported runners.
 
 ## Publishing and compatibility
+
+In the source checkout, use `maintainers/acceptance/CURRENT-READINESS.md` to
+separate local artifact checks, public availability and clean-device pilots.
+Contributor acceptance records are not part of the installed skill package.
+For an opt-in public-link check with approved network access, run:
+
+```bash
+pnpm run docs:check-links
+```
+
+Expected: a JSON summary and any unresolved destinations. Exit 0 means the checked
+URLs were reachable, 1 means a 404/410 response, and 2 means a network failure or
+another unverified response such as 403/429. Inspect those pages manually before
+declaring them broken. Redirects and requests are bounded; local/example addresses,
+historical changelog links and compatibility pages are excluded. Add `--json` for
+all results. The check does not validate remote fragments or certify page content.
+Normal validation remains offline; link-checker tests use injected responses.
+For a managed certificate error, use the approved system trust configuration;
+never disable TLS verification to make the check pass.
 
 There is no runtime release pipeline, installer archive or release token
 requirement. Reviewed commits and optional tags identify skill snapshots.

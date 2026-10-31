@@ -569,7 +569,6 @@ templates/agents/shared/day-one-verifier.md
 
 # AI component contracts
 docs/shared/explanation/ai-components.md
-config/mcp/day-one-mac.json
 
 # Optional native plugin distribution
 docs/setup/manual/ai/day-one-plugins.md

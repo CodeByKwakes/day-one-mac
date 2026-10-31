@@ -1,0 +1,48 @@
+{
+  "name": "day-one-mac-contributor-tooling",
+  "version": "1.5.0",
+  "private": true,
+  "description": "Contributor-only linting and Git hook tooling for Day One Mac",
+  "packageManager": "pnpm@12.4.2",
+  "engines": {
+    "node": ">=22.20.0",
+    "pnpm": ">=10"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "lint": "tools/lint.sh && markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.agents\"",
+    "lint:shell": "tools/lint.sh",
+    "lint:markdown": "markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.agents\"",
+    "validate": "tools/validate.sh",
+    "test:vscode-profiles": "node tests/integration/test-vscode-profiles.cjs",
+    "test:vscode-profile-replacement": "node tests/integration/test-vscode-profile-replacement.cjs",
+    "commitlint": "commitlint",
+    "validate:static": "tools/validate.sh --static",
+    "test:integration": "tools/validate.sh --regressions",
+    "docs:sync": "node tools/sync-vscode-reference.cjs",
+    "docs:check": "node tools/sync-vscode-reference.cjs --check",
+    "skills:build": "node tools/build-agents.cjs && node tools/build-skills.cjs",
+    "skills:check": "node tools/build-agents.cjs --check && node tools/build-skills.cjs --check",
+    "test:skills": "node tests/integration/test-skills-package.cjs",
+    "test:skills-cli": "node tests/integration/test-skills-cli.cjs",
+    "docs:export": "node tools/export-docs.cjs",
+    "docs:build": "node tools/build-docs-site.cjs",
+    "agents:build": "node tools/build-agents.cjs",
+    "agents:check": "node tools/build-agents.cjs --check",
+    "test:mcp": "npm --prefix integrations/mcp test && npm --prefix integrations/mcp run test:package",
+    "validate:complete": "tools/validate.sh --all && pnpm run test:mcp && pnpm run test:plugins && actionlint",
+    "plugins:build": "pnpm run skills:check && npm --prefix integrations/mcp run build && node tools/build-plugins.cjs",
+    "test:plugins": "npm --prefix integrations/mcp run build && node --test tests/plugins/*.test.cjs"
+  },
+  "lint-staged": {
+    "*.{md,mdx}": "markdownlint-cli2",
+    "*.{sh,bash}": "shellcheck --severity=style"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.5.1",
+    "markdownlint-cli2": "^0.23.3"
+  }
+}

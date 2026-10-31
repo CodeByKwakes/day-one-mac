@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sourceRevision": "ca887a0a167bb1eb6f10ced641e25970a25cc482",
+  "files": {
+    "integrations/mcp/Dockerfile": "65d05294e150f4b3a73490731e9bf747866eca1787577be7fa7e639847b91b5d",
+    "integrations/mcp/LICENSE": "8b48a142d0a6c0f90710df7e66b18835e9bdaa66a209cdf29406ffaadd56b2a7",
+    "integrations/mcp/README.md": "fe9300556c78d33496955ebc081499f337ecbe9a661e6af10ee3993bee30049b",
+    "integrations/mcp/compose.yaml": "466af5c439a342789771de10416827d05d484a0f8e102b8d70c38800dd9db3c5",
+    "integrations/mcp/npm-shrinkwrap.json": "b6c9cb0124bf53b1d05c37094c3245cd7fd1103b60fbb7fb55cf7c56564493bc",
+    "integrations/mcp/package.json": "4cde083cf9282566c62c5ab50c8f50ccc0c8c661857f606cdf2224c2b87bb4af",
+    "integrations/mcp/scripts/bundle-guides.mjs": "7bdeb243689b5d498585c1f1bbedf1ac04ea5f7d1e60186c8454fc20813adabe",
+    "integrations/mcp/scripts/image-artifact.mjs": "1f94a0dd86ed23ec0b524b4ef2f37df8a4cfba38c501f784a687d63321f7007b",
+    "integrations/mcp/scripts/package-artifact.mjs": "28a1a5b7f97308dfac5f2d62dd7c50fedbb5868713644710e1dc1c5ca3af7912",
+    "integrations/mcp/src/configure.ts": "f45a7ff405e103aab725d9fdddfc5e50f0964b299b69070728d1564699b961ce",
+    "integrations/mcp/src/index.ts": "3421320948f2cfbfc45ff59e27a3141437ae0f1cec6cc327de689a9c60546bf3",
+    "integrations/mcp/src/server.ts": "1244dd719c349ed9239933024a0248c71a4b896a494c586e0a34b712d4fb2df6",
+    "integrations/mcp/src/spec.ts": "5fd309503e124119c6478429ad021c3ff346aaff37b8eb983554921901b62347",
+    "integrations/mcp/test/artifacts.test.ts": "f82ab0fe0f4409f26c763d444d8274c058386cd721a1fa00ca4a3d34292d6be2",
+    "integrations/mcp/test/configure.test.ts": "4dcde0f2e92f9d296ce8b012e3cd6c9a6a24290d6f93fb57eef326d673237ff6",
+    "integrations/mcp/test/docker-smoke.ts": "519c3d15298d19478a488b1fdf206d5f83b391e3b43226ba692bdeb9578451b4",
+    "integrations/mcp/test/package-smoke.ts": "3110b40f3b5c1e1869961bdeb6c1949d0df6a5b5ab00e826a39ac3233ba825dd",
+    "integrations/mcp/test/server.test.ts": "f0e7f75591d325c97f5af95f97841fcad36e476cad7ea61e96f7ae57d54dd4ba",
+    "integrations/mcp/tsconfig.json": "05cfd48965ce4f666c7797609bba9ed28b537af0119cdef4d05f6ce00e42c7d4",
+    "config/mcp/day-one-mac.json": "a6a3250db22cbbf3ce4e9b9eacd46463f6a3017b017ba6935c31b16b95ff1dec",
+    ".dockerignore": "4b68169fb7aad1d2a49beb404de27f4fd51825268c31f80b8d0c23ab681eabb2",
+    "tools/build-plugins.cjs": "5a3d9d117e9630c94edb79b9cf99d6ed7591309c3e22da18fd9918fe248ae237",
+    "tests/plugins/native.test.cjs": "91d4c838ce1bb6a60a01b8d9c2a147a4d113add9ce141d7d5e83e22a02230105",
+    "package.json": "864a0c00fbbef2c3e72240889dc9acd9ced3abe20ee3bf2f60d570c4368e0d8d",
+    ".github/workflows/validate.yml": "af7b83f20897a986c12c40d2688afa72e47567672a769e8a92c1a1d86b007697"
+  }
+}

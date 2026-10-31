@@ -1,7 +1,7 @@
 {
   "name": "day-one-mac",
-  "version": "0.1.1",
-  "description": "Day One Mac skills and a local, read-only MCP connection for Apple-silicon setup guidance.",
+  "version": "0.1.2",
+  "description": "Portable Day One Mac skills and guides for Apple-silicon development setup.",
   "author": {
     "name": "Day One Mac contributors"
   },

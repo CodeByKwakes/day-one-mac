@@ -167,16 +167,24 @@ a single shell change.
 ### 5. Validate the active result
 
 ```bash
-/opt/homebrew/bin/zsh -n "$HOME/.zshrc"
 /bin/zsh -n "$HOME/.zshrc"
 ```
 
-For shared shell files, validate each one you changed:
+Expected: no output and exit status zero. Apple's `/bin/zsh` is already present.
+If you selected Homebrew Zsh, also check the changed files with that installed
+executable; installing Homebrew Zsh is not required for this procedure.
+
+For shared shell files, check the files that exist. The aliases file is optional:
 
 ```bash
-/opt/homebrew/bin/zsh -n "$HOME/.zprofile"
-/opt/homebrew/bin/zsh -n "$HOME/.config/zsh/path.zsh"
-/opt/homebrew/bin/zsh -n "$HOME/.config/zsh/aliases.zsh"
+(
+  set -euo pipefail
+  for shell_file in "$HOME/.zprofile" "$HOME/.config/zsh/path.zsh" "$HOME/.config/zsh/aliases.zsh"; do
+    if [[ -f "$shell_file" ]]; then
+      /bin/zsh -n "$shell_file"
+    fi
+  done
+)
 ```
 
 Open a new Warp or Terminal tab only after syntax validation passes. A new

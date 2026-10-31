@@ -1,1 +1,2 @@
-node_modules/.bin/lint-staged
+# Archived package metadata must not select historical contributor tasks.
+node_modules/.bin/lint-staged --config package.json

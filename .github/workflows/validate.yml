@@ -25,11 +25,6 @@ jobs:
         env:
           HUSKY: 0
         run: pnpm install --frozen-lockfile
-      - name: Verify optional MCP server
-        run: |
-          npm --prefix integrations/mcp ci --ignore-scripts --no-audit --no-fund
-          npm --prefix integrations/mcp test
-          npm --prefix integrations/mcp run test:package
       - name: Verify independent native plugin artifacts
         run: pnpm run test:plugins
       - name: Validate pull request title
@@ -51,30 +46,13 @@ jobs:
           npm install --prefix "$SKILLS_TEST_DIR" --ignore-scripts --no-audit --no-fund skills@1.7.4
           pnpm run test:skills-cli "$SKILLS_TEST_DIR/node_modules/skills/bin/cli.mjs"
 
-  mcp-container:
-    name: MCP container
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
-        with:
-          node-version: '24'
-      - name: Build and test the final MCP image
-        run: npm --prefix integrations/mcp run image:build
-      - name: Verify final image over stdio
-        run: |
-          npm --prefix integrations/mcp ci --ignore-scripts --no-audit --no-fund
-          npm --prefix integrations/mcp run build
-          npm --prefix integrations/mcp run test:docker
-
   validate:
     name: validate
-    needs: [platform, mcp-container]
+    needs: [platform]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
       - name: Require every platform check to succeed
         env:
           PLATFORM_RESULT: ${{ needs.platform.result }}
-          MCP_RESULT: ${{ needs.mcp-container.result }}
-        run: test "$PLATFORM_RESULT" = success && test "$MCP_RESULT" = success
+        run: test "$PLATFORM_RESULT" = success

@@ -87,7 +87,9 @@ sample before replacing active data. Database migrations may need a logical
 backup and application-specific recovery rather than a package downgrade.
 
 For an old manager installation, use [legacy removal](../../shared/migration/remove-legacy-manager.md).
-Current skills have no runtime installation.
-Removing it preserves developer apps and setup records. An assistant workspace
-updates by creating a new export; see [assistant operation](../ai/operation.md).
+Removing the legacy manager preserves developer apps and setup records.
+Update an installed skill through its [scoped lifecycle procedure](ai/day-one-skills.md#update-and-remove),
+or use the [native plugin update procedure](ai/day-one-plugins.md#update-an-existing-installation)
+for that delivery method. Keep private session notes outside the installed
+package and resume through [assistant operation](../ai/operation.md).
 To add support to this project, follow [adding capabilities](../../shared/reference/adding-capabilities.md).

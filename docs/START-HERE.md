@@ -26,6 +26,11 @@ retired scripted setup runner.
 | AI-assisted setup | You review guidance or approve a local client's bounded plan | [Prepare the assistant](setup/ai/README.md) |
 | Manual setup | You run each command and complete each application step | [Follow the manual sequence](setup/manual/README.md) |
 
+First-time users can use the [minimal manual path](setup/manual/README.md#follow-the-base-setup)
+and [file-editing walkthrough](shared/terminal-basics.md#create-or-edit-a-configuration-file).
+Introduce optional tools after the first selected project works. Experienced users
+can jump to a capability through the [documentation index](README.md).
+
 AI users prepare a client and choose direct provider access, existing OmniRoute,
 local OmniRoute or gateway setup later before depending on the assistant.
 If no client is available yet, use the manual bootstrap instructions or browser guidance.

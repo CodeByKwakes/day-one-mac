@@ -9,12 +9,12 @@ Passing one does not establish the others. Recheck after relevant upgrades.
 
 | Surface | Source and fixture coverage | Live evidence and limits |
 |---|---|---|
-| Codex native plugin | Manifest, relocated MCP startup, packaged references and hashes | Version 0.1.1: signed-in main-guide reads recorded on 30 October 2026; existing sessions need reload after an update |
-| Claude Code native plugin | Strict native validation when `DAY_ONE_CLAUDE_BIN` is supplied; independent server handshake | Version 0.1.1 with Claude Code 2.1.308: skill invocation and guide reads recorded on 30 October 2026 |
+| Codex native plugin | Skill-only relocation, packaged references, hashes and absence of server manifests | Version 0.1.2 needs fresh installed-version and skill-invocation checks; version 0.1.1 server-backed reads were recorded on 30 October 2026 |
+| Claude Code native plugin | Skill-only artifact checks; strict native validation when the CLI is supplied | Version 0.1.2 needs fresh skill-invocation checks; version 0.1.1 invocation was recorded with Claude Code 2.1.308 on 30 October 2026 |
 | Standalone skills for Codex, Claude Code and Copilot | Skills CLI 1.7.4 isolated scope, symlink, update and removal cases | Discover the installed skill and request the intended workflow in each selected client; installer fixtures do not prove account access |
-| Claude Desktop | Shared stdio server is available; no Desktop-specific acceptance established | Integration deferred. Claude Code plugin or symlink acceptance does not prove Desktop discovery |
+| Claude Desktop | No active Day One Mac MCP distribution | Integration deferred; Claude Code acceptance does not prove Desktop discovery |
 | Optional native agent roles | Generated adapter consistency and read-only policy checks | Activation and client permission checks remain separate, opt-in work |
-| Docker MCP server | Non-root image and stdio resource/host-denial smoke fixture | Linux-container evidence does not prove access to macOS preferences |
+| Archived Day One Mac MCP | Historical server/container fixtures preserved with source | Not part of current releases or CI; restoration needs separate review |
 
 These observations refer to the stated installed snapshot. Edited source guides
 and generated packages are not installed client updates until deliberately

@@ -27,19 +27,24 @@ software and permissions remain subject to the device owner's policy.
 | Delivery | Choose it when | Complete procedure |
 |---|---|---|
 | Main skill | You want the assistant's instructions and bundled guides | [Skill installation](docs/setup/manual/ai/day-one-skills.md) |
-| Native plugin | You also want Day One Mac's read-only local MCP tools in Codex or Claude Code | [Plugin installation and lifecycle](docs/setup/manual/ai/day-one-plugins.md) |
+| Native plugin | You prefer native plugin discovery and lifecycle controls in Codex or Claude Code | [Plugin installation and lifecycle](docs/setup/manual/ai/day-one-plugins.md) |
 
 The main `day-one-mac` skill includes setup, checking, maintenance, recovery,
 VS Code, application, shortcut, Second Brain and gateway workflows. You do not
 need separate specialist installations for these capabilities. Install a
 specialist only when you deliberately want its narrower scope. Choose one
-active delivery method for the main skill in each client.
+active delivery method for the main skill in each client. Native plugins are
+skill-only; the [Day One Mac MCP is archived](integrations/mcp/README.md).
 
 ### Install the main skill from GitHub
 
-Use Node.js 22.20.0 or newer, npm and an approved AI client. The selected
-published revision must contain `skills/`; local commits are unavailable until
-pushed. In Terminal, create and enter a new private setup folder:
+Use Node.js 22.20.0 or newer, npm, working Git and an approved AI client. Check
+`node --version`, `npm --version` and `git --version` first. If Git requests Apple
+developer tools, complete the [Command Line Tools installation](docs/setup/manual/homebrew.md#1-check-apple-command-line-tools)
+before continuing. The [skill guide](docs/setup/manual/ai/day-one-skills.md#choose-a-reviewed-source)
+explains how to select a published revision or use a reviewed source archive.
+Local changes are unavailable through GitHub until published. In Terminal,
+create and enter a new private setup folder:
 
 ```bash
 SETUP_WORKSPACE="$HOME/Developer/Setup/day-one-$(date +%Y%m%d-%H%M%S)"
@@ -53,8 +58,10 @@ Expected: a new setup workspace, not an unrelated project. List the packages:
 npx skills@1.7.4 add CodeByKwakes/day-one-mac --list
 ```
 
-Expected: `day-one-mac` appears. If it does not, use a reviewed published revision
-or the [local-source procedure](docs/setup/manual/ai/day-one-skills.md#install-from-a-local-checkout-or-source-archive).
+Expected: `day-one-mac` appears. Inspect its workflows at the selected source;
+the default branch can be older than the guide you are reading. If a needed
+workflow is absent, use a reviewed revision containing it or the
+[local-source procedure](docs/setup/manual/ai/day-one-skills.md#install-from-a-local-checkout-or-source-archive).
 Install only for your selected clients; remove unused client names:
 
 ```bash

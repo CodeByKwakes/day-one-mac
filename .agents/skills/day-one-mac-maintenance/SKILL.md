@@ -8,9 +8,9 @@ description: Maintain Day One Mac's manual guides, portable AI skills, reviewed 
 Read AGENTS.md, docs/START-HERE.md and the owning capability guide. AI-assisted
 and manual setup share canonical manual recipes. There is no mandatory runtime,
 global setup command, setup wizard, background manager or permanent checkout
-requirement. The separately installed optional
-MCP server under `integrations/mcp` is a bounded tool transport, not a setup
-route or machine manager.
+requirement. The Day One Mac MCP source is archived under
+`maintainers/archive/2026-10-31-day-one-mac-mcp`; it is excluded from active
+plugin builds and CI. Preserve its source and restoration boundaries.
 
 ## Optional contributor toolkit
 

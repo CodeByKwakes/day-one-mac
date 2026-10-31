@@ -5,21 +5,47 @@ developer shortcuts and repository contribution through one entry point. Its wor
 references are bundled. Specialist skills are optional independent installations.
 Neither installation requires the Day One Mac runtime or a permanent checkout.
 
-For the main skill plus a read-only local MCP connection, the
-[optional native plugin](day-one-plugins.md) is an alternative distribution.
-Choose one route for the main skill and avoid duplicate server registrations.
+The [optional native plugin](day-one-plugins.md) distributes the same main skill
+through native client lifecycle controls. It includes no MCP server. Choose one
+active delivery method for the main skill per client.
 
 ## Prerequisites and source
 
-Use an approved AI client and Node.js 22.20.0 or newer with npm. Check
-`node --version` and `npm --version`; follow the [language toolchain guide](../languages.md)
-if needed. The commands below use Skills CLI 1.7.4. `npx` downloads the CLI when
+Use an approved AI client, Node.js 22.20.0 or newer with npm, and working Git for
+GitHub or other Git sources. Check `node --version`, `npm --version` and
+`git --version`. Follow the [language toolchain guide](../languages.md) for Node
+and npm. If Git is missing or opens Apple's developer-tools prompt, finish the
+[Command Line Tools installation](../homebrew.md#1-check-apple-command-line-tools),
+then rerun `git --version`. A native AI client does not install Git for you.
+
+The commands below use Skills CLI 1.7.4. `npx` downloads the CLI when
 it is absent from the npm cache. Review its prompts and selected destinations.
+
+### Choose a reviewed source
 
 GitHub installation requires a published revision containing `skills/`. A local
 commit is available only through the local path until it is pushed. A branch or
 release URL selects that published revision; the repository shorthand selects
 its default branch. Check the source before installing or updating.
+
+| Source | Before installation | What it supplies |
+|---|---|---|
+| Published Git revision | Inspect `skills/day-one-mac/SKILL.md` and the needed workflows at that revision | The published snapshot, which may differ from this guide |
+| Reviewed source archive or checkout | Confirm `skills/day-one-mac/SKILL.md` and its bundled workflow files exist | That source's generated packages |
+| Manually copied skill | Copy the complete reviewed package, including references | That package without requiring npm or Git for the copy |
+
+To obtain a source archive, open the reviewed revision on GitHub and choose
+**Code > Download ZIP**, then extract it in Finder. Open Terminal, type `cd `
+with a trailing space, drag the extracted folder from Finder into Terminal and
+press Return. Check `pwd` and `ls skills/day-one-mac` before following the local
+procedure. A source archive contains instructions and packages; it does not
+contain downloaded developer applications or account access.
+
+The workflow list in this guide describes the matching local package. Before
+using a GitHub command for `day-one-vscode` or `day-one-macos-apps`, verify that
+the chosen revision contains those package directories. If it does not, use a
+reviewed source archive containing them or wait for publication. Do not infer
+availability from the presence of the older umbrella skill alone.
 
 ## Install from GitHub
 

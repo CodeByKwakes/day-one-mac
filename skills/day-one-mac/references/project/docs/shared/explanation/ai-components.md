@@ -9,14 +9,15 @@ without any skill, server or permanent checkout.
 | Category | Responsibility | Source and supporting files |
 |---|---|---|
 | Skill | Instructions and knowledge selected within a conversation | `templates/skills`, canonical `docs/setup/manual`, AI guidance in `docs/setup/ai` |
-| Plugin integration | Executable tools, protocol connections and application actions | `helpers`, `integrations/mcp`, `integrations/shortcuts`, `integrations/warp` |
+| Plugin integration | Executable tools, protocol connections and application actions | `helpers`, `integrations/shortcuts`, `integrations/warp` |
 | Agent | A delegated goal, decisions and evidence across steps | Shared policies in `templates/agents/shared`; generated Codex, Claude and Copilot adapters beside them |
 
 An executable helper belongs to the integration layer without being a native
 plugin package. Contributor builds produce native Codex and Claude manifests
-from shared metadata under `templates/plugins`. The optional MCP package supplies
-tools, resources and prompts, not an autonomous agent loop.
-MCP prompts carry skill-like instructions; agents consume the server's interface.
+from shared metadata under `templates/plugins`. Current native plugins contain skills and guides only. The Day One Mac MCP
+implementation is archived, outside active packaging and CI. Its
+[archive notice](../../../integrations/mcp/README.md) preserves existing-connection
+and restoration guidance. External MCP servers remain separate integrations.
 
 `agents/openai.yaml` inside a skill is discovery/UI metadata, not a native agent.
 Obsidian templates, Bases, Notion CSVs and knowledge guides are skill assets.
@@ -127,17 +128,10 @@ authentication, managed policy and permission approvals remain client-specific.
 
 ## Integration ownership
 
-The optional MCP server uses `config/mcp/day-one-mac.json` for reviewed guide
-sources, client identifiers, timeouts and the default read-only tool list.
-Its configuration command prints native entries; it does not merge settings,
-start servers or grant permissions. Use one direct or Docker route per server.
-The [MCP guide](../../setup/manual/ai/mcp.md) owns client registration and the
-[Docker guide](../../setup/manual/ai/mcp-docker.md) owns gateway configuration.
-
-The Day One server exposes preview separately from apply. Startup opt-in and
-private backups are required to expose apply; token and drift checks still apply.
-Client approval is independent of any confirmation text supplied by a caller.
-Containers report their own Linux environment and cannot change Mac preferences.
+The Day One Mac MCP is archived. Skills and manual setup do not depend on it.
+Do not re-enable a connection from an older plugin merely to read a bundled guide.
+The [MCP guide](../../setup/manual/ai/mcp.md) owns external client registration and
+the [Docker guide](../../setup/manual/ai/mcp-docker.md) owns gateway configuration.
 
 Angular, Nx, Context7, Azure DevOps, GitHub, Playwright, Postgres and DataGrip MCP
 servers are external integrations. Docker is optional connection infrastructure.

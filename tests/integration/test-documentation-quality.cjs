@@ -26,6 +26,11 @@ assert(checkDocumentationQuality(new Map([['guide.md', 'Use Node 22 or newer.']]
 assert.deepEqual(checkDocumentationQuality(new Map([['guide.md', 'Use Node.js 22.20 or newer.']]), null, '22.20.0'), []);
 assert(checkDocumentationQuality(new Map([['guide.md', '# Guide\n\n[Continue]()']])).some(error => error.includes('empty destination')));
 assert(checkDocumentationQuality(new Map([['guide.md', '# Guide\n\nUse Day One Script Commands for setup checks.']])).some(error => error.includes('retired behaviour')));
+assert(checkDocumentationQuality(new Map([['guide.md', 'An assistant workspace\nupdates by creating a new export.']])).some(error => error.includes('retired behaviour')));
+for (const entry of ['README.md', 'docs/setup/manual/ai/day-one-skills.md']) {
+  assert(checkDocumentationQuality(new Map([[entry, 'Use Node.js and npm.\n\n```bash\nnpx skills@1.7.4 add CodeByKwakes/day-one-mac --list\n```']])).some(error => error.includes('Git prerequisite')));
+  assert.deepEqual(checkDocumentationQuality(new Map([[entry, 'Check `git --version` first.\n\n```bash\nnpx skills@1.7.4 add CodeByKwakes/day-one-mac --list\n```']])), []);
+}
 const titles = new Map([['guide.md', 'Troubleshoot the client']]);
 assert.deepEqual(findDocumentation(titles, 'spawn node ENOENT', new Map([['guide.md', '# Client\n\nIf spawn node ENOENT appears, inspect PATH.']])), [['guide.md', 'Troubleshoot the client']]);
 assert.deepEqual(findDocumentation(titles, 'not-present', new Map([['guide.md', '# Client']])), []);
