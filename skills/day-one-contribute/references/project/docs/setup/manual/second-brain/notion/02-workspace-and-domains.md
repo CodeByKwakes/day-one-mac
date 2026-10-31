@@ -58,7 +58,10 @@ If work requires separate permissions:
 
 The [example domain CSV](../../../../../extensions/second-brain/notion/seeds/domains.csv)
 is optional. Copy it to a private folder and edit that copy to contain your
-selected domains before importing it. No planner generates or customises it:
+selected domains before importing it. Review each row's sensitivity and keep
+`AI Policy = No AI` until its policy has been approved. These labels record your
+decisions; they do not enforce Notion permissions or block AI access. No planner
+generates or customises the CSV:
 
 1. Open Domains.
 2. Use the database menu and choose **Merge with CSV** or import the CSV as

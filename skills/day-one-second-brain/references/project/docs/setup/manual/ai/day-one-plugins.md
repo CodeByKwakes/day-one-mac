@@ -103,9 +103,12 @@ installed package. Preserve the prior working version until verification passes.
 
 ## Receive and place a package
 
-The repository does not configure a public native-plugin download service.
-Obtain `day-one-mac-native-plugins-0.1.2.zip` from the maintainer through an approved
-channel, together with its expected SHA-256 digest and reviewed source identity.
+Download `day-one-mac-native-plugins-0.1.2.zip` and `SHA256SUMS` from the
+[0.1.2 preview release](https://github.com/CodeByKwakes/day-one-mac/releases/tag/plugins-v0.1.2).
+Confirm the repository, reviewed source commit and acceptance limits in the
+release notes. This is a manual artifact handoff, with no automatic client update.
+An approved maintainer handoff may also supply the ZIP, expected SHA-256 digest
+and reviewed source identity.
 Alternatively, follow the [contributor build and handoff](../../../shared/reference/plugin-packaging.md#prepare-a-package-handoff)
 using a source snapshot that contains this plugin version. If neither source is
 available, use the [plain skill installation](day-one-skills.md).
