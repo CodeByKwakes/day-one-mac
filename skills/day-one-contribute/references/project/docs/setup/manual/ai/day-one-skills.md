@@ -28,9 +28,9 @@ it is absent from the npm cache. Review its prompts and selected destinations.
 ### Choose a reviewed source
 
 GitHub installation requires a published revision containing `skills/`. A local
-commit is available only through the local path until it is pushed. A branch or
-release URL selects that published revision; the repository shorthand selects
-its default branch. Check the source before installing or updating.
+commit is available only through the local path until it is pushed. A full commit
+ID in a GitHub tree URL selects that exact published snapshot; the repository
+shorthand selects its default branch. Check the source before installing or updating.
 
 | Source | Before installation | What it supplies |
 |---|---|---|
@@ -89,15 +89,24 @@ availability from the presence of the older umbrella skill alone.
    exist. Review the displayed installation destinations. Remove client names
    you do not use. Choose the shared/symlink method when prompted.
 
-For a published branch, tag or commit, use the full GitHub tree URL pointing to
-its `skills/day-one-mac` directory as the source. Replace `PUBLISHED_REF` with
-an actual published revision; it is not a literal branch name:
+To install an exact published snapshot, open its commit page on GitHub and copy
+the full 40-character commit ID. Replace `PUBLISHED_COMMIT` below with that ID;
+do not paste a branch name into this example:
 
 ```bash
 npx skills@1.7.4 add \
-  https://github.com/CodeByKwakes/day-one-mac/tree/PUBLISHED_REF/skills/day-one-mac \
+  https://github.com/CodeByKwakes/day-one-mac/tree/PUBLISHED_COMMIT/skills/day-one-mac \
   --skill day-one-mac --agent codex github-copilot claude-code
 ```
+
+Expected result: the CLI's `Source:` line shows the complete commit ID and the
+`skills/day-one-mac` path before the installation summary.
+
+Skills CLI 1.7.4 treats the first path segment after `tree/` as the revision.
+Branch or tag names containing `/`, such as `codex/agents-router`, cannot be
+passed in this tree-URL form. Use the full commit ID instead. If an error names
+only the first part of your branch, check the `Source:` line and correct the URL;
+do not change account credentials to repair a misread revision.
 
 ## Install from a local checkout or source archive
 

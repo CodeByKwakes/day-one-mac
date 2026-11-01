@@ -37,6 +37,17 @@ read was recorded. The previous package and duplicate Claude standalone link
 were preserved, and shared skill files remained unchanged. Ordinary implicit
 activation and broader workflow coverage remain unverified.
 
+On 1 November 2026, Skills CLI 1.7.4 fetched public source
+`b9f663f682ed5f5d7c60bf76f7e9410dc5f8a478` into disposable homes and workspaces.
+It listed all 11 packages, installed the main skill at project and isolated
+global scopes, and installed the VS Code and macOS apps specialists at project
+scope. The selected destinations were Codex, Copilot and Claude Code; installed
+bytes, contained Claude links and all ten main-skill workflows matched the source.
+No client or provider ran. The [installation guide](../../setup/manual/ai/day-one-skills.md#install-from-github)
+uses a full commit ID because this CLI misreads tree URLs for branch names
+containing `/`. Fresh npm bootstrap and an update through the public source were
+not tested by this check.
+
 ## Application and device workflows
 
 | Workflow | Fixture coverage | Required live check |

@@ -4,6 +4,9 @@
 
 This folder contains project-maintenance evidence rather than setup steps.
 
+- [1 November public skills installation](2026-11-01-public-skills-installation.md)
+  records actual GitHub installation into isolated destinations, the slash-branch
+  URL failure and the verified commit-ID route.
 - [1 November reader keyboard review](2026-11-01-reader-keyboard-review.md)
   records two source-supported keyboard repairs, failing/passing regressions and
   the remaining browser and assistive-technology acceptance boundary.
