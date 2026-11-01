@@ -5,6 +5,10 @@ and the static reader. Record the candidate source identity and observed results
 privately. A working-tree check does not establish public availability or device
 acceptance. Historical runtime rehearsals remain in `ACCEPTANCE.md`.
 
+The [1 November published-snapshot record](../audits/2026-11-01-published-readiness.md)
+collects observed results and remaining gaps for its named sources. Use it as
+dated evidence; this checklist still defines the required acceptance work.
+
 ## Verify local artifacts
 
 1. Run `pnpm run validate:complete` from the candidate source.
@@ -41,8 +45,12 @@ default GitHub branch already contains it.
 ## Complete clean-device pilots
 
 Use disposable Apple-silicon accounts/devices with recovery prepared. Run both
-manual and AI-assisted journeys against the minimum supported macOS version and
+manual and AI-assisted journeys against the
+[minimum supported macOS version](../../docs/shared/prerequisites.md#platform-and-evidence) and
 the current approved version. Record the exact OS build and selected software.
+Exclude releases below that floor from current acceptance work. If the minimum
+and current approved targets are the same OS build, one pilot per route covers
+both matrix columns.
 
 - Begin with no usable Git, Node, Homebrew or editor configuration. Confirm each
   prerequisite is installed before the first command that needs it.

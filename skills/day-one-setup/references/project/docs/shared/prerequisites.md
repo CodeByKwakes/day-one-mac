@@ -8,19 +8,19 @@ accounts selected in the [decision worksheet](decisions.md).
 | Requirement | How to check | Expected result |
 |---|---|---|
 | Native Apple silicon | `uname -m` | `arm64`; use a terminal without Rosetta |
-| macOS guidance baseline | `sw_vers -productVersion` | macOS 15 or newer; use a vendor-supported, IT-approved build |
+| macOS guidance baseline | `sw_vers -productVersion` | macOS 26 or newer; use a vendor-supported, IT-approved build |
 | Storage | System Settings, General, Storage | At least 30 GB free for the base; budget separately for Xcode, containers, models and projects |
 | Account | Confirm with the owner or IT | Personal administrator, or managed standard daily account with approved elevation |
 | Backup | Restore a sample file from another location | Readable, independent copy of the data you need |
 | Network | Open the approved software and hosting services | Trusted connection; managed proxy, VPN and certificate requirements supplied by IT |
 | Power | Connect the power adapter | Stable power during updates and downloads |
 
-CI configuration includes macOS 15 and 26. The guides do not certify every
+CI configuration targets macOS 26. The guides do not certify every
 future OS or application combination. Hardware and managed-device
 validation require separate evidence for the actual device and OS build. Follow
 [verification](verification.md) for the distinction between local checks and
 physical-device acceptance. Intel, Rosetta execution, Windows and Linux are not
-supported setup targets.
+supported setup targets. macOS releases below 26 are outside the supported scope.
 
 ## Tool prerequisites by task
 
