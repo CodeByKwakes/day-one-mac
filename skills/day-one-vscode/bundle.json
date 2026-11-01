@@ -180,8 +180,8 @@
     "references/project/templates/phase-05-shell-files/home/.config/zsh/path.zsh": "558131621c69519593e3083485d8cdf909c435cf135c2837da0da34c3441f4b6",
     "references/project/templates/phase-05-shell-files/home/.gitignore_global": "bedc246e40a79019e8c33d36fd8ceaa396fa905ca6de7dc62ed9ee20201880a5",
     "references/project/templates/phase-05-shell-files/home/.zprofile": "63ab0ec3c64f07ca8b2335ba93e8fe4905021552edf064289a50ce47b11d58cd",
-    "references/project/templates/phase-05-shell-files/home/.zshrc": "e5f59b321ac85df53939a587997c7e27876afe394b4df529a91e8dbc06a6dc66",
-    "references/project/templates/phase-05-shell-files/README.md": "6575ca5c79596ee8f727d64cc932b1601524079c119051d6dc6629956a6b64f0",
+    "references/project/templates/phase-05-shell-files/home/.zshrc": "0cc680f3209e494079ad8afee92f2cf8ce7380a9eed3d4ff51ddd0ae4e6c2b99",
+    "references/project/templates/phase-05-shell-files/README.md": "dd69773363446191c0a36044f43c71cad7a3278a56b54a86097b7185ef7b214b",
     "SKILL.md": "5326f5db5f19eedb4d0e52cdae0bbd85f01822c86bafeec112d43278cadbf15a"
   }
 }
