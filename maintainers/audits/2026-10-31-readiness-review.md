@@ -1,5 +1,8 @@
 # Cross-device readiness review
 
+> Subsequent pilot evidence and the macOS 15 stop instruction are recorded in the
+> [1 November follow-up](2026-11-01-readiness-followup.md). This review retains its original scope.
+
 **Overall readiness verdict: Not ready.** The reviewed software routes and local
 checks pass within their recorded scope, but required recovery, human and device
 acceptance remain unverified.

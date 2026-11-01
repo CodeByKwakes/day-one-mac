@@ -4,6 +4,9 @@
 
 This folder contains project-maintenance evidence rather than setup steps.
 
+- [1 November readiness follow-up](2026-11-01-readiness-followup.md) records
+  selected minimum-OS passes, the partial AI route, shell reference repairs and
+  the user's decision to end further macOS 15 testing.
 - [31 October cross-device readiness review](2026-10-31-readiness-review.md)
   separates corrected-candidate validation, earlier clean-VM software observations
   and deferred human, recovery and device acceptance.
