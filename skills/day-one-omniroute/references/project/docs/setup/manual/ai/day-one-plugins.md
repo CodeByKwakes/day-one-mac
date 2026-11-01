@@ -245,6 +245,12 @@ and removal. A Claude plugin skill has a namespace such as `/day-one-mac:day-one
    Expected: one main skill is discovered and its bundled references resolve.
    No tool call to `list_guides` or `read_guide` is required for skill use.
 
+   When Claude reports both `installPath` and `readFromFolder`, compare the
+   fresh session's loaded path with the registered folder. The cache path can
+   differ from the folder actually read. For a bounded read-only check, approve
+   the verified loaded folder as its read scope; a cache-only scope can deny
+   the bundled references.
+
 3. Inspect the client's MCP list for stale Day One Mac registrations.
 
    Expected: this skill-only plugin introduces none. An old direct registration

@@ -4,6 +4,9 @@
 
 This folder contains project-maintenance evidence rather than setup steps.
 
+- [1 November installed Claude acceptance](2026-11-01-native-claude-installed-acceptance.md)
+  records the approved user-scope update, recovered read-scope failure and
+  separately approved successful retry through the registered plugin.
 - [1 November native Claude acceptance](2026-11-01-native-claude-acceptance.md)
   records a session-only 0.1.2 invocation, the initial activation failure and
   the unchanged persistent registration.

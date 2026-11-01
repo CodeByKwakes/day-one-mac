@@ -10,7 +10,7 @@ Passing one does not establish the others. Recheck after relevant upgrades.
 | Surface | Source and fixture coverage | Live evidence and limits |
 |---|---|---|
 | Codex native plugin | Skill-only relocation, packaged references, hashes and absence of server manifests | On 1 November 2026, version 0.1.2 passed installed-version/hash checks and one explicit read-only shortcuts-guide request in Codex CLI 0.165.0; broader workflows remain unverified |
-| Claude Code native plugin | Skill-only artifact checks; strict native validation when the CLI is supplied | On 1 November 2026, version 0.1.2 passed one explicit read-only shortcuts-guide request with session-only loading in Claude Code 2.1.308; persistent installation and broader workflows remain unverified |
+| Claude Code native plugin | Skill-only artifact checks; strict native validation when the CLI is supplied | On 1 November 2026, version 0.1.2 passed user-scope update/hash checks and an explicit read-only shortcuts-guide request through its registered source in Claude Code 2.1.308; broader workflows remain unverified |
 | Standalone skills for Codex, Claude Code and Copilot | Skills CLI 1.7.4 isolated scope, symlink, update and removal cases | Discover the installed skill and request the intended workflow in each selected client; installer fixtures do not prove account access |
 | Claude Desktop | No active Day One Mac MCP distribution | Integration deferred; Claude Code acceptance does not prove Desktop discovery |
 | Optional native agent roles | Generated adapter consistency and read-only policy checks | Activation and client permission checks remain separate, opt-in work |
@@ -28,13 +28,14 @@ shortcut guide. It did not run a shortcut or establish clean-device acceptance.
 The previous package was preserved, and the existing standalone skill remained
 disabled in Codex. Private evidence records the approval, update and response.
 
-The Claude check used the same source revision with `--plugin-dir`. Its first
-natural-language request did not activate the skill under Read-only tool
-restrictions. Prefixing the request with `/day-one-mac:day-one-mac` produced
-three successful reads of the same bundled documents, with no additional tools.
-Package hashes and the existing disabled 0.1.1 registration remained unchanged.
-This establishes explicit session invocation; ordinary implicit activation and
-a persistent 0.1.2 installation remain unverified.
+The Claude installed check used the same source revision and the namespaced
+command `/day-one-mac:day-one-mac`, without a session-only plugin override.
+Client initialization identified the registered 0.1.2 source. The trace contained
+two successful reads: the shortcuts workflow and manual guide. The response
+reported that the skill loader supplied the main skill; no separate main-skill
+read was recorded. The previous package and duplicate Claude standalone link
+were preserved, and shared skill files remained unchanged. Ordinary implicit
+activation and broader workflow coverage remain unverified.
 
 ## Application and device workflows
 
