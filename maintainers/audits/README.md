@@ -4,6 +4,9 @@
 
 This folder contains project-maintenance evidence rather than setup steps.
 
+- [1 November native Claude acceptance](2026-11-01-native-claude-acceptance.md)
+  records a session-only 0.1.2 invocation, the initial activation failure and
+  the unchanged persistent registration.
 - [1 November native Codex acceptance](2026-11-01-native-codex-acceptance.md)
   records the approved 0.1.2 update and one read-only request through the installed
   plugin, with recovery and broader acceptance limits.
