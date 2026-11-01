@@ -4,6 +4,10 @@
 
 This folder contains project-maintenance evidence rather than setup steps.
 
+- [1 November published readiness](2026-11-01-published-readiness.md) consolidates
+  publication, exact-source installation and live reader checks, records the
+  macOS 26+ support clarification, and lists the
+  remaining accessibility, recovery, human and device acceptance gaps.
 - [1 November public skills installation](2026-11-01-public-skills-installation.md)
   records actual GitHub installation into isolated destinations, the slash-branch
   URL failure and the verified commit-ID route.
@@ -20,7 +24,7 @@ This folder contains project-maintenance evidence rather than setup steps.
   records the approved 0.1.2 update and one read-only request through the installed
   plugin, with recovery and broader acceptance limits.
 - [1 November readiness follow-up](2026-11-01-readiness-followup.md) records
-  selected minimum-OS passes, the partial AI route, shell reference repairs and
+  historical macOS 15 passes, the partial AI route, shell reference repairs and
   the user's decision to end further macOS 15 testing.
 - [31 October cross-device readiness review](2026-10-31-readiness-review.md)
   separates corrected-candidate validation, earlier clean-VM software observations

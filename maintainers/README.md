@@ -12,6 +12,7 @@ engineering decisions and evidence for people changing Day One Mac.
 | Revisit the paused Day One Mac MCP | [Source archive and restoration boundaries](archive/2026-10-31-day-one-mac-mcp/README.md) |
 | Set up local checks and hooks | [Contributor tooling](contributing/CONTRIBUTOR-TOOLING.md) |
 | Accept current guides, skills and published snapshots | [Current readiness checklist](acceptance/CURRENT-READINESS.md) |
+| Review the tested published snapshot and open acceptance gaps | [1 November readiness evidence](audits/2026-11-01-published-readiness.md) |
 | Follow the documentation audit fixes | [Readiness implementation plan](plans/2026-10-31-readiness-fixes.md) |
 | Understand historical runtime acceptance | [Historical acceptance](acceptance/ACCEPTANCE.md) |
 | Follow branch and release procedures | [Git workflow](contributing/GIT-WORKFLOW.md) |

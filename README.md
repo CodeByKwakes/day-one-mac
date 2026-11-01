@@ -1,6 +1,7 @@
 # Day One Mac
 
-Set up and maintain a development environment on an Apple-silicon Mac. Follow
+Set up and maintain a development environment on an Apple-silicon Mac running
+[macOS 26 or newer](docs/shared/prerequisites.md#platform-and-evidence). Follow
 manual instructions yourself, or use an AI assistant to inspect the Mac and
 propose selected changes. Keep working tools with their existing installation
 owners and verify each capability before relying on it.
