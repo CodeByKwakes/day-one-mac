@@ -4,6 +4,9 @@
 
 This folder contains project-maintenance evidence rather than setup steps.
 
+- [1 November reader keyboard review](2026-11-01-reader-keyboard-review.md)
+  records two source-supported keyboard repairs, failing/passing regressions and
+  the remaining browser and assistive-technology acceptance boundary.
 - [1 November installed Claude acceptance](2026-11-01-native-claude-installed-acceptance.md)
   records the approved user-scope update, recovered read-scope failure and
   separately approved successful retry through the registered plugin.

@@ -228,7 +228,9 @@ if (typeof document !== 'undefined') {
     menuToggle.textContent = expanded ? 'Close guides' : 'Browse guides';
   });
   window.addEventListener('keydown', event => {
-    if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey
+    if (event.defaultPrevented || event.isComposing
+        || event.key.toLowerCase() !== 'k' || !(event.metaKey || event.ctrlKey)
+        || event.altKey || event.shiftKey
         || /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName)
         || document.activeElement?.isContentEditable) return;
     event.preventDefault();
@@ -398,7 +400,11 @@ if (typeof document !== 'undefined') {
       if (link.getAttribute('href') === `#${path}#${encodeURIComponent(anchor)}`) link.setAttribute('aria-current', 'location');
       else link.removeAttribute('aria-current');
     }
-    if (heading) { heading.scrollIntoView(); heading.focus({ preventScroll: true }); }
+    if (heading) {
+      heading.setAttribute('tabindex', '-1');
+      heading.scrollIntoView();
+      heading.focus({ preventScroll: true });
+    }
     else { window.scrollTo(0, 0); if (focus) focusGuide(); }
     readerStatus.textContent = anchor && !heading ? 'That section is not in this guide. Showing the guide from the top.' : '';
   }
