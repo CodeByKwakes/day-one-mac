@@ -4,6 +4,9 @@
 
 This folder contains project-maintenance evidence rather than setup steps.
 
+- [1 November native Codex acceptance](2026-11-01-native-codex-acceptance.md)
+  records the approved 0.1.2 update and one read-only request through the installed
+  plugin, with recovery and broader acceptance limits.
 - [1 November readiness follow-up](2026-11-01-readiness-followup.md) records
   selected minimum-OS passes, the partial AI route, shell reference repairs and
   the user's decision to end further macOS 15 testing.

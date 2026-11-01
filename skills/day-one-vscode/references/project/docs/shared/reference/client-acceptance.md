@@ -9,7 +9,7 @@ Passing one does not establish the others. Recheck after relevant upgrades.
 
 | Surface | Source and fixture coverage | Live evidence and limits |
 |---|---|---|
-| Codex native plugin | Skill-only relocation, packaged references, hashes and absence of server manifests | Version 0.1.2 needs fresh installed-version and skill-invocation checks; version 0.1.1 server-backed reads were recorded on 30 October 2026 |
+| Codex native plugin | Skill-only relocation, packaged references, hashes and absence of server manifests | On 1 November 2026, version 0.1.2 passed installed-version/hash checks and one explicit read-only shortcuts-guide request in Codex CLI 0.165.0; broader workflows remain unverified |
 | Claude Code native plugin | Skill-only artifact checks; strict native validation when the CLI is supplied | Version 0.1.2 needs fresh skill-invocation checks; version 0.1.1 invocation was recorded with Claude Code 2.1.308 on 30 October 2026 |
 | Standalone skills for Codex, Claude Code and Copilot | Skills CLI 1.7.4 isolated scope, symlink, update and removal cases | Discover the installed skill and request the intended workflow in each selected client; installer fixtures do not prove account access |
 | Claude Desktop | No active Day One Mac MCP distribution | Integration deferred; Claude Code acceptance does not prove Desktop discovery |
@@ -20,6 +20,13 @@ These observations refer to the stated installed snapshot. Edited source guides
 and generated packages are not installed client updates until deliberately
 refreshed through their own lifecycle. No account or device readiness should be
 inferred from this table when resuming a setup.
+
+The 1 November Codex check used source revision
+`c0bc02400aa8e5c501fb1638bdfe977b32158bbe`. Its trace contained three successful
+reads from the installed plugin: the main skill, shortcuts workflow and manual
+shortcut guide. It did not run a shortcut or establish clean-device acceptance.
+The previous package was preserved, and the existing standalone skill remained
+disabled in Codex. Private evidence records the approval, update and response.
 
 ## Application and device workflows
 
