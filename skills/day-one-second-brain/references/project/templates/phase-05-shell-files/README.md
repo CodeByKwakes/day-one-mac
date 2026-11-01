@@ -88,16 +88,10 @@ chezmoi apply "$HOME/.zshrc"
 ```
 
 Repeat that sequence for the specific file that needs a reviewed change.
-Finish with:
-
-```bash
-/opt/homebrew/bin/zsh -n "$HOME/.zprofile"
-/opt/homebrew/bin/zsh -n "$HOME/.zshrc"
-/opt/homebrew/bin/zsh -n "$HOME/.config/zsh/path.zsh"
-/opt/homebrew/bin/zsh -n "$HOME/.config/zsh/aliases.zsh"
-command -v git
-command -v node
-```
+Follow the [active-result validation](../../docs/setup/manual/shell/chezmoi.md#5-validate-the-active-result)
+before opening a new terminal. It uses Apple's Zsh and checks optional shell
+files only when present. Then run the [language checks](../../docs/setup/manual/languages.md)
+for the stacks you selected.
 
 ---
 

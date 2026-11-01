@@ -1,32 +1,44 @@
-# Project instructions for AI agents
+# Day One Mac: agent router
 
 Day One Mac is a public, Apple-silicon-only macOS development-environment guide
-and portable AI-skill collection. Read `docs/START-HERE.md`,
-`docs/shared/explanation/process-overview.md` and the affected capability first.
+and portable AI-skill collection. People use its manual recipes or AI-assisted
+guidance to set up and maintain their Macs without a permanent source checkout.
 
-The routes are AI-assisted setup and manual setup. Canonical recipes live under
-`docs/setup/manual`; AI operation lives under `docs/setup/ai`. Do not restore a
-setup wizard, whole-machine runner, global CLI, installed runtime or background
-manager. Normal users need no permanent checkout. Manual setup must not call
-project helpers.
+## Where to look first
 
-Keep instructions in `templates/skills/`, native roles in `templates/agents/`,
-and generated installable packages in `skills/`. Update `config/skill-sources.txt`
-and `config/document-sources.txt` deliberately when adding public sources.
-Helpers under `helpers/` must work inside an independently installed skill, with
-no runtime state or checkout dependency. Keep private outputs outside skills.
+Read [Start here](docs/START-HERE.md) and the
+[process overview](docs/shared/explanation/process-overview.md), then the owning
+guide for the task below. Paths are repository-relative; maintainer records and
+contributor tools require a source checkout.
 
-Preserve ownership and recovery evidence. Historical phase markers do not prove
-current completion. Never add credentials, private keys, recovery codes,
-personal inventories, company identifiers or machine-specific absolute paths.
-Keep mutations preview-first, explicitly scoped and recoverable. Never erase or
-format a disk. Respect managed-device ownership and client permissions.
+| Task | Canonical source |
+|---|---|
+| Manual setup | [Manual sequence](docs/setup/manual/README.md) and the affected guide under `docs/setup/manual/` |
+| AI-assisted setup | [AI operation](docs/setup/ai/operation.md) and `docs/setup/ai/` |
+| Add a capability or helper | [Capability contract](docs/shared/reference/adding-capabilities.md), [helper reference](docs/shared/reference/tools.md), `helpers/` |
+| Change skill instructions | `templates/skills/`; [AI component ownership](docs/shared/explanation/ai-components.md) |
+| Change native agent roles | `templates/agents/shared/` and `config/catalogs/assistant-agents.json`; native adapters under `templates/agents/` are generated |
+| Package skills or native plugins | [CONTRIBUTING.md](CONTRIBUTING.md), [plugin packaging](docs/shared/reference/plugin-packaging.md), `config/skill-sources.txt`, `config/document-sources.txt`; `skills/` is generated output |
+| Change the handbook or offline reader | [Reading and export](docs/shared/reading-and-export.md), `tools/docs/` |
+| Check migration decisions or acceptance | `maintainers/plans/2026-10-25-no-runtime.md` records the approved migration; `maintainers/acceptance/CURRENT-READINESS.md` defines current acceptance checks |
 
-Shell scripts target macOS Bash 3.2, use `set -euo pipefail`, quote paths and
-support spaces and Unicode. Use private writes, drift checks and locks where
-needed. Do not source a user's shell configuration to inspect it.
+## Hard invariants
 
-Validate from the repository root:
+- Do not restore a setup wizard, whole-machine runner, global CLI, installed
+  runtime or background manager. Manual setup must not call project helpers.
+- Keep mutations preview-first, explicitly scoped and recoverable. Preserve
+  ownership and recovery evidence. Respect managed-device ownership and client
+  permissions.
+- Never add credentials, private keys, recovery codes, personal inventories,
+  company identifiers or machine-specific absolute paths. Keep private outputs
+  outside installed skills.
+- Never erase or format a disk.
+- Never change live Mac configuration, delete recovery backups, publish or push
+  without explicit scope.
+
+## Validation
+
+Run from the repository root:
 
 ```bash
 pnpm run lint
@@ -34,14 +46,24 @@ pnpm run validate:static
 pnpm run test:integration
 ```
 
-`tools/validate.sh --all` is the full local gate. Packaging changes also require
-the pinned Skills CLI acceptance in CONTRIBUTING.md. Report isolated fixture
-results separately from live provider or device checks.
+`tools/validate.sh --all` combines these checks. For plugin tests and actionlint
+as well, use `pnpm run validate:complete`. Packaging changes also require the
+pinned Skills CLI acceptance in [CONTRIBUTING.md](CONTRIBUTING.md).
+Report isolated fixture results separately from live provider or device checks.
 
-## Restructuring and maintenance
+## Shell conventions
 
-The approved no-runtime migration is recorded in
-`maintainers/plans/2026-10-25-no-runtime.md`. Earlier plans and audits remain
-historical. Preserve public guide URLs with compatibility notices. Keep manual
-recipes, contributor tools and installed skill assets distinct. Never change
-live Mac configuration, delete recovery backups, publish or push without scope.
+Target macOS Bash 3.2, use `set -euo pipefail`, quote paths and support spaces
+and Unicode. Use private writes, drift checks and locks where needed. Never
+source a user's shell configuration to inspect it. Lint configuration lives in
+`.shellcheckrc`; [CONTRIBUTING.md](CONTRIBUTING.md) owns the check procedures.
+
+## Maintenance
+
+- Historical plans, audits and phase markers do not prove current completion.
+- Preserve public guide URLs with compatibility notices.
+- Keep manual recipes, contributor tools and installed skill assets distinct.
+  Helpers must work inside independently installed skills without runtime state
+  or a checkout dependency.
+- Review both source inventories when adding public sources. Edit owning sources
+  and regenerate skill packages and native adapters through CONTRIBUTING.md.

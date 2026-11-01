@@ -228,7 +228,7 @@ codex login status 2>/dev/null || true
 
 Raycast has no separate AI command-line executable. Open its model picker and
 confirm that only the intended providers and models appear. To disable the
-feature without uninstalling the required launcher, turn off AI in Raycast
+feature without uninstalling the launcher, turn off AI in Raycast
 Settings and remove or disable only the provider credential concerned.
 
 For the GitHub Copilot app, open **Settings**, confirm the intended GitHub

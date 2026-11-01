@@ -142,9 +142,8 @@ shared references and reviewed skill helpers support individual tasks.
 | [VS Code profile configuration reference](shared/reference/vscode-profile-data.md) | `shared/reference` |
 | [Remove the legacy manager](shared/migration/remove-legacy-manager.md) | `shared/migration` |
 | [Terminal basics](shared/terminal-basics.md) | `shared` |
-| [Choose Route A or Route B](shared/tools/preparation/00-existing-mac-decision.md) | `shared/tools/preparation` |
-| [Step 1 - Create and review the safety report](setup/manual/backup-and-restore.md) | `shared/tools/preparation` |
-| [Steps 2-3 - Prepare, copy, and prove the backup can be restored](setup/manual/backup-and-restore.md) | `shared/tools/preparation` |
+| [Prepare an existing Mac](shared/tools/preparation/00-existing-mac-decision.md) | `shared/tools/preparation` |
+| [Inventory, backup and restore checks](setup/manual/backup-and-restore.md) | `setup/manual` |
 | [Inspect Second Brain repository connections](shared/tools/second-brain-connections.md) | `shared/tools` |
 | [Generate, replace and restore VS Code profiles](shared/tools/vscode-profiles.md) | `shared/tools` |
 | [Find the right troubleshooting procedure](shared/troubleshooting.md) | `shared` |

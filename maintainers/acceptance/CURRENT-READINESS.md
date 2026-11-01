@@ -60,3 +60,91 @@ the current approved version. Record the exact OS build and selected software.
 Sign off only the tested route/capabilities, with reviewer, date, evidence expiry
 and unresolved items. Use the [client acceptance matrix](../../docs/shared/reference/client-acceptance.md)
 for existing scope boundaries. Unknown required checks prevent a readiness claim.
+
+### Use a fresh macOS VM for software acceptance
+
+A newly installed macOS guest on an Apple-silicon host can exercise the clean
+software-installation journey. Record the environment as **clean VM**, with
+host/guest OS builds, virtualization app/version and any guest tools. Keep
+physical-device, managed-device and first-time-human acceptance separate.
+
+1. Confirm the host's owner permits the virtualization app, local guests and
+   selected network access. Use that app's approved installation/update owner.
+2. Create a new native macOS guest from an Apple restore image compatible with
+   the host. Record the selected stable release; do not assume the latest image
+   matches the host or covers the minimum supported macOS version.
+3. Have the user complete licence acceptance and guest account creation. Start
+   without migration, restored developer configuration or copied account tokens.
+4. Before developer installations, record `sw_vers`, `uname -m`,
+   `xcode-select -p` and availability of the selected tools. A stock Apple Git
+   stub does not establish usable Git or installed Command Line Tools.
+5. Shut down the guest and preserve a full baseline copy including its virtual
+   disk. Use separate full copies for the manual and AI-assisted journeys.
+   Do not assume a configuration-only copy or suspended state is a clean baseline.
+6. Transfer only the reviewed candidate's guides and skill package. Record its
+   content fingerprint, including uncommitted changes when applicable. Keep
+   host home folders, account credentials and developer caches outside the guest.
+7. Run the applicable checks below inside each guest. Record interventions and
+   failures, restart the guest, test a real project and restore a sample. Repeat
+   on the minimum supported OS only when that image is available and compatible.
+
+For UTM, the [macOS guest guide](https://docs.getutm.app/guest-support/macos/)
+describes Apple restore images and the [actions guide](https://docs.getutm.app/basics/actions/)
+distinguishes full copies from configuration-only copies. Follow the installed
+version's controls; record the app version with each pilot.
+
+| Acceptance area | Evidence a VM run can establish | Remaining boundary |
+|---|---|---|
+| Missing prerequisites, shell and language setup | Observed installation order and fresh-session/project checks | Only the tested guest OS and selections |
+| Skill installation and recovery | Actual copy/install, discovery, scoped update and restore results | A fixture or file check alone does not prove client discovery |
+| Provider and account workflows | Actual approved sign-in and harmless request in the guest | No pass without a live response |
+| Novice usability | A first-time person follows the guest journey without coaching | Agent execution does not establish this |
+| Physical displays, device encryption/recovery and company controls | No physical-device acceptance from the software pilot | Test on the relevant hardware and managed environment |
+| Container engines | Only observed success in a supported nested-virtualization configuration | Check host, guest and engine support separately |
+
+If a required device control cannot be exercised, mark it **untested**. A
+continued software-only experiment does not sign off the complete workstation.
+Keep the untouched baseline and recovery copies; never erase or format disks.
+
+### Run the first spare-Mac pilot
+
+Use the spare Apple-silicon Mac only after its owner approves the test scope and
+recovery plan. Do not erase or format it for this procedure. A new account can
+isolate user settings, but it does not remove system-wide developer tools. If
+Git, Homebrew or other prerequisites are already usable, record that limitation;
+the run cannot prove those fresh-install steps.
+
+1. Copy the [private acceptance record](../../docs/shared/private-evidence.md#copy-a-setup-acceptance-record)
+   outside the checkout. Record `sw_vers`, `uname -m`, the selected source revision,
+   device ownership and the [supported macOS floor](../../docs/shared/prerequisites.md).
+2. Inventory existing prerequisites without installing anything. Record which
+   fresh-install preconditions are met and which remain untested.
+3. Have a first-time user follow [Start here](../../docs/START-HERE.md) and the
+   [manual base sequence](../../docs/setup/manual/README.md#follow-the-base-setup).
+   Record every unclear or blocked step before offering help. Start with Apple
+   Zsh and one project language; optional productivity apps may remain absent.
+4. Verify the selected real project, open a new terminal, restart as approved,
+   and restore an independent sample from the chosen backup owner. Preserve
+   errors and recovery references privately.
+5. In a separate approved pilot, follow the [AI bootstrap](../../docs/setup/manual/ai/setup-assistant.md).
+   Exercise manual skill copy before Node/Git are available, then verify skill
+   discovery, a harmless provider response and the bounded tool-permission check.
+6. Have an experienced user locate the selected capability's configuration,
+   recovery and troubleshooting without coaching. Record navigation failures.
+7. Repeat missing OS, language and managed-device combinations only in appropriate
+   approved environments. An already configured Mac cannot fill a clean-device row.
+
+Copy the matrix below into the private record. All rows begin **untested**;
+replace a status only with observed evidence for that exact candidate.
+
+| Check | Minimum supported macOS | Current approved macOS | Evidence required |
+|---|---|---|---|
+| Novice manual base, Apple Zsh, Python-only | Untested | Untested | Starting prerequisites, stopped steps, project/restart/restore results |
+| Manual base with Node selected | Untested | Untested | Node owner, version, real project and fresh-shell result |
+| AI bootstrap before Node/Git | Untested | Untested | Manual copy, client discovery, live response and bounded tools |
+| Selected native plugin/client | Untested | Untested | Installed version, scope and live skill invocation |
+| Advanced configuration and recovery discovery | Untested | Untested | Tasks, destinations found and unresolved confusion |
+| Managed standard-account journey, if claimed | Untested | Untested | Approved elevation, network policy and recovery checks |
+
+Store local validation logs separately from pilot evidence. A passing fixture
+or native CLI artifact validator does not change any live row to **pass**.

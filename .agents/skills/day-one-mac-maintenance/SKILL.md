@@ -14,10 +14,11 @@ plugin builds and CI. Preserve its source and restoration boundaries.
 
 ## Optional contributor toolkit
 
-This is the only checkout-local contributor skill. General planning, debugging,
-review, writing and design helpers belong in a personal toolkit. They are not
-required to contribute: use AGENTS.md, CONTRIBUTING.md and the repository gates
-when a helper is unavailable. Never install companions merely to follow this skill.
+This is the only repository-owned contributor skill. General planning, debugging,
+review, writing and design helpers are optional. CONTRIBUTING.md owns the
+repo-local gstack dependency policy and its installation scope. Use AGENTS.md,
+CONTRIBUTING.md and the repository gates when a helper is unavailable. Never
+install companions merely to follow this skill.
 
 ## Implementation contracts
 

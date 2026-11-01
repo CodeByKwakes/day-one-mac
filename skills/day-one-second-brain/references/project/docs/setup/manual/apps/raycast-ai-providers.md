@@ -24,7 +24,7 @@ Add a second route later only for a defined reason.
 
 > **Work Mac:** confirm the organisation's AI-provider, data-retention and API-key
 > rules before adding a personal account or key. If approval is unclear, choose
-> **No Raycast AI** and continue using the required launcher features.
+> **No Raycast AI** and continue using the launcher features.
 
 ## Option 1 - Leave Raycast AI unconfigured
 
@@ -91,20 +91,17 @@ model identifiers and supported request fields.
    ~/.config/raycast/ai/providers.template.yaml
    ```
 
-4. If no live file exists, copy the template:
+4. Select the live file before creating or editing it:
 
    ```bash
-   cp "$HOME/.config/raycast/ai/providers.template.yaml" \
-     "$HOME/.config/raycast/ai/providers.yaml"
+   TARGET_FILE="$HOME/.config/raycast/ai/providers.yaml"
    ```
 
-5. If a live file already exists, back it up before editing:
-
-   ```bash
-   mkdir -p "$HOME/.local/state/development-setup/manual-backups"
-   cp "$HOME/.config/raycast/ai/providers.yaml" \
-     "$HOME/.local/state/development-setup/manual-backups/raycast-providers.before-change.yaml"
-   ```
+5. Follow steps 1-2 of the [configuration-file walkthrough](../../../shared/terminal-basics.md#create-or-edit-a-configuration-file)
+   with this target instead of its Zsh example. Inspect ownership and parents,
+   then record the new private backup or absence record. Stop on any failure.
+   If the file was absent, copy the template's contents in the editor. Keep
+   earlier recovery folders.
 
 6. Keep the one existing top-level `providers:` key and add an indented entry
    beneath it. Do not create a second `providers:` key:
@@ -187,7 +184,7 @@ Verify all four parts:
 4. A Raycast request appears in the OmniRoute dashboard under the intended route.
 
 Stopping OrbStack or OmniRoute makes this provider unavailable; it does not
-break Raycast's required launcher features.
+break Raycast's launcher features.
 
 ## Option 6 - Use a local Ollama model
 

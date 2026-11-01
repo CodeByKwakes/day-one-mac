@@ -7,9 +7,8 @@ and private machine paths outside the public repository.
 
 Use this checkout's `day-one-mac-maintenance` skill for repository upkeep.
 It is the only repository-owned contributor skill, displayed as **Maintain this
-repository**. General planning, writing, design and review helpers belong in a
-contributor's personal toolkit. They are optional; AGENTS.md, this guide and the
-repository checks are sufficient to contribute.
+repository**. General planning, writing, design and review helpers are optional;
+AGENTS.md, this guide and the repository checks are sufficient to contribute.
 The public `day-one-maintain` and `day-one-contribute` workflows serve different
 scopes; see the [maintenance skill distinction](docs/setup/manual/ai/day-one-skills.md#repository-maintenance-versus-environment-maintenance)
 for their source locations and packaging boundaries.
@@ -35,6 +34,28 @@ integration and agent boundaries. Edit shared policies under
 
    Expected result: contributor dependencies and local Git hooks are ready.
    The private package is tooling only; users do not install it as an application.
+
+### Optional repo-local gstack
+
+The reviewed optional contributor dependency is `garrytan/gstack`. Its local
+installation lives in `.agents/skills/gstack/`, which Git and project shell lint
+exclude. `skills-lock.json` records its source and content hash. Keep upstream
+files out of commits and both public source inventories. The owned maintenance
+skill and all other project shell sources remain subject to repository checks.
+A fresh clone and CI do not need gstack installed.
+
+To install it for Codex in this checkout, review the upstream source and run:
+
+```bash
+NODE_USE_SYSTEM_CA=1 npx skills@1.7.4 add https://github.com/garrytan/gstack \
+  --skill gstack --agent codex
+```
+
+Expected: the local skill entry point exists and the lock records the selected
+source. Review any lock change before committing it. This command does not set
+up gstack's browser runtime or global integrations. Use its own setup instructions
+only when those features are needed and their changes are approved. Do not add
+Claude aliases or other client integrations unless those clients are selected.
 
 ## Change and verify
 

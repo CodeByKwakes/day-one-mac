@@ -11,12 +11,16 @@ active delivery method for the main skill per client.
 
 ## Prerequisites and source
 
-Use an approved AI client, Node.js 22.20.0 or newer with npm, and working Git for
-GitHub or other Git sources. Check `node --version`, `npm --version` and
+Use an approved AI client. The Skills CLI route needs Node.js 22.20.0 or newer
+with npm, and working Git for GitHub or other Git sources. Check `node --version`, `npm --version` and
 `git --version`. Follow the [language toolchain guide](../languages.md) for Node
 and npm. If Git is missing or opens Apple's developer-tools prompt, finish the
 [Command Line Tools installation](../homebrew.md#1-check-apple-command-line-tools),
 then rerun `git --version`. A native AI client does not install Git for you.
+
+Without Node/npm or Git, use [manual copy](#install-by-manual-copy-without-node-or-git).
+That route needs only the reviewed source archive and the selected client;
+individual workflows may need additional tools listed in their owning guides.
 
 The commands below use Skills CLI 1.7.4. `npx` downloads the CLI when
 it is absent from the npm cache. Review its prompts and selected destinations.
@@ -24,9 +28,9 @@ it is absent from the npm cache. Review its prompts and selected destinations.
 ### Choose a reviewed source
 
 GitHub installation requires a published revision containing `skills/`. A local
-commit is available only through the local path until it is pushed. A branch or
-release URL selects that published revision; the repository shorthand selects
-its default branch. Check the source before installing or updating.
+commit is available only through the local path until it is pushed. A full commit
+ID in a GitHub tree URL selects that exact published snapshot; the repository
+shorthand selects its default branch. Check the source before installing or updating.
 
 | Source | Before installation | What it supplies |
 |---|---|---|
@@ -52,13 +56,16 @@ availability from the presence of the older umbrella skill alone.
 1. Create and enter a dedicated private setup directory:
 
    ```bash
-   SETUP_WORKSPACE="$HOME/Developer/Setup/day-one-$(date +%Y%m%d-%H%M%S)"
-   mkdir -p "$(dirname "$SETUP_WORKSPACE")"
-   mkdir -m 700 "$SETUP_WORKSPACE"
-   cd "$SETUP_WORKSPACE"
+   SETUP_WORKSPACE="$HOME/Developer/Setup/day-one-$(date +%Y%m%d-%H%M%S)" &&
+     mkdir -p "$(dirname "$SETUP_WORKSPACE")" &&
+     mkdir -m 700 "$SETUP_WORKSPACE" &&
+     cd "$SETUP_WORKSPACE" &&
+     printf 'Setup workspace ready: %s\n' "$PWD"
    ```
 
-   Expected result: a new directory. Stop if the destination already exists.
+   Expected result: `Setup workspace ready:` followed by the new directory's
+   path. If any command fails, the remaining commands do not run. Stop if you
+   see an error or no success message; preserve any existing destination.
    Project installation writes here, so avoid starting in an unrelated repository.
 
 2. List the published skills:
@@ -82,15 +89,24 @@ availability from the presence of the older umbrella skill alone.
    exist. Review the displayed installation destinations. Remove client names
    you do not use. Choose the shared/symlink method when prompted.
 
-For a published branch, tag or commit, use the full GitHub tree URL pointing to
-its `skills/day-one-mac` directory as the source. Replace `PUBLISHED_REF` with
-an actual published revision; it is not a literal branch name:
+To install an exact published snapshot, open its commit page on GitHub and copy
+the full 40-character commit ID. Replace `PUBLISHED_COMMIT` below with that ID;
+do not paste a branch name into this example:
 
 ```bash
 npx skills@1.7.4 add \
-  https://github.com/CodeByKwakes/day-one-mac/tree/PUBLISHED_REF/skills/day-one-mac \
+  https://github.com/CodeByKwakes/day-one-mac/tree/PUBLISHED_COMMIT/skills/day-one-mac \
   --skill day-one-mac --agent codex github-copilot claude-code
 ```
+
+Expected result: the CLI's `Source:` line shows the complete commit ID and the
+`skills/day-one-mac` path before the installation summary.
+
+Skills CLI 1.7.4 treats the first path segment after `tree/` as the revision.
+Branch or tag names containing `/`, such as `codex/agents-router`, cannot be
+passed in this tree-URL form. Use the full commit ID instead. If an error names
+only the first part of your branch, check the `Source:` line and correct the URL;
+do not change account credentials to repair a misread revision.
 
 ## Install from a local checkout or source archive
 
@@ -98,10 +114,18 @@ npx skills@1.7.4 add \
 
    ```bash
    DAY_ONE_SOURCE="$(pwd -P)"
-   test -f "$DAY_ONE_SOURCE/skills/day-one-mac/SKILL.md"
+   if test -f "$DAY_ONE_SOURCE/skills/day-one-mac/SKILL.md"; then
+     printf 'Source package found: %s\n' "$DAY_ONE_SOURCE"
+   else
+     printf 'STOP: open Terminal in the reviewed source directory and retry.\n' >&2
+     unset DAY_ONE_SOURCE
+   fi
    ```
 
-   Expected result: the test succeeds without output. Stop if the package is absent.
+   Expected result: `Source package found:` followed by the source directory's
+   path. If you see `STOP`, return to [Choose a reviewed source](#choose-a-reviewed-source)
+   and locate the extracted folder before continuing. Keep this Terminal window
+   open: the following steps use the variable set here.
 
 2. Create and enter a new setup directory using step 1 of the GitHub procedure.
 
@@ -125,22 +149,62 @@ Use `.claude/skills/day-one-mac` instead of `.agents/skills/day-one-mac` in the
 verification and role-source examples for that selection. Selecting Codex,
 Copilot and Claude together supports the shared copy with a Claude symlink.
 
-To install without the Skills CLI, copy the reviewed `skills/day-one-mac` folder
-into a new `.agents/skills/day-one-mac` directory in your setup workspace. Preserve
-all files and subdirectories. For Claude, follow the linking procedure below.
+## Install by manual copy without Node or Git
+
+1. Download and extract the [reviewed source archive](#choose-a-reviewed-source).
+   Follow steps 1-2 of [local installation](#install-from-a-local-checkout-or-source-archive)
+   to record `DAY_ONE_SOURCE` and enter a new private setup workspace. Skip its
+   Skills CLI command.
+
+   Expected: the source contains `skills/day-one-mac/SKILL.md`; the current
+   directory is your separate setup workspace.
+
+2. Copy the complete package, preserving existing installations:
+
+   ```bash
+   (
+     set -euo pipefail
+     test -f "$DAY_ONE_SOURCE/skills/day-one-mac/SKILL.md"
+     target=.agents/skills/day-one-mac
+     if [[ -e "$target" || -L "$target" ]]; then
+       printf 'Preserve existing skill: %s\n' "$target" >&2
+       exit 1
+     fi
+     mkdir -p .agents/skills
+     cp -R "$DAY_ONE_SOURCE/skills/day-one-mac" "$target"
+   )
+   ```
+
+   Expected: an independent copy with all references and assets. Stop on any
+   error. For Claude, follow [Link skills in an existing project](#link-skills-in-an-existing-project).
+   Then use the file and client checks below. No Skills CLI command is needed.
 
 ## Verify and start
 
-1. List installed project skills and check the entry point:
+1. From the setup workspace, check the entry point and bundled workflow:
 
    ```bash
-   npx skills@1.7.4 list
-   test -f .agents/skills/day-one-mac/SKILL.md
-   test -f .agents/skills/day-one-mac/references/workflows/day-one-check.md
+   (
+     set -euo pipefail
+     for file in .agents/skills/day-one-mac/SKILL.md \
+       .agents/skills/day-one-mac/references/workflows/day-one-check.md; do
+       if test -f "$file"; then
+         printf 'Found: %s\n' "$file"
+       else
+         printf 'STOP: missing file: %s\n' "$file" >&2
+         exit 1
+       fi
+     done
+   )
    ```
 
-   Expected result: the main skill is listed and both file checks succeed.
-   No specialist installation is needed for its bundled workflows.
+   Expected result: two `Found:` lines, one for each file. If either is missing,
+   stop and check the workspace and installation destination before continuing.
+   These checks also work after manual copy without Node/npm. For a CLI-managed installation,
+   additionally run `npx skills@1.7.4 list` and confirm the main skill is listed.
+   Use the reported destination for a global install, or `.claude/skills/day-one-mac`
+   for a Claude-only CLI install. No specialist installation is needed for the
+   bundled workflows.
 
 2. Open this directory in the chosen client and request a read-only check:
 
@@ -253,11 +317,22 @@ installation only when you prefer their narrower entry points.
 2. Verify the installed entry points:
 
    ```bash
-   test -f .agents/skills/day-one-vscode/SKILL.md
-   test -f .agents/skills/day-one-macos-apps/SKILL.md
+   (
+     set -euo pipefail
+     for file in .agents/skills/day-one-vscode/SKILL.md \
+       .agents/skills/day-one-macos-apps/SKILL.md; do
+       if test -f "$file"; then
+         printf 'Found: %s\n' "$file"
+       else
+         printf 'STOP: missing file: %s\n' "$file" >&2
+         exit 1
+       fi
+     done
+   )
    ```
 
-   Expected result: both commands succeed for the project installation above.
+   Expected result: two `Found:` lines for the project installation above.
+   Stop on a missing-file message and check the installation destination.
    Use the CLI-reported destination for global or Claude-only installations.
 
 3. Start with a bounded request:
@@ -402,6 +477,35 @@ when disconnecting a repository. Umbrella users update or remove `day-one-mac`
 instead; no specialist installation is required for that bundled workflow.
 
 ## Update and remove
+
+### Manually copied installations
+
+Do not use Skills CLI update or removal for an untracked manual copy. Close
+sessions using the skill. In Finder, show hidden files with **Command+Shift+.**
+and inspect the exact `.agents/skills/day-one-mac` folder in the setup workspace.
+Keep customisations and private `session/` notes outside that folder.
+
+To update, record the existing setup workspace's path privately. Download and
+extract the newly reviewed archive, then use only step 1 of
+[local installation](#install-from-a-local-checkout-or-source-archive) to set
+`DAY_ONE_SOURCE`. In the same Terminal window, return to the recorded existing
+setup workspace and confirm it with `pwd`; do not create a new workspace.
+
+Move that workspace's one skill folder to a new private recovery folder outside
+`.agents/skills`, preserving earlier backups. Run only step 2 of
+[manual copy](#install-by-manual-copy-without-node-or-git) in the existing workspace,
+then repeat the file and client checks. An existing Claude symlink to that
+canonical path can stay in place. If validation fails, preserve the unsuccessful
+new copy separately before restoring the saved folder to its original path.
+Keep recovery copies until the update is accepted.
+
+To remove, move the same selected skill folder out of `.agents/skills`. If you
+created `.claude/skills/day-one-mac` as a symlink, verify that it points to this
+copy before removing only that link. Preserve unrelated skills, separately
+copied roles, private notes and all recovery folders. Restart the client and
+confirm it no longer discovers the removed skill.
+
+### Skills CLI installations
 
 Before an update, preserve customisations outside the installed package and
 review the source changes. For project installations, run from that workspace:

@@ -79,7 +79,7 @@ async function run(download = false) {
   const version = document.createElement('div'); version.setAttribute('id', 'bundle-version'); version.textContent = 'test'; document.body.append(version);
   if (download) version.setAttribute('data-download', 'day-one-mac-offline.zip');
   const pages = {
-    'docs/START-HERE.md': '[All documentation](README.md)\n\n# Start\n\n## Choose a route\n\nRead the guide.\n\n### Manual\n\n```sh\necho "safe"\n```',
+    'docs/START-HERE.md': '[All documentation](README.md)\n\n# Start\n\n## Choose a route\n\nRead the guide.\n\n<a id="legacy-manual"></a>\n\n### Manual\n\n```sh\necho "safe"\n```',
     'docs/README.md': '# All documentation',
     'docs/setup/ai/README.md': '# Phase 1',
     'docs/setup/ai/bootstrap.md': '# Settings checkpoint',
@@ -140,6 +140,10 @@ async function run(download = false) {
   navigate('#docs/START-HERE.md#manual'); assert.equal(document.scrolled.id, 'manual');
   assert.equal(document.activeElement.id, 'manual');
   assert.equal(get('article').querySelectorAll('button').length, 2, 'Anchor navigation does not duplicate code controls');
+  navigate('#docs/START-HERE.md#legacy-manual');
+  assert.equal(document.scrolled.id, 'legacy-manual');
+  assert.equal(document.activeElement.id, 'legacy-manual');
+  assert.equal(document.activeElement.getAttribute('tabindex'), '-1', 'Legacy section anchors must be programmatically focusable');
   navigate('#docs/START-HERE.md#missing'); assert.match(get('reader-status').textContent, /not in this guide/);
   navigate('#docs/setup/ai/README.md');
   assert.equal(visibleBlocks()[0].tagName, 'H1', 'Title-first source guides use the same browser order');
@@ -160,10 +164,33 @@ async function run(download = false) {
   const narrow = media.get('(max-width: 760px)'); narrow.matches = true; narrow.change();
   assert.equal(get('sidebar').hidden, true);
   document.activeElement = get('content');
-  let prevented = false;
-  events.keydown({ key: '/', preventDefault() { prevented = true; } });
-  assert(prevented); assert.equal(document.activeElement, search); assert.equal(get('sidebar').hidden, false);
-  get('sidebar').fire('keydown', { key: 'Escape' });
+  const press = keys => {
+    let prevented = false;
+    events.keydown({ ...keys, preventDefault() { prevented = true; } });
+    return prevented;
+  };
+  for (const keys of [{ key: '/' }, { key: 'k' }, { key: 'k', metaKey: true, altKey: true },
+    { key: 'k', ctrlKey: true, shiftKey: true }, { key: 'k', metaKey: true, isComposing: true },
+    { key: 'k', ctrlKey: true, defaultPrevented: true }]) {
+    assert.equal(press(keys), false, `Unmatched or handled key stays untouched: ${JSON.stringify(keys)}`);
+    assert.equal(document.activeElement, get('content'));
+    assert.equal(get('sidebar').hidden, true);
+  }
+  for (const keys of [{ key: 'k', metaKey: true }, { key: 'k', ctrlKey: true }, { key: 'K', metaKey: true }]) {
+    assert.equal(press(keys), true);
+    assert.equal(document.activeElement, search);
+    assert.equal(get('sidebar').hidden, false);
+    assert.equal(get('menu-toggle').getAttribute('aria-expanded'), 'true');
+    get('sidebar').fire('keydown', { key: 'Escape' });
+  }
+  for (const target of [search, document.createElement('textarea'), document.createElement('select'), document.createElement('div')]) {
+    if (target.tagName === 'DIV') target.isContentEditable = true;
+    document.activeElement = target;
+    assert.equal(press({ key: 'k', metaKey: true }), false, 'Search shortcut does not interrupt editing');
+    assert.equal(document.activeElement, target);
+  }
+  assert.equal(search.getAttribute('aria-keyshortcuts'), 'Meta+K Control+K');
+  document.activeElement = get('menu-toggle');
   get('menu-toggle').fire('click'); assert.equal(get('sidebar').hidden, false); assert.equal(get('menu-toggle').getAttribute('aria-expanded'), 'true');
   get('sidebar').fire('keydown', { key: 'Escape' }); assert.equal(get('sidebar').hidden, true); assert.equal(document.activeElement, get('menu-toggle'));
   get('menu-toggle').fire('click'); navigate('#docs/setup/ai/operation.md'); assert.equal(get('sidebar').hidden, true);

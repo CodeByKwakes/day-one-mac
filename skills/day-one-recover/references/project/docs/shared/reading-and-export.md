@@ -16,8 +16,9 @@ the guides under `references/project/docs/`; it does not depend on the website.
    and manual links lead to the same canonical recipes used by installed skills.
 
 2. Search for a topic such as `VS Code`, `Docker` or `backup`. On a keyboard,
-   press `/` to focus search when you are not typing in another field. On a small
-   screen, choose **Browse guides** to reveal search and chapter navigation.
+   press **Command+K** on a Mac or **Ctrl+K** on other keyboards to focus search
+   when you are not typing in another field. On a small screen, choose
+   **Browse guides** to reveal search and chapter navigation.
 
    Expected result: guides matching titles, paths, headings or body text appear.
    Select one to read it; a

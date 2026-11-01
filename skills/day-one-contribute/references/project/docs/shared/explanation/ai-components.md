@@ -33,14 +33,14 @@ that single entry point; install standalone specialists for selective use.
 Generated packages under `skills/` are independent distribution snapshots.
 Edit their sources and regenerate them rather than editing snapshots directly.
 
-The only checkout-local contributor skill is `day-one-mac-maintenance`, under
+The only repository-owned contributor skill is `day-one-mac-maintenance`, under
 `.agents/skills`, with a matching Claude symlink. Its Codex display name is
 **Maintain this repository**. The public main skill's Codex display name is
 **Use Day One Mac**. Invocation names remain unchanged; Claude uses the shared
 skill's canonical name.
 
 General planning, architecture, debugging, verification, review, writing and
-design skills belong in a contributor's personal toolkit. They are not shipped
+design skills are optional contributor tools. They are not shipped
 as project requirements or installed by the Day One Mac plugin. Choose one
 default writing helper and one default interface-design helper; keep overlapping
 alternatives and specialist security review outside automatic discovery until
@@ -52,9 +52,10 @@ before consolidating them, and do not alter another project's local skill merely
 because it has the same name. External skills and host-provided plugins remain
 separate dependencies.
 
-The repository `skills-lock.json` has no external contributor-skill entries.
-Keep personal helper provenance outside that lock so restoring project skills
-cannot reinstall a contributor's general toolkit into this checkout.
+The [optional repo-local gstack policy](../../../CONTRIBUTING.md#optional-repo-local-gstack)
+owns its installation scope, lock entry and exclusions. Keep other personal
+helper provenance outside the repository lock. Contributor dependencies are
+not public skill assets or prerequisites for normal repository checks.
 
 `day-one-mac-maintenance` maintains this repository. `day-one-maintain` maintains
 a Mac environment. `day-one-maintainer` is a delegated repository role. The
